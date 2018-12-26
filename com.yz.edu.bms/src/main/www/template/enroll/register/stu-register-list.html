@@ -1,0 +1,615 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>学员注册</title>
+</head>
+<body>
+	<nav class="breadcrumb">
+		<i class="Hui-iconfont">&#xe67f;</i>入学管理
+		<span class="c-gray en">/</span>学员注册
+		<a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+			<i class="iconfont icon-shuaxin"></i>
+		</a>
+	</nav>
+	<div id="tab_demo" class="HuiTab">
+		<div class="tabBar clearfix">
+			<span>第一年注册</span><span>第二年注册</span><span>第三年注册</span>
+		</div>
+		<div class="tabCon">
+			<div class="page-container">
+				<div class="text-l search" style="position: relative">
+					<form id="firstForm">
+						<div class="cl">
+							<div class="cl">
+								<div class="f-l">
+									<span>学员姓名：</span>
+									<input type="text" name="stdName" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>证件号码：</span>
+									<input type="text" name="idCard" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>手机号：</span>
+									<input type="text" name="mobile" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-r mr-5" style="position: absolute; right: 0;">
+									<a class="btn btn-primary radius" style="width: 90px" href="javascript:;" onclick="searchRegister(1)"><i class="iconfont icon-sousuo"></i>搜索</a>
+									<a class="btn btn-normal-outline radius" onclick="_reset()"><i class="iconfont icon-shuaxin"></i></a>
+								</div>
+							</div>
+							<div class="cl">
+							   <div class="f-l">
+									<span>年级：</span>
+									<select class="select" size="1" id="gradeFirst" name="grade">
+										<option value="" selected>--请选择年级--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考院校：</span>
+									<select class="select" size="1" id="unvsIdFirst" name="unvsId">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考层次：</span>
+									<select class="select" size="1" id="pfsnLevelFirst" name="pfsnLevel">
+										<option value="" selected>--请选择专业层次--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报考专业：</span>
+									<select class="select" size="1" id="pfsnIdFirst" name="pfsnId" disabled="disabled">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>学员阶段：</span>
+									<select class="select" id="stdStageFirst" name="stdStage" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>招生类型：</span>
+									<select class="select" size="1" id="recruitTypeFirst" name="recruitType"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>优惠类型：</span>
+									<select class="select" size="1" id="scholarshipFirst" name="scholarship"></select>
+								</div>
+								<div class="f-l">
+									<span>招生分校：</span>
+									<select class="select" size="1" id="campusIdFirst" name="campusId">
+										<option value="" selected>--请选招生分校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span> 招生部门：</span>
+									<select class="select" size="1" id="dpIdFirst" name="dpId">
+										<option value="" selected>--请选择部门--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>考试县区：</span>
+									<input type="text" name="taName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师：</span>
+									<input type="text" name="recruitName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师状态：</span>
+									<select class="select" size="1" id="recruitStatusFirst" name="recruitStatus"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报名确认：</span>
+									<select class="select" id="isOkFirst" name="isOk" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否有考生号：</span>
+									<select class="select" id="isExamNoFirst" name="isExamNo" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>参考签到：</span>
+									<select class="select" id="isExamSignFirst" name="isExamSign" size="1"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无成绩：</span>
+									<select class="select" id="isScoreFirst" name="isScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>总考分高于：</span>
+									<input type="text" name="scoreMax" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>总考分低于：</span>
+									<input type="text" name="scoreMin" class="input-text radius ml-10"/>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无加分：</span>
+									<select class="select" id="isAddScoreFirst" name="isAddScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取状态：</span>
+									<select class="select" id="isAdmitFirst" name="isAdmit" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取院校：</span>
+									<select class="select" size="1" id="unvsIdAdmitFirst" name="unvsIdAdmit">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>录取专业：</span>
+									<select class="select" size="1" id="pfsnIdAdmitFirst" name="pfsnIdAdmit">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>录取与报读一致：</span>
+									<select class="select" id="isAdmitEnrollFirst" name="isAdmitEnroll" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否外校：</span>
+									<select class="select" id="stdTypeFirst" name="stdType" size="1"></select>
+								</div>
+							</div>
+
+							<div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+								<p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666"><i class="iconfont icon-xiala"></i></p>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="bg-1">
+					<div class="cl bg-1">
+						<span class="l mt-15 mb-15">
+							<a href="javascript:void(0);" onclick="register_import()" class="btn btn-success radius"><i class="iconfont icon-daoru"></i> 导入学号</a>
+							<a href="javascript:void(0);" onclick="register_stdno_import()" class="btn btn-success radius"><i class="iconfont icon-daoru"></i> 导入学籍编号</a>
+							<a href="javascript:void(0);" onclick="registerBatch(1)" class="btn btn-primary radius"><i class="iconfont icon-shenhe"></i> 批量注册</a>
+							<!--<a href="javascript:void(0);" onclick="stduent_out()" class="btn btn-danger radius"><i class="iconfont icon-shanchu"></i> 退学申请</a>-->
+						</span>
+						<div class="mt-35 bg-fff">
+							<table class="table table-border table-bordered table-hover table-bg table-sort" id="firstGrade">
+								<thead>
+									<tr class="text-c">
+										<th width="15"><input type="checkbox" name="all" value="" /></th>
+										<th width="50">学员编号</th>
+										<th width="50">学员</th>
+										<th width="80">报读院校</th>
+										<th width="80">录取院校</th>
+										<th width="80">高校学号</th>
+										<th width="30">入学年级</th>
+										<th width="40">学员阶段</th>
+										<th width="40">注册学籍</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--------------------------------------分割线---------------------------------------->
+		<div class="tabCon">
+			<div class="page-container">
+				<div class="text-l search">
+					<form id="secondForm">
+						<div class="cl">
+							<div class="cl">
+								<div class="f-l">
+									<span>学员姓名：</span>
+									<input type="text" name="stdName" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>证件号码：</span>
+									<input type="text" name="idCard" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>手机号：</span>
+									<input type="text" name="mobile" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-r mr-5" style="position: absolute; right: 0;">
+									<a class="btn btn-primary radius" style="width: 90px"  href="javascript:void(0);" onclick="searchRegister(2)"> <i class="iconfont icon-sousuo"></i>搜索</a>
+									<a class="btn btn-normal-outline radius" onclick="_reset()"><i class="iconfont icon-shuaxin"></i></a>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>年级：</span>
+									<select class="select" size="1" id="gradeSecond" name="grade">
+										<option value="" selected>--请选择年级--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考院校：</span>
+									<select class="select" size="1" id="unvsIdSecond" name="unvsId">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考层次：</span>
+									<select class="select" size="1" id="pfsnLevelSecond" name="pfsnLevel">
+										<option value="" selected>--请选择专业层次--</option>
+									</select>
+								</div>
+						
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报考专业：</span>
+									<select class="select" size="1" id="pfsnIdSecond" name="pfsnId" disabled="disabled">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>学员阶段：</span>
+									<select class="select" id="stdStageSecond" name="stdStage" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>招生类型：</span>
+									<select class="select" size="1" id="recruitTypeSecond" name="recruitType"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>优惠类型：</span>
+									<select class="select" size="1" id="scholarshipSecond" name="scholarship"></select>
+								</div>
+								<div class="f-l">
+									<span>招生分校：</span>
+									<select class="select" size="1" id="campusIdSecond" name="campusId">
+										<option value="" selected>--请选招生分校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span> 招生部门：</span>
+									<select class="select" size="1" id="dpIdSecond" name="dpId">
+										<option value="" selected>--请选择部门--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>考试县区：</span>
+									<input type="text" name="taName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师：</span>
+									<input type="text" name="recruitName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师状态：</span>
+									<select class="select" size="1" id="recruitStatusSecond" name="recruitStatus"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报名确认：</span>
+									<select class="select" id="isOkSecond" name="isOk" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否有考生号：</span>
+									<select class="select" id="isExamNoSecond" name="isExamNo" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>参考签到：</span>
+									<select class="select" id="isExamSignSecond" name="isExamSign" size="1"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无成绩：</span>
+									<select class="select" id="isScoreSecond" name="isScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>总考分高于：</span>
+									<input type="text" name="scoreMax" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>总考分低于：</span>
+									<input type="text" name="scoreMin" class="input-text radius ml-10"/>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无加分：</span>
+									<select class="select" id="isAddScoreSecond" name="isAddScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取状态：</span>
+									<select class="select" id="isAdmitSecond" name="isAdmit" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取院校：</span>
+									<select class="select" size="1" id="unvsIdAdmitSecond" name="unvsIdAdmit">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>录取专业：</span>
+									<select class="select" size="1" id="pfsnIdAdmitSecond" name="pfsnIdAdmit">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>录取与报读一致：</span>
+									<select class="select" id="isAdmitEnrollSecond" name="isAdmitEnroll" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否外校：</span>
+									<select class="select" id="stdTypeSecond" name="stdType" size="1"></select>
+								</div>
+							</div>
+							<div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+								<p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666"><i class="iconfont icon-xiala"></i></p>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="bg-1">
+					<div class="cl bg-1">
+						<span class="l mt-15 mb-15">
+							<a href="javascript:void(0);" onclick="registerBatch(2)" class="btn btn-primary radius"> <i class="iconfont icon-shenhe"></i>批量注册</a>
+							<!--<a href="javascript:void(0);" onclick="stduent_out()" class="btn btn-danger radius"> <i class="iconfont icon-shanchu"></i>退学申请</a>-->
+						</span>
+						<div class="mt-35 bg-fff">
+							<table class="table table-border table-bordered table-hover table-bg table-sort" id="secondGrade">
+								<thead>
+									<tr class="text-c">
+										<th width="15"><input type="checkbox" name="all" value=""/></th>
+										<th width="50">学员编号</th>
+										<th width="50">学员</th>
+										<th width="80">报读院校</th>
+										<th width="80">录取院校</th>
+										<th width="80">高校学号</th>
+										<th width="30">入学年级</th>
+										<th width="40">学员阶段</th>
+										<th width="40">注册学籍</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--------------------------------------分割线---------------------------------------->
+
+		<div class="tabCon">
+			<div class="page-container">
+				<div class="text-l search" >
+					<form id="thirdForm">
+						<div class="cl">
+							<div class="cl">
+								<div class="f-l">
+									<span>学员姓名：</span>
+									<input type="text" name="stdName" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>证件号码：</span>
+									<input type="text" name="idCard" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>手机号：</span>
+									<input type="text" name="mobile" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-r mr-5" style="position: absolute; right: 0;">
+									<a class="btn btn-primary radius" style="width: 90px" href="javascript:void(0);" onclick="searchRegister(3)"><i class="iconfont icon-sousuo"></i>搜索 </a>
+									<a class="btn btn-normal-outline radius" onclick="_reset()"><i class="iconfont icon-shuaxin"></i></a>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>年级：</span>
+									<select class="select" size="1" id="gradeThird" name="grade">
+										<option value="" selected>--请选择年级--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考院校：</span>
+									<select class="select" size="1" id="unvsIdThird" name="unvsId">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>报考层次：</span>
+									<select class="select" size="1" id="pfsnLevelThird" name="pfsnLevel" >
+										<option value="" selected>--请选择专业层次--</option>
+									</select>
+								</div>
+							
+
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报考专业：</span>
+									<select class="select" size="1" id="pfsnIdThird" name="pfsnId" disabled="disabled">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>学员阶段：</span>
+									<select class="select" id="stdStageThird" name="stdStage" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>招生类型：</span>
+									<select class="select" size="1" id="recruitTypeThird" name="recruitType"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>优惠类型：</span>
+									<select class="select" size="1" id="scholarshipThird" name="scholarship"></select>
+								</div>
+								<div class="f-l">
+									<span>招生分校：</span>
+									<select class="select" size="1" id="campusIdThird" name="campusId">
+										<option value="" selected>--请选招生分校--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span> 招生部门：</span>
+									<select class="select" size="1" id="dpIdThird" name="dpId">
+										<option value="" selected>--请选择部门--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>考试县区：</span>
+									<input type="text" name="taName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师：</span>
+									<input type="text" name="recruitName" class="input-text radius"/>
+								</div>
+								<div class="f-l">
+									<span>招生老师状态：</span>
+									<select class="select" size="1" id="recruitStatusThird" name="recruitStatus"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>报名确认：</span>
+									<select class="select" id="isOkThird" name="isOk" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否有考生号：</span>
+									<select class="select" id="isExamNoThird" name="isExamNo" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>参考签到：</span>
+									<select class="select" id="isExamSignThird" name="isExamSign" size="1"></select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无成绩：</span>
+									<select class="select" id="isScoreThird" name="isScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>总考分高于：</span>
+									<input type="text" name="scoreMax" class="input-text radius ml-10"/>
+								</div>
+								<div class="f-l">
+									<span>总考分低于：</span>
+									<input type="text" name="scoreMin" class="input-text radius ml-10"/>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>有无加分：</span>
+									<select class="select" id="isAddScoreThird" name="isAddScore" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取状态：</span>
+									<select class="select" id="isAdmitThird" name="isAdmit" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>录取院校：</span>
+									<select class="select" size="1" id="unvsIdAdmitThird" name="unvsIdAdmit">
+										<option value="" selected>--请选择院校--</option>
+									</select>
+								</div>
+							</div>
+							<div class="cl">
+								<div class="f-l">
+									<span>录取专业：</span>
+									<select class="select" size="1" id="pfsnIdAdmitThird" name="pfsnIdAdmit">
+										<option value="" selected>--请选择专业--</option>
+									</select>
+								</div>
+								<div class="f-l">
+									<span>录取与报读一致：</span>
+									<select class="select" id="isAdmitEnrollThird" name="isAdmitEnroll" size="1"></select>
+								</div>
+								<div class="f-l">
+									<span>是否外校：</span>
+									<select class="select" id="stdTypeThird" name="stdType" size="1"></select>
+								</div>
+							</div>
+							<div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+								<p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666"><i class="iconfont icon-xiala"></i></p>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="bg-1">
+					<div class="cl bg-1">
+						<span class="l mt-15 mb-15">
+							<a href="javascript:void(0);" onclick="registerBatch(3)" class="btn btn-primary radius"><i class="iconfont icon-shenhe"></i>批量注册</a>
+							<!--<a href="javascript:void(0);" onclick="stduent_out()" class="btn btn-danger radius"> <i class="iconfont icon-shanchu"></i>退学申请</a>-->
+						</span>
+						<div class="mt-35 bg-fff">
+							<table class="table table-border table-bordered table-hover table-bg table-sort" id="thirdGrade">
+								<thead>
+									<tr class="text-c">
+										<th width="15"><input type="checkbox" name="all" value=""/></th>
+										<th width="50">学员编号</th>
+										<th width="50">学员</th>
+										<th width="80">报读院校</th>
+										<th width="80">录取院校</th>
+										<th width="80">高校学号</th>
+										<th width="30">入学年级</th>
+										<th width="40">学员阶段</th>
+										<th width="40">注册学籍</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/webjs/enroll/register/stu-register-list.js}"></script>
+</body>
+</html>

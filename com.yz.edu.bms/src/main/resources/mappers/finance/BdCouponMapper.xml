@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdCouponMapper" >
+
+	<resultMap type="com.yz.model.finance.coupon.BdCoupon" id="CouponReulstMap">
+		<result column="coupon_id" property="couponId" />
+		<result column="trigger_content" property="triggerContent" />
+		<result column="c_trigger_type" property="cTriggerType" />
+	</resultMap>
+	
+	<resultMap type="com.yz.model.finance.coupon.BdCoupon" id="BaseReulstMap">
+		<result column="coupon_id" property="couponId" />
+		<result column="coupon_name" property="couponName" />
+		<result column="amount" property="amount" />
+		<result column="trigger_content" property="triggerContent" />
+		<result column="c_trigger_type" property="cTriggerType" />
+		<result column="available_start_time" property="availableStartTime" />
+		<result column="available_expire_time" property="availableExpireTime" />
+		<result column="publish_start_time" property="publishStartTime" />
+		<result column="publish_expire_time" property="publishExpireTime" />
+		<result column="is_allow" property="isAllow" />
+		<result column="remark" property="remark" />
+		<association property="scholarship" column="coupon_id" select="selectScholarship"/>
+		<association property="grade" column="coupon_id" select="selectGrade"/>
+		<association property="itemCodes" column="coupon_id" select="selectItemCodes"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.model.finance.coupon.BdCouponResponse" id="CouponInfoResult" extends="BaseReulstMap">
+		<association property="pfsnInfo" column="coupon_id" select="selectPfsnInfo"/>
+  		<association property="taInfo" column="coupon_id" select="selectTestArea"/>
+  		<association property="itemCodes" column="coupon_id" select="selectItemInfo"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.model.finance.fee.PfsnInfoResponse" id="PfsnInfoResultMap">
+	  	<result column="pfsn_id" property="pfsnId"/>
+	  	<result column="pfsn_code" property="pfsnCode"/>
+	  	<result column="pfsn_name" property="pfsnName"/>
+	  	<result column="pfsn_level" property="pfsnLevel"/>
+	  	<result column="grade" property="grade"/>
+	  	<result column="unvs_id" property="unvsId"/>
+	  	<result column="unvs_name" property="unvsName"/>
+	  	<result column="unvs_code" property="unvsCode"/>
+	  	<result column="recruit_type" property="recruitType"/>
+	  </resultMap>
+	  
+	<resultMap type="java.util.HashMap" id="TestAreaResultMap">
+	  	<result column="ta_name" property="taName"/>
+	  	<result column="ta_code" property="taCode"/>
+	</resultMap>
+	
+	<delete id="deleteAllCouponByStdId" parameterType="java.lang.String">
+		delete from bd_student_coupon where std_id = #{stdId};
+		delete from bd_student_coupon where user_id =
+		(
+		select user_id from bd_student_info where std_id = #{stdId}
+		)
+	</delete>
+	
+	<delete id="deleteCouponByStdId" parameterType="java.lang.String">
+		DELETE 
+		FROM
+		  bd_student_coupon 
+		WHERE (
+		    std_id = #{stdId}
+		    OR user_id = 
+		    (SELECT 
+		      user_id 
+		    FROM
+		      bd_student_info 
+		    WHERE std_id = #{stdId})
+		  ) 
+		  AND coupon_id in
+		  <foreach collection="couponIds" item="couponId" open="(" close=")" separator=",">
+	    	#{couponId}
+	    </foreach>
+	</delete>
+	
+	<select id="selectCouponNameCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select 
+		  count(1) 
+		from
+		  bd_coupon 
+		where coupon_name = #{couponName}
+	</select>
+	
+	<insert id="insertStdCoupon">
+		INSERT INTO bd_student_coupon (sc_id, coupon_id, std_id) 
+		VALUES
+		  (#{scId}, #{couponId}, #{stdId})
+	</insert>
+	
+	<select id="selectAvailableScoreCoupon" parameterType="java.lang.String" resultMap="CouponReulstMap">
+		SELECT 
+		  bc.`coupon_id`,
+		  bct.`trigger_content`,
+		  bct.`c_trigger_type` 
+		FROM
+		  bd_coupon bc 
+		  LEFT JOIN bd_ptc bp 
+		    ON bc.`coupon_id` = bp.`coupon_code` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bp.`pfsn_id` = bli.`pfsn_id` 
+		    AND bp.`scholarship` = bli.`scholarship` 
+		    AND bp.`ta_id` = bli.`ta_id` 
+		  LEFT JOIN bd_coupon_trigger bct 
+		    ON bct.`coupon_id` = bc.`coupon_id` 
+		WHERE bli.`learn_id` = #{learnId}
+		  AND (
+		    NOW() BETWEEN bc.`publish_start_time` 
+		    AND bc.`publish_expire_time`
+		  ) 
+		  AND bc.`is_allow` = '1' 
+		  AND bct.`c_trigger_type` = '1' 
+	</select>
+	
+	<select id="selectAvailableScoreCouponResetOrder" parameterType="java.lang.String" resultMap="CouponReulstMap">
+		SELECT 
+		  bc.`coupon_id`,
+		  bct.`trigger_content`,
+		  bct.`c_trigger_type` 
+		FROM
+		  bd_coupon bc 
+		  LEFT JOIN bd_ptc bp 
+		    ON bc.`coupon_id` = bp.`coupon_code` 
+		  LEFT JOIN bd_student_admit bli 
+		    ON bp.`pfsn_id` = bli.`pfsn_id` 
+		    AND bp.`ta_id` = bli.`ta_id` 
+		  LEFT JOIN bd_learn_info l 
+		    ON l.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_coupon_trigger bct 
+		    ON bct.`coupon_id` = bc.`coupon_id` 
+		WHERE bli.`learn_id` = #{learnId}
+		  AND l.`scholarship` = bp.`scholarship` 
+		  AND (
+		    NOW() BETWEEN bc.`publish_start_time` 
+		    AND bc.`publish_expire_time`
+		  ) 
+		  AND bc.`is_allow` = '1' 
+		  AND bct.`c_trigger_type` = '1' 
+	</select>
+	
+	<select id="selectItemInfo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  item_code 
+		FROM
+		  `bd_coupon_item` 
+		WHERE coupon_id = #{couponId}
+	</select>
+	
+	<update id="blockCoupon">
+		update bd_coupon set is_allow = #{status} where coupon_id = #{couponId}
+	</update>
+	
+	<delete id="deleteCoupons">
+		DELETE FROM bd_coupon WHERE coupon_id IN 
+		<foreach collection="couponIds" item="couponId" open="(" close=")" separator=",">
+	    	#{couponId}
+	    </foreach>;
+	    DELETE FROM `bd_coupon_item` WHERE coupon_id IN
+	    <foreach collection="couponIds" item="couponId" open="(" close=")" separator=",">
+	    	#{couponId}
+	    </foreach>;
+	    DELETE FROM `bd_ptc` WHERE coupon_code IN
+	    <foreach collection="couponIds" item="couponId" open="(" close=")" separator=",">
+	    	#{couponId}
+	    </foreach>;
+	</delete>
+	
+	<update id="updateCoupon">
+		UPDATE 
+		  bd_coupon bc 
+		  left join `bd_coupon_trigger` bct
+		  on bct.coupon_id = bc.coupon_id
+		<set>
+		<if test="amount != null and amount != ''">
+			bc.amount = #{amount},
+		</if>
+		<if test="remark != null and remark != ''">
+			bct.remark = #{remark},
+		</if>
+		<if test="triggerContent != null and triggerContent != ''">
+			bct.trigger_content = #{triggerContent},
+		</if>
+		<if test="publishStartTime != null and publishStartTime != ''">
+			bc.publish_start_time = #{publishStartTime},
+		</if>
+		<if test="publishExpireTime != null and publishExpireTime != ''">
+			bc.publish_expire_time = #{publishExpireTime},
+		</if>
+		<if test="availableStartTime != null and availableStartTime != ''">
+			bc.available_start_time = #{availableStartTime},
+		</if>
+		<if test="availableExpireTime != null and availableExpireTime != ''">
+			bc.available_expire_time = #{availableExpireTime},
+		</if>
+		<if test="isAllow != null and isAllow != ''">
+			bc.is_allow = #{isAllow},
+		</if>
+		<if test="couponName != null and couponName != ''">
+			bc.coupon_name = #{couponName},
+		</if>
+		</set>
+		WHERE bc.`coupon_id` = #{couponId};
+		DELETE FROM bd_coupon_item where coupon_id = #{couponId};
+		insert into bd_coupon_item(coupon_id,item_code)
+		values
+		<foreach collection="itemCodes" item="itemCode" index="index" separator="," >  
+        	(#{couponId},#{itemCode})
+    	</foreach>
+	</update>
+	
+	<select id="selectTestArea" parameterType="java.lang.String" resultMap="TestAreaResultMap">
+	  	SELECT distinct
+		  bta.`ta_name`,
+		  bta.`ta_code`
+		FROM
+		  bd_ptc bp 
+		  LEFT JOIN bd_test_area bta 
+		    ON bta.`ta_id` = bp.`ta_id` 
+		WHERE bp.`coupon_code` = #{couponId}
+	</select>
+	
+	<select id="selectPfsnInfo" parameterType="java.lang.String" resultMap="PfsnInfoResultMap">
+	  	select distinct
+		  bup.`pfsn_id`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bup.`grade`,
+		  bu.`unvs_id`,
+		  bu.`unvs_name`,
+		  bu.`unvs_code`,
+		  bu.`recruit_type`
+		from
+		  bd_ptc bp 
+		  left join bd_unvs_profession bup 
+		    on bup.`pfsn_id` = bp.`pfsn_id` 
+		  left join bd_university bu 
+		    on bu.`unvs_id` = bup.`unvs_id` 
+		where bp.`coupon_code` = #{couponId}
+    </select>
+	
+	<select id="selectCouponById" parameterType="java.lang.String" resultMap="CouponInfoResult">
+		SELECT 
+		  bc.`coupon_name`,
+		  bc.`amount`,
+		  bct.`trigger_content`,
+		  bct.`c_trigger_type`,
+		  DATE_FORMAT(bc.`available_start_time`, '%Y-%m-%d %H:%i:%S') available_start_time,
+		  DATE_FORMAT(bc.`available_expire_time`, '%Y-%m-%d %H:%i:%S') available_expire_time,
+		  DATE_FORMAT(bc.`publish_start_time`, '%Y-%m-%d %H:%i:%S') publish_start_time,
+		  DATE_FORMAT(bc.`publish_expire_time`, '%Y-%m-%d %H:%i:%S') publish_expire_time,
+		  bc.`is_allow`,
+		  bc.`coupon_id`,
+		  bct.remark
+		FROM
+		  bd_coupon bc 
+		  LEFT JOIN bd_coupon_trigger bct 
+		    ON bct.`coupon_id` = bc.`coupon_id`
+		where bc.coupon_id = #{couponId}
+	</select>
+	
+	<insert id="insertCoupon">
+		INSERT INTO bd_coupon (
+		  coupon_id,
+		  coupon_name,
+		  amount,
+		  publish_start_time,
+		  publish_expire_time,
+		  available_start_time,
+		  available_expire_time,
+		  is_allow,
+		  update_user,
+		  update_user_id,
+		  create_user,
+		  create_user_id
+		)VALUES
+		(
+			#{couponId},#{couponName},#{amount},#{publishStartTime},#{publishExpireTime},#{availableStartTime},
+			#{availableExpireTime},#{isAllow},#{updateUser},#{updateUserId},#{createUser},#{createUserId}
+		);
+		INSERT INTO bd_coupon_trigger (
+		  coupon_id,
+		  trigger_content,
+		  c_trigger_type,
+		  remark
+		) 
+		VALUES
+		  (#{couponId},#{triggerContent},#{cTriggerType},#{remark});
+		INSERT INTO bd_coupon_item (coupon_id, item_code) 
+		VALUES
+		  <foreach collection="itemCodes" item="itemCode" index="index" separator="," >  
+        	(#{couponId},#{itemCode})
+    	</foreach>;
+	</insert>
+	
+	<insert id="insertPtfUpdate">
+		INSERT INTO bd_ptc (
+		  ptc_id,
+		  pfsn_id,
+		  ta_id,
+		  coupon_code,
+		  scholarship
+		) values
+		<foreach collection="list" item="item" index="index" separator="," >  
+        	(
+        	#{item.ptc_id},
+        	#{item.pfsn_id},
+        	#{item.ta_id},
+        	#{item.coupon_code},
+        	#{item.scholarship}
+        	)
+    	</foreach>;
+	</insert>
+	
+	<select id="selectTmpAddPtc" resultType="java.util.HashMap">
+		SELECT 
+		  p.`pfsn_id`,
+		  p.`ta_id`,
+		  #{couponId} AS coupon_code,
+		  #{scholarship} AS scholarship 
+		FROM
+		  bd_proferssion_ta p 
+		WHERE p.`ta_id` IN (
+		    <foreach collection="taIds" item="area" index="index" separator="," >  
+        		#{area}
+    		</foreach>
+		  ) 
+		  AND p.`pfsn_id` IN (
+		    <foreach collection="pfsnIds" item="pfsn" index="index" separator="," >  
+        		#{pfsn}
+    		</foreach>
+		  );
+	</select>
+	
+	<insert id="insertRegistCoupon">
+		INSERT INTO bd_coupon (
+		  coupon_id,
+		  coupon_name,
+		  amount,
+		  publish_start_time,
+		  publish_expire_time,
+		  available_start_time,
+		  available_expire_time,
+		  is_allow,
+		  update_user,
+		  update_user_id,
+		  create_user,
+		  create_user_id
+		)VALUES
+		(
+			#{couponId},#{couponName},#{amount},#{publishStartTime},#{publishExpireTime},#{availableStartTime},
+			#{availableExpireTime},#{isAllow},#{updateUser},#{updateUserId},#{createUser},#{createUserId}
+		);
+		INSERT INTO bd_coupon_trigger (
+		  coupon_id,
+		  trigger_content,
+		  c_trigger_type,
+		  remark
+		) 
+		VALUES
+		  (#{couponId},#{triggerContent},#{cTriggerType},#{remark});
+		INSERT INTO bd_coupon_item (coupon_id, item_code) 
+		VALUES
+		  <foreach collection="itemCodes" item="itemCode" index="index" separator="," >  
+        	(#{couponId},#{itemCode})
+    	</foreach>;
+	</insert>
+	
+	<select id="selectGrade" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bup.`grade` 
+		FROM
+		  bd_ptc bp 
+		  left join bd_unvs_profession bup 
+		    on bp.`pfsn_id` = bup.`pfsn_id` 
+		WHERE bp.`coupon_code` = #{couponId} 
+		LIMIT 0, 1 
+	</select>
+	
+	<select id="selectItemCodes" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  bci.`item_code` 
+		FROM
+		  bd_coupon_item bci 
+		WHERE bci.`coupon_id` = #{couponId}
+	</select>
+	
+	<select id="selectScholarship" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bp.`scholarship` 
+		FROM
+		  bd_ptc bp 
+		WHERE bp.`coupon_code` = #{couponId} 
+		LIMIT 0, 1 
+	</select>
+	
+	<select id="selectCouponByPage" resultMap="BaseReulstMap">
+	   select * from ( SELECT 
+		  bc.`coupon_name`,
+		  bc.`amount`,
+		  bct.`trigger_content`,
+		  bct.`c_trigger_type`,
+		  DATE_FORMAT(bc.`available_start_time`, '%Y-%m-%d %H:%i:%S') available_start_time,
+		  DATE_FORMAT(bc.`available_expire_time`, '%Y-%m-%d %H:%i:%S') available_expire_time,
+		  DATE_FORMAT(bc.`publish_start_time`, '%Y-%m-%d %H:%i:%S') publish_start_time,
+		  DATE_FORMAT(bc.`publish_expire_time`, '%Y-%m-%d %H:%i:%S') publish_expire_time,
+		  bc.`is_allow`,
+		  bc.`coupon_id`,
+		  bc.`update_time`,
+		  bct.remark,
+		  (select GROUP_CONCAT(item_code) from bd_coupon_item where coupon_id=bc.`coupon_id`) item_codes,
+		  (SELECT bup.`grade` FROM bd_ptc bp left join bd_unvs_profession bup on bp.`pfsn_id` = bup.`pfsn_id` 
+		   WHERE bp.`coupon_code` =bc.`coupon_id` LIMIT 0, 1 ) grade,
+		   (SELECT bp.`scholarship` FROM bd_ptc bp left join bd_unvs_profession bup on bp.`pfsn_id` = bup.`pfsn_id` 
+		   WHERE bp.`coupon_code` =bc.`coupon_id` LIMIT 0, 1 ) scholarship
+		FROM
+		  bd_coupon bc 
+		  LEFT JOIN bd_coupon_trigger bct 
+		    ON bct.`coupon_id` = bc.`coupon_id`) temp_table
+		 where 1 = 1
+		 <if test="couponName != null and couponName != ''">  
+	         and temp_table.coupon_name LIKE CONCAT('%', CONCAT(#{couponName}, '%'))
+	     </if>  
+	     <if test="isAllow != null and isAllow != ''">  
+	         and temp_table.is_allow = #{isAllow}
+	     </if> 
+	     <if test="scholarship != null and scholarship != ''">  
+	         and temp_table.scholarship = #{scholarship}
+	     </if> 
+	     <if test="grade !=null and '' != grade">
+	     	and temp_table.grade = #{grade}
+	     </if>
+	     <if test="itemCode !=null and '' !=itemCode">
+	     	and find_in_set(#{itemCode},temp_table.item_codes)
+	     </if>
+	     <if test="availableStartTime != null and availableStartTime != ''">  
+	             and temp_table.available_start_time &gt;= #{availableStartTime}
+	    </if>
+	    <if test="availableExpireTime != null and availableExpireTime != ''">  
+	             and temp_table.available_expire_time &lt;= #{availableExpireTime}
+	    </if>
+	    <if test="publishStartTime != null and publishStartTime != ''">  
+	             and temp_table.publish_start_time &gt;= #{publishStartTime}
+	    </if>
+	    <if test="publishExpireTime != null and publishExpireTime != ''">  
+	             and temp_table.publish_expire_time &lt;= #{publishExpireTime}
+	    </if>
+		ORDER BY temp_table.`update_time` desc
+	</select>
+  	
+</mapper>

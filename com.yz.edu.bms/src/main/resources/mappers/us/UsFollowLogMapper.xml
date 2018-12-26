@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.us.UsFollowLogMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.us.UsFollowLog">
+		<id column="recrods_no" property="recrodsNo" jdbcType="VARCHAR" />
+		<result column="old_emp_id" property="oldEmpId" jdbcType="VARCHAR" />
+		<result column="old_dp_id" property="oldDpId" jdbcType="VARCHAR" />
+		<result column="old_campus_id" property="oldCampusId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="dr_type" property="drType" jdbcType="VARCHAR" />
+		<result column="dr_id" property="drId" jdbcType="VARCHAR" />
+		<result column="dr_name" property="drName" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		recrods_no, old_emp_id, old_dp_id, old_campus_id, emp_id, dp_id, campus_id, create_time, 
+    user_id, create_user, create_user_id, dr_type, dr_id, dr_name, remark
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from us.`us_follow_log`
+		where recrods_no = #{recrodsNo,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertSelective" parameterType="com.yz.model.us.UsFollowLog">
+		insert into us.`us_follow_log`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				recrods_no,
+			<if test="oldEmpId != null">
+				old_emp_id,
+			</if>
+			<if test="oldDpId != null">
+				old_dp_id,
+			</if>
+			<if test="oldCampusId != null">
+				old_campus_id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="dpId != null">
+				dp_id,
+			</if>
+			<if test="campusId != null">
+				campus_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="drType != null">
+				dr_type,
+			</if>
+			<if test="drId != null">
+				dr_id,
+			</if>
+			<if test="drName != null">
+				dr_name,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{recrodsNo,jdbcType=VARCHAR},
+			<if test="oldEmpId != null">
+				#{oldEmpId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldDpId != null">
+				#{oldDpId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldCampusId != null">
+				#{oldCampusId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="dpId != null">
+				#{dpId,jdbcType=VARCHAR},
+			</if>
+			<if test="campusId != null">
+				#{campusId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="drType != null">
+				#{drType,jdbcType=VARCHAR},
+			</if>
+			<if test="drId != null">
+				#{drId,jdbcType=VARCHAR},
+			</if>
+			<if test="drName != null">
+				#{drName,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.us.UsFollowLog">
+		update us.`us_follow_log`
+		<set>
+			<if test="oldEmpId != null">
+				old_emp_id = #{oldEmpId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldDpId != null">
+				old_dp_id = #{oldDpId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldCampusId != null">
+				old_campus_id = #{oldCampusId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null">
+				emp_id = #{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="dpId != null">
+				dp_id = #{dpId,jdbcType=VARCHAR},
+			</if>
+			<if test="campusId != null">
+				campus_id = #{campusId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="drType != null">
+				dr_type = #{drType,jdbcType=VARCHAR},
+			</if>
+			<if test="drId != null">
+				dr_id = #{drId,jdbcType=VARCHAR},
+			</if>
+			<if test="drName != null">
+				dr_name = #{drName,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where recrods_no = #{recrodsNo,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectByUserId" parameterType="string" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from us.`us_follow_log`
+		where user_id = #{userId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectCountByUserId" parameterType="string" resultType="java.lang.String">
+		select count(1) as logCount from us.`us_follow_log`  where user_id = #{userId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

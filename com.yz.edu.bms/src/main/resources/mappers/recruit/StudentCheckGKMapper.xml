@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.recruit.StudentCheckGKMapper">
+    <resultMap id="gkStudentInfoMap" type="java.util.HashMap">
+        <id column="learn_id" jdbcType="VARCHAR" property="learnId"/>
+        <result column="std_type" jdbcType="VARCHAR" property="stdType"/>
+        <result column="grade" jdbcType="VARCHAR" property="grade"/>
+        <result column="recruit_type" jdbcType="VARCHAR" property="recruitType"/>
+        <result column="std_stage" jdbcType="VARCHAR" property="stdStage"/>
+        <result column="scholarship" jdbcType="VARCHAR" property="scholarship"/>
+        <result column="annex_status" jdbcType="VARCHAR" property="annexStatus"/>
+        <result column="is_data_completed" jdbcType="VARCHAR" property="isDataCompleted"/>
+        <result column="inclusion_status" jdbcType="VARCHAR" property="inclusionStatus"/>
+        <result column="std_id" jdbcType="VARCHAR" property="stdId"/>
+        <result column="std_name" jdbcType="VARCHAR" property="stdName"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="unvs_name" jdbcType="VARCHAR" property="unvsName"/>
+        <result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName"/>
+        <result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode"/>
+        <result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel"/>
+        <result column="recruit_name" jdbcType="VARCHAR" property="recruitName"/>
+        <result column="emp_status" jdbcType="VARCHAR" property="empStatus"/>
+        <result column="tutor_name" jdbcType="VARCHAR" property="tutorName"/>
+        <result column="assign_flag" jdbcType="VARCHAR" property="assignFlag"/>
+        <result column="dp_name" jdbcType="VARCHAR" property="dpName"/>
+        <result column="campus_name" jdbcType="VARCHAR" property="campusName"/>
+        <result column="create_user" jdbcType="VARCHAR" property="createUser"/>
+        <association column="learn_id"  property="checkRecordList" select="selectCheckRecordLearnId"/>
+    </resultMap>
+
+
+    <select id="selectAllStudentInfoGKList" resultMap="gkStudentInfoMap">
+        SELECT
+            bli.learn_id,bli.std_type,bli.grade,bli.recruit_type,bli.std_stage,bli.scholarship,
+            bli.annex_status,bli.is_data_completed,bli.inclusion_status,bli.create_user,
+            bsi.std_id,bsi.std_name,bsi.user_id,
+            bu.unvs_name,
+            bup.pfsn_name,bup.pfsn_code,bup.pfsn_level,
+            oer.emp_name AS recruit_name,oer.emp_status,
+            oet.emp_name AS tutor_name,
+            blr.assign_flag,
+            oc.campus_name,
+            od.dp_name
+        FROM bd_learn_info bli
+        LEFT JOIN bd_student_info bsi ON bli.std_id = bsi.std_id
+        LEFT JOIN bd_learn_rules blr ON blr.learn_id = bli.learn_id
+        LEFT JOIN bd_unvs_profession bup ON bup.pfsn_id = bli.pfsn_id
+        LEFT JOIN bd_university bu ON bu.unvs_id = bli.unvs_id
+        LEFT JOIN oa_employee oer ON oer.emp_id = blr.recruit
+        LEFT JOIN oa_employee oet ON oet.emp_id = blr.tutor
+        LEFT JOIN oa_campus oc ON oc.campus_id = blr.recruit_campus_id
+        LEFT JOIN oa_department od ON od.dp_id = blr.recruit_dp_id
+        WHERE  bli.recruit_type='2' and bli.std_stage in ('2','3','12','5','6')
+        <if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+            and bsi.`std_name` like CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR} ,'%')
+        </if>
+        <if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+            and bsi.`mobile` like CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR} ,'%')
+        </if>
+        <if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+            and bsi.`id_card` like CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR} ,'%')
+        </if>
+        <if test="queryInfo.myAnnexStatus != null and queryInfo.myAnnexStatus != ''">
+            and bli.`annex_status` = #{queryInfo.myAnnexStatus, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.isDataCompleted != null and queryInfo.isDataCompleted != ''">
+            and bli.`is_data_completed` = #{queryInfo.isDataCompleted, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+            and bli.`recruit_type` = #{queryInfo.recruitType, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.scholarship != null and queryInfo.scholarship != ''">
+            and bli.`scholarship` = #{queryInfo.scholarship, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.stdStage != null and queryInfo.stdStage != ''">
+            and bli.`std_stage` = #{queryInfo.stdStage, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.grade != null and queryInfo.grade != ''">
+            and bli.`grade` = #{queryInfo.grade, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.sg != null and queryInfo.sg != ''">
+            and bli.`sg` = #{queryInfo.sg, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+            and bli.`unvs_id` = #{queryInfo.unvsId, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+            and bup.`pfsn_level` = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+            and bli.`pfsn_id` = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.recruitName != null and queryInfo.recruitName != ''">
+            and oer.`emp_name` like CONCAT('%', #{queryInfo.recruitName, jdbcType=VARCHAR} ,'%')
+        </if>
+        <if test="queryInfo.inclusionStatus !=null and queryInfo.inclusionStatus !=''">
+            and bli.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.campusId !=null and queryInfo.campusId !=''">
+            and blr.`recruit_campus_id` = #{queryInfo.campusId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.dpId !=null and queryInfo.dpId !=''">
+            and od.`dp_id` = #{queryInfo.dpId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.taId !=null and queryInfo.taId !=''">
+            and bli.`taId` = #{queryInfo.taId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.taName !=null and queryInfo.taName !=''">
+            and area.`ta_name` =  like CONCAT('%', #{queryInfo.taName, jdbcType=VARCHAR} ,'%')
+        </if>
+        <if test="user.userLevel != 1">
+            <choose>
+                <when test="user.userLevel == 15">
+                    <!-- 国开资料初审  -->
+                    and (blr.recruit = #{user.empId, jdbcType=VARCHAR} or blr.recruit_campus_id in
+                        <foreach collection="campusIdList" item="campusId" index="index" open="(" close=")" separator=",">
+                            #{campusId}
+                        </foreach>
+                    )
+                </when>
+                <otherwise>
+                    and 1=1
+                </otherwise>
+            </choose>
+        </if>
+        order by bli.create_time desc
+    </select>
+
+    <resultMap id="checkRecordMap" type="com.yz.model.transfer.BdCheckRecord">
+        <result column="cr_id" property="crId" jdbcType="VARCHAR" />
+        <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+        <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+        <result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+        <result column="reason" property="reason" jdbcType="VARCHAR" />
+        <result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+        <result column="check_type" property="checkType" jdbcType="VARCHAR" />
+        <result column="cr_status" property="crStatus" jdbcType="VARCHAR" />
+        <result column="jt_id" property="jtId" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+        <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectCheckRecordLearnId" parameterType="java.lang.String" resultMap="checkRecordMap">
+        select bcr.cr_id, bcr.mapping_id, bcr.emp_id, bcr.check_status, bcr.reason,
+         bcr.check_type, bcr.cr_status, bcr.jt_id, bcr.update_time, bcr.update_user, bcr.update_user_id, oe.emp_name
+        from  bd_check_record bcr
+        left join oa_employee oe  on bcr.emp_id = oe.emp_id
+        where bcr.mapping_id = #{learnId} order by bcr.check_order asc
+    </select>
+
+
+
+    <resultMap id="gkBdLearnInfoMap" type="java.util.HashMap">
+        <id column="learn_id" jdbcType="VARCHAR" property="learnId"/>
+        <result column="recruit_type" jdbcType="VARCHAR" property="recruitType"/>
+        <result column="std_stage" jdbcType="VARCHAR" property="stdStage"/>
+        <result column="std_id" jdbcType="VARCHAR" property="stdId"/>
+        <result column="is_data_check" jdbcType="VARCHAR" property="isDataCheck"/>
+        <association column="learn_id"  property="checkRecordList" select="selectCheckRecordJtId"/>
+    </resultMap>
+    <select id="selectAllLearnInfoGKList" resultMap="gkBdLearnInfoMap">
+        select learn_id, recruit_type, std_stage, std_id, is_data_check
+        from bd_learn_info where recruit_type='2' and learn_id in (
+            <foreach collection="learnIds" index="index" item="learnId" separator=",">
+                #{learnId}
+            </foreach>
+        )
+    </select>
+
+    <select id="selectCheckRecordJtId" parameterType="java.lang.String" resultMap="checkRecordMap">
+        select cr_id, mapping_id, emp_id, check_status, reason, reason, check_type, cr_status,
+          jt_id, update_time, update_user, update_user_id
+        from  bd_check_record
+        where (jt_id in ('GKZL3','GKZL4') or jt_id is null) and mapping_id = #{learnId} order by check_order asc
+    </select>
+
+
+    <update id="updateIsDataCheckList">
+        <foreach collection="bdLearnInfoList" item="bdLearnInfo" index="index" open="" close="" separator=";">
+            update bd_learn_info
+            <set>
+                is_data_check = #{bdLearnInfo.isDataCheck, jdbcType=VARCHAR},
+                std_stage = #{bdLearnInfo.stdStage, jdbcType=VARCHAR},
+            </set>
+            where learn_id = #{bdLearnInfo.learnId, jdbcType=VARCHAR}
+        </foreach>
+    </update>
+
+    <update id="updateBdCheckRecordList">
+        <foreach collection="checkRecordList" item="checkRecord" index="index" open="" close="" separator=";">
+            update bd_check_record
+            <set>
+                emp_id = #{checkRecord.empId, jdbcType=VARCHAR},
+                check_status = #{checkRecord.checkStatus, jdbcType=VARCHAR},
+                cr_status = #{checkRecord.crStatus, jdbcType=VARCHAR},
+                update_time = #{checkRecord.updateTime, jdbcType=TIMESTAMP},
+                update_user = #{checkRecord.updateUser, jdbcType=VARCHAR},
+                update_user_id = #{checkRecord.updateUserId, jdbcType=VARCHAR},
+            </set>
+            where cr_id = #{checkRecord.crId, jdbcType=VARCHAR}
+        </foreach>
+    </update>
+
+
+    <insert id="insertBdStudentModifyList">
+        insert into bd_student_modify(modify_id,learn_id,std_id,modify_type,is_complete,create_time,create_user,create_user_id,ext_1) values
+        <foreach collection="bdStudentModifyList" item="bdStudentModify"  separator="," >
+            (#{bdStudentModify.modifyId},#{bdStudentModify.learnId},#{bdStudentModify.stdId},#{bdStudentModify.modifyType},#{bdStudentModify.isComplete},
+            now(),#{bdStudentModify.createUser},#{bdStudentModify.createUserId},#{bdStudentModify.ext1})
+        </foreach>
+    </insert>
+
+
+    <update id="updateBdCheckRecordById" parameterType="com.yz.model.recruit.StudentCheckRecord" >
+        update bd_check_record
+        <set >
+            <if test="mappingId != null" >
+                mapping_id = #{mappingId,jdbcType=VARCHAR},
+            </if>
+            <if test="empId != null" >
+                emp_id = #{empId,jdbcType=VARCHAR},
+            </if>
+            <if test="jtId != null" >
+                jt_id = #{jtId,jdbcType=VARCHAR},
+            </if>
+            <if test="checkStatus != null" >
+                check_status = #{checkStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reason != null" >
+                reason = #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="checkOrder != null" >
+                check_order = #{checkOrder,jdbcType=VARCHAR},
+            </if>
+            <if test="checkType != null" >
+                check_type = #{checkType,jdbcType=VARCHAR},
+            </if>
+            <if test="crStatus != null" >
+                cr_status = #{crStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null" >
+                update_time = str_to_date(#{updateTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null" >
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="ext1 != null" >
+                ext_1 = #{ext1,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where cr_id = #{crId,jdbcType=VARCHAR}
+    </update>
+
+
+    <insert id="insertCheckRecordBatch">
+        insert into bd_check_record (cr_id, mapping_id, emp_id, jt_id, check_status, check_order, check_type, cr_status,
+        update_time, update_user, update_user_id) values
+        <foreach collection ="studentCheckRecordList" item="record" separator =",">
+            (#{record.crId}, #{record.mappingId}, #{record.empId}, #{record.jtId}, #{record.checkStatus}, #{record.checkOrder}, #{record.checkType}, #{record.crStatus},
+            str_to_date(#{record.updateTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'), #{record.updateUser}, #{record.updateUserId})
+        </foreach >
+    </insert>
+</mapper>

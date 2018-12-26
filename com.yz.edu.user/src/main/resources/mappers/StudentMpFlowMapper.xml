@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.StudentMpFlowMapper" >
+
+	<resultMap type="com.yz.model.communi.Body" id="ConditionMap">
+		<result column="scholarship" property="scholarship" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="p_id" property="pId" jdbcType="VARCHAR" />
+		<result column="p_is_mb" property="pIsMb" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="is_online" property="isOnline" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="enroll_channel" property="enrollChannel" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getCondition" parameterType="string" resultMap="ConditionMap">
+		SELECT 
+		  l.`scholarship`,
+		  l.`recruit_type`,
+		  l.`std_stage`,
+		  r.`p_id`,
+		  l.`std_id`,
+		  r.`user_id`,
+		  l.is_online,
+		  l.grade,
+		  r.reg_time as create_time,
+		  l.enroll_channel,
+		  r.p_is_mb
+		FROM
+		  `bms`.bd_learn_info l 
+		  LEFT JOIN us.us_base_info r
+		    ON r.`std_id` = l.`std_id` 
+		WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getHistoryLearn" resultType="java.util.HashMap">
+		SELECT 
+		  l.`recruit_type` as recruitType,
+		  l.`std_stage` as stdStage,
+		  l.`grade` as grade,
+		  p.`pfsn_level` as pfsnLevel
+		FROM `bms`.bd_learn_info l
+		left join `bms`.bd_unvs_profession p on p.pfsn_id = l.pfsn_id
+		where l.`std_id` = #{stdId, jdbcType=VARCHAR}
+		and l.`learn_id` != #{learnId, jdbcType=VARCHAR}
+		and l.std_stage in ('7','8','9','14')
+	</select>
+	
+	<select id="getRelation" resultType="java.util.HashMap" parameterType="string">
+		select 
+		  r.`user_id` as userId,
+		  r.`emp_id` as empId,
+		  r.`p_id` as pId,
+		  r.`p_is_mb` as pIsMb 
+		from
+		  `us`.`us_base_info` r 
+		where r.`std_id` = 
+		  (select 
+		    l.std_id 
+		  from
+		    `bms`.bd_learn_info l 
+		  where l.learn_id = #{learnId, jdbcType=VARCHAR})
+	</select>
+	
+	<select id="getRecruitMap" parameterType="string" resultType="com.yz.model.communi.Body">
+		SELECT 
+		  r.`recruit` AS empId,
+		  r.`recruit_dp_id` AS dpId,
+		  r.`recruit_campus_id` AS campusId,
+		  o.`mobile`,
+		  o.`std_id` as stdId
+		FROM
+		  `bms`.bd_learn_rules r 
+		  INNER JOIN `bms`.bd_student_order o 
+		    ON o.`learn_id` = r.`learn_id` 
+		  INNER JOIN `bms`.bd_student_serial s 
+		    ON s.`order_no` = o.`order_no` 
+		WHERE s.`serial_no` = #{serialNo, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getRecruitMapByOrderNo" parameterType="string" resultType="com.yz.model.communi.Body">
+		SELECT 
+		  r.`recruit` AS empId,
+		  r.`recruit_dp_id` AS dpId,
+		  r.`recruit_campus_id` AS campusId,
+		  o.`mobile`,
+		  o.`std_id` as stdId
+		FROM
+		  `bms`.bd_learn_rules r 
+		  INNER JOIN `bms`.bd_student_order o 
+		    ON o.`learn_id` = r.`learn_id` 
+		WHERE o.`order_no` = #{serialNo, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getRecruitMapBySerialMark" parameterType="string" resultType="com.yz.model.communi.Body">
+		SELECT 
+		  r.`recruit` AS empId,
+		  r.`recruit_dp_id` AS dpId,
+		  r.`recruit_campus_id` AS campusId,
+		  o.`mobile`,
+		  o.`std_id` AS stdId,
+		  e.`emp_status` AS empStatus
+		FROM
+		  `bms`.bd_learn_rules r 
+		  INNER JOIN `bms`.bd_student_order o 
+		    ON o.`learn_id` = r.`learn_id` 
+		  INNER JOIN `bms`.bd_student_serial s 
+		    ON s.`order_no` = o.`order_no` 
+		  LEFT JOIN `bms`.oa_employee e
+		    ON e.emp_id = r.recruit
+		WHERE s.`serial_mark` = #{serialMark, jdbcType=VARCHAR}
+		GROUP BY o.`order_no`
+	</select>
+	
+	<select id="getRelationsByStd" parameterType="string" resultType="map">
+		SELECT 
+		  r.`user_id` AS userId
+		FROM
+		  `bms`.bd_student_info r 
+		WHERE r.`std_id` = #{stdId, jdbcType=VARCHAR}
+	</select>
+</mapper>

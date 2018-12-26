@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdOfferMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.offer.BdOfferResponse" >
+    <id column="offer_id" property="offerId" />
+    <result column="offer_name" property="offerName" />
+    <result column="start_time" property="startTime" />
+    <result column="expire_time" property="expireTime" />
+    <result column="status" property="status" />
+    <association property="items" column="offer_id" select="selectOfferItemDetail"/>
+    <association property="testArea" column="offer_id" select="selectTestArea"/>
+    <association property="pfsnLevel" column="offer_id" select="selectPfsnLevel"/>
+  </resultMap>
+  
+  <resultMap id="OfferItemResult" type="com.yz.model.finance.offer.OfferItemMap">
+  	<result column="item_code" property="itemCode" />
+  	<result column="define_amount" property="defineAmount" />
+  	<result column="discount_type" property="discountType" />
+  	<result column="item_name" property="itemName" />
+  </resultMap>
+  
+  <resultMap type="java.util.HashMap" id="TestAreaResultMap">
+  	<result column="ta_name" property="taName"/>
+  	<result column="ta_code" property="taCode"/>
+  	<result column="ta_id" property="taId"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.offer.BdOfferResponse" id="OfferInfoResult" extends="BaseResultMap">
+  	<association property="pfsnInfos" column="offer_id" select="selectPfsnInfo"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.fee.PfsnInfoResponse" id="PfsnInfoResultMap">
+  	<result column="pfsn_id" property="pfsnId"/>
+  	<result column="pfsn_code" property="pfsnCode"/>
+  	<result column="pfsn_name" property="pfsnName"/>
+  	<result column="pfsn_level" property="pfsnLevel"/>
+  	<result column="grade" property="grade"/>
+  	<result column="unvs_id" property="unvsId"/>
+  	<result column="unvs_name" property="unvsName"/>
+  	<result column="scholarship" property="scholarship"/>
+  	<result column="unvs_code" property="unvsCode"/>
+  	<result column="recruit_type" property="recruitType"/>
+  	<result column="inclusion_status" property="inclusionStatus"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+   
+  </sql>
+  
+  <select id="selectSgByScholarship" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT ext_1 FROM sys_dict WHERE p_id = 'scholarship' AND dict_value = #{scholarship} and ext_1 != '3'
+  </select>
+  
+  <select id="deletePtoByOfferId" parameterType="java.lang.String">
+  	delete from bd_pto where offer_id = #{offerId}
+  </select>
+  
+  <select id="selectOfferPfsnIds" parameterType="java.lang.String" resultType="java.lang.String" >
+  	select 
+	  p.`pfsn_id` 
+	from
+	  bd_pto p 
+	  left join bd_offer f 
+	    on f.`offer_id` = p.`offer_id` 
+	where p.`offer_id` = #{offerId}
+	group by p.`pfsn_id` 
+	  	
+  </select>
+  
+  <select id="selectOfferTaIds" parameterType="java.lang.String" resultType="java.lang.String" >
+  	select 
+	  p.`ta_id` 
+	from
+	  bd_pto p 
+	  left join bd_offer f 
+	    on f.`offer_id` = p.`offer_id` 
+	where p.`offer_id` = #{offerId}
+	group by p.`ta_id` 
+  </select>
+  
+  <select id="selectOfferScholarship" parameterType="java.lang.String" resultType="java.lang.String" >
+  	select 
+	  p.`scholarship` 
+	from
+	  bd_pto p 
+	  left join bd_offer f 
+	    on f.`offer_id` = p.`offer_id` 
+	where p.`offer_id` = #{offerId}
+	group by p.`scholarship` 
+	limit 0,1
+  </select>
+  
+  <select id="selectInclusionStatus" parameterType="java.lang.String" resultType="java.lang.String" >
+  	select 
+	  p.`inclusion_status` 
+	from
+	  bd_pto p 
+	  left join bd_offer f 
+	    on f.`offer_id` = p.`offer_id` 
+	where p.`offer_id` = #{offerId}
+	group by p.`inclusion_status` 
+	limit 0,1
+  </select>
+  
+  <select id="selectPfsnLevel" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  p.`pfsn_level` 
+	FROM
+	  bd_pto o 
+	  LEFT JOIN bd_unvs_profession p 
+	    ON p.`pfsn_id` = o.`pfsn_id` 
+	WHERE o.`offer_id` = #{offerId}
+	LIMIT 0, 1 
+  </select>
+  
+  <select id="selectExistOffer" resultType="java.util.HashMap">
+  	SELECT 
+	  p.pfsn_name pfsnName,
+	  a.ta_name taName
+	FROM
+	  `bd_pto` bp 
+	  left join bd_offer f
+	    ON f.offer_id = bp.offer_id 
+	  left join bd_unvs_profession p
+	    on p.pfsn_id = bp.pfsn_id
+	  left join bd_test_area a
+	    on a.ta_id = bp.ta_id
+	WHERE bp.`ta_id` IN (
+			<foreach collection="testAreas" item="area" index="index" separator="," >  
+        		#{area}
+    		</foreach>
+		) 
+	
+	  AND bp.`pfsn_id` IN (
+			<foreach collection="pfsns" item="pfsn" index="index" separator="," >  
+        		#{pfsn}
+    		</foreach>
+		) 
+	and scholarship = #{scholarship}
+	and inclusion_status = #{inclusionStatus}
+	and f.status = '1'
+	limit 0,1
+  </select>
+  
+  <update id="blockOffer" parameterType="java.lang.String">
+  	UPDATE 
+	  bd_offer
+	SET
+	  `status` = #{status}
+	WHERE offer_id = #{offerId}
+  </update>
+  
+  <delete id="deleteOffersByIds">
+  	delete from bd_offer where offer_id in 
+  	<foreach collection="offerIds" item="offerId" open="(" close=")" separator=",">
+    	#{offerId}
+    </foreach>
+    ;
+  	delete from bd_pto where offer_id in
+  	<foreach collection="offerIds" item="offerId" open="(" close=")" separator=",">
+    	#{offerId}
+    </foreach>;
+  	delete from bd_offer_define where offer_id in
+  	<foreach collection="offerIds" item="offerId" open="(" close=")" separator=",">
+    	#{offerId}
+    </foreach>;
+  </delete>
+  
+  <delete id="deleteOfferById">
+  	delete from bd_offer where offer_id = #{offerId};
+  	delete from bd_pto where offer_id = #{offerId};
+  	delete from bd_offer_define where offer_id = #{offerId};
+  </delete>
+  
+  <select id="selectPfsnInfo" parameterType="java.lang.String" resultMap="PfsnInfoResultMap">
+  	select distinct
+	  bup.`pfsn_id`,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  bup.`grade`,
+	  bu.`unvs_id`,
+	  bu.`unvs_name`,
+	  bu.`unvs_code`,
+	  bu.`recruit_type`,
+  	  bp.scholarship,
+  	  bp.inclusion_status
+	from
+	  bd_pto bp 
+	  left join bd_unvs_profession bup 
+	    on bup.`pfsn_id` = bp.`pfsn_id` 
+	  left join bd_university bu 
+	    on bu.`unvs_id` = bup.`unvs_id` 
+	where bp.`offer_id` = #{offerId}
+  </select>
+  
+  <select id="selectOfferById" parameterType="java.lang.String" resultMap="OfferInfoResult">
+  	SELECT 
+	  bo.offer_id,
+	  bo.offer_name,
+	  date_format(bo.start_time,'%Y-%m-%d') start_time,
+	  date_format(bo.expire_time,'%Y-%m-%d') expire_time,
+	  bo.status 
+	FROM
+	  `bd_offer` bo 
+	WHERE bo.offer_id = #{offerId} 
+  </select>
+  
+  <select id="selectTmpAddPto" resultType="java.util.HashMap">
+  	SELECT 
+		  p.`pfsn_id`,
+		  p.`ta_id`,
+		  #{offer.offerId} AS offer_id,
+		  #{offer.scholarship} AS scholarship,
+		  #{offer.inclusionStatus} AS inclusion_status  
+		FROM
+		  bd_proferssion_ta p 
+		WHERE p.`ta_id` IN (
+		    <foreach collection="offer.taIds" item="area" index="index" separator="," >  
+        		#{area}
+    		</foreach>
+		  ) 
+		  AND p.`pfsn_id` IN (
+		    <foreach collection="offer.pfsnIds" item="pfsn" index="index" separator="," >  
+        		#{pfsn}
+    		</foreach>
+		  )
+  </select>
+  
+  <insert id="insertPtoUpdate">
+  	insert into bd_pto(pto_id,pfsn_id,ta_id,offer_id,scholarship,inclusion_status) values
+	<foreach collection="list" item="item" index="index" separator="," >  
+       	(
+       	#{item.pto_id},
+       	#{item.pfsn_id},
+       	#{item.ta_id},
+       	#{item.offer_id},
+       	#{item.scholarship},
+       	#{item.inclusion_status}
+       	)
+   	</foreach>
+  </insert>
+  
+  <update id="updateOffer">
+  	update bd_offer 
+	<set >
+      <if test="offer.offerName != null and offer.offerName != ''" >
+        offer_name = #{offer.offerName,jdbcType=VARCHAR},
+      </if>
+      <if test="offer.startTime != null and offer.startTime != ''" >
+        start_time = #{offer.startTime},
+      </if>
+      <if test="offer.expireTime != null and offer.expireTime != ''" >
+        expire_time = #{offer.expireTime},
+      </if>
+      <if test="offer.status != null and offer.status != ''" >
+        status = #{offer.status,jdbcType=VARCHAR},
+      </if>
+      <if test="offer.updateUser != null and offer.updateUser != ''" >
+        update_user = #{offer.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="offer.updateUserId != null and offer.updateUserId != ''" >
+        update_user_id = #{offer.updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where offer_id = #{offer.offerId};
+		
+    delete from bd_offer_define where offer_id = #{offer.offerId};
+    insert into bd_offer_define(od_id,offer_id,item_code,define_amount,discount_type)
+		values
+		<foreach collection="offer.items" item="item" index="index" separator="," >  
+        	(#{item.odId},#{offer.offerId},#{item.itemCode},#{item.amount},#{item.discountType})
+    	</foreach>
+  </update>
+  
+  <insert id="insertOffer">
+  	insert into bd_offer(offer_id, offer_name, `status`, expire_time, start_time,
+  		update_user,update_user_id,create_user_id,create_user
+  	) 
+		values(#{offer.offerId},#{offer.offerName},#{offer.status},#{offer.expireTime}, #{offer.startTime},
+			#{offer.updateUser}, #{offer.updateUserId}, #{offer.createUserId}, #{offer.createUser}
+		);
+	
+	insert into bd_offer_define(od_id,offer_id,item_code,define_amount,discount_type)
+		values
+		<foreach collection="offer.items" item="item" index="index" separator="," >  
+        	(#{item.odId},#{offer.offerId},#{item.itemCode},#{item.amount},#{item.discountType})
+    	</foreach>
+  </insert>
+  
+  <select id="selectTestArea" parameterType="java.lang.String" resultMap="TestAreaResultMap">
+  	SELECT distinct
+	 CONCAT('(', bta.`ta_code`, ')', bta.`ta_name`) ta_name,
+	  bta.ta_code,
+	  bta.ta_id
+	FROM
+	  bd_pto bp 
+	  LEFT JOIN bd_test_area bta 
+	    ON bta.`ta_id` = bp.`ta_id` 
+	WHERE bp.`offer_id` = #{offerId}
+  </select>
+  
+  <select id="selectOfferItemDetail" parameterType="java.lang.String" resultMap="OfferItemResult">
+  	SELECT 
+	  bod.define_amount,
+	  bfi.`item_code`,
+	  bfi.`item_name`,
+	  bod.discount_type
+	FROM
+	  bd_offer_define bod 
+	  LEFT JOIN bd_fee_item bfi 
+	    ON bod.item_code = bfi.item_code 
+	WHERE bod.offer_id = #{offerId} 
+	ORDER BY bfi.order_num 
+  </select>
+  
+  <select id="selectOfferByPage" parameterType="com.yz.model.finance.offer.BdOfferQuery" resultMap="OfferInfoResult">
+  	SELECT 
+	  bo.offer_id,
+	  bo.offer_name,
+	  date_format(bo.start_time,'%Y-%m-%d') start_time,
+	  date_format(bo.expire_time,'%Y-%m-%d') expire_time,
+	  bo.status,
+	  bu.`unvs_id`,
+	  bup.`pfsn_id`,
+	  bup.`grade`,
+	  bup.`pfsn_level`
+	FROM
+	  `bd_offer` bo 
+	  left join bd_pto bp
+	  on bo.offer_id = bp.offer_id
+	  left join `bd_unvs_profession` bup 
+	  on bup.`pfsn_id` = bp.`pfsn_id`
+	  left join `bd_university` bu 
+	  on bu.`unvs_id` = bup.`unvs_id`
+	  left join `sys_dict` d
+	    on d.p_id = 'scholarship' and d.dict_value = bp.`scholarship`
+	  where 1 = 1  
+	 <if test="offer.offerName != null and offer.offerName != ''">  
+         and bo.offer_name LIKE CONCAT('%', CONCAT(#{offer.offerName}, '%'))
+     </if>  
+     <if test="offer.status != null and offer.status != ''">  
+         and bo.status = #{offer.status}
+     </if> 
+     <if test="offer.unvsId !=null and '' != offer.unvsId">
+     	 and bu.`unvs_id` = #{offer.unvsId,jdbcType=VARCHAR}
+     </if>
+     <if test="offer.pfsnId !=null and '' != offer.pfsnId">
+     	and bp.`pfsn_id` = #{offer.pfsnId,jdbcType=VARCHAR}
+     </if>
+     <if test="offer.grade !=null and '' != offer.grade">
+     	and bup.`grade` = #{offer.grade,jdbcType=VARCHAR}
+     </if>
+     <if test="offer.pfsnLevel !=null and '' != offer.pfsnLevel">
+     	and bup.`pfsn_level` = #{offer.pfsnLevel,jdbcType=VARCHAR}
+     </if>
+     <if test="offer.scholarship !=null and '' != offer.scholarship">
+     	and bp.`scholarship` = #{offer.scholarship}
+     </if>
+      <if test="offer.sg !=null and '' != offer.sg">
+     	AND d.`ext_1` = #{offer.sg}
+     </if>
+     GROUP BY bo.offer_id, bp.scholarship
+      order by bo.update_time desc 
+  </select>
+  
+  
+</mapper>

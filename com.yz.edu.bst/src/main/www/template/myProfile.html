@@ -1,0 +1,214 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" /> 
+<title>远智学堂-我的信息</title>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<style>
+	.learn-list .item .bd .liveBox p{height:40px;line-height:40px;color:#fff;background-color: #f55161;padding:0 10px; border-radius: 2px;}
+	.learn-list .item .bd .liveBox p a{color:#fff;}
+</style>
+<body>
+<div class="wrraper">
+  <div class="banner">
+    <div class="tit">远智学堂</div>
+  </div>
+  <div class="breadcrumb">
+    <div class="inner">
+      <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+      <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+      <a class="fc6" href="javascript:void(0);" title="我的信息">我的信息</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sidebar" th:include="common::sidebar">
+    </div>
+    <div class="main">
+      <div class="base-info">
+        <div class="fc6">基本信息：</div>
+        <div class="bd cl">
+          <div class="f-l avatar">
+            <img class="img" th:src="@{/css/image/student_ico_head.png}" alt=""/>
+          </div>
+          <div class="f-l txt">
+            <p><span class="fc9">姓名：</span><span id="std_name" th:text="*{myprofile.std_name}"></span></p>
+            <p><span class="fc9">性别：</span><span id="sex" th:text="${myprofile.sex=='1'}? '男' : '女'"></span></p>
+            <p><span class="fc9">手机号：</span><span id="mobile" th:text="*{myprofile.mobile}"></span></p>
+            <p><span class="fc9">证件号：</span><span id="idCard" th:text="*{myprofile.idCard}"></span></p>
+          </div>
+        </div>
+      </div>
+      <div id="learnList" class="learn-list">
+        <div class="item hidden" th:each="item,stat:${myprofile.learnInfos}" th:stdstage="${item.stdStage}">
+          <div class="hd cl">
+            <h3 class="h3 f-l">报读信息</h3>
+            <a class="f-r btn learnId-radio" th:data-learnid="${item.learnId}"  href="javascript:void(0)"  ><i class="i-radio"></i>切换到该身份</a>
+
+          </div>
+          <div class="bd">
+            <p class="t">[<span th:text="${item.grade}+'级'"></span>]<span th:text="${item.unvsName}"></span></p>
+            <div class="liveBox"></div>
+            <p class="p"><span class="fc6">专&#x3000;&#x3000;业：</span>  <span th:text="${item.pfsnName}"></span>[<span  class="pfsnLevel" th:id="${item.pfsnLevel}"></span>]</p>
+            <p class="p"><span class="fc6">学&#x3000;&#x3000;号：</span>  <span th:text="${item.stdNo}"></span></p>
+            <p class="p" th:if="${item.guideTeacher!=null}"><span class="fc6">指导老师：</span>  <span th:text="${item.guideTeacher}"></span></p>
+            <p class="p"><span class="fc6">学习形式：</span>   <span class="teachMethod" th:id="${item.teachMethod}"></span></p>
+            <p class="p"><span class="fc6">学员状态：</span>   <span class="stdStage" th:id="${item.stdStage}"></span></p>
+            <p class="p"><span class="fc6">备&#x3000;&#x3000;注：</span>   </p>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+  <div class="footer" th:include="common::footer">
+  </div>
+</div>
+
+
+  
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+
+	
+  	
+<script th:inline="javascript" type="text/javascript">
+
+$(function() {
+	$(".pfsnLevel").each(function(i,val){
+	     $(val).text(_findDict('pfsnLevel', val.id)); 
+	});
+	$(".teachMethod").each(function(i,val){
+	     $(val).text(_findDict('teachMethod', val.id)); 
+	}); 
+	
+	$(".stdStage").each(function(i,val){
+	     $(val).text(_findDict('stdStage', val.id)); 
+	});
+
+    getLive();
+});
+
+// 过滤退学学员
+if($('#learnList > .item:not([stdstage="10"])').length){
+    $('#learnList > .item[stdstage="10"]').remove();
+    $('#learnList > .item:not([stdstage="10"])').show();
+}else {
+    $('#learnList > .item:eq(0)').show().end().siblings().remove();
+}
+
+// 切换身份
+$(".learnId-radio").click(function() {
+    var learnId = $(this).data("learnid");
+    var stdStage = $(this).closest('.item').attr('stdstage');
+    store.set('learnId', learnId);
+    store.set('stdStage', stdStage);
+    $(".learnId-radio").removeClass('active');
+    $(".learnId-radio").html("<i class=\"i-radio\"></i>切换到该身份");
+    $(this).addClass("active"); // 追加样式
+    $(this).html("<i class=\"i-radio\"></i>身份使用中"); // 追加样式
+    getLearnInfoMenu();
+});
+
+function setLearnid() {
+    var learnId = store.get('learnId');
+    var $cur;
+    if (learnId) {
+        $cur = $(".learnId-radio[data-learnid='" + learnId + "']");
+        if ($cur.length === 0) $cur = $(".learnId-radio:eq(0)");
+    } else {
+        $cur = $(".learnId-radio:eq(0)");
+    }
+    $cur.trigger('click');
+}
+setLearnid();
+
+
+function getLive(){
+	$('#learnList >.item:not([stdstage="10"])').each(function(){
+		var learnId=$(this).find('.learnId-radio').data('learnid');
+        var stdstage = $(this).attr('stdstage');
+        presentTerm($(this), learnId, stdstage);
+	});
+}
+
+//获取学期
+function presentTerm($item, learnId, stdStage) {
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        data: {learnId: learnId},
+        url: [[@{/presentTerm.do}]], //请求url
+        success: function (data) {
+            if ('00' == data.code) {
+                // 观看直播的学员限制。1、辅导课程：考前辅导、考前确认、入学考试  2、学科课程：在读学员
+                if ((data.body === '0' && '"2","3","4"'.indexOf('"' + stdStage + '"') > -1) || (data.body > 0 && stdStage === '7')) {
+                    getCourseLive($item, learnId, data.body);
+                }
+            }
+        }
+    });
+}
+  //获取课程直播
+    function getCourseLive($item,learnId,term) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            data: {learnId: learnId, term: term},
+            url: [[@{/getCourseLive.do}]], //请求url
+            success: function (data) {
+                if ('00' == data.code) {
+                	// 过滤直播课程
+                    var courseLive = $.map(data.body.live.courseLive, function (item) {
+                        var startDate = new Date(item.startTime.replace(/-/g, '/')).getTime()-1000*60*10;
+                        var endDate = new Date(item.endTime.replace(/-/g, '/')).getTime();
+                        if (data.body.live.now >= startDate&&data.body.live.now <= endDate) {
+                        	return item;
+                        }
+                    });
+                	if(courseLive.length>0){
+                		var url = [[@{/live.do?term=}]]+term+'&courseId='+courseLive[0].courseId+'&channelId='+(courseLive[0].channelId||'');
+                		var html='<a href="'+url+'"><p class="p cl"><span class="f-r">进入课程直播&gt;</span><span >直播课程：</span><span>'+delCode(courseLive[0].courseName)+'</span></p></a>';
+                		$item.find('>.bd .liveBox').append(html);
+                		
+                	}
+                    
+                }
+            }
+        });
+    }
+
+function delCode(courseName) {
+    return courseName.replace(/【([^】]*)】/g, '');
+}
+
+$('.liveBox').on('click','>a',function (e) {
+    e.preventDefault();
+    var href=$(this).attr('href');
+    $(this).closest('.item').find('>.hd .learnId-radio').trigger('click');
+    window.location.href=href
+});
+</script>
+
+</body>
+</html>

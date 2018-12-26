@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsFollowMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsFollow" >
+    <id column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+    <result column="dp_manager" property="dpManager" jdbcType="VARCHAR" />
+    <result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+    <result column="campus_manager" property="campusManager" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    user_id, emp_id, dp_id, dp_manager, campus_id, campus_manager
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from us_follow
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsFollow" >
+    insert into us_follow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="dpId != null" >
+        dp_id,
+      </if>
+      <if test="dpManager != null" >
+        dp_manager,
+      </if>
+      <if test="campusId != null" >
+        campus_id,
+      </if>
+      <if test="campusManager != null" >
+        campus_manager,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpManager != null" >
+        #{dpManager,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null" >
+        #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusManager != null" >
+        #{campusManager,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.UsFollow" >
+    update us_follow
+    <set >
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpId != null" >
+        dp_id = #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpManager != null" >
+        dp_manager = #{dpManager,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null" >
+        campus_id = #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusManager != null" >
+        campus_manager = #{campusManager,jdbcType=VARCHAR},
+      </if>
+      update_time = now()
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectList" parameterType="string" resultType="map">
+  	SELECT f.`emp_id` AS empId, f.`dp_id` AS dpId, f.`campus_id` AS campusId, f.`user_id` FROM us_follow f WHERE f.`emp_id` = #{empId, jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="clearFollow" parameterType="string">
+  	delete f.* from us_follow f where f.emp_id = #{empId, jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteFollow" parameterType="string">
+  	delete f.* from us_follow f where f.user_id = #{user_id, jdbcType=VARCHAR}
+  </delete>
+
+
+  <resultMap id="usFollowMb" type="com.yz.model.UsFollowMb" >
+    <id column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="head_img" property="headImg" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectFollowMbByNameOrMobile" resultMap="usFollowMb">
+    select us.user_id,us.real_name,us.mobile,us.sex,us.head_img,uc.cert_no as id_card from us_follow uf
+    left join us_base_info us on us.user_id=uf.user_id
+    left join us_certificate uc on uc.user_id=uf.user_id
+    where uf.emp_id= #{empId,jdbcType=VARCHAR}
+    <if test="nameOrMobile != null and nameOrMobile != ''"  >
+      and (us.mobile=#{nameOrMobile,jdbcType=VARCHAR} or us.real_name=#{nameOrMobile,jdbcType=VARCHAR})
+    </if>
+  </select>
+</mapper>

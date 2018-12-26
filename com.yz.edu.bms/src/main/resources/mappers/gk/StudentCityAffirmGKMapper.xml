@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.gk.StudentCityAffirmGKMapper">
+    
+    <resultMap type="com.yz.model.gk.StudentCityAffirmGKInfo" id="StudentCityAffirmGkMap">
+		<result column="affirm_id" property="affirmId" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="ey_id" property="eyId" jdbcType="VARCHAR"/>
+		<result column="ec_id" property="ecId" jdbcType="VARCHAR"/>
+		<result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+		<result column="ec_name" property="ecName" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="view_time" property="viewTime" jdbcType="VARCHAR"/>
+		<result column="is_view" property="isView" jdbcType="VARCHAR"/>
+		<result column="is_exam" property="isExam" jdbcType="VARCHAR"/>
+		<result column="is_affirm" property="isAffirm" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+		<result column="reason" property="reason" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="is_reset" property="isReset" jdbcType="VARCHAR"/>
+		<result column="number" property="number" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="findStudentCityAffirmGKList" resultMap="StudentCityAffirmGkMap">
+		SELECT
+		a.affirm_id,
+		oti.task_title,
+		bli.std_no,
+		bli.school_roll,
+		bsi.std_name,
+		bsi.id_card,
+		bli.grade,
+		u.unvs_name,
+		p.pfsn_code,
+		p.pfsn_level,
+		p.pfsn_name,
+		bli.std_stage,
+		date_format(a.view_time,'%Y-%m-%d %H:%i:%S') view_time,
+		a.is_view,
+		a.is_exam,
+		a.is_affirm,
+		a.is_reset,
+		a.ey_id,
+		a.ec_id,
+		ec.ec_name,
+		ey.exam_year,
+		oe.emp_name,
+		a.reason,
+		a.task_id,
+		a.learn_id
+		FROM
+		oa_student_examcityaffirm_gk_task a
+		LEFT JOIN bd_learn_info bli ON a.learn_id = bli.learn_id
+		LEFT JOIN bd_student_info bsi ON bli.std_id = bsi.std_id
+		LEFT JOIN oa_task_info oti ON a.task_id = oti.task_id
+		LEFT JOIN bd_learn_rules blr ON a.learn_id = blr.learn_id
+		LEFT JOIN oa_employee oe ON blr.tutor = oe.emp_id
+		LEFT JOIN bd_university u ON bli.unvs_id = u.unvs_id
+		LEFT JOIN bd_unvs_profession p ON bli.pfsn_id = p.pfsn_id
+		LEFT JOIN bd_exam_city_gk ec ON ec.ec_id = a.ec_id
+		LEFT JOIN bd_exam_year_gk ey ON ey.ey_id = a.ey_id
+		WHERE 1=1
+		<if test="queryInfo.affirmId !=null and '' != queryInfo.affirmId">
+			and a.`affirm_id` = #{queryInfo.affirmId,jdbcType=VARCHAR}
+		</if>
+	  	<if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+	  		and bsi.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+	  	</if>
+		<if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+			and bli.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+		</if>
+	  	<if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+	  		and bsi.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+	  	</if>
+		<if test="queryInfo.reason !=null and '' != queryInfo.reason">
+			and a.`reason` like concat('%',#{queryInfo.reason,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+			and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+		</if>
+	  	<if test="queryInfo.grade !=null and '' != queryInfo.grade">
+	  		and bli.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+	  		and bli.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+	  		and p.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+	  		and bli.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.eyId !=null and '' != queryInfo.eyId">
+	  		and a.ey_id = #{queryInfo.eyId,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.ecId !=null and '' != queryInfo.ecId">
+	  		and a.ec_id = #{queryInfo.ecId,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.isView !=null and '' != queryInfo.isView">
+	  		and a.`is_view` = #{queryInfo.isView,jdbcType=VARCHAR}
+	  	</if>
+		<if test="queryInfo.isReset !=null and '' != queryInfo.isReset">
+			and a.`is_reset` = #{queryInfo.isReset,jdbcType=VARCHAR}
+		</if>
+	  	<if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+	  		and oe.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+	  	</if>
+		<if test="queryInfo.isExam !=null and '' != queryInfo.isExam">
+	  		and a.is_exam = #{queryInfo.isExam,jdbcType=VARCHAR}
+	  	</if>
+	  	<if test="queryInfo.isAffirm!=null and '' != queryInfo.isAffirm">
+	  		and a.is_affirm = #{queryInfo.isAffirm,jdbcType=VARCHAR}
+	  	</if>
+		<if test="user.userLevel != 1">
+			<choose>
+				<when test="user.userLevel == 6">
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</if>
+		order by a.create_time desc
+	</select>
+	
+	
+	<select id="getGkCityStatisticsInfo" resultMap="StudentCityAffirmGkMap">
+		SELECT
+		ec.ec_name,
+		bli.grade,
+		u.unvs_name,
+		p.pfsn_level,
+		p.pfsn_name,
+		count(1) as number
+		FROM
+		oa_student_examcityaffirm_gk_task a
+		LEFT JOIN bd_learn_info bli ON a.learn_id = bli.learn_id
+		LEFT JOIN oa_task_info oti ON a.task_id = oti.task_id
+		LEFT JOIN bd_university u ON bli.unvs_id = u.unvs_id
+		LEFT JOIN bd_unvs_profession p ON bli.pfsn_id = p.pfsn_id
+		LEFT JOIN bd_exam_city_gk ec ON ec.ec_id = a.ec_id
+		WHERE 1=1  and a.ey_id=#{eyId,jdbcType=VARCHAR} 
+		GROUP BY
+        <trim suffixOverrides=",">
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bli.grade')">
+                bli.grade,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'u.unvs_name')">
+                u.unvs_name,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'p.pfsn_level')">
+                p.pfsn_level,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'p.pfsn_id')">
+                p.pfsn_id,
+            </if>
+             ec.ec_name
+         </trim>
+		order by ec_name desc 
+	</select>
+	
+	<select id="getExamCityForGK" resultType="java.util.HashMap">
+		SELECT ec_id as ecId,ec_name as ecName FROM `bd_exam_city_gk`
+		 WHERE 1=1
+		 <if test="null != status">
+		  and `status`=#{status,jdbcType=VARCHAR}
+		 </if> 
+		 order by create_time asc
+	</select>
+	
+	<update id="updateReason">
+		UPDATE oa_student_examcityaffirm_gk_task SET reason= #{reason,jdbcType=VARCHAR},is_exam= #{isExam,jdbcType=VARCHAR}
+		WHERE affirm_id =#{affirmId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="resetTask">
+		UPDATE oa_student_examcityaffirm_gk_task SET is_view=0,view_time=NULL,
+		is_Exam = 0,is_affirm='0',reason='',ec_id='',
+		is_reset = 1,reset_time=now()
+		WHERE affirm_id = #{affirmId,jdbcType=VARCHAR};
+		
+		UPDATE oa_student_task set task_status = 0
+		WHERE task_id = #{taskId,jdbcType=VARCHAR} and learn_id = #{learnId,jdbcType=VARCHAR};
+	</update>
+	
+	<select id="checkIfExistByLearnId" resultType="java.lang.Integer">
+		select count(1) FROM oa_student_examcityaffirm_gk_task WHERE
+		ey_id=#{eyId,jdbcType=VARCHAR} AND
+		learn_id=#{learnId,jdbcType=VARCHAR};
+	</select>
+	
+	<insert id="addStuCityAffirmGK">
+		INSERT INTO oa_student_examcityaffirm_gk_task (affirm_id,task_id,learn_Id,ey_id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.affirmId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 #{item.eyId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<delete id="delStuCityAffirm">
+		delete from oa_student_examcityaffirm_gk_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<insert id="singleAddStuCityAffirmInfo" parameterType="com.yz.model.gk.StudentCityAffirmGKInfo">
+		INSERT INTO oa_student_examcityaffirm_gk_task (affirm_id,task_id,learn_Id,ey_id,create_time) 
+        VALUES (#{affirmId, jdbcType=VARCHAR},
+			 #{taskId, jdbcType=VARCHAR},
+			 #{learnId,jdbcType=VARCHAR},
+			 #{eyId,jdbcType=VARCHAR},
+			 NOW())
+	</insert>
+	
+	<delete id="aloneDelStuCityAffirmInfo">
+		delete from oa_student_examcityaffirm_gk_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

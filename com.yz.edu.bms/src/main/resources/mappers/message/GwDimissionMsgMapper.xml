@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.message.GwDimissionMsgMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.message.GwDimissionMsg" >
+    <id column="msg_id" property="msgId" jdbcType="VARCHAR" />
+    <result column="msg_type" property="msgType" jdbcType="CHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="std_name" property="stdName" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    msg_id, msg_type, mobile, id_card, std_name, std_id, emp_name, emp_id, send_time, 
+    status, remark, create_time, create_user, create_user_id
+  </sql>
+  
+  <select id="selectDimissionCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT COUNT(*) FROM bms.`gw_dimission_msg` WHERE emp_id = #{empId} AND msg_type = #{msgType} and status = '1'
+  </select>
+  
+  <select id="selectDimissionMsgList" parameterType="com.yz.model.message.GwDimissionMsg" resultMap="BaseResultMap" >
+  	select 
+    <include refid="Base_Column_List" />
+    from bms.`gw_dimission_msg`
+    where 1 = 1
+    <if test="stdName != null and stdName != ''">
+   		and std_name like CONCAT('%', CONCAT(#{stdName}, '%'))
+   	</if>
+   	<if test="empName != null and empName != ''">
+   		and emp_name like CONCAT('%', CONCAT(#{empName}, '%'))
+   	</if>
+   	<if test="createUser != null and createUser != ''">
+   		and create_user like CONCAT('%', CONCAT(#{createUser}, '%'))
+   	</if>
+   	<if test="msgType != null and msgType != ''">
+   		and msg_type = #{msgType}
+   	</if>
+   	<if test="status != null and status != ''">
+   		and status = #{status}
+   	</if>
+   	order by create_time desc
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.`gw_dimission_msg`
+    where msg_id = #{msgId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bms.`gw_dimission_msg`
+    where msg_id = #{msgId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.message.GwDimissionMsg" >
+    insert into bms.`gw_dimission_msg` (msg_id, msg_type, mobile, 
+      id_card, std_name, std_id, 
+      emp_name, emp_id, send_time, 
+      status, remark, create_time, 
+      create_user, create_user_id)
+    values (#{msgId,jdbcType=VARCHAR}, #{msgType,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{idCard,jdbcType=VARCHAR}, #{stdName,jdbcType=VARCHAR}, #{stdId,jdbcType=VARCHAR}, 
+      #{empName,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR}, #{sendTime,jdbcType=VARCHAR}, 
+      #{status,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.message.GwDimissionMsg" >
+    insert into bms.`gw_dimission_msg`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="msgId != null" >
+        msg_id,
+      </if>
+      <if test="msgType != null" >
+        msg_type,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+      <if test="stdName != null" >
+        std_name,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="empName != null" >
+        emp_name,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="sendTime != null" >
+        create_time,
+        send_time,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="msgId != null" >
+        #{msgId,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null" >
+        #{msgType,jdbcType=CHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="stdName != null" >
+        #{stdName,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+      	NOW(),
+        #{sendTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.message.GwDimissionMsg" >
+    update bms.`gw_dimission_msg`
+    <set >
+      <if test="msgType != null" >
+        msg_type = #{msgType,jdbcType=CHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="stdName != null" >
+        std_name = #{stdName,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        emp_name = #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where msg_id = #{msgId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.message.GwDimissionMsg" >
+    update bms.`gw_dimission_msg`
+    set msg_type = #{msgType,jdbcType=CHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      id_card = #{idCard,jdbcType=VARCHAR},
+      std_name = #{stdName,jdbcType=VARCHAR},
+      std_id = #{stdId,jdbcType=VARCHAR},
+      emp_name = #{empName,jdbcType=VARCHAR},
+      emp_id = #{empId,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR}
+    where msg_id = #{msgId,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="batchInsertSelective">
+  	insert into bms.`gw_dimission_msg`(msg_id,msg_type,mobile,id_card,std_name,std_id,emp_name,emp_id,
+  	send_time,status,remark,create_time,create_user,create_user_id) values
+  	<foreach collection="list" item="item" separator=",">
+			(#{item.msgId, jdbcType=VARCHAR},
+			 #{item.msgType, jdbcType=VARCHAR},
+			 #{item.mobile,jdbcType=VARCHAR},
+			 #{item.idCard,jdbcType=VARCHAR},
+			 #{item.stdName,jdbcType=VARCHAR},
+			 #{item.stdId,jdbcType=VARCHAR},
+			 #{item.empName,jdbcType=VARCHAR},
+			 #{item.empId,jdbcType=VARCHAR},
+			 #{item.sendTime,jdbcType=VARCHAR},
+			 #{item.status,jdbcType=VARCHAR},
+			 #{item.remark,jdbcType=VARCHAR},
+			 now(),
+			 #{item.createUser,jdbcType=VARCHAR},
+			 #{item.createUserId,jdbcType=VARCHAR}
+			 )
+	</foreach>
+  </insert>
+</mapper>

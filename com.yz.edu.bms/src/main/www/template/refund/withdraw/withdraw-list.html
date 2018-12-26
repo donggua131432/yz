@@ -1,0 +1,144 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" th:href="@{/favicon.ico}">
+    <link rel="Shortcut Icon" th:href="@{/favicon.ico}"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>提现审批</title>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 退费(提现)管理 <span class="c-gray en">/</span> 提现审批 <a
+        class="btn btn-success radius r"
+        style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新"><i
+        class="iconfont icon-shuaxin"></i></a>
+</nav>
+ 
+<div class="page-container">
+    <form id="export-form" th:action="@{/withdraw/export.do}">
+    <div class="text-l search" style="position: relative">
+        <div class="cl" style="padding-left: 30px;">
+            <div class="cl">
+                <div class="f-l">
+                    <span>学员名称：</span> 
+                    <input type="text" class="input-text radius ml-10" placeholder="输入学员名称" id="stdName" name="stdName">
+                </div>
+                <div class="f-l">
+                    <span>手机号：</span> 
+                    <input type="text" class="input-text radius ml-10" placeholder="输入手机号" id="mobile" name="mobile">
+                </div>
+                <div class="f-l">
+                    <span>身份证号：</span> 
+                    <input type="text" class="input-text radius ml-10" placeholder="输入身份证号" id="idCard" name="idCard">
+                </div>
+                <div class="f-r mr-15" style="position: absolute; right: 0;">
+                    <a class="btn btn-primary radius" style="width: 90px" href="javascript:;" onclick="searchItem()"> <i
+                            class="iconfont icon-sousuo"></i> 搜索
+                    </a> <a class="btn btn-normal-outline radius" onclick="_reset()"><i
+                        class="iconfont icon-shuaxin"></i></a>
+                </div>
+            </div>
+            <div class="cl">
+                <div class="f-l">
+                    <span>审批状态：</span><select class="select" id="checkStatus" name="checkStatus">
+                    <option value=""></option>
+                    <option value="2">待审批</option>
+                    <option value="3">已审批</option>
+                    <option value="4">已驳回</option>
+                </select>
+                </div>
+                <div class="f-l">
+                   <span>发起时间起:</span>
+	               <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}'})" id="beginTime" name="beginTime" class="input-text Wdate"/>
+                </div>
+                <div class="f-l">
+                   <span>发起时间至:</span>
+	               <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'beginTime\')}'})" id="endTime" name="endTime" class="input-text Wdate"/>
+                </div>
+            </div>
+			
+			<div class="cl">
+				<div class="f-l">
+					<span>操作时间起:</span>
+	               <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'operEndTime\')}'})" id="operBeginTime" name="operBeginTime" class="input-text Wdate"/>
+				</div>
+				<div class="f-l">
+					<span>操作时间至:</span>
+	               <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'operBeginTime\')}'})" id="operEndTime" name="operEndTime" class="input-text Wdate"/>
+				</div>
+			</div>
+			
+            <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+                <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                    <i class="iconfont icon-xiala"></i>
+                </p>
+            </div>
+        </div>
+    </div>
+    </form>
+    <div class="bg-1">
+        <div class="cl pd-15 bg-1">
+				<span class="l mt-15 mb-15">
+					<a href="javascript:;" onclick="checks()" class="btn btn-primary radius"><i class="iconfont icon-edit"></i> 批量完成 </a>
+					<a href="javascript:;" onclick="exportWithdraw()" class="btn btn-warning radius"><i class="iconfont icon-daochu"></i> 导出数据</a>
+				</span>
+            <div class="bg-fff">
+                <table class="table table-border table-bordered table-bg table-sort" id="tab">
+                    <thead>
+                    <tr class="text-c">
+                        <th width="10"><input type="checkbox" name="all"/></th>
+                        <th width="40">学员姓名</th>
+                        <th width="30">性别</th>
+                        <th width="50">银行账号</th>
+                        <th width="40">所属银行</th>
+                        <th width="40">手机号</th>
+                        <th width="50">身份证号</th>
+                        <th width="30">提现金额</th>
+                        <th width="50">发起时间</th>
+                        <th width="40">操作状态</th>
+                        <th width="40">经办人</th>
+                        <th width="50">操作时间</th>
+                        <th width="40">操作备注</th>
+                        <th width="30">操作</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--_footer 作为公共模版分离出去-->
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+    <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+    <!--/_footer 作为公共模版分离出去-->
+
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+    <script type="text/javascript" th:src="@{/js/webjs/refund/withdraw/withdraw-list.js}"></script>
+
+</body>
+</html>

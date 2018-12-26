@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>慢资源预警邮件</title>
+		<meta charset="utf-8" />
+		<style type="text/css">
+			body {
+			font-size: 10pt;
+			color: #333;
+			background-color:
+			#f5f6f8;
+			}
+
+			.bg {
+			background-color: #fff;
+			padding: 0 10px 15px;
+			}
+
+			.footer {
+			text-align: right;
+			}
+
+			#name {
+			color: grey;
+			}
+
+			#message {
+			color: grey;
+			}
+
+			.title
+			{
+			text-align: center;
+			color: #333;
+			font-size: 20px;
+			}
+
+			.title h3 {
+			margin:
+			0;
+			margin-bottom: 10px;
+			padding: 8px 0;
+			font-weight: 500;
+			border-radius:
+			2px;
+			}
+
+			.content {
+			margin: 20px 0;
+			background-color: #fff;
+			}
+
+			.content table
+			{
+			width: 100%;
+			}
+
+			table tr th {
+			background-color: #F7F7F5;
+			font-weight:
+			500;
+			}
+
+			table {
+			width: 200px;
+			min-height: 25px;
+			line-height: 25px;
+			text-align: center;
+			border-collapse: collapse;
+			}
+
+			table, table tr th,
+			table tr td {
+			border: 1px solid #ddd;
+			line-height: 20px;
+			padding: 8px;
+			font-size: 12px;
+			}
+
+			table td {
+			text-align: center;
+			}
+
+			.link-box {
+			text-align: right;
+			}
+
+			.link-box a:hover {
+
+			}
+
+			.link-box a {
+			color:
+			cornflowerblue;
+			}
+
+			.aym_table_wrap, .aym_table_wrap table {
+			width: 100%
+			!important;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="bg">
+			<div class="content">
+				<div id="message">
+					<span></span>
+					<span id="message"></span>
+				</div>
+				<div class="content">
+					<table>
+						<thead>
+							<tr>
+								<th>资源类型</th> 
+								<th>平均耗时</th> 
+								<th>最大耗时</th> 
+								<th>调用次数</th> 
+								<td>时间</td>
+							</tr>
+						</thead>
+						<tbody>
+							<#list annotations as info>
+							<tr> 
+								<td>
+								    <#if info.resouceType == 1>
+									MySql
+									<#elseif info.resouceType == 2>
+									Redis
+									<#elseif info.resouceType == 3>
+									Rpc
+									<#elseif info.resouceType == 4>
+									Http
+									<#else>
+									Other
+									</#if>
+								</td> 
+								<td>${info.avgDestination?string('0.00')}ms</td>
+								<td>${info.maxDestination?string('0.00')}ms</td>
+								<td>${info.count}</td>
+								<td>${info.date?number_to_datetime}</td>
+							</tr>
+							</#list>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

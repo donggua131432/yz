@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.transfer.BdStudentQuitMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.transfer.BdStudentQuitInfo">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="scholarship" property="scholarship" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+		<result column="apply_time" property="applyTime" jdbcType="VARCHAR" />
+		<result column="apply_user_name" property="applyUserName" jdbcType="VARCHAR" />
+		<result column="oper_user_name" property="operUserName" jdbcType="VARCHAR"/>
+		<result column="oper_time" property="operTime" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+		<result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="recruit_name" property="recruitName" jdbcType="VARCHAR"/>
+		<result column="totur_name" property="toturName" jdbcType="VARCHAR"/>
+		<result column="inclusion_status" property="inclusionStatus" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="reject_reason" property="rejectReason" jdbcType="VARCHAR"/>
+		<result column="old_std_stage" property="oldStdStage" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap id="StudentMap" type="java.util.Map">
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<update id="updateFileUrl" parameterType="java.lang.String">
+		update bd_student_out set file_url = #{url},file_name = #{fileName} where out_id = #{outId}
+	</update>
+	
+	<select id="findAllBdStudentQuit" resultMap="BaseResultMap">
+		SELECT 
+		  bsqp.`id`,
+		  bsi.`std_name`,
+		  bli.`std_no`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`scholarship`,
+		  bli.`std_stage`,
+		  bsqp.reason,
+		  bsqp.`check_status`,
+		  bsqp.`apply_user_name`,
+		  date_format(bsqp.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+		  date_format(bsqp.`oper_time`,'%Y-%m-%d %H:%i:%s') oper_time,
+		  bsqp.`oper_user_name`, 
+		  bsqp.`std_stage` old_std_stage  
+		FROM
+		  bms.`bd_student_quit_apply` bsqp 
+		  LEFT JOIN bms.`bd_student_info` bsi 
+		    ON bsi.`std_id` = bsqp.`std_id` 
+		  LEFT JOIN bms.`bd_learn_info` bli 
+		    ON bli.`learn_id` = bsqp.`learn_id` 
+		  LEFT JOIN bms.`bd_university` bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bms.`bd_unvs_profession` bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bms.`bd_learn_rules` blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bms.`oa_employee` oe 
+		    ON oe.`emp_id` = blr.`recruit` 
+		  LEFT JOIN bms.`oa_employee` oet 
+		    ON oet.`emp_id` = blr.`tutor`
+		 where 1=1
+		 <if test="quit.stdName !=null and '' != quit.stdName">
+		 	and bsi.std_name like concat('%',#{quit.stdName,jdbcType=VARCHAR},'%')
+		 </if> 
+		 <if test="quit.mobile !=null and '' !=quit.mobile">
+		 	and bsi.mobile = #{quit.mobile,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.idCard !=null and '' !=quit.idCard">
+		 	and bsi.id_card = #{quit.idCard,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.stdNo !=null and '' != quit.stdNo">
+		 	and bli.std_no = #{quit.stdNo,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.checkStatus !=null and '' !=quit.checkStatus">
+		 	and bsqp.check_status = #{quit.checkStatus,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.reason !=null and '' != quit.reason">
+		 	and bsqp.reason = #{quit.reason,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.grade !=null and '' !=quit.grade ">
+		 	and bli.grade = #{quit.grade,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.unvsId !=null and '' !=quit.unvsId">
+		 	and bu.unvs_id = #{quit.unvsId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnLevel !=null and '' !=quit.pfsnLevel">
+		 	and bup.pfsn_level = #{quit.pfsnLevel,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnId !=null and '' !=quit.pfsnId">
+		 	and bup.pfsn_id = #{quit.pfsnId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.recruitName !=null and '' !=quit.recruitName">
+		 	and oe.emp_name like concat('%',#{quit.recruitName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.tutorName !=null and '' != quit.tutorName">
+		 	and oet.emp_name like concat('%',#{quit.tutorName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.recruitType !=null and '' !=quit.recruitType">
+		 	and bli.recruit_type = #{quit.recruitType,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.sg !=null and '' !=quit.sg">
+		 	and bli.sg = #{quit.sg,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.scholarship !=null and '' != quit.scholarship">
+		 	and bli.scholarship = #{quit.scholarship,jdbcType=VARCHAR}
+		 </if> 
+		 <if test="quit.inclusionStatus !=null and '' != quit.inclusionStatus">
+		 	and bli.inclusion_status = #{quit.inclusionStatus,jdbcType=VARCHAR}
+		 </if>  
+		 <if test="quit.applyUserName !=null and '' !=quit.applyUserName">
+		 	and bsqp.apply_user_name like concat('%',#{quit.applyUserName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.applyTimeBegin !=null and '' != quit.applyTimeBegin">	
+	 		 <![CDATA[ and DATE_FORMAT(bo.`apply_time`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{quit.applyTimeBegin}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	 <if test="quit.applyTimeEnd !=null and '' !=quit.applyTimeEnd">
+	 	 	<![CDATA[ and DATE_FORMAT(bsqp.`apply_time`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{quit.applyTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	 <if test="user.userLevel != 1 ">
+			 <choose>
+				<when test="user.userLevel == 12">
+					and bli.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 13">
+				    and bli.recruit_type='2'
+				</when>
+				<when test="user.userLevel == 14">
+					and bsqp.apply_user_id = #{user.userId, jdbcType=VARCHAR} and bli.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 15">
+					and bsqp.apply_user_id = #{user.userId, jdbcType=VARCHAR} and bli.recruit_type='2'
+				</when>
+			</choose>
+		</if>
+	 	 order by bsqp.`apply_time` desc
+	</select>
+	
+	<insert id="insertQuitSchoolApply" parameterType="com.yz.model.transfer.BdStudentQuitInfo">
+		insert into bd_student_quit_apply
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			id,
+			<if test="stdId !=null and '' !=stdId">
+				std_id,
+			</if>
+			<if test="learnId !=null and '' != learnId">
+				learn_id,
+			</if>
+			<if test="recruitType !=null and '' != recruitType">
+				recruit_type,
+			</if>
+			<if test="stdStage !=null and '' !=stdStage">
+				std_stage,
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				start_time,
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				end_time,
+			</if>
+			<if test="fileName !=null and '' != fileName">
+				file_name,
+			</if>
+			<if test="fileUrl !=null and '' != fileUrl">
+				file_url,
+			</if>
+			<if test="applyUserId !=null and '' != applyUserId">
+				apply_user_id,
+			</if>
+			<if test="applyUserName !=null and '' != applyUserName">
+				apply_user_name,
+			</if>
+			<if test="applyTime !=null and '' != applyTime">
+				apply_time,
+			</if>
+			<if test="remark !=null and '' != remark">
+				remark,
+			</if>
+			<if test="reason !=null and '' != reason">
+				reason,
+			</if>
+			<if test="checkStatus !=null and '' != checkStatus">
+				check_status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{id,jdbcType=VARCHAR},
+			<if test="stdId !=null and '' !=stdId">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="learnId !=null and '' != learnId">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="recruitType !=null and '' != recruitType">
+				#{recruitType,jdbcType=VARCHAR},
+			</if>
+			<if test="stdStage !=null and '' !=stdStage">
+				#{stdStage,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				#{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName !=null and '' != fileName">
+				#{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileUrl !=null and '' != fileUrl">
+				#{fileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="applyUserId !=null and '' != applyUserId">
+				#{applyUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="applyUserName !=null and '' != applyUserName">
+				#{applyUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="applyTime !=null and '' != applyTime">
+				#{applyTime,jdbcType=VARCHAR},
+			</if>
+			<if test="remark !=null and '' != remark">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="reason !=null and '' != reason">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="checkStatus !=null and '' != checkStatus">
+				#{checkStatus,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="checkStudentQuitSchoolApply" parameterType="com.yz.model.transfer.BdStudentQuitInfo">
+		update bd_student_quit_apply
+		<set>
+			<if test="checkStatus !=null and '' != checkStatus">
+				check_status = #{checkStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="operUserId !=null and '' !=operUserId">
+				oper_user_id = #{operUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="operUserName != null and '' != operUserName">
+				oper_user_name = #{operUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="rejectReason !=null and '' != rejectReason">
+				reject_reason = #{rejectReason,jdbcType=VARCHAR},
+			</if>
+			oper_time = NOW(),
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getStudentQuitSchoolStatus" resultType="java.lang.String">
+		select check_status from bd_student_quit_apply where id =#{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="delStudentQuitSchoolApply">
+		delete from bd_student_quit_apply where id =#{id,jdbcType=VARCHAR}
+	</delete>
+	
+	
+	<select id="findAllBdStudentQuitForCheck" resultMap="BaseResultMap">
+		SELECT 
+		  bsqp.`id`,
+		  bsi.`std_name`,
+		  bli.`std_no`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bsi.`mobile`,
+		  bli.learn_id,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`scholarship`,
+		  bli.`std_stage`,
+		  bsqp.reason,
+		  bsqp.`check_status`,
+		  bsqp.`apply_user_name`,
+		  date_format(bsqp.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+		  date_format(bsqp.`oper_time`,'%Y-%m-%d %H:%i:%s') oper_time,
+		  bsqp.`oper_user_name`,
+		  bsqp.`std_stage` old_std_stage   
+		FROM
+		  bms.`bd_student_quit_apply` bsqp 
+		  LEFT JOIN bms.`bd_student_info` bsi 
+		    ON bsi.`std_id` = bsqp.`std_id` 
+		  LEFT JOIN bms.`bd_learn_info` bli 
+		    ON bli.`learn_id` = bsqp.`learn_id` 
+		  LEFT JOIN bms.`bd_university` bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bms.`bd_unvs_profession` bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bms.`bd_learn_rules` blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bms.`oa_employee` oe 
+		    ON oe.`emp_id` = blr.`recruit` 
+		  LEFT JOIN bms.`oa_employee` oet 
+		    ON oet.`emp_id` = blr.`tutor`
+		 where 1=1
+		 <if test="quit.stdName !=null and '' != quit.stdName">
+		 	and bsi.std_name like concat('%',#{quit.stdName,jdbcType=VARCHAR},'%')
+		 </if> 
+		 <if test="quit.mobile !=null and '' !=quit.mobile">
+		 	and bsi.mobile = #{quit.mobile,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.idCard !=null and '' !=quit.idCard">
+		 	and bsi.id_card = #{quit.idCard,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.stdNo !=null and '' != quit.stdNo">
+		 	and bli.std_no = #{quit.stdNo,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.checkStatus !=null and '' !=quit.checkStatus">
+		 	and bsqp.check_status = #{quit.checkStatus,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.reason !=null and '' != quit.reason">
+		 	and bsqp.reason = #{quit.reason,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.grade !=null and '' !=quit.grade ">
+		 	and bli.grade = #{quit.grade,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.unvsId !=null and '' !=quit.unvsId">
+		 	and bu.unvs_id = #{quit.unvsId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnLevel !=null and '' !=quit.pfsnLevel">
+		 	and bup.pfsn_level = #{quit.pfsnLevel,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnId !=null and '' !=quit.pfsnId">
+		 	and bup.pfsn_id = #{quit.pfsnId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.recruitName !=null and '' !=quit.recruitName">
+		 	and oe.emp_name like concat('%',#{quit.recruitName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.tutorName !=null and '' != quit.tutorName">
+		 	and oet.emp_name like concat('%',#{quit.tutorName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.recruitType !=null and '' !=quit.recruitType">
+		 	and bli.recruit_type = #{quit.recruitType,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.sg !=null and '' !=quit.sg">
+		 	and bli.sg = #{quit.sg,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.scholarship !=null and '' != quit.scholarship">
+		 	and bli.scholarship = #{quit.scholarship,jdbcType=VARCHAR}
+		 </if>   
+		 <if test="quit.applyUserName !=null and '' !=quit.applyUserName">
+		 	and bsqp.apply_user_name like concat('%',#{quit.applyUserName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.applyTimeBegin !=null and '' != quit.applyTimeBegin">	
+	 		 <![CDATA[ and DATE_FORMAT(bo.`apply_time`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{quit.applyTimeBegin}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	 <if test="quit.applyTimeEnd !=null and '' !=quit.applyTimeEnd">
+	 	 	<![CDATA[ and DATE_FORMAT(bsqp.`apply_time`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{quit.applyTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	 <if test="user.userLevel != 1">
+			<choose>
+				<when test="user.userLevel == 12">
+					and bsqp.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 13">
+					and bsqp.recruit_type='2'
+				</when>
+			</choose>
+		</if>
+		 order by bsqp.`apply_time` desc
+	</select>
+	
+	
+	<select id="findStudentInfo" resultMap="StudentMap" parameterType="java.lang.String">
+		SELECT 
+		  bli.`std_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`learn_id` 
+		FROM
+		  bd_learn_info bli 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.std_id = bli.std_id 
+		  LEFT JOIN bd_learn_rules blr
+		    ON blr.learn_id = bli.learn_id  
+		WHERE NOT EXISTS 
+		  (SELECT 
+		    bsqp.`learn_id` 
+		  FROM
+		    bd_student_quit_apply bsqp 
+		  WHERE bsqp.`learn_id` = bli.`learn_id`  AND bsqp.`check_status`='3') 
+		  AND bli.`std_stage` = '7' 
+		<if test="sName != null and sName != ''">
+			and (
+			 bsi.`std_name` like CONCAT('%',#{sName},'%') 
+			 or bsi.`mobile` like CONCAT('%',#{sName},'%') 
+			 or bsi.`id_card` like CONCAT('%',#{sName},'%')
+			)
+		</if>
+		<if test="user.userLevel != 1 ">
+			 <choose>
+				<when test="user.userLevel == 12">
+					and bli.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 13">
+				    and bli.recruit_type='2'
+				</when>
+				<when test="user.userLevel == 14">
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR} and bli.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 15">
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR} and bli.recruit_type='2'
+				</when>
+			</choose>
+		</if>
+		group by bli.`learn_id`
+	  </select>
+	  
+	  <select id="selectQuitCount" resultType="java.lang.Integer">
+	  	select count(0) from bd_student_quit_apply where learn_id =#{learnId,jdbcType=VARCHAR} and check_status='3'
+	  </select>
+	  
+	  <select id="getQuitSchoolApplyInfo" resultMap="BaseResultMap">
+		SELECT 
+		  bsqp.`id`,
+		  bsi.`std_name`,
+		  bli.`std_no`,
+		  bli.`grade`,
+		  bsi.`mobile`,
+		  bsi.`id_card`,
+		  bli.`recruit_type`,
+		  bli.`learn_id`,
+		  bli.`inclusion_status`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`scholarship`,
+		  bli.`std_stage`,
+		  bsqp.`reason`,
+		  bsqp.`check_status`,
+		  bsqp.`apply_user_name`,
+		  date_format(bsqp.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+		  date_format(bsqp.`oper_time`,'%Y-%m-%d %H:%i:%s') oper_time,
+		  bsqp.`oper_user_name`,
+		  bsqp.remark,
+		  bsqp.file_name,
+		  bsqp.file_url,
+		  oe.emp_name recruit_name,
+		  oet.emp_name totur_name,
+		  bsqp.reject_reason,
+		  bsqp.`std_stage` old_std_stage  
+		FROM
+		  bms.`bd_student_quit_apply` bsqp 
+		  LEFT JOIN bms.`bd_student_info` bsi 
+		    ON bsi.`std_id` = bsqp.`std_id` 
+		  LEFT JOIN bms.`bd_learn_info` bli 
+		    ON bli.`learn_id` = bsqp.`learn_id` 
+		  LEFT JOIN bms.`bd_university` bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bms.`bd_unvs_profession` bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bms.`bd_learn_rules` blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bms.`oa_employee` oe 
+		    ON oe.`emp_id` = blr.`recruit` 
+		  LEFT JOIN bms.`oa_employee` oet 
+		    ON oet.`emp_id` = blr.`tutor`
+		 where id=#{id,jdbcType=VARCHAR}
+		 </select>
+		 
+		 <update id="updateStdStageByLearnId">
+		 	update bd_learn_info set std_stage='14' where learn_id=#{learnId,jdbcType=VARCHAR}
+		 </update>
+		 
+		 <update id="batchUpdateStdStageByLearnId">
+		 	update bd_learn_info set std_stage='14' where learn_id in
+		 	<foreach collection="list" item="id" open="(" close=")" separator=",">
+				#{id, jdbcType=CHAR}
+			</foreach>
+		 </update>
+		 
+		 <update id="batchUpdateCheckStatus" parameterType="java.util.List">  
+	        <foreach close="" collection="list" index="index" item="item" open="" separator=";">  
+		        update bd_student_quit_apply
+				<set>
+					<if test="item.checkStatus !=null and '' != item.checkStatus">
+						check_status = #{item.checkStatus,jdbcType=VARCHAR},
+					</if>
+					<if test="item.operUserId !=null and '' !=item.operUserId">
+						oper_user_id = #{item.operUserId,jdbcType=VARCHAR},
+					</if>
+					<if test="item.operUserName != null and '' != item.operUserName">
+						oper_user_name = #{item.operUserName,jdbcType=VARCHAR},
+					</if>
+					<if test="item.rejectReason !=null and '' != item.rejectReason">
+						reject_reason = #{item.rejectReason,jdbcType=VARCHAR},
+					</if>
+					oper_time = NOW(),
+				</set>
+				where id = #{item.id,jdbcType=VARCHAR}
+		   </foreach>  
+    	</update>  
+    	
+    <select id="findAllBdStudentQuitForExport" resultMap="BaseResultMap">
+    	 SELECT 
+    	  bsi.`id_card`,
+		  bsi.`mobile`,
+		  bsi.`std_name`,
+		  bli.`std_no`,
+		  bli.`grade`,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'recruitType' 
+		    AND dict_value = bli.`recruit_type`) recruit_type,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'pfsnLevel' 
+		    AND dict_value = bup.`pfsn_level`) pfsn_level,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'scholarship' 
+		    AND dict_value = bli.`scholarship`) scholarship,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'stdStage' 
+		    AND dict_value = bli.`std_stage`) std_stage,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'quitSchoolReason' 
+		    AND dict_value = bsqp.reason) reason,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'checkStatus' 
+		    AND dict_value = bsqp.`check_status`) check_status,
+		  bsqp.`apply_user_name`,
+		  DATE_FORMAT(
+		    bsqp.`apply_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) apply_time,
+		  DATE_FORMAT(
+		    bsqp.`oper_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) oper_time,
+		  bsqp.`oper_user_name`,
+		  (SELECT 
+		    dict_name 
+		  FROM
+		    sys_dict 
+		  WHERE p_id = 'stdStage' 
+		    AND dict_value = bsqp.`std_stage`) old_std_stage 
+		FROM
+		  bms.`bd_student_quit_apply` bsqp 
+		  LEFT JOIN bms.`bd_student_info` bsi 
+		    ON bsi.`std_id` = bsqp.`std_id` 
+		  LEFT JOIN bms.`bd_learn_info` bli 
+		    ON bli.`learn_id` = bsqp.`learn_id` 
+		  LEFT JOIN bms.`bd_university` bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bms.`bd_unvs_profession` bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bms.`bd_learn_rules` blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bms.`oa_employee` oe 
+		    ON oe.`emp_id` = blr.`recruit` 
+		  LEFT JOIN bms.`oa_employee` oet 
+		    ON oet.`emp_id` = blr.`tutor`
+		 where 1=1
+		 <if test="quit.stdName !=null and '' != quit.stdName">
+		 	and bsi.std_name like concat('%',#{quit.stdName,jdbcType=VARCHAR},'%')
+		 </if> 
+		 <if test="quit.mobile !=null and '' !=quit.mobile">
+		 	and bsi.mobile = #{quit.mobile,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.idCard !=null and '' !=quit.idCard">
+		 	and bsi.id_card = #{quit.idCard,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.stdNo !=null and '' != quit.stdNo">
+		 	and bli.std_no = #{quit.stdNo,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.checkStatus !=null and '' !=quit.checkStatus">
+		 	and bsqp.check_status = #{quit.checkStatus,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.reason !=null and '' != quit.reason">
+		 	and bsqp.reason = #{quit.reason,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.grade !=null and '' !=quit.grade ">
+		 	and bli.grade = #{quit.grade,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.unvsId !=null and '' !=quit.unvsId">
+		 	and bu.unvs_id = #{quit.unvsId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnLevel !=null and '' !=quit.pfsnLevel">
+		 	and bup.pfsn_level = #{quit.pfsnLevel,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.pfsnId !=null and '' !=quit.pfsnId">
+		 	and bup.pfsn_id = #{quit.pfsnId,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.recruitName !=null and '' !=quit.recruitName">
+		 	and oe.emp_name like concat('%',#{quit.recruitName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.tutorName !=null and '' != quit.tutorName">
+		 	and oet.tutor_name like concat('%',#{quit.tutorName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.recruitType !=null and '' !=quit.recruitType">
+		 	and bli.recruit_type = #{quit.recruitType,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.sg !=null and '' !=quit.sg">
+		 	and bli.sg = #{quit.sg,jdbcType=VARCHAR}
+		 </if>
+		 <if test="quit.scholarship !=null and '' != quit.scholarship">
+		 	and bli.scholarship = #{quit.scholarship,jdbcType=VARCHAR}
+		 </if>   
+		 <if test="quit.applyUserName !=null and '' !=quit.applyUserName">
+		 	and bsqp.apply_user_name like concat('%',#{quit.applyUserName,jdbcType=VARCHAR},'%')
+		 </if>
+		 <if test="quit.applyTimeBegin !=null and '' != quit.applyTimeBegin">	
+	 		 <![CDATA[ and DATE_FORMAT(bo.`apply_time`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{quit.applyTimeBegin}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	 <if test="quit.applyTimeEnd !=null and '' !=quit.applyTimeEnd">
+	 	 	<![CDATA[ and DATE_FORMAT(bsqp.`apply_time`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{quit.applyTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+	 	 </if>
+	 	  <if test="user.userLevel != 1">
+			<choose>
+				<when test="user.userLevel == 12">
+					and bsqp.recruit_type='1'
+				</when>
+				<when test="user.userLevel == 13">
+					and bsqp.recruit_type='2'
+				</when>
+			</choose>
+		</if>
+		 order by bsqp.`apply_time` desc
+    </select>
+</mapper>

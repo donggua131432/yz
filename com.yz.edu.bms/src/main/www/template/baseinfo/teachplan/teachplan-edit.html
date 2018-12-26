@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title th:text="UPDATE == ${exType} ? 修改教学计划管理 : 添加教学计划管理"></title>
+</head>
+<body>
+   <!--  <div id="tab_demo" class="HuiTab">
+  </br>
+    <div class="tabBar clearfix">
+      <span>基本信息</span><span>变更记录</span>
+    </div> -->
+    <!-- <div class="tabCon"> -->
+      <article class="page-container">
+        <form action="" method="post" class="form form-horizontal" id="form-member-add" th:object="${teachPlanInfo}">
+          <input type="hidden" th:value="${exType}" name="exType" id="exType" /> 
+          <input type="hidden" th:value="*{thpId}" name="thpId" id="thpId" /> 
+          <input type="hidden" th:value="*{pfsnLevel}" name="pfsnLevel" id="pfsnLevel" />
+          <input type="hidden" th:value="*{unvsId}" name="unvsId" id="unvsId" /> 
+          <input type="hidden" th:value="*{unvsName}" name="unvsName" id="unvsName" />
+          <input type="hidden" th:value="*{pfsnName}" id="pfsnName" />
+          <input type="hidden" th:value="*{pfsnId}" id="pfsnId" />
+          <input type="hidden" th:value="*{grade}" name="grades" id="grades">
+          <input type="hidden" th:value="*{pfsnCode}" name="pfsnCode" id="pfsnCode">
+          <!-- 执行类型 -->
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span
+              class="c-red">*</span>年级：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+               <select
+                class="select" size="1" id="grade" name="grade">
+                  <option th:value="*{grade}" selected>--请选择年级--</option>
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>院校：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+             <select class="js-data-example-ajax" style="width: 100%;" id="unvsIds2">
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>层次：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <select class="select" style="width: 100%;" id="pfsnLevels2" name="pfsnLevel">
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>专业：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <select class="select" style="width: 100%;" id="pfsnIds2" name="pfsnId">
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>教学计划名称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{thpName}" placeholder="请输入教学计划名称" id="thpName" name="thpName">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>学期：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <select class="select" size="1" id="semester" name="semester">
+                  <option th:value="*{semester}" selected>--请选择学期--</option>
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">学分：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{credit}" placeholder="请输入学分" id="credit" name="credit">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+             <select class="select" size="1" id="thpType" name="thpType">
+                  <option th:value="*{thpType}" selected>--请选择类型--</option>
+              </select>
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">考试科目：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{testSubject}" placeholder="请输入考试科目" id="testSubject" name="testSubject">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">总学时：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{totalHours}" placeholder="请输入总学时" id="totalHours" name="totalHours">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">面授学时：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{educatedHour}" placeholder="请输入面授学时" id="educatedHour" name="educatedHour">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">自学学时：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{selfHours}" placeholder="请输入自学学时" id="selfHours" name="selfHours">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">实践学时：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{practiceHours}" placeholder="请输入实践学时" id="practiceHours" name="practiceHours">
+            </div>
+          </div>
+          <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">备注：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <input type="text" class="input-text" th:value="*{remark}" placeholder="请输入备注" id="remark" name="remark">
+            </div>
+          </div>
+          <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+              <input class="btn btn-success radius inputW9" type="submit" value="提交">
+            </div>
+          </div>
+        </form>
+      </article>
+  <!--   </div>
+    <div class="tabCon">
+      <div class="mt-20">
+        <table class="table table-border table-bordered table-hover table-bg table-sort">
+          <thead>
+            <tr class="text-c">
+              <th width="80">操作人</th>
+              <th width="100">操作记录</th>
+              <th width="40">操作时间</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <!-- </div> -->
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/baseinfo/teachplan/teachplan-edit.js}"></script>
+</body>
+</html>

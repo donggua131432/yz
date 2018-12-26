@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdOrderMapper" >
+<resultMap id="BaseResultMap" type="com.yz.model.payment.BdSubOrder" >
+    <id column="sub_order_no" property="subOrderNo" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="item_code" property="itemCode" jdbcType="VARCHAR" />
+    <result column="fee_amount" property="feeAmount" jdbcType="VARCHAR" />
+    <result column="offer_amount" property="offerAmount" jdbcType="VARCHAR" />
+    <result column="payable" property="payable" jdbcType="VARCHAR" />
+    <result column="fd_id" property="fdId" jdbcType="VARCHAR" />
+    <result column="od_id" property="odId" jdbcType="VARCHAR" />
+    <result column="sub_order_status" property="subOrderStatus" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="qr_code" property="qrCode" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="expire_time" property="expireTime" jdbcType="VARCHAR" />
+    <result column="item_year" property="itemYear" jdbcType="VARCHAR" />
+    <result column="item_type" property="itemType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="selectOrderNoByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select bs.order_no from bms.bd_student_order bs where bs.learn_id = #{learnId}
+  </select>
+  
+  <select id="selectSubOrderByLearnId" parameterType="java.lang.String" resultMap="BaseResultMap" >
+    SELECT s.sub_order_no, s.order_no, s.item_code,
+        s.fee_amount, s.offer_amount, s.payable, s.fd_id, s.od_id,
+        s.sub_order_status, s.qr_code, s.create_time, s.expire_time, b.item_year , b.item_type
+    FROM bd_sub_order s left join bd_fee_item b on s.item_code = b.item_code
+    WHERE s.order_no = (SELECT o.order_no FROM bd_student_order o WHERE o.learn_id = #{learnId, jdbcType=VARCHAR})
+    AND sub_order_status not in ('3', '4');
+  </select>
+	
+  <insert id="createOrder" parameterType="com.yz.model.communi.Body">
+  	insert into bms.bd_student_order
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        order_no,
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="payable != null" >
+        payable,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="learnId != null" >
+        learn_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="stdName != null" >
+        std_name,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="unvsId != null" >
+        unvs_id,
+      </if>
+      <if test="unvsName != null" >
+        unvs_name,
+      </if>
+      <if test="pfsnId != null" >
+        pfsn_id,
+      </if>
+      <if test="pfsnName != null" >
+        pfsn_name,
+      </if>
+      <if test="taName != null" >
+        ta_name,
+      </if>
+      <if test="taId != null" >
+        ta_id,
+      </if>
+      <if test="expireTime != null" >
+        expire_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="orderStatus != null" >
+        order_status,
+      </if>
+      <if test="payeeId != null" >
+        payee_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{orderNo,jdbcType=VARCHAR},
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="payable != null" >
+        #{payable,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdName != null" >
+        #{stdName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+       <if test="unvsId != null" >
+        #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsName != null" >
+        #{unvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnId != null" >
+        #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnName != null" >
+        #{pfsnName,jdbcType=VARCHAR},
+      </if>
+      <if test="taName != null" >
+        #{taName,jdbcType=VARCHAR},
+      </if>
+      <if test="taId != null" >
+        #{taId,jdbcType=VARCHAR},
+      </if>
+      <if test="expireTime != null" >
+        #{expireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null" >
+        #{orderStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeId != null" >
+        #{payeeId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateOrder" parameterType="com.yz.model.communi.Body" >
+    update bms.bd_student_order
+    <set >
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="payable != null" >
+        payable = #{payable,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null" >
+        discount = #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        learn_id = #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdName != null" >
+        std_name = #{stdName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expireTime != null" >
+        expire_time = #{expireTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderStatus != null" >
+        order_status = #{orderStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_no = #{orderNo,jdbcType=VARCHAR}
+  </update>
+  
+  <resultMap type="java.util.HashMap" id="FeeSimpleMap">
+		<result column="item_code" jdbcType="VARCHAR" property="itemCode" />
+		<result column="item_name" jdbcType="VARCHAR" property="itemName" />
+		<result column="amount" jdbcType="VARCHAR" property="amount" />
+		<result column="discount" jdbcType="VARCHAR" property="discount" />
+		<result column="fd_id" jdbcType="VARCHAR" property="fdId" />
+		<result column="od_id" jdbcType="VARCHAR" property="odId" />
+	</resultMap>
+  
+  <select id="getRequireItemCodes" parameterType="com.yz.model.communi.Body" resultMap="FeeSimpleMap">
+  	SELECT 
+	  i.`item_code`,
+	  i.`item_name` 
+	FROM
+	  bms.bd_fee_item i 
+	  INNER JOIN bms.bd_rt_item r 
+	    ON r.`item_code` = i.`item_code` 
+	WHERE r.`std_stage` = #{stdStage, jdbcType=VARCHAR} 
+	  AND r.`recruit_type` = #{recruitType, jdbcType=VARCHAR}
+	  AND i.`status` = '1'
+	  order by i.`order_num`
+  </select>
+  
+  <select id="getFeeInfo" resultMap="FeeSimpleMap">
+		SELECT 
+		  fd.`define_amount` as amount,
+		  ifnull(of.`define_amount`, '0.00') as discount,
+		  fd.fd_id,
+		  of.od_id
+		FROM
+		  bms.bd_fee_define fd 
+		  left join bms.bd_offer_define of 
+		    on of.`offer_id` = #{offerId, jdbcType=VARCHAR}
+		    and of.`item_code` = fd.`item_code` 
+		    and of.`status` = '1'
+		WHERE fd.`fee_id` = #{feeId, jdbcType=VARCHAR}
+		  and fd.`item_code` = #{itemCode, jdbcType=VARCHAR}
+		  and fd.`status` = '1'
+		limit 0, 1 
+	</select>
+	
+	<insert id="createSubOrders">
+		insert into bms.`bd_sub_order` (
+		  `sub_order_no`,
+		  `order_no`,
+		  `item_code`,
+		  `fee_amount`,
+		  `offer_amount`,
+		  `payable`,
+		  `fd_id`,
+		  `od_id`,
+		  `sub_order_status`,
+		  `std_id`,
+		  `mobile`,
+		  `std_name`,
+		  `payee_id`
+		) 
+		values
+		<foreach collection="list" item="sb" separator=",">
+			(
+		    seq(),
+		    #{sb.orderNo, jdbcType=VARCHAR},
+		    #{sb.itemCode, jdbcType=VARCHAR},
+		    #{sb.feeAmount, jdbcType=VARCHAR},
+		    #{sb.offerAmount, jdbcType=VARCHAR},
+		    #{sb.payable, jdbcType=VARCHAR},
+		    #{sb.fdId, jdbcType=VARCHAR},
+		    #{sb.odId, jdbcType=VARCHAR},
+		    #{sb.subOrderStatus, jdbcType=VARCHAR},
+		    #{sb.stdId, jdbcType=VARCHAR},
+		    #{sb.mobile, jdbcType=VARCHAR},
+		    #{sb.stdName, jdbcType=VARCHAR},
+		    #{sb.payeeId, jdbcType=VARCHAR}
+		  )
+		</foreach>
+	</insert>
+	
+	<select id="selectFinanceCodeByEmp" parameterType="string" resultType="string">
+		SELECT 
+		  c.`finance_no` 
+		FROM
+		  bms.oa_employee_job j 
+		  INNER JOIN bms.oa_campus c 
+		    ON c.`campus_id` = j.`campus_id` 
+		WHERE j.`emp_id` = #{recruitEmpId, jdbcType=VARCHAR}
+	</select>
+  
+</mapper>

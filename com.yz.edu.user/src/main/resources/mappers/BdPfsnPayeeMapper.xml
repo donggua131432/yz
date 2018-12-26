@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdPfsnPayeeMapper" >
+  <select id="selectPayeeId" parameterType="string" resultType="string">
+  	SELECT payee_id FROM bms.bd_pfsn_payee WHERE pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+  </select>
+</mapper>

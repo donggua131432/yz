@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.InviteDataAcquisitionMapper">
+	<insert id="saveInviteDataAcquisition" parameterType="list">
+		INSERT INTO
+		bms.rep_invite_qrcode_log
+		(
+		`channel_id`,
+		`type`,
+		`ip`,
+		`country_name`,
+		`region_name`,
+		`city_name`,
+		`qrcode_url`,
+		 user_id
+		)
+		values
+		<foreach collection="record" item="info" separator=",">
+			(
+			#{info.channelId, jdbcType=VARCHAR},
+			#{info.channelType,jdbcType=VARCHAR},
+			#{info.remote_addr,
+			jdbcType=VARCHAR},
+			#{info.location.country_name,jdbcType=VARCHAR},
+			#{info.location.region_name,jdbcType=VARCHAR},
+			#{info.location.city_name,jdbcType=VARCHAR},
+			#{info.user_req,jdbcType=VARCHAR},
+			#{info.userId,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	<update id="addLookCount" parameterType="java.lang.String" >
+	UPDATE bms.`rep_channel_qrcode` SET look_count=#{count} where channel_id=#{channel_id}
+	</update>
+	
+	<select id="getLookCount" parameterType="java.lang.String" resultType="java.lang.String">
+	SELECT look_count FROM bms.`rep_channel_qrcode` WHERE channel_id=#{channel_id}
+	</select>
+</mapper>

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+</head>
+<body>
+<div class="pd-15">
+	<div class="bg-1 pd-10 bk-gray ">
+	  <!--   <span class="r"> 
+			<a href="javascript:;" onclick="addStu()" class="btn btn-primary radius"> 添加选中 </a>
+			<a href="javascript:;" onclick="delStu()" class="btn btn-success radius"> 清除选中</a>
+		</span> -->
+		<input type="hidden" id="taskId" name="taskId" th:value="*{taskId}"/>
+	    <input type="hidden" th:value="*{resultInfo}" name="resultInfo" id="resultInfo" />
+		<div class="mt-10 bg-fff">
+		    <div id="taskInfoDiv"></div>
+		</div>
+		<div class="text-c mt-15 mb-10" style="display: none;" id="remind">
+			<input id="remindStu" class="btn btn-primary radius" onclick="remindUnfinishedStudent()" 
+			type="submit" value="提醒未完成的学员" style="width: 150px" />
+		</div>
+	</div>
+</div>
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/stdservice/activity/result_list.js}"></script>
+</body>
+</html>

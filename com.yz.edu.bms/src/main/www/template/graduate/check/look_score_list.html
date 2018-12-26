@@ -1,0 +1,141 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+</head>
+<body>
+<div class="page-container">
+    <div class="pd-15 bg-1">
+        <div class="bg-fff">
+            <input type="hidden" th:value="*{checkId}" name="checkId" id="checkId"/>
+            <input type="hidden" th:value="*{stdName}" name="stdNames" id="stdNames"/>
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="score"
+                   th:object="${scoreInfo}">
+                <thead>
+                <tr>
+                    <th scope="col" colspan="6">学员【<span id="stdName"></span>】的期末成绩核准</th>
+                </tr>
+                <tr class="text-c">
+                    <th width="100">第一学期</th>
+                    <th width="100">第二学期</th>
+                    <th width="100">第三学期</th>
+                    <th width="100">第四学期</th>
+                    <th width="100">第五学期</th>
+                    <th width="100">第六学期</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="text-c">
+                    <td>
+					<span th:each="s : *{firstSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                    <td>
+					<span th:each="s : *{secondSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                    <td>
+					<span th:each="s : *{thirdSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                    <td>
+					<span th:each="s : *{fourthSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                    <td>
+					<span th:each="s : *{fifthSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                    <td>
+					<span th:each="s : *{sixthSemester}">
+					  <span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+					</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+            <div th:if="*{exType} =='CHECK'">
+                <div class="mt-10 bk-gray radius">
+                    <div class="layui-layer-title">审批备注</div>
+                    <textarea name="remark" id="remark" cols="" rows="" style="border: none" class="textarea"
+                              placeholder="请输入备注...最少输入10个字符"
+                              onKeyUp="$.Huitextarealength(this,100)"></textarea>
+                </div>
+                <div class="text-c mt-10">
+                    <button type="submit" onclick="check_pass(2)" class="btn btn-success radius"
+                            id="admin-role-save"
+                            name="admin-role-save"><i class="icon-ok"></i> 审核通过
+                    </button>
+                    <button type="submit" onclick="check_pass(3)" class="btn btn-normal-outline radius"
+                            id="admin-role-save"
+                            name="admin-role-save"><i class="icon-ok"></i> 审核不通过
+                    </button>
+                </div>
+            </div>
+            <div th:if="*{exType} =='LOOK'">
+                <div class="mt-10 bk-gray radius">
+                    <div class="layui-layer-title">审批备注</div>
+                    <div class="row cl mt-10">
+                        <span class="col-sm-3 text-r">审核状态:</span>
+                        <span th:text="*{recordInfo.checkStatus}" class="col-sm-9" id="checkStatus"></span>
+                    </div>
+                    <div class="row cl mt-10">
+                        <span class="col-sm-3 text-r">备注:</span>
+                        <span class="col-sm-9"><textarea disabled="disabled" th:text="*{recordInfo.remark}" name="remark" id="remark"
+                                        cols=""
+                                        rows="" class="textarea"></textarea></span>
+                    </div>
+                    <div class="row cl mt-10">
+                        <span class="col-sm-3 text-r">审核人:</span>
+                        <span class="col-sm-9" th:text="*{recordInfo.checkUserName}"></span>
+                    </div>
+                    <div class="row cl mt-10">
+                        <span class="col-sm-3 text-r">审核时间:</span>
+                        <span class="col-sm-9" th:text="*{recordInfo.checkTime}"></span>
+                    </div>
+                    <br>
+                </div>
+            </div>
+    </div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/graduate/check/look_score_list.js}"></script>
+</body>
+</html>

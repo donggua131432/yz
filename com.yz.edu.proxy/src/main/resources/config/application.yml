@@ -1,0 +1,87 @@
+spring:
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-file-size: 30Mb
+      max-request-size: 30Mb
+server:
+  display-name: proxy
+  port: 8180
+logging:
+  config: classpath:config/logback.xml
+  dir:  /home/www/webapp/logs/bcc
+jdbc:
+  global:
+    user: ${jdbc_user}
+    password: ${jdbc_password} 
+    poolsize: ${jdbc_poolsize}
+    driverClassName: ${jdbc_driverclassName}
+    minIdle: ${jdbc_minIdle}
+    maxActive: ${jdbc_maxActive}
+    maxWait: ${jdbc_maxWait}
+    minEictableIdleTimeMillis: ${jdbc_minEictableIdleTimeMillis}
+    defaultDatasource: bcc
+  jdbcConfigInfos:
+    - name: bcc
+      url: ${jdbc_url}
+      uniqueResourceName: mysql.bcc.write
+redis.pool:
+  minIdle: 10
+  maxIdle: 300
+  maxWait: 1000
+  testOnReturn: false
+  testOnBorrow: false
+  timeout: 1000
+  maxActive: 300
+  redisInfos:
+    - name:default
+      isdefault:true
+      host:${redis_host}
+      port:${redis_port}
+      authKey:${redis_authKey}
+      connectType:single
+oss:
+  accessKeyId: LTAIU4tkMxyhD7ue
+  accessKeySecret: KlxRgC5IIfC8sPJ0cXFczISJqUmL0s
+  tempEndpoint: file2.mhsapp.com
+  homeEndpoint: file1.mhsapp.com
+  fileEndpoint: file.mhsapp.com
+  fileBucket: mhsfile
+  tempBucket: mhstemp
+  homeBucket: mhshome
+dubbo:
+  registryAddress: ${dubbo.registry.address}
+  application: proxy
+upload:
+   handler: ${upload.handler}
+   path: ${upload.path}
+sf:
+  orderUrl: http://bsp-ois.sit.sf-express.com:9080/bsp-ois/sfexpressService
+  checkword: j8DzkIFgmlomPt0aLuwU
+  head: BSPdevelop
+kafka:
+  bootstrapServers: ${kafka.address}
+  kafkaDerail: ${kafka.kafkaDerail}
+  
+yzsysconfig:
+  smsSwitch: ${sms.is.on}
+  paymentCouponSwitch: ${payment.coupon.switch}
+  zhiMiScale: ${yz.zhimi.scale}
+  tempBucket: ${aliyun.oss.tempBucket}
+  planSetting: ${discount.plan.setting}
+  bucket: ${aliyun.oss.bucket}
+  reptAmount: ${yz.rept.amount}
+  addressMaxSize: ${address.max.size}
+  signNumber: ${sign.base.number}
+  fileBrowserUrl: ${file.browser.url}
+  salesRemindTime: ${goods.sales.remind.time}
+  submitState: ${submit.state}
+  regCode: ${reg.code}
+  invoicePhone: ${invoice.phone}
+  invoiceType: ${invoice.type}
+  recruitYear: ${yz.recruit.year}
+  lotteryCode: ${lottery.code}

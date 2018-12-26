@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.recruit.OaPlanMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.recruit.OaPlan" >
+    <id column="plan_id" property="planId" jdbcType="VARCHAR" />
+    <result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+    <result column="time_slot" property="timeSlot" jdbcType="VARCHAR" />
+    <result column="target_count" property="targetCount" jdbcType="VARCHAR" />
+    <result column="min_count" property="minCount" jdbcType="VARCHAR" />
+    <result column="real_count" property="realCount" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="plan_type" property="planType" jdbcType="VARCHAR" />
+    <result column="today_incr" property="todayIncr" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.util.HashMap" id="PageReulstMap" extends="BaseResultMap">
+  	<result column="campus_name" property="campusName" />
+  	<result column="dp_name" property="dpName" />
+  	<result column="percent" property="percent" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    plan_id, dp_id, time_slot, target_count, min_count, real_count, status, plan_type, today_incr,
+     update_time, update_user, update_user_id, create_user_id, create_time, create_user
+  </sql>
+  
+  <!-- 逻辑删除传入的计划 -->
+  <update id="deletePlans">
+  	DELETE FROM oa_plan
+    where plan_id in 
+    <foreach collection="planIds" item="planId" open="(" close=")" separator=",">
+    	#{planId}
+    </foreach>
+  </update>
+  
+  <select id="selectPlanByType" resultMap="PageReulstMap">
+	  	SELECT 
+		  rp.`plan_id`,
+		  rp.`plan_type`,
+		  rp.`target_count`,
+		  rp.`time_slot`,
+		  rp.`real_count`,
+		  rp.`dp_id`,
+		  rp.`update_user_id`,
+		  rp.`update_user`,
+		  rp.`update_time`,
+		  rp.`min_count`,
+		  rp.`real_count`,
+		  rp.`status`,
+		  rp.`create_user_id`,
+		  rp.`create_user`,
+		  rp.`create_time`,
+		  rp.`today_incr`,
+		  od.`dp_name`,
+		  oc.`campus_name`,
+  		rp.`real_count`/rp.`target_count` * 100 AS percent
+		FROM
+		  oa_plan rp 
+		  LEFT JOIN oa_department od 
+		  ON od.`dp_id` = rp.`dp_id`
+		  LEFT JOIN oa_campus oc
+		  ON oc.`campus_id` = od.`campus_id`
+		WHERE rp.`plan_type` = #{planType}
+	  <if test="plan.timeSlot != null and plan.timeSlot != ''" >
+      	and time_slot = #{plan.timeSlot}
+      </if>
+      <if test="plan.dpId != null and plan.dpId != ''" >
+      	and rp.dp_id = #{plan.dpId}
+      </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from oa_plan
+    where plan_id = #{planId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    DELETE FROM oa_plan
+    where plan_id = #{planId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.recruit.OaPlan" >
+    insert into oa_plan (plan_id, dp_id, time_slot, 
+      target_count, min_count, 
+      plan_type, 
+      update_user, update_user_id, 
+      create_user_id, create_user)
+    values (#{planId,jdbcType=VARCHAR}, #{dpId,jdbcType=VARCHAR}, #{timeSlot,jdbcType=VARCHAR}, 
+      #{targetCount,jdbcType=VARCHAR}, #{minCount,jdbcType=VARCHAR}, 
+      #{planType,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.recruit.OaPlan" >
+    insert into oa_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        plan_id,
+      <if test="dpId != null" >
+        dp_id,
+      </if>
+      <if test="timeSlot != null" >
+        time_slot,
+      </if>
+      <if test="targetCount != null" >
+        target_count,
+      </if>
+      <if test="minCount != null" >
+        min_count,
+      </if>
+      <if test="realCount != null" >
+        real_count,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="planType != null" >
+        plan_type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{planId,jdbcType=VARCHAR},
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="timeSlot != null" >
+        #{timeSlot,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCount != null" >
+        #{targetCount,jdbcType=VARCHAR},
+      </if>
+      <if test="minCount != null" >
+        #{minCount,jdbcType=VARCHAR},
+      </if>
+      <if test="realCount != null" >
+        #{realCount,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="planType != null" >
+        #{planType,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.recruit.OaPlan" >
+    update oa_plan
+    <set >
+      <if test="dpId != null" >
+        dp_id = #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="timeSlot != null" >
+        time_slot = #{timeSlot,jdbcType=VARCHAR},
+      </if>
+      <if test="targetCount != null" >
+        target_count = #{targetCount,jdbcType=VARCHAR},
+      </if>
+      <if test="minCount != null" >
+        min_count = #{minCount,jdbcType=VARCHAR},
+      </if>
+      <if test="realCount != null" >
+        real_count = #{realCount,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="planType != null" >
+        plan_type = #{planType,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where plan_id = #{planId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.recruit.OaPlan" >
+    update oa_plan
+    set dp_id = #{dpId,jdbcType=VARCHAR},
+      time_slot = #{timeSlot,jdbcType=VARCHAR},
+      target_count = #{targetCount,jdbcType=VARCHAR},
+      min_count = #{minCount,jdbcType=VARCHAR},
+      real_count = #{realCount,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      plan_type = #{planType,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where plan_id = #{planId,jdbcType=VARCHAR}
+  </update>
+</mapper>

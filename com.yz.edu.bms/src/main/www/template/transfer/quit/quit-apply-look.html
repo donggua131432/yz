@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/jquery.progress/control.css}" />
+<!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title>查看休学学员信息</title>
+<meta name="keywords"
+	content="H-ui.admin v3.0,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
+<meta name="description"
+	content="H-ui.admin v3.0，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal max-w" id="form-member-add" th:object="${quitSchoolInfo}">
+			<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+			<!-- 执行类型 -->
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 f-14">学员休学信息</label>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3">学员：</label>
+				<div class="formControls col-xs-8 col-sm-9" id="stdNameBox">
+					<span th:text="${quitSchoolInfo.stdName}"></span>
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">身份证：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span th:text="${quitSchoolInfo.idCard}"></span>
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">手机号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span th:text="${quitSchoolInfo.mobile}"></span>
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">优惠类型：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="scholarship" style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">入围状态：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="inclusionStatus" style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">原学员阶段：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-red" id="oldStdStage"
+						style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">现学员阶段：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-red" id="stdStage"
+						style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">志愿：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="unvsId"
+						style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">录取/在读：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="onUnvsId"
+						style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">招生老师：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="recruit" style="border: 0;" readonly="readonly" th:value="${quitSchoolInfo.recruitName}">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">班主任：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="tutor" style="border: 0;" readonly="readonly" th:value="${quitSchoolInfo.toturName}">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">休学原因：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-red" id="reason" name="reason" style="border: 0;"readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">附件：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span class="c-primary"><a
+						th:href="${_file_browser}+${quitSchoolInfo.fileUrl}" download="附件"><span
+							th:text="${quitSchoolInfo.fileName}"></span></a></span>
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">备注：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="remark" style="border: 0;" th:value="${quitSchoolInfo.remark}" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">提交人：</label>
+				<div class="formControls col-xs-8 col-sm-9 ">
+					<input type="text" class="input-text c-gray" id="applyUserName" th:value="${quitSchoolInfo.applyUserName}" style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">提交时间：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="applyTime" th:value="${quitSchoolInfo.applyTime}" style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">审核状态：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-red" id="checkStatus" name="checkStatus" style="border: 0;"readonly="readonly">
+				</div>
+			</div>
+			<div th:if="${quitSchoolInfo.checkStatus} !='2'">
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">审核人：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-red" id="operUserName" name="operUserName" style="border: 0;"readonly="readonly" th:value="${quitSchoolInfo.operUserName}">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">审核时间：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text c-gray" id="operTime" th:value="${quitSchoolInfo.operTime}" style="border: 0;" readonly="readonly">
+				</div>
+			</div>
+			<div class="row cl" style="margin: 0px; padding: 0px;">
+				<label class="form-label col-xs-4 col-sm-3 c-gray">审批备注：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<textarea name="rejectReason" id="rejectReason" cols="" rows="" class="textarea"  readonly="readonly"  placeholder="说点什么...100个字符以内" dragonfly="true" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+					<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
+				</div>
+		 	 </div>
+		 	 </div>
+			<div class="text-c mt-10" id="btn" style="height: 31px;">
+           	  <input style="width: 90px;" type="button" class="previous btn btn-normal-outline radius mr-10" value="关闭" id="bt_cancel" onclick="layer_close();"/>
+        	</div>
+		</form>
+	</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript"
+		th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript"
+		th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript"
+		th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	
+	<script type="text/javascript" th:inline="javascript">
+  	  var quitSchoolInfo = [[${quitSchoolInfo}]];
+  	</script>
+	<!--/请在上方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/webjs/transfer/quit/student-quit-look.js}"></script>
+</body>
+</html>

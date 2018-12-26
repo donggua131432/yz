@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdCourseTextbookMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdCourseTextbookKey" >
+    <id column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <id column="textbook_id" property="textbookId" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_course_textbook
+    where course_id = #{courseId}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.educational.BdCourseTextbookKey" >
+    insert into bd_course_textbook (course_id, textbook_id)
+    values (#{courseId,jdbcType=VARCHAR}, #{textbookId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.educational.BdCourseTextbookKey" >
+    insert into bd_course_textbook
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="courseId != null" >
+        course_id,
+      </if>
+      <if test="textbookId != null" >
+        textbook_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="courseId != null" >
+        #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookId != null" >
+        #{textbookId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertBatch" >
+  	insert into bd_course_textbook (textbook_id, course_id)
+    values 
+    <foreach collection="textBooks" item="textbookId" separator=",">
+    	(
+    		#{textbookId, jdbcType=VARCHAR},
+    		#{courseId, jdbcType=VARCHAR}
+    	)
+    </foreach>
+  </insert>
+  
+</mapper>

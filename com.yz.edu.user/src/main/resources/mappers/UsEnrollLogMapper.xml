@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsEnrollLogMapper" >
+
+  <resultMap id="BaseResultMap" type="com.yz.model.UsEnrollLog" >
+    <id column="enroll_id" property="enrollId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+    <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+    <result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+    <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+    <result column="ta_id" property="taId" jdbcType="VARCHAR" />
+    <result column="ta_name" property="taName" jdbcType="VARCHAR" />
+    <result column="scholarship" property="scholarship" jdbcType="VARCHAR" />
+    <result column="enroll_time" property="enrollTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsEnrollLog" >
+    insert into us_enroll_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        enroll_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="unvsId != null" >
+        unvs_id,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="unvsName != null" >
+        unvs_name,
+      </if>
+      <if test="pfsnLevel != null" >
+        pfsn_level,
+      </if>
+      <if test="pfsnId != null" >
+        pfsn_id,
+      </if>
+      <if test="pfsnName != null" >
+        pfsn_name,
+      </if>
+      <if test="taId != null" >
+        ta_id,
+      </if>
+      <if test="taName != null" >
+        ta_name,
+      </if>
+      <if test="sg != null" >
+        sg,
+      </if>
+      <if test="scholarship != null" >
+        scholarship,
+      </if>
+      <if test="enrollTime != null" >
+        enroll_time,
+      </if>
+      <if test="enrollChannel != null" >
+        enroll_channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        seq(),
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsId != null" >
+        #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsName != null" >
+        #{unvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnLevel != null" >
+        #{pfsnLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnId != null" >
+        #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnName != null" >
+        #{pfsnName,jdbcType=VARCHAR},
+      </if>
+      <if test="taId != null" >
+        #{taId,jdbcType=VARCHAR},
+      </if>
+      <if test="taName != null" >
+        #{taName,jdbcType=VARCHAR},
+      </if>
+      <if test="sg != null" >
+        #{sg,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollTime != null" >
+        #{enrollTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enrollChannel != null" >
+        #{enrollChannel,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

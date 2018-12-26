@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.zhimi.ZhimiAwardMapper" >
+
+  <resultMap id="BaseResultMap" type="com.yz.model.zhimi.ZhimiAwardList" >
+    <id column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="VARCHAR" />
+    <result column="rule_desc" property="ruleDesc" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="zhimi_count" property="zhimiCount" jdbcType="VARCHAR" />
+    <result column="exp_count" property="expCount" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="rule_group" property="ruleGroup" jdbcType="VARCHAR"/>
+    <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+    <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+    <result column="is_mutex" property="isMutex" jdbcType="VARCHAR"/>
+    <result column="is_repeat" property="isRepeat" jdbcType="VARCHAR"/>
+    <result column="sort" property="sort" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap id="AwardMap" type="com.yz.model.zhimi.ZhimiAwardInfo" >
+    <id column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="VARCHAR" />
+    <result column="rule_desc" property="ruleDesc" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="zhimi_count" property="zhimiCount" jdbcType="VARCHAR" />
+    <result column="exp_count" property="expCount" jdbcType="VARCHAR" />
+    <result column="rule_group" property="ruleGroup" jdbcType="VARCHAR"/>
+    <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+    <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+    <result column="is_mutex" property="isMutex" jdbcType="VARCHAR"/>
+    <result column="is_repeat" property="isRepeat" jdbcType="VARCHAR"/>
+    <result column="sort" property="sort" jdbcType="VARCHAR"/>
+    <association property="attrList" column="rule_code" select="selectAtsCustomizeAttr" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    rule_code, rule_type, rule_desc, is_allow, zhimi_count, exp_count, update_user, update_user_id, 
+    update_time, create_user, create_user_id, create_time
+  </sql>
+  
+  <select id="getAwardInfo" parameterType="string" resultMap="AwardMap">
+  	select 
+  	  a.rule_group,
+	  a.rule_code,
+	  a.rule_type,
+	  a.rule_desc,
+	  a.is_allow,
+	  a.zhimi_count,
+	  a.exp_count,
+	  date_format(a.start_time, '%Y-%m-%d %H:%i:%s') as start_time,
+	  date_format(a.end_time, '%Y-%m-%d %H:%i:%s') as end_time,
+	  a.`is_mutex`,
+	  a.`is_repeat`,
+	  a.`sort`
+	from
+	  goods.`ats_award_rule` a
+	where a.rule_code = #{ruleCode, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getList" resultMap="BaseResultMap" parameterType="com.yz.model.condition.zhimi.ZhimiAwardQueryInfo" >
+    select 
+      a.rule_group,
+	  a.rule_code,
+	  a.rule_type,
+	  a.rule_desc,
+	  a.is_allow,
+	  a.zhimi_count,
+	  a.exp_count,
+	  a.update_user,
+	  date_format(a.update_time, '%Y-%m-%d %H:%i:%s') as update_time,
+	  a.create_user,
+	  date_format(a.create_time, '%Y-%m-%d %H:%i:%s') as create_time,
+	  date_format(a.start_time, '%Y-%m-%d %H:%i:%s') as start_time,
+	  date_format(a.end_time, '%Y-%m-%d %H:%i:%s') as end_time,
+	  a.`is_mutex`,
+	  a.`is_repeat`,
+	  a.`sort`
+	from
+	  goods.`ats_award_rule` a 
+	<where>
+		<if test="ruleCode != null and ruleCode != ''">
+			and a.rule_code like concat('%', #{ruleCode, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="ruleDesc != null and ruleDesc != ''">
+			and a.rule_desc like concat('%', #{ruleDesc, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="zhimiCount != null and zhimiCount != ''">
+			and a.zhimi_count = #{zhimiCount, jdbcType=VARCHAR}
+		</if>
+		<if test="isAllow != null and isAllow != ''">
+			and a.is_allow = #{isAllow, jdbcType=VARCHAR}
+		</if>
+		<if test="ruleGroup !=null and '' != ruleGroup">
+			and a.rule_group = #{ruleGroup,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime !=null and '' !=startTime">
+			<![CDATA[ and DATE_FORMAT(a.`start_time`, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%S')   ]]>
+		</if>
+		<if test="endTime !=null and '' !=endTime">
+			<![CDATA[ and DATE_FORMAT(a.`end_time`, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%S')   ]]>
+		</if>
+		<if test="isMutex !=null and '' != isMutex">
+			and a.is_mutext = #{isMutex,jdbcType=VARCHAR}
+		</if>
+		<if test="isRepeat !=null and '' !=isRepeat">
+			a.is_repeat = #{isRepeat,jdbcType=VARCHAR}
+		</if>
+	</where>
+	order by a.rule_group desc, a.update_time desc
+  </select>
+
+  <insert id="addAwardInfo" parameterType="com.yz.model.zhimi.ZhimiAwardInfo" >
+    insert into goods.`ats_award_rule`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        rule_code,
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+      <if test="ruleDesc != null" >
+        rule_desc,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="zhimiCount != null" >
+        zhimi_count,
+      </if>
+      <if test="expCount != null" >
+        exp_count,
+      </if>
+      <if test="ruleGroup !=null and '' != ruleGroup">
+      	rule_group,
+      </if>
+      <if test="startTime !=null and '' != startTime">
+      	start_time,
+      </if>
+      <if test="endTime !=null and '' != endTime">
+      	end_time,
+      </if>
+      <if test="isMutex !=null and '' != isMutex">
+      	is_mutex,
+      </if>
+      <if test="isRepeat !=null and '' != isRepeat">
+      	is_repeat,
+      </if>
+      <if test="sort !=null and '' != sort">
+      	sort,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{ruleCode,jdbcType=VARCHAR},
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleDesc != null" >
+        #{ruleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="zhimiCount != null" >
+        #{zhimiCount,jdbcType=VARCHAR},
+      </if>
+      <if test="expCount != null" >
+        #{expCount,jdbcType=VARCHAR},
+      </if>
+       <if test="ruleGroup !=null and '' != ruleGroup">
+      	#{ruleGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime !=null and '' != startTime">
+      	#{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime !=null and '' != endTime">
+      	#{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="isMutex !=null and '' != isMutex">
+      	#{isMutex,jdbcType=VARCHAR},
+      </if>
+      <if test="isRepeat !=null and '' != isRepeat">
+      	#{isRepeat,jdbcType=VARCHAR},
+      </if>
+      <if test="sort !=null and '' != sort">
+      	#{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>;
+    <if test="items.size() >0">
+	    insert into goods.`ats_customize_attr`(ref_type,ref_handler,attr_name,attr_desc,attr_value,attr_seq)
+		values
+		<foreach collection="items" item="item" index="index" separator="," >  
+	       	('awardRule',#{ruleCode},#{item.dictValue},#{item.dictName},#{item.attrValue},#{item.attrSeq})
+	   	</foreach>
+    </if>
+    
+  </insert>
+  
+  <update id="updateAwardInfo" parameterType="com.yz.model.zhimi.ZhimiAwardInfo" >
+    update goods.`ats_award_rule`
+    <set >
+      <if test="ruleType != null" >
+        rule_type = #{ruleType,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleDesc != null" >
+        rule_desc = #{ruleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="zhimiCount != null" >
+        zhimi_count = #{zhimiCount,jdbcType=VARCHAR},
+      </if>
+      <if test="expCount != null" >
+        exp_count = #{expCount,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+       <if test="ruleGroup !=null and '' != ruleGroup">
+      	rule_group =#{ruleGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime !=null and '' != startTime">
+      	start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime !=null and '' != endTime">
+      	end_time =#{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="isMutex !=null and '' != isMutex">
+      	is_mutex =#{isMutex,jdbcType=VARCHAR},
+      </if>
+      <if test="isRepeat !=null and '' != isRepeat">
+      	is_repeat = #{isRepeat,jdbcType=VARCHAR},
+      </if>
+      <if test="sort !=null and '' != sort">
+      	sort = #{sort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where rule_code = #{ruleCode,jdbcType=VARCHAR};
+    
+    delete from goods.`ats_customize_attr` where ref_type='awardRule' and ref_handler=#{ruleCode,jdbcType=VARCHAR};
+    <if test="items.size() >0">
+	    insert into goods.`ats_customize_attr`(ref_type,ref_handler,attr_name,attr_desc,attr_value,attr_seq)
+		values
+		<foreach collection="items" item="item" index="index" separator="," >  
+	       	('awardRule',#{ruleCode},#{item.dictValue},#{item.dictName},#{item.attrValue},#{item.attrSeq})
+	   	</foreach>
+    </if>
+
+  </update>
+  
+  <select id="countBy" resultType="int" parameterType="string">
+  	select count(1) from goods.`ats_award_rule` r where r.rule_code = #{ruleCode, jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="RecordsMap" type="com.yz.model.zhimi.ZhimiAwardRecords" >
+    <id column="award_id" property="awardId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="award_desc" property="awardDesc" jdbcType="VARCHAR" />
+    <result column="zhimi_count" property="zhimiCount" jdbcType="VARCHAR" />
+    <result column="exp_count" property="expCount" jdbcType="VARCHAR" />
+    <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+    <result column="trigger_user_id" property="triggerUserId" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getRecordsList" parameterType="com.yz.model.condition.zhimi.ZhimiAwardRecordsQuery" resultMap="RecordsMap">
+  	SELECT 
+	  a.`award_id`,
+	  a.`user_id`,
+	  a.`rule_code`,
+	  a.`award_desc`,
+	  a.`zhimi_count`,
+	  a.`exp_count`,
+	  a.`mapping_id`,
+	  a.`trigger_user_id`,
+	  DATE_FORMAT(`update_time`, '%Y-%m-%d %H:%i:%s') AS update_time
+	FROM
+	  goods.`ats_award_record` a
+	<where>
+		<if test="ruleCode != null and ruleCode != ''">
+			and a.rule_code like concat('%', #{ruleCode, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="ruleType != null and ruleType != ''">
+			and a.rule_type = #{ruleType, jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and a.`update_time` &gt; str_to_date(#{startTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and a.`update_time` &lt; str_to_date(#{endTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="userIds != null and userIds.size() > 0">
+			and a.user_id in (
+				<foreach collection="userIds" item="userId" separator=",">
+					#{userId, jdbcType=VARCHAR}
+				</foreach>
+			)
+		</if>
+		<if test="userIds == null or userIds.size() == 0">
+			<if test="(mobile != null and mobile != '') or (yzCode != null and yzCode != '') or (realName != null and realName != '')">
+				and 1=0
+			</if>
+		</if>
+	</where>
+	ORDER BY update_time desc
+  </select>
+  
+  	<select id="selectAtsCustomizeAttr" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT sd.`dict_name` dictName,sd.`dict_value` dictValue,
+		(SELECT aca.`attr_value` FROM goods.`ats_customize_attr` aca
+		WHERE aca.`attr_name` = sd.`dict_value` AND aca.`ref_handler`=#{ruleCode,jdbcType=VARCHAR})
+		attrValue FROM
+		bms.`sys_dict` sd WHERE sd.p_id='ruleGroupAttrList'
+	</select>
+	
+	
+	<update id="zhimiAwardToggle" parameterType="com.yz.model.zhimi.ZhimiAwardInfo" >
+	    update goods.`ats_award_rule`
+	    <set >
+	      <if test="ruleType != null" >
+	        rule_type = #{ruleType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ruleDesc != null" >
+	        rule_desc = #{ruleDesc,jdbcType=VARCHAR},
+	      </if>
+	      <if test="isAllow != null" >
+	        is_allow = #{isAllow,jdbcType=CHAR},
+	      </if>
+	      <if test="zhimiCount != null" >
+	        zhimi_count = #{zhimiCount,jdbcType=VARCHAR},
+	      </if>
+	      <if test="expCount != null" >
+	        exp_count = #{expCount,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user = #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUserId != null" >
+	        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+	      </if>
+	       <if test="ruleGroup !=null and '' != ruleGroup">
+	      	rule_group =#{ruleGroup,jdbcType=VARCHAR},
+	      </if>
+	      <if test="startTime !=null and '' != startTime">
+	      	start_time = #{startTime,jdbcType=VARCHAR},
+	      </if>
+	      <if test="endTime !=null and '' != endTime">
+	      	end_time =#{endTime,jdbcType=VARCHAR},
+	      </if>
+	      <if test="isMutex !=null and '' != isMutex">
+	      	is_mutex =#{isMutex,jdbcType=VARCHAR},
+	      </if>
+	      <if test="isRepeat !=null and '' != isRepeat">
+	      	is_repeat = #{isRepeat,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sort !=null and '' != sort">
+	      	sort = #{sort,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where rule_code = #{ruleCode,jdbcType=VARCHAR};
+  	</update>
+  	
+  	<select id="getRuleGroupAttrList" resultType="java.util.HashMap">
+  		SELECT sd.`dict_name` dictName,sd.`dict_value` dictValue, '' attrValue FROM
+		bms.`sys_dict` sd WHERE sd.p_id='ruleGroupAttrList';
+  	</select>
+  	
+  	
+  	  <select id="getAwardListInfo" parameterType="string" resultMap="AwardMap">
+	  	select 
+	  	  a.rule_group,
+		  a.rule_code,
+		  a.rule_type,
+		  a.rule_desc,
+		  a.is_allow,
+		  a.zhimi_count,
+		  a.exp_count,
+		  date_format(a.start_time, '%Y-%m-%d %H:%i:%s') as start_time,
+		  date_format(a.end_time, '%Y-%m-%d %H:%i:%s') as end_time,
+		  a.`is_mutex`,
+		  a.`is_repeat`,
+		  a.`sort`
+		from
+		  goods.`ats_award_rule` a
+		where a.rule_group = #{ruleGroup, jdbcType=VARCHAR}
+  </select>
+</mapper>

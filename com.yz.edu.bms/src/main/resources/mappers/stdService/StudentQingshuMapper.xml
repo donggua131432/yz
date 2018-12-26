@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentQingshuMapper">
+    <resultMap type="com.yz.model.stdService.StudentQingshuInfo" id="StudentQingshuMap">
+        <result column="qingshu_id" property="qingshuId" jdbcType="VARCHAR"/>
+        <result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+        <result column="confirm_status" property="confirmStatus" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+        <association property="firstCourse" column="{qingshuId=qingshu_id,semester=first}" select="selectQingshuCourse"/>
+        <association property="secondCourse" column="{qingshuId=qingshu_id,semester=second}" select="selectQingshuCourse"/>
+        <association property="thirdCourse" column="{qingshuId=qingshu_id,semester=third}" select="selectQingshuCourse"/>
+        <association property="fourCourse" column="{qingshuId=qingshu_id,semester=four}" select="selectQingshuCourse"/>
+        <association property="fiveCourse" column="{qingshuId=qingshu_id,semester=five}" select="selectQingshuCourse"/>
+        <association property="sixCourse" column="{qingshuId=qingshu_id,semester=six}" select="selectQingshuCourse"/>
+    </resultMap>
+
+    <select id="findAllQingshuList" resultMap="StudentQingshuMap">
+        SELECT
+        a.qingshu_id,
+        c.std_name,
+        b.grade,
+        g.unvs_name,
+        h.pfsn_level,
+        h.pfsn_name,
+        h.pfsn_code,
+        b.school_roll,
+        d.task_title,
+        f.emp_name,
+        a.confirm_status,
+        a.remark,
+        c.id_card,
+        b.learn_id,
+        b.unvs_id,
+        '1' first,
+        '2' second,
+        '3' third,
+        '4' four,
+        '5' five,
+        '6' six
+        FROM
+        oa_student_qingshu_task a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN oa_task_info d ON a.task_id = d.task_id
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.tutor = f.emp_id
+        LEFT JOIN bd_university g ON b.unvs_id = g.unvs_id
+        LEFT JOIN bd_unvs_profession h ON b.pfsn_id = h.pfsn_id
+        WHERE 1=1
+        <if test="queryInfo.qingshuId !=null and '' != queryInfo.qingshuId">
+            and a.`qingshu_id` = #{queryInfo.qingshuId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+            and c.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+            and b.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+            and c.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+            and f.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+            and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.grade !=null and '' != queryInfo.grade">
+            and b.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+            and b.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+            and h.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+            and b.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.confirmStatus !=null and '' != queryInfo.confirmStatus">
+            and a.`confirm_status` = #{queryInfo.confirmStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.genericScore !=null and '' != queryInfo.genericScore">
+            <if test="queryInfo.genericScore == 0">
+                and a.qingshu_id in (
+                    select qingshu_id from oa_student_qingshu_course where generic_score&lt;30 and semester=#{queryInfo.semester}
+                    group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.genericScore == 1">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where generic_score between 30 and 59 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.genericScore == 2">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where generic_score >60 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+        </if>
+        <if test="queryInfo.finalScore !=null and '' != queryInfo.finalScore">
+            <if test="queryInfo.finalScore == 0">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where final_score&lt;30 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.finalScore == 1">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where final_score between 30 and 59 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.finalScore == 2">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where final_score >60 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+        </if>
+        <if test="queryInfo.summaryScore !=null and '' != queryInfo.summaryScore">
+            <if test="queryInfo.summaryScore == 0">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where summary_score&lt;30 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.summaryScore == 1">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where summary_score between 30 and 59 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+            <if test="queryInfo.summaryScore == 2">
+                and a.qingshu_id in (
+                select qingshu_id from oa_student_qingshu_course where summary_score >60 and semester=#{queryInfo.semester}
+                group by qingshu_id
+                )
+            </if>
+        </if>
+        <if test="queryInfo.isRemark !=null and '' != queryInfo.isRemark">
+            <if test="queryInfo.isRemark == 0">
+                and a.remark is null
+            </if>
+            <if test="queryInfo.isRemark == 1">
+                and LENGTH(a.remark)>0
+            </if>
+        </if>
+        <if test="user.userLevel != 1">
+            <choose>
+                <when test="user.userLevel == 6">
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </otherwise>
+            </choose>
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <update id="updateRemark">
+        UPDATE oa_student_qingshu_task SET remark= #{remark,jdbcType=VARCHAR}
+        WHERE qingshu_id =#{qingshuId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectQingshuCourse" resultType="com.yz.model.stdService.StudentQingshuCourse">
+        SELECT
+        qc_id qcId,
+        qingshu_id qingshuId,
+        semester,
+        course_name courseName,
+        generic_score genericScore,
+        final_score finalScore,
+        summary_score summaryScore
+        FROM oa_student_qingshu_course where qingshu_id = #{qingshuId} and semester = #{semester}
+    </select>
+    
+    <delete id="resetScore">
+        DELETE FROM oa_student_qingshu_course
+        WHERE qingshu_id = #{qingshuId} and semester = #{semester}
+    </delete>
+
+    <select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_qingshu;
+        CREATE TEMPORARY TABLE tmp_student_qingshu (
+        std_name VARCHAR (50),
+        grade VARCHAR (50),
+        id_card VARCHAR (50));
+        INSERT INTO tmp_student_qingshu (
+        std_name,
+        grade,
+        id_card
+        )
+        VALUES
+        <foreach collection="studentQingshuExcelList" item="info" separator=",">
+            (
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+        d.std_name,
+        d.id_card,
+        a.qingshu_id
+        FROM
+        oa_student_qingshu_task a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        RIGHT JOIN (select grade,id_card,std_name from tmp_student_qingshu group by grade,id_card,std_name) d ON d.grade = b.grade
+        AND d.id_card = c.id_card
+        WHERE
+        a.qingshu_id IS NULL;
+    </select>
+    
+    <insert id="initTmpQingshu">
+    	 DROP TEMPORARY TABLE IF EXISTS tmp_student_qingshu;
+        CREATE TEMPORARY TABLE tmp_student_qingshu (
+        grade VARCHAR (50),
+        id_card VARCHAR (50),
+        semester VARCHAR (50),
+        course_name VARCHAR(255),
+        generic_score VARCHAR(50),
+        final_score VARCHAR (50),
+        summary_score VARCHAR (50)
+        );
+        INSERT INTO tmp_student_qingshu
+        VALUES
+        <foreach collection="studentQingshuExcelList" item="info" separator=",">
+            (
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR},
+            #{info.courseName, jdbcType=VARCHAR},
+            #{info.genericScore, jdbcType=VARCHAR},
+            #{info.finalScore, jdbcType=VARCHAR},
+            #{info.summaryScore, jdbcType=VARCHAR}
+            )
+        </foreach>;
+
+        DELETE e FROM oa_student_qingshu_course e
+        JOIN oa_student_qingshu_task a on e.qingshu_id = a.qingshu_id
+        JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        JOIN bd_student_info c ON b.std_id = c.std_id
+        JOIN tmp_student_qingshu d ON d.grade = b.grade;
+    </insert>
+
+    <insert id="insert">
+       INSERT INTO `oa_student_qingshu_course` (
+		  `qc_id`,
+		  `qingshu_id`,
+		  `semester`,
+		  `course_name`,
+		  `generic_score`,
+		  `final_score`,
+		  `summary_score`
+		) values
+		<foreach collection="studentQingshuList" item="item" separator=",">
+			(#{item.qcId},
+	        #{item.qingshuId},
+	        #{item.semester},
+	        #{item.courseName},
+	        #{item.genericScore},
+	        #{item.finalScore},
+	        #{item.summaryScore})
+		</foreach>
+    </insert>
+    
+    <select id="selectQingshuTmpCourse" resultType="java.util.HashMap">
+    	SELECT 
+        a.qingshu_id qingshuId,
+        d.semester semester,
+        d.course_name courseName,
+        d.generic_score genericScore,
+        d.final_score finalScore,
+        d.summary_score summaryScore
+        FROM oa_student_qingshu_task a
+        JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        JOIN bd_student_info c ON b.std_id = c.std_id
+        JOIN tmp_student_qingshu d ON d.grade = b.grade  AND d.id_card = c.id_card
+    </select>
+    
+    <select id="checkIfExistByLearnId" resultType="java.lang.Integer">
+    	select count(1) from oa_student_qingshu_task where learn_id=#{learnId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 批量初始化 青书学堂跟进数据 -->
+	<insert id="addStuQingShuInfo">
+		INSERT INTO oa_student_qingshu_task (qingshu_id,task_id,learn_Id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.qingshuId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<!-- 单个初始化 青书学堂跟进数据 -->
+	<insert id="singleAddStuQingShuInfo" parameterType="com.yz.model.stdService.StudentQingshuInfo">
+		INSERT INTO oa_student_qingshu_task (qingshu_id,task_id,learn_Id,create_time) 
+        VALUES (#{qingshuId, jdbcType=VARCHAR},
+			 #{taskId, jdbcType=VARCHAR},
+			 #{learnId,jdbcType=VARCHAR},
+			 NOW())
+	</insert>
+	
+	<!-- 批量删除 青书学堂跟进数据 -->
+	<delete id="delStuQingShuInfo">
+		delete from oa_student_qingshu_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<!-- 单个删除 -->
+	<delete id="aloneDelStuQingShuInfo">
+		delete from oa_student_qingshu_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

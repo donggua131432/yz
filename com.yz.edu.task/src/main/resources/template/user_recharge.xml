@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<AtsAwardRules>
+    <@yzRuleList ruleCode="charge"/>
+	<#list rules as rule>
+	<#if (!createTime??||((createTime?datetime gte rule.startTime?datetime) && (createTime?datetime lte rule.endTime?datetime)))>
+	<#if (!rule.customizeAttr.payDateTime??||(payDateTime?? && (payDateTime?datetime <= rule.customizeAttr.payDateTime?datetime("yyyy-MM-dd HH:mm:ss"))))>
+	<@yzRuleTag handler="userReChargeBuzHandler" param='{"lSize":"${lSize}","itemCode":${itemCode},"itemYear":${itemYear},"scholarship":"${scholarship}","recruitType":"${recruitType}","grade":"${grade}","stdStage":"${stdStage}","ruleCode":"${rule.ruleCode}"}'>
+	<AtsAwardRule>
+		<ruleGroup>${rule.ruleGroup}</ruleGroup>
+		<isMutex>${rule.isMutex}</isMutex>
+		<ruleCode> ${rule.ruleCode}</ruleCode>
+		<sort>${rule.sort}</sort>
+		<ruleType>${rule.ruleType}</ruleType>
+		<ruleDesc>${rule.ruleDesc}</ruleDesc>
+		<#if (rule.customizeAttr?? && rule.customizeAttr.multiple?? && payable?? && rule.customizeAttr.multiple?number!=0)>
+		<zhimiCount>${(rule.customizeAttr.multiple?number * payable?number)}</zhimiCount>
+		<#else>
+		<zhimiCount>${rule.zhimiCount}</zhimiCount>
+		</#if>
+		<expCount>${rule.expCount}</expCount>
+		<#if (rule.customizeAttr??&&rule.customizeAttr.isParent??&&rule.customizeAttr.isParent=="1")>
+		<userId>${pId}</userId>
+		<#else>
+		<userId>${userId}</userId>
+		</#if>
+	</AtsAwardRule>
+	</@yzRuleTag>
+	</#if>
+	</#if>
+	</#list>
+</AtsAwardRules>

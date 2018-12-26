@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.invite.InviteQrCodeMapper">
+	<resultMap id="InviteQrCodeMap" type="com.yz.model.invite.InviteQrCodeInfo">
+		<id column="channelId" property="channelId" jdbcType="VARCHAR" />
+		<result column="empId" property="empId" jdbcType="VARCHAR" />
+		<result column="empName" property="empName" jdbcType="VARCHAR" />
+		<result column="inviteQrcodeUrl" property="inviteQrcodeUrl"	jdbcType="VARCHAR" />
+		<result column="defaultUrl" property="defaultUrl" jdbcType="VARCHAR" />
+		<result column="inviteUrl" property="inviteUrl" jdbcType="VARCHAR" />
+		<result column="inviteName" property="inviteName" jdbcType="VARCHAR" />
+		<result column="lookCount" property="lookCount" jdbcType="VARCHAR" />
+		<result column="registerCount" property="registerCount" jdbcType="VARCHAR" />
+		<result column="reChargeCount" property="reChargeCount" jdbcType="VARCHAR" />
+		<result column="createUser" property="createUser" jdbcType="VARCHAR" />
+		<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getList" parameterType="com.yz.model.condition.invite.InviteQrCodeQuery" resultMap="InviteQrCodeMap">
+		SELECT
+		qr.`channel_id` channelId,
+		qr.`emp_id` empId,
+		qr.`defaultUrl` defaultUrl,
+		qr.`emp_name` empName,
+		qr.`invite_qrcode_url` inviteQrcodeUrl,
+		qr.`invite_url` inviteUrl,
+		qr.`invite_name` inviteName,
+		qr.`look_count` lookCount,
+		COUNT(DISTINCT bi.user_id) registerCount,
+		COUNT(DISTINCT ss.std_id) reChargeCount,
+		qr.`create_user_name` createUser,
+		DATE_FORMAT(qr.`create_time`, '%Y-%m-%d %H:%i:%S') createTime,
+		qr.`remark` remark
+		FROM
+		bms.`rep_channel_qrcode` qr
+		LEFT JOIN bms.`rep_invite_qrcode_log` lo ON lo.`channel_id`=qr.`channel_id`
+		LEFT JOIN (
+		 SELECT user_id,channel_id,std_id FROM us.`us_base_info` WHERE `channel_id` IS NOT NULL 
+		 ) bi ON bi.channel_id=qr.`channel_id`
+		LEFT JOIN bms.`bd_student_serial` ss ON ss.`std_id`=bi.`std_id` AND ss.`serial_status` IN(2,3) 
+		WHERE 1=1
+		<if test="invitations !=null and '' != invitations">
+			AND qr.emp_id=#{invitations}
+		</if>
+		<if test="createName !=null and '' != createName">
+			AND qr.`create_user_name` like CONCAT('%',#{createName,jdbcType=VARCHAR}, '%')
+		</if>
+		GROUP BY qr.`channel_id`;
+	</select>
+	<select id="getInviteCount" resultType="int" parameterType="com.yz.model.condition.invite.InviteQrCodeQuery">
+	    SELECT count(0) FROM rep_channel_qrcode qr
+		WHERE 1=1
+		<if test="invitations !=null and '' != invitations">
+			AND qr.emp_id=#{invitations}
+		</if>
+		<if test="createName !=null and '' != createName">
+			AND qr.`create_user_name` like CONCAT('%',#{createName,jdbcType=VARCHAR}, '%')
+		</if>
+	</select>
+	<insert id="add" parameterType="com.yz.model.invite.InviteQrCodeInfo">
+		insert into bms.rep_channel_qrcode
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="channelId != null">
+				channel_id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="empName != null">
+				emp_name,
+			</if>
+			<if test="defaultUrl != null">
+				defaultUrl,
+			</if>
+			<if test="inviteQrcodeUrl != null">
+				invite_qrcode_url,
+			</if>
+			<if test="inviteUrl != null">
+				invite_url,
+			</if>
+			<if test="inviteName != null">
+				invite_name,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="createUserName != null">
+				create_user_name,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="channelId != null">
+				#{channelId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="empName != null">
+				#{empName,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultUrl != null">
+				#{defaultUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteQrcodeUrl != null">
+				#{ inviteQrcodeUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteUrl != null">
+				#{ inviteUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="inviteName != null">
+				#{inviteName,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserName != null">
+				#{createUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="del" >
+		delete from bms.`rep_channel_qrcode`
+		where channel_id in
+		<foreach open="(" collection="channelIds" item="channelId"
+			separator="," close=")">
+			#{channelId, jdbcType=VARCHAR}
+		</foreach>
+	</delete>
+	
+	<select id="selectByChancelId" parameterType="string"  resultMap="InviteQrCodeMap">
+	SELECT qr.`channel_id` channelId,
+		qr.`emp_id` empId,
+		IF(emp.`emp_name` IS NULL OR emp.`emp_id`='0000','智哥',emp.`emp_name`) empName,
+		qr.`invite_qrcode_url` inviteQrcodeUrl,
+		qr.`invite_url`	inviteUrl,
+		qr.`invite_name` inviteName,
+		qr.`defaultUrl` defaultUrl,
+		qr.`create_user`
+		createUser,
+		qr.`create_time` createTime,
+		qr.`remark` remark FROM bms.`rep_channel_qrcode` qr 
+		LEFT JOIN bms.`oa_employee` emp ON emp.`emp_id`=qr.`emp_id` 
+		WHERE qr.`channel_id`=#{channelId}
+	</select>
+</mapper>

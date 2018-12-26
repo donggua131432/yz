@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdTeachPlanMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdTeachPlan">
+		<id column="thp_id" property="thpId" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="thp_name" property="thpName" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="credit" property="credit" jdbcType="VARCHAR" />
+		<result column="thp_type" property="thpType" jdbcType="VARCHAR" />
+		<result column="total_hours" property="totalHours" jdbcType="VARCHAR" />
+		<result column="educated_hour" property="educatedHour"
+			jdbcType="VARCHAR" />
+		<result column="self_hours" property="selfHours" jdbcType="VARCHAR" />
+		<result column="practice_hours" property="practiceHours"
+			jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="Result" type="com.yz.model.baseinfo.BdTeachPlanMap">
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+		<result column="thp_name" property="thpName" jdbcType="VARCHAR" />
+		<result column="thp_id" property="thpId" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="total_hours" property="totalHours" jdbcType="VARCHAR" />
+		<result column="educated_hour" property="educatedHour"
+			jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="thp_type" property="thpType" jdbcType="VARCHAR" />
+		<result column="credit" property="credit" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="practice_hours" property="practiceHours"
+			jdbcType="VARCHAR" />
+		<result column="self_hours" property="selfHours" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMap" type="java.util.Map">
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+		<result column="thp_name" property="thpName" jdbcType="VARCHAR" />
+		<result column="thp_id" property="thpId" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="total_hours" property="totalHours" jdbcType="VARCHAR" />
+		<result column="educated_hour" property="educatedHour"
+			jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="thp_type" property="thpType" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="credit" property="credit" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="practice_hours" property="practiceHours" jdbcType="VARCHAR" />
+		<result column="self_hours" property="selfHours" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		thp_id, pfsn_id, thp_name, semester, credit, thp_type,
+		total_hours,
+		educated_hour,
+		self_hours, practice_hours, remark,
+		update_time, update_user,
+		update_user_id,
+		create_user_id, create_time,
+		create_user, ext_1, ext_2, ext_3
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_teach_plan
+		where thp_id = #{thpId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectTeachPlan" resultMap="BaseResultMap" parameterType="com.yz.model.baseinfo.BdTeachPlan"> 
+		select * from bd_teach_plan where grade=#{grade} and  thp_name=#{thpName} and semester=#{semester} and pfsn_id=#{pfsnId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectTeachPlanCount" resultType="java.lang.Integer" parameterType="com.yz.model.baseinfo.BdTeachPlan"> 
+		select count(*) from bd_teach_plan where grade=#{grade} and  thp_name=#{thpName} and semester=#{semester} and pfsn_id=#{pfsnId,jdbcType=VARCHAR}
+	</select>
+	<select id="isTeachPlanExit" parameterType="com.yz.model.baseinfo.BdTeachPlan"
+		resultType="boolean"> 
+    <![CDATA[ select count(thp_id) from bd_teach_plan where grade=#{grade} and  thp_name=#{thpName} and semester=#{semester} and pfsn_id=#{pfsnId,jdbcType=VARCHAR}]]>
+	</select>
+	<select id="findTeachPlan" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_teach_plan
+		where 1=1
+		<if test="sName != null and '' != sName">
+			and thp_name like CONCAT('%',#{sName},'%')
+		</if>
+	</select>
+	
+	<select id="selectUnvsCodeByPfsnId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  u.`unvs_code` 
+		FROM
+		  bd_unvs_profession p 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = p.`unvs_id` 
+		WHERE p.pfsn_id = #{pfsnId}
+	</select>
+	
+	<select id="getCount" resultType="int">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  bd_teach_plan t 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = t.`pfsn_id` 
+		WHERE p.`pfsn_code` = 
+		  (SELECT 
+		    pfsn_code 
+		  FROM
+		    bd_unvs_profession 
+		  WHERE pfsn_id = #{pfsnId}) 
+		  AND t.semester = #{semester}
+	</select>
+	<select id="selectAll" resultMap="Result" parameterType="com.yz.model.baseinfo.TUPDemo">
+		SELECT
+		btp.`grade`,btp.`credit`,bu.`recruit_type`,bu.`unvs_name`,
+		bup.`pfsn_code`,bup.`year`,btp.`thp_type`,bup.`pfsn_name`,bup.`pfsn_level`,bup.`pfsn_id`,
+		btp.`thp_name`,btp.`thp_id`,btp.`semester`,btp.`total_hours`,btp.`educated_hour`,btp.`self_hours`,
+		btp.`practice_hours`,btp.`test_subject`
+		FROM
+		bd_teach_plan btp
+		LEFT JOIN bd_unvs_profession bup
+		ON btp.`pfsn_id` = bup.`pfsn_id` 
+		LEFT JOIN bd_university bu ON
+		bup.`unvs_id` = bu.`unvs_id`
+		WHERE 1 = 1
+		<if test="pfsnCode != null and '' != pfsnCode">
+			and bup.`pfsn_code` like CONCAT('%',#{pfsnCode},'%')
+		</if>
+		<if test="pfsnId != null and '' != pfsnId">
+			and bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel != null and '' != pfsnLevel">
+			and bup.`pfsn_level` = #{pfsnLevel}
+		</if>
+		<if test="year != null and '' != year">
+			and bup.`year` = #{year}
+		</if>
+		<if test="unvsId != null and '' != unvsId">
+			and bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		</if>
+		<if test="thpName != null and '' != thpName">
+			and btp.`thp_name` like CONCAT('%',#{thpName},'%')
+		</if>
+		<if test="thpCode != null and '' != thpCode">
+			and btp.`thp_id` = #{thpCode}
+		</if>
+		<if test="semester != null and '' != semester">
+			and btp.`semester` = #{semester}
+		</if>
+		<if test="grade !=null and '' != grade">
+		    and	btp.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="thpType !=null and '' != thpType">
+		    and	btp.`thp_type` = #{thpType,jdbcType=VARCHAR}
+		</if>
+		ORDER BY btp.`create_time` desc
+	</select>
+
+	<select id="selectOne" resultMap="ResultMap" parameterType="java.lang.String">
+		SELECT
+		btp.`grade`,btp.`remark`,btp.`practice_hours`,btp.`self_hours`,btp.`credit`,bu.`recruit_type`,bu.`unvs_name`,bu.`unvs_id`,
+		bup.`pfsn_code`,bup.`year`,btp.`grade`,bup.`pfsn_level`,btp.`thp_type`,btp.`test_subject`,bup.`pfsn_name`,bup.`pfsn_level`,
+		bup.`pfsn_id`,btp.`thp_name`,btp.`thp_id`,btp.`semester`,btp.`total_hours`,btp.`educated_hour`,btp.`test_subject`
+		FROM
+		bd_teach_plan btp
+		LEFT JOIN bd_unvs_profession bup
+		ON btp.`pfsn_id` = bup.`pfsn_id` 
+		LEFT JOIN bd_university bu ON
+		bup.`unvs_id` = bu.`unvs_id`
+		WHERE btp.`thp_id` = #{teachPlanId}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from bd_teach_plan
+		where thp_id = #{thpId,jdbcType=VARCHAR}
+	</delete>
+
+	<delete id="deleteTeachPlan">
+		delete from bd_teach_plan
+		where thp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+
+	<insert id="insert" parameterType="com.yz.model.baseinfo.BdTeachPlan">
+		insert into bd_teach_plan
+		(thp_id, pfsn_id, thp_name,
+		semester, credit, thp_type,test_subject,
+		total_hours,
+		educated_hour, self_hours,
+		practice_hours, remark,
+		update_time,
+		update_user, update_user_id,
+		create_user_id, create_time, create_user,
+		ext_1, ext_2, ext_3)
+		values (#{thpId,jdbcType=VARCHAR},
+		#{pfsnId,jdbcType=VARCHAR},
+		#{thpName,jdbcType=VARCHAR},
+		#{semester,jdbcType=VARCHAR}, #{credit,jdbcType=VARCHAR},
+		#{thpType,jdbcType=VARCHAR},
+		#{testSubject,jdbcType=VARCHAR},
+		#{totalHours,jdbcType=VARCHAR},
+		#{educatedHour,jdbcType=VARCHAR},
+		#{selfHours,jdbcType=VARCHAR},
+		#{practiceHours,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{ext1,jdbcType=VARCHAR},
+		#{ext2,jdbcType=VARCHAR},
+		#{ext3,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdTeachPlan">
+		insert into bd_teach_plan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="thpId != null and '' != thpId">
+				thp_id,
+			</if>
+			<if test="pfsnId != null and '' != pfsnId">
+				pfsn_id,
+			</if>
+			<if test="grade != null and '' != grade">
+				grade,
+			</if>
+			<if test="thpName != null and '' != thpName">
+				thp_name,
+			</if>
+			<if test="semester != null and '' != semester">
+				semester,
+			</if>
+			<if test="credit != null and '' != credit">
+				credit,
+			</if>
+			<if test="thpType != null and '' != thpType">
+				thp_type,
+			</if>
+			<if test="testSubject != null and '' != testSubject">
+				test_subject,
+			</if>
+			<if test="totalHours != null and '' != totalHours">
+				total_hours,
+			</if>
+			<if test="educatedHour != null and '' != educatedHour">
+				educated_hour,
+			</if>
+			<if test="selfHours != null and '' != selfHours">
+				self_hours,
+			</if>
+			<if test="practiceHours != null and '' != practiceHours">
+				practice_hours,
+			</if>
+			<if test="remark != null and '' != remark">
+				remark,
+			</if>
+			<if test="updateUser != null and '' != updateUser">
+				update_user,
+			</if>
+			<if test="updateUserId != null and '' != updateUserId">
+				update_user_id,
+			</if>
+			<if test="createUserId != null and '' != createUserId">
+				create_user_id,
+			</if>
+			<if test="createUser != null and '' != createUser">
+				create_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="thpId != null and '' != thpId">
+				#{thpId,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnId != null and '' != pfsnId">
+				#{pfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null and '' != grade">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="thpName != null and '' != thpName">
+				#{thpName,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null and '' != semester">
+				#{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="credit != null and '' != credit">
+				#{credit,jdbcType=VARCHAR},
+			</if>
+			<if test="thpType != null and '' != thpType">
+				#{thpType,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null and '' != testSubject">
+				#{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="totalHours != null and '' != totalHours">
+				#{totalHours,jdbcType=VARCHAR},
+			</if>
+			<if test="educatedHour != null and '' != educatedHour">
+				#{educatedHour,jdbcType=VARCHAR},
+			</if>
+			<if test="selfHours != null and '' != selfHours">
+				#{selfHours,jdbcType=VARCHAR},
+			</if>
+			<if test="practiceHours != null and '' != practiceHours">
+				#{practiceHours,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and '' != remark">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null and '' != updateUser">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and '' != updateUserId">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null and '' != createUserId">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null and '' != createUser">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.baseinfo.BdTeachPlan">
+		update bd_teach_plan
+		<set>
+			<if test="pfsnId != null">
+				pfsn_id = #{pfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="thpName != null">
+				thp_name = #{thpName,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				semester = #{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="credit != null">
+				credit = #{credit,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="thpType != null">
+				thp_type = #{thpType,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null">
+				test_subject = #{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="totalHours != null">
+				total_hours = #{totalHours,jdbcType=VARCHAR},
+			</if>
+			<if test="educatedHour != null">
+				educated_hour = #{educatedHour,jdbcType=VARCHAR},
+			</if>
+			<if test="selfHours != null">
+				self_hours = #{selfHours,jdbcType=VARCHAR},
+			</if>
+			<if test="practiceHours != null">
+				practice_hours = #{practiceHours,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where thp_id = #{thpId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.baseinfo.BdTeachPlan">
+		update
+		bd_teach_plan
+		set pfsn_id = #{pfsnId,jdbcType=VARCHAR},
+		thp_name =
+		#{thpName,jdbcType=VARCHAR},
+		semester = #{semester,jdbcType=VARCHAR},
+		credit = #{credit,jdbcType=VARCHAR},
+		thp_type =
+		#{thpType,jdbcType=VARCHAR},
+		test_subject =
+		#{testSubject,jdbcType=VARCHAR},
+		total_hours =
+		#{totalHours,jdbcType=VARCHAR},
+		educated_hour =
+		#{educatedHour,jdbcType=VARCHAR},
+		self_hours =
+		#{selfHours,jdbcType=VARCHAR},
+		practice_hours =
+		#{practiceHours,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR},
+		create_user_id =
+		#{createUserId,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		create_user =
+		#{createUser,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2
+		= #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR}
+		where
+		thp_id = #{thpId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectPfsnIdByCon" resultType="string">
+		select 
+		  bup.`pfsn_id` 
+		from
+		  bd_unvs_profession bup 
+		  left join bd_university bu 
+		    on bu.`unvs_id` = bup.`unvs_id` 
+		where bup.pfsn_name = #{pfsnName,jdbcType=VARCHAR} 
+		  and bup.`grade` = #{grade,jdbcType=VARCHAR}
+		  and bu.`unvs_name` = #{unvsName,jdbcType=VARCHAR}
+		  and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		  and bup.`pfsn_code` = #{pfsnCode,jdbcType=VARCHAR}
+		 ORDER BY bup.`is_allow` DESC LIMIT 1
+	</select>
+	
+	
+	<select id="initTeachPlanTable">
+		DROP TEMPORARY TABLE IF EXISTS tmp_teachplan;
+        CREATE TEMPORARY TABLE tmp_teachplan (
+        thp_name VARCHAR (100),
+        pfsn_level VARCHAR (50),
+        unvs_name varchar(50),
+        pfsn_name varchar(50),
+        pfsn_code varchar(50),
+        grade varchar(50),
+        semester varchar(50),
+        test_subject varchar(100));
+        
+        INSERT INTO tmp_teachplan (
+            thp_name,pfsn_level,unvs_name,pfsn_name,pfsn_code,grade,semester,test_subject
+        )
+        VALUES
+        <foreach collection="teachPlanList" item="info" separator=",">
+            ( 
+            #{info.thpName, jdbcType=VARCHAR},
+            #{info.pfsnLevel, jdbcType=VARCHAR},
+            #{info.unvsName, jdbcType=VARCHAR},
+            #{info.pfsnName, jdbcType=VARCHAR},
+            #{info.pfsnCode, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR},
+            #{info.testSubject, jdbcType=VARCHAR}
+            )
+        </foreach>;
+	</select>
+	
+	<select id="getNonExistsTeachPlan" resultType="java.util.Map">
+        SELECT
+            a.thp_name,a.pfsn_level,a.unvs_name,a.pfsn_name,a.pfsn_code,a.grade,a.semester
+        FROM tmp_teachplan a  WHERE NOT  EXISTS(
+        	SELECT btp.thp_id,btp.thp_name from bd_teach_plan  btp
+        	LEFT JOIN bd_unvs_profession p 
+				ON p.`pfsn_id` = btp.`pfsn_id`
+			LEFT JOIN bd_university u  
+				ON u.`unvs_id` = p.`unvs_id`
+        	WHERE btp.thp_name=a.thp_name 
+			and btp.semester=a.semester 
+			and btp.grade=a.grade 
+			and p.pfsn_name=a.pfsn_name 
+			and p.pfsn_code=a.pfsn_code
+			and u.unvs_name=a.unvs_name
+        ) group by a.thp_name,a.pfsn_level,a.unvs_name,a.pfsn_name,a.pfsn_code,a.grade,a.semester
+    </select>
+    
+    <update id="batchUpdateTestSubjectByExcel">
+    	UPDATE bd_teach_plan a 
+    	LEFT JOIN bd_unvs_profession p 
+			 ON p.`pfsn_id` = a.`pfsn_id`
+		LEFT JOIN bd_university u  
+			ON u.`unvs_id` = p.`unvs_id`
+		INNER JOIN  tmp_teachplan b 
+    		ON a.thp_name=b.thp_name  AND a.grade=b.grade and a.semester=b.semester
+    		AND b.pfsn_level=p.pfsn_level AND b.unvs_name=u.unvs_name AND b.pfsn_name=p.pfsn_name
+    		AND b.pfsn_code=p.pfsn_code
+    	SET a.test_subject=b.test_subject
+    </update>
+    
+</mapper>

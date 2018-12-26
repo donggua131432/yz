@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsSignMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsSign" >
+    <id column="sign_id" property="signId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="sign_time" property="signTime" jdbcType="TIMESTAMP" />
+    <result column="sign_get" property="signGet" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    sign_id, user_id, sign_time, sign_get
+  </sql>
+  
+  <select id="countTodayBy" resultType="int" parameterType="java.lang.String" >
+    SELECT 
+	  COUNT(1) 
+	FROM
+	  us_sign 
+	WHERE user_id = #{userId, jdbcType=VARCHAR} 
+	  AND DATE_FORMAT(sign_time, '%Y%m%d') = DATE_FORMAT(NOW(), '%Y%m%d')
+  </select>
+  
+  <select id="countToday" resultType="int">
+    SELECT 
+	  COUNT(1) 
+	FROM
+	  us_sign 
+	WHERE DATE_FORMAT(sign_time, '%Y%m%d') = DATE_FORMAT(NOW(), '%Y%m%d')
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsSign" >
+    <selectKey keyProperty="signId" order="BEFORE" resultType="string">
+  		select seq()
+  	</selectKey>
+    insert into us_sign
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        sign_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="signGet != null" >
+        sign_get,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{signId, jdbcType=VARCHAR},
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="signGet != null" >
+        #{signGet,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

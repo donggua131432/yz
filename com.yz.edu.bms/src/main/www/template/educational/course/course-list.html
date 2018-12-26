@@ -1,0 +1,156 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>课程管理</title>
+</head>
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 教务管理 <span class="c-gray en">/</span> 课程管理 <span class="c-gray en"></span> <a class="btn btn-success radius r"
+      style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新"><i class="iconfont icon-shuaxin"></i></a>
+  </nav>
+  <div class="page-container">
+    <div class="text-l search" style="position: relative">
+      <div class="cl">
+        <div class="cl">
+          <div class="f-l">
+            <span>课程名称:</span> <input type="text" class="input-text radius ml-10" placeholder="输入课程名称" id="courseName">
+          </div>
+          <div class="f-l">
+            <span>课程编码:</span> <input type="text" class="input-text radius ml-10" placeholder="输入课程编码" id="courseId">
+          </div>
+          <div class="f-l">
+            <span>教材:</span> <input type="text" class="input-text radius ml-10" placeholder="输入教材" id="textbookName">
+          </div>
+          <div class="f-r mr-5">
+            <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" /> <i class="iconfont icon-sousuo"></i> 搜索 </a> <a class="btn btn-normal-outline radius"
+              onclick="_reset()" href="javascript:;"><i class="iconfont icon-shuaxin"></i></a>
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+            <span>教学计划:</span> <input type="text" class="input-text radius ml-10" placeholder="输入教学计划" id="thpName">
+          </div>
+          <div class="f-l">
+            <span>课程类型:</span> <select class="select" size="1" id="courseType">
+              <option value="" selected>--请选择课程类型--</option>
+            </select>
+          </div>
+          <div class="f-l">
+            <span>课程年度:</span> <select class="select" size="1" id="year">
+              <option value="" selected>--请选择年度--</option>
+            </select>
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+            <span>是否启用:</span> <select class="select" size="1" id="isAllow">
+              <option value="" selected>--请选择是否启用--</option>
+            </select>
+          </div>
+          <div class="f-l">
+            <span>年级：</span>
+            <select class="select" size="1" id="grade" name="grade">
+            <option selected>--请选择年级--</option>
+            </select>
+          </div>
+          <div class="f-l">
+          	<span>学期：</span>           
+            <select class="select" size="1" id="semester" name="semester">
+              <option selected>--请选择学期--</option>
+            </select>
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+              <span>专业层次：</span> 
+              <select class="select" size="1" id="pfsnLevel" name="pfsnLevel">
+                <option selected>--请选择专业层次--</option>
+              </select>
+          </div>
+          <div class="f-l">
+              <span>课程资源：</span> 
+              <select class="select" size="1" id="isResource" name="isResource">
+                <option selected>--请选择是否有课程资源--</option>
+              </select>
+          </div>
+        </div>
+        
+        <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+			<p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+				<i class="iconfont icon-xiala"></i>
+			</p>
+		</div>
+      </div>
+    </div>
+    <div class="bg-1">
+      <div class="cl pd-15 bg-1">
+        <span class="l mt-15 mb-15"> <a href="javascript:;" onclick="member_add()" class="btn btn-primary radius"><i class="iconfont icon-tianjia"></i>新增</a> <a href="javascript:;"
+          onclick="excel_import()" class="btn btn-success2 radius"><i class="iconfont icon-daoru"></i> Excel导入</a> <a href="javascript:;" onclick="excel_export()"
+          class="btn btn-success radius"><i class="iconfont icon-daochu"></i> Excel导出</a> <a href="javascript:;" onclick="exportCourse()" class="btn btn-warning radius"><i
+            class="iconfont icon-daochu"></i> 导出上课平台安排</a>
+             <a href="javascript:;" onclick="delAll()" class="btn btn-danger radius">
+            <i class="iconfont icon-shanchu"></i>
+            批量删除
+          </a>
+          <a href="javascript:;" onclick="exportTeachTaskBook()" class="btn btn-warning radius"><i
+                  class="iconfont icon-daochu"></i> 导出授课任务书</a>
+        </span>
+        
+        <div class="mt-35 bg-fff">
+          <table class="table table-border table-bordered table-hover table-bg table-sort">
+            <thead>
+              <tr class="text-c">
+                <th width="25"><input type="checkbox" name="all" value=""></th>
+                <th width="40">课程年度</th>
+                <th width="50">课程编码</th>
+                <th width="60">课程名称</th>
+                <th width="40">课程类型</th>
+                <th width="120">使用教材</th>
+                <th width="120">相关教学计划</th>
+                <th width="40">学员数量</th>
+                <th width="80">课程资源</th>
+                <th width="30">是否启用</th>
+                <th width="30">操作</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/educational/course/course-list.js}"></script>
+</body>
+</html>

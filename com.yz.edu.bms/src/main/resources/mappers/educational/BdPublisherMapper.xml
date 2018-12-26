@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdPublisherMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdPublisher" >
+    <id column="press_id" property="pressId" jdbcType="VARCHAR" />
+    <result column="press_name" property="pressName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    press_id, press_name, remark, update_time, update_user, update_user_id, create_user_id, 
+    create_time, create_user, ext_1, ext_2, ext_3
+  </sql>
+  <select id="isPublisher" parameterType="java.lang.String" resultType="boolean"> 
+    <![CDATA[ select count(press_id) from bd_publisher where press_name=#{publisher} ]]> 
+</select> 
+ <select id="findPublisherByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_publisher
+    where 1=1
+    <if test="sName != null and '' != sName" >
+    press_name like  CONCAT('%',#{sName},'%')
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_publisher
+    where press_id = #{pressId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_publisher
+    where press_id = #{pressId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.educational.BdPublisher" >
+    insert into bd_publisher (press_id, press_name, remark, 
+      update_time, update_user, update_user_id, 
+      create_user_id, create_time, create_user, 
+      ext_1, ext_2, ext_3)
+    values (#{pressId,jdbcType=VARCHAR}, #{pressName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.educational.BdPublisher" >
+    insert into bd_publisher
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        press_id,
+      <if test="pressName != null" >
+        press_name,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       #{pressId,jdbcType=VARCHAR},
+      <if test="pressName != null" >
+        #{pressName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdPublisher" >
+    update bd_publisher
+    <set >
+      <if test="pressName != null" >
+        press_name = #{pressName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where press_id = #{pressId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdPublisher" >
+    update bd_publisher
+    set press_name = #{pressName,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where press_id = #{pressId,jdbcType=VARCHAR}
+  </update>
+</mapper>

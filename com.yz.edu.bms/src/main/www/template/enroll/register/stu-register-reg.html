@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/zTree/v3/css/zTreeStyle/zTreeStyle.css}">
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title>注册学员</title>
+</head>
+<body>
+		<div id="tab_demo" class="HuiTab">
+				<div>
+						<article class="page-container">
+								<form action="" method="post" class="form form-horizontal" id="form-regist" th:object="${regInfo}">
+										<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" /> 
+										<input type="hidden" th:value="*{learnId}" name="learnId" id="learnId" />
+										<input type="hidden" th:value="${grade}" name="grade" id="grade" />
+										<!-- 执行类型 -->
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 学员：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span th:text="*{stdName}"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 身份证：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span th:text="*{idCard}"></span>
+												</div>
+										</div>										
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 入学年级： </label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span th:text="*{grade}"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3">招生类型：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span id="recruitType"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 招生老师：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span th:text="*{empName}"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 招生分校：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span th:text="*{campusName}"></span>
+												</div>
+										</div>
+										<div class="line"></div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 报考层次：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span id="pfsnLevel"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 报考成绩：</label>
+												<div class="formControls col-xs-3 col-sm-4">
+														<table class="table table-border table-bordered table-hover table-bg table-sort" id="score">
+																<thead>
+																		<tr class="text-c">
+																				<th width="30">科目成绩</th>
+																				<th width="20">总考分</th>
+																				<th width="20">加分</th>
+																				<th width="20">总分</th>
+																		</tr>
+																</thead>
+																<tbody>
+																		<tr class="text-c">
+																				<td>
+																					<span th:each="s : *{score}">
+																					<span th:text="${s.courseName}"></span>：<span th:text="${s.score}"></span></br>
+																					</span>
+																				</td>
+																				<td>
+																					<span id="totalPoint"></span>
+																				</td>
+																				<td>
+																					<span th:text="null == *{points} ? '0' : *{points}" id="points"></span>
+																				</td>
+																				<td>
+																					<span id="total"></span>
+																				</td>
+																		</tr>
+																</tbody>
+														</table>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 第一志愿：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														<span id="application"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 在读专业：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														(<span th:text="*{pfsnCode}"></span>)<span th:text="*{pfsnName}"></span>
+												</div>
+										</div>
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 收费标准：</label>
+												<div class="formControls col-xs-8 col-sm-9">
+														[<span id="scholarship"></span>]<span th:text="*{feeName}"></span>
+												</div>
+										</div>
+										
+										<div class="row cl">
+												<label class="form-label col-xs-4 col-sm-3"> 缴费情况：</label>
+												<div class="formControls col-xs-3 col-sm-4" id="payInfoDiv">
+												</div>
+										</div>
+
+										<div class="row cl">
+												<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+														<input class="btn btn-success radius inputW9" type="submit" value="注册">
+												</div>
+										</div>
+								</form>
+						</article>
+				</div>
+		</div>
+		</div>
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+		<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+		<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+		<!--/_footer 作为公共模版分离出去-->
+
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+		<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+		<script type="text/javascript" th:inline="javascript">
+		var recruitType = /*[[${regInfo.recruitType}]]*/;
+		var pfsnLevel = /*[[${regInfo.pfsnLevel}]]*/;
+		var type = /*[[${regInfo.application.recruitType}]]*/;
+		var unvs = /*[[${regInfo.application.unvsName}]]*/;
+		var pCode = /*[[${regInfo.application.pfsnCode}]]*/;
+		var level = /*[[${regInfo.application.pfsnLevel}]]*/;
+		var pfsnName = /*[[${regInfo.application.pfsnName}]]*/;
+		var row = /*[[${regInfo}]]*/;
+		var scores = /*[[${regInfo.score}]]*/;
+		</script>
+		<script type="text/javascript" th:src="@{/js/webjs/enroll/register/stu-register-reg.js}"></script>
+		<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

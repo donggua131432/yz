@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.educational.BdExamYearProfessionMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdExamYearProfession">
+	  <id column="eyp_id" property="eypId" jdbcType="VARCHAR"/>
+	  <result column="eyp_code" property="eypCode" jdbcType="VARCHAR"/>
+	  <result column="ey_id" property="eyId" jdbcType="VARCHAR"/>
+	  <result column="grade" property="grade" jdbcType="VARCHAR"/>
+	  <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+	  <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+	  <result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR"/>
+	  <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	  <result column="create_user" property="createUser" jdbcType="CHAR"/>
+	  <result column="create_user_id" property="createUserId" jdbcType="VARCHAR"/>
+	  <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+	  <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+	  <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.yz.model.educational.BdExamYearProfession" >
+	  INSERT INTO `bd_exam_year_profession` (
+		`eyp_id`,
+		`eyp_code`,
+		`ey_id`,
+		`grade`,
+		`unvs_id`,
+		`pfsn_level`,
+		`pfsn_id`,
+		`update_time`,
+		`update_user`,
+		`update_user_id`,
+		`create_user_id`,
+		`create_time`,
+		`create_user`
+	  )
+	  VALUES
+	  (
+	  #{eypId},
+	  #{eypCode},
+	  #{eyId},
+	  #{grade},
+	  #{unvsId},
+	  #{pfsnLevel},
+	  #{pfsnId},
+	  #{updateTime},
+	  #{updateUser},
+	  #{updateUserId},
+	  #{createUserId},
+	  #{createTime},
+	  #{createUser}
+	  );
+  </insert>
+  
+  <select id="getProfession" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	SELECT 
+	  *
+	FROM
+	  bd_exam_year_profession
+	WHERE ey_id = #{eyId} and grade = #{grade} and unvs_id=#{unvsId} and pfsn_level =#{pfsnLevel} and pfsn_id=#{pfsnId}
+  </select>
+
+	<update id="updateCode">
+		update bd_exam_year_profession
+		<set>
+			<if test="eypCode != null">
+				eyp_code = #{eypCode,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_Id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where eyp_id = #{eypId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectExamYearId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+		ey_id
+		FROM
+		bd_exam_year
+		WHERE exam_year = #{examYear} and `status`=1
+	</select>
+
+	<select id="selectProfession" resultType="java.util.Map">
+		SELECT
+		DISTINCT
+		a.grade,
+		b.unvs_id,
+		a.pfsn_level,
+		a.pfsn_id
+		FROM
+		bd_unvs_profession a
+		JOIN bd_university b ON a.unvs_id = b.unvs_id
+		JOIN (
+		SELECT
+		dict_value,
+		dict_name
+		FROM
+		sys_dict
+		WHERE
+		p_id = 'pfsnLevel'
+		) c
+		ON c.dict_value = a.pfsn_level
+		WHERE
+		1 = 1
+		<if test="grade != null and ''!= grade">
+			AND a.grade = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="unvsName != null and ''!= unvsName">
+			AND b.unvs_name = #{unvsName,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel != null and ''!= pfsnLevel">
+			AND c.dict_name = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnName != null and ''!= pfsnName">
+			AND a.pfsn_name = #{pfsnName,jdbcType=VARCHAR}
+		</if>
+        ORDER BY is_allow desc
+        LIMIT 1
+	</select>
+</mapper>

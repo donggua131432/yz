@@ -1,0 +1,90 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" th:href="@{/favicon.ico}">
+<link rel="Shortcut Icon" th:href="@{/favicon.ico}" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>部门管理</title>
+</head>
+<body>
+		<nav class="breadcrumb">
+				<i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">/</span> 人事管理 <span class="c-gray en">/</span> 部门管理 <a class="btn btn-success radius r"
+						style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+		</nav>
+		<div class="page-container">
+			<div class="text-l search" style="position: relative">
+				<div class="cl" style="padding-left: 30px;">
+				    <div class="cl">
+						<div class="f-l">
+							<span>校区名称:</span> <select class="select" size="1" id="campusId" >
+			                  <option value="" selected>--请选择校区名称--</option>
+			               </select>
+						</div>
+						<div class="f-l">
+								部门名称： <input type="text" class="input-text radius ml-10" placeholder="输入部门名称" id="dpName" name="dpName">
+						</div>
+					
+						<div class="f-r mr-15" style="position: absolute; right: 0;">
+								<a class="btn btn-primary radius" style="width: 90px" href="javascript:;" onclick="searchDep()"> <i class="Hui-iconfont">&#xe665;</i> 搜索
+								</a> <a class="btn btn-normal-outline radius" onclick="_reset()"><i class="Hui-iconfont Hui-iconfont-huanyipi"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+	<div class="bg-1">
+			<div class="cl pd-15 bg-1">
+					<span class="l mt-15 mb-15"> <a href="javascript:;" onclick="dep_add()" class="btn btn-primary radius"><i  class="iconfont  icon-tianjia"></i> 新增部门 </a></span>
+					<div class="mt-35 bg-fff">
+
+					<table class="table table-border table-bordered table-bg table-sort" id="tab">
+				     <thead>
+						<tr class="text-c">
+							<th width="25"><input type="checkbox" name="all" value=""></th>
+							<th width="80">部门名称</th>
+							<th width="30">所属校区</th>
+							<th width="40">负责人</th>
+							<th width="50">是否有招生职能</th>
+							<th width="100">是否参与招生计划</th>
+							<th width="90">招生权限</th>
+							<th width="60">是否启用</th>
+							<th width="100">操作</th>
+						</tr>
+					</thead>
+				  </table>
+				</div>
+		</div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/oa/dep/dep-list.js}"></script>
+</body>
+</html>

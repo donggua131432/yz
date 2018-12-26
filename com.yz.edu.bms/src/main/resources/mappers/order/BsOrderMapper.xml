@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.order.BsOrderMapper" >
+	<resultMap type="com.yz.model.order.BsOrder" id="BsOrderMap">
+	 <id column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+	 <result column="jd_order_id" property="jdOrderId" jdbcType="VARCHAR"/>
+	 <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+	 <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+	 <result column="unit_price" property="unitPrice" jdbcType="VARCHAR"/>
+	 <result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+	 <result column="trans_amount" property="transAmount" jdbcType="VARCHAR"/>
+	 <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+	 <result column="order_time" property="orderTime" jdbcType="VARCHAR"/>
+	 <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	 <result column="order_status" property="orderStatus" jdbcType="VARCHAR"/>
+	 <result column="address" property="address" jdbcType="VARCHAR"/>
+	 <result column="take_user_name" property="takeUserName" jdbcType="VARCHAR"/>
+	 <result column="take_mobile" property="takeMobile" jdbcType="VARCHAR"/>
+	 <result column="transport_no" property="transportNo" jdbcType="VARCHAR"/>
+	 <result column="sub_order_no" property="subOrderNo" jdbcType="VARCHAR"/>
+	 <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR"/>
+	 <result column="logistics_name" property="logisticsName" jdbcType="VARCHAR"/>
+	 <result column="province" property="province" jdbcType="VARCHAR"/>
+	 <result column="city" property="city" jdbcType="VARCHAR"/>
+	 <result column="district" property="district" jdbcType="VARCHAR"/>
+	 <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+	 <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+	 <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+	 <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+	 <result column="check_time" property="checkTime" jdbcType="VARCHAR"/>
+	 <result column="check_user" property="checkUser" jdbcType="VARCHAR"/>
+	 <result column="sf_order_time" property="sfOrderTime" jdbcType="VARCHAR"/>
+	 <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+	 <result column="freight" property="freight" jdbcType="VARCHAR"/>
+	 <result column="order_price" property="orderPrice" jdbcType="VARCHAR"/>
+	 <result column="price" property="jdPrice" jdbcType="VARCHAR"/>
+	 <result column="jd_ordercomplete_time" property="jdOrderCompleteTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	
+	<select id="selectDelayByStdId" parameterType="java.lang.String" resultType="java.lang.String">
+		 SELECT acc_amount FROM `goods`.`ats_account` WHERE std_id = #{stdId} AND acc_type="3"
+	</select>
+	<select id="getBsOrderList" resultMap="BsOrderMap" parameterType="com.yz.model.order.BsOrderQuery">
+	SELECT 
+	  bo.`order_no`,
+	  bo.`jd_order_id`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bl.`user_name` as take_user_name,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`mobile` as take_mobile,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bl.`logistics_id`,
+	  bl.`logistics_name`,
+	  bl.`province`,
+	  bl.`city`,
+	  bl.`district`,
+	  bl.`province_name`,
+	  bl.`city_name`,
+	  bl.`district_name`,
+	  date_format(bl.`sf_order_time`,'%Y-%m-%d %H:%i:%s') sf_order_time,
+	  bo.`check_status`,
+	  date_format(bo.`check_time`,'%Y-%m-%d %H:%i:%s') check_time,
+	  bo.`check_user`,
+	  bo.`freight`,
+	  bo.`order_price`,
+	  bso.`sku_id`,
+	  bso.`price`,
+	  date_format(bo.`jd_ordercomplete_time`,'%Y-%m-%d %H:%i:%s') jd_ordercomplete_time
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where '1'='1' and bso.type='0'
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="salesType !=null and '' != salesType">
+	    and bso.`sales_type`=#{salesType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	 <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no` like CONCAT('%', CONCAT(#{orderNo,jdbcType=VARCHAR}, '%')) 
+	 </if>
+	 <if test="transportNo !=null and '' != transportNo">
+	 	and bl.`transport_no`=#{transportNo,jdbcType=VARCHAR} 
+	 </if>	
+	 <if test="orderStatus !=null and '' != orderStatus">
+	 	and bo.`order_status` = #{orderStatus,jdbcType=VARCHAR}
+	 </if>
+	 <if test="mobile !=null and '' != mobile">
+	 	and bo.`mobile` = #{mobile,jdbcType=VARCHAR}
+	 </if>
+	 <if test="sfOrderTimeBegin !=null and '' !=sfOrderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') >=  DATE_FORMAT(#{sfOrderTimeBegin}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="sfOrderTimeEnd !=null and '' !=sfOrderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{sfOrderTimeEnd}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="orderTimeBegin !=null and '' !=orderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d') >=  DATE_FORMAT(#{orderTimeBegin}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="orderTimeEnd !=null and '' !=orderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{orderTimeEnd}, '%Y-%m-%d')   ]]>
+	 </if>
+	 ORDER BY bo.`order_time` DESC
+	</select>
+	
+	<!-- 得到已拒收订单总金额 -->
+	<select id="selectRefusedJdOrderAmount" resultType="java.lang.String" parameterType="com.yz.model.order.BsOrderQuery">
+	SELECT 
+	   COUNT(bo.`trans_amount`)  refusedAmount
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  where '1'='1'  and bso.`sales_type`=1 and bo.order_status='5'
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="salesType !=null and '' != salesType">
+	    and bso.`sales_type`=#{salesType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	 <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no`=#{orderNo,jdbcType=VARCHAR}
+	 </if>
+	 <if test="orderStatus !=null and '' != orderStatus">
+	 	and bo.`order_status` = #{orderStatus,jdbcType=VARCHAR}
+	 </if>
+	 <if test="orderTimeBegin !=null and '' !=orderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{orderTimeBegin}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	 <if test="orderTimeEnd !=null and '' !=orderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{orderTimeEnd}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	 <if test="sfOrderTimeBegin !=null and '' !=sfOrderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') >=  DATE_FORMAT(#{sfOrderTimeBegin}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="sfOrderTimeEnd !=null and '' !=sfOrderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{sfOrderTimeEnd}, '%Y-%m-%d')   ]]>
+	 </if>
+	</select>
+	
+	
+	<!-- 得到订单总额,总数 -->
+	<select id="selectJdOrderTotal" resultType="java.util.HashMap" parameterType="com.yz.model.order.BsOrderQuery">
+	SELECT 
+	   SUM(bo.`order_price`+bo.`freight`) totalAmount,COUNT(bo.`order_no`)  orderNum
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	  LEFT JOIN `goods`.gs_goods gg 
+	    ON gg.`goods_id` = bso.`goods_id` 
+	  where bso.`sales_type`=1  and bso.type='0'
+	  <if test="jdGoodsType !=null and '' != jdGoodsType">
+	    and gg.`jd_goods_type`=#{jdGoodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="salesType !=null and '' != salesType">
+	    and bso.`sales_type`=#{salesType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	  <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no` like CONCAT('%', CONCAT(#{orderNo,jdbcType=VARCHAR}, '%')) 
+	 </if>
+	 <if test="transportNo !=null and '' != transportNo">
+	 	and bl.`transport_no`=#{transportNo,jdbcType=VARCHAR} 
+	 </if>	
+	 <if test="orderStatus !=null and '' != orderStatus">
+	 	and bo.`order_status` = #{orderStatus,jdbcType=VARCHAR}
+	 </if>
+	 <if test="mobile !=null and '' != mobile">
+	 	and bo.`mobile` = #{mobile,jdbcType=VARCHAR}
+	 </if>
+	<if test="sfOrderTimeBegin !=null and '' !=sfOrderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') >=  DATE_FORMAT(#{sfOrderTimeBegin}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="sfOrderTimeEnd !=null and '' !=sfOrderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`jd_ordercomplete_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{sfOrderTimeEnd}, '%Y-%m-%d')   ]]>
+	 </if>
+	 <if test="orderTimeBegin !=null and '' !=orderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{orderTimeBegin}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	 <if test="orderTimeEnd !=null and '' !=orderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{orderTimeEnd}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	</select>
+	<!-- 京东需要同步的订单 -->
+	<select id="getNeedSynchronousJdOrderList" resultMap="BsOrderMap" >
+	SELECT 
+	  bo.`order_no`,
+	  bo.`jd_order_id`,
+	  bso.`sku_id`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bo.`order_status`,
+	  bso.`sub_order_no`
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	  where bo.`jd_order_id`!='' and  bso.`sales_type`=1 and bo.order_status!='3' and bo.order_status!='5'
+	  ORDER BY bo.`order_time` DESC
+	</select>
+	<!-- 京东对账订单列表 -->
+	<select id="getBsJdOrderList" resultMap="BsOrderMap" parameterType="com.yz.model.order.BsOrderQuery">
+	SELECT 
+	  bo.`order_no`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bl.`user_name` as take_user_name,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`mobile` as take_mobile,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bl.`logistics_id`,
+	  bl.`logistics_name`,
+	  bl.`province`,
+	  bl.`city`,
+	  bl.`district`,
+	  date_format(bl.`sf_order_time`,'%Y-%m-%d %H:%i:%s') sf_order_time,
+	  bo.`check_status`,
+	  date_format(bo.`check_time`,'%Y-%m-%d %H:%i:%s') check_time,
+	  bo.`check_user`,
+	  bo.`freight`,
+	  bo.`order_price`,
+	  bso.`sku_id`,
+	  bso.`price`
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	  where '1'='1' and bso.`sales_type`=1 and bo.order_status in ('3','5')
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="salesType !=null and '' != salesType">
+	    and bso.`sales_type`=#{salesType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	 <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no`=#{orderNo,jdbcType=VARCHAR}
+	 </if>
+	 <if test="orderStatus !=null and '' != orderStatus">
+	 	and bo.`order_status` = #{orderStatus,jdbcType=VARCHAR}
+	 </if>
+	 <if test="orderTimeBegin !=null and '' !=orderTimeBegin">	
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{orderTimeBegin}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	 <if test="orderTimeEnd !=null and '' !=orderTimeEnd">
+	 	<![CDATA[ and DATE_FORMAT(bo.`order_time`, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{orderTimeEnd}, '%Y-%m-%d %H:%i:%S')   ]]>
+	 </if>
+	 ORDER BY bo.`order_time` DESC
+	</select>
+	
+	
+	
+	
+	<resultMap type="com.yz.model.order.BsActivityOrder" id="BsActivityOrder" extends="BsOrderMap">
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<association property="memberList" column="sub_order_no" select="getBsActionMember"/>
+	</resultMap>
+	<resultMap type="com.yz.model.order.BsActionMember" id="BsActionMember">
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBsActivityOrderList" resultMap="BsActivityOrder">
+		SELECT 
+	  bo.`order_no`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`transport_no`,
+	  bso.`sub_order_no` 
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where '1'='1'
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	 <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no`=#{orderNo,jdbcType=VARCHAR}
+	 </if>
+	</select>
+	
+	<resultMap type="com.yz.model.order.BsCourseOrder" id="BsCourseOrder" extends="BsOrderMap">
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBsCourseOrderList" resultMap="BsCourseOrder">
+	  	SELECT 
+	  bo.`order_no`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bso.`goods_id` 
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where '1'='1'
+	 <if test="goodsType !=null and '' != goodsType">
+	    and bso.`goods_type`=#{goodsType,jdbcType=VARCHAR}
+	 </if>
+	 <if test="goodsName !=null and '' != goodsName">
+	    and bso.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+	 </if>
+	 <if test="orderNo !=null and '' != orderNo">
+	    and bo.`order_no`=#{orderNo,jdbcType=VARCHAR}
+	 </if>
+	</select>
+		
+	<select id="getBsActionMember" resultMap="BsActionMember">
+		SELECT `name`,`mobile` FROM `goods`.`bs_action_member` WHERE `sub_order_no`=#{sub_order_no,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBsOrderDetail" resultMap="BsOrderMap">
+		SELECT 
+	  bo.`order_no`,
+	  bo.`jd_order_id`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bl.`user_name` as take_user_name,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`mobile` as take_mobile,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bl.`logistics_id`,
+	  bl.`logistics_name`,
+	  bl.`province`,
+	  bl.`city`,
+	  bl.`district`,
+	  bl.`province_name`,
+	  bl.`city_name`,
+	  bl.`district_name`,
+	  date_format(bl.`sf_order_time`,'%Y-%m-%d %H:%i:%s') sf_order_time,
+	  bo.`check_status` ,
+	  bo.`freight`,
+	  bso.`price` ,
+	  bo.`order_price`
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where bo.`order_no` =#{orderNo,jdbcType=VARCHAR} and bso.type='0'
+	</select>
+	
+	<update id="updateOrderLogisticsInfo" parameterType="com.yz.model.order.BsLogistics">
+		update `goods`.`bs_logistics`
+		<set>
+			<if test="logisticsName !=null and '' !=logisticsName">
+				logistics_name = #{logisticsName,jdbcType=VARCHAR},
+			</if>
+			<if test="transportNo !=null and '' !=transportNo">
+				transport_no = #{transportNo,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' !=updateUser">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId !=null and '' !=updateUserId">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			update_time=NOW()
+		</set> 
+		 where logistics_id=#{logisticsId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateOrderStatus">
+		update `goods`.`bs_order` set `order_status`=#{status,jdbcType=VARCHAR} where `order_no`=#{orderNo,jdbcType=VARCHAR};
+	    update `goods`.`bs_sales_order` set `sub_order_status`=#{status,jdbcType=VARCHAR} where `order_no`=#{orderNo,jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getBsCourseOrder" resultMap="BsCourseOrder">
+	  	SELECT 
+	  bo.`order_no`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bl.`user_name`,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`mobile`,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bso.`goods_id` 
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where bo.`order_no` =#{orderNo,jdbcType=VARCHAR}
+	</select>	
+	
+	<select id="getBsActivityOrder" resultMap="BsActivityOrder">
+	  	SELECT 
+	  bo.`order_no`,
+	  bso.`sales_type`,
+	  bso.`goods_name`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bo.`trans_amount`,
+	  bo.`user_name`,
+	  date_format(bo.`order_time`,'%Y-%m-%d %H:%i:%s') order_time,
+	  bo.`mobile`,
+	  bl.`user_name`,
+	  bo.`order_status`,
+	  bl.`address`,
+	  bl.`mobile`,
+	  bl.`transport_no`,
+	  bso.`sub_order_no`,
+	  bso.`goods_id` 
+	FROM
+	  `goods`.bs_order bo 
+	  LEFT JOIN `goods`.bs_sales_order bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN `goods`.bs_logistics bl 
+	    ON bo.`order_no` = bl.`order_no` 
+	where bo.`order_no` =#{orderNo,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLogisticsIdByOrderNo" parameterType="java.lang.String" resultType="java.lang.String">
+		select logistics_id from `goods`.bs_logistics where order_no=#{orderNo,jdbcType=VARCHAR}
+	</select>
+		<resultMap id="SfResultMap" type="com.yz.model.sf.SFExpressRequest">
+		<result column="user_name" property="dContact" jdbcType="VARCHAR" />
+		<result column="dTel" property="dTel" jdbcType="VARCHAR" />
+		<result column="dMobile" property="dMobile" jdbcType="VARCHAR" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+		<result column="address" property="dAddress" jdbcType="VARCHAR" />
+		<result column="province" property="dProvince" jdbcType="VARCHAR" />
+		<result column="city" property="dCity" jdbcType="VARCHAR" />
+		<result column="district" property="dCountry" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectSfInfoByLogisticsId" resultMap="SfResultMap">
+		SELECT order_no AS orderid,user_name,mobile AS dTel,mobile AS dMobile ,address,province,city,district  FROM `goods`.`bs_logistics` bl
+		where bl.`logistics_id`=#{logisticsId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateBsLogisticsRemark">
+		update 
+		  `goods`.bs_logistics 
+		set
+		  remark = #{errMsg} 
+		where logistics_id = #{logisticsId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateBsLogistics" parameterType="com.yz.model.order.BsLogistics">
+		update 
+		  `goods`.bs_logistics 
+		<set>
+			<if test="zipCode != null and zipCode != ''">
+			 	zip_code = #{zipCode},
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+			 	transport_no = #{transportNo},
+			</if>
+			<if test="logisticsStatus != null and logisticsStatus != ''">
+			 	logistics_status = #{logisticsStatus},
+			</if>
+			<if test="remark != null and remark != ''">
+			 	remark = #{remark},
+			</if>
+			sf_order_time=now()
+		</set>
+		where logistics_id = #{logisticsId}
+	</update>
+	
+	
+	
+   <resultMap type="com.yz.model.finance.receipt.BdSfPrint" id="SfPrintResult">
+		<result column="mailno" property="mailno" />
+		<result column="dest_code" property="destCode" />
+		<result column="address" property="dAddress" />
+		<result column="user_name" property="dContact" />
+		<result column="mobile" property="dMobile" />
+		<result column="goods_name" property="goodsName"/>
+		<result column="goods_num" property="goodsNum"/>
+	</resultMap>
+	
+	<select id="selectSfPrint" parameterType="java.lang.String" resultMap="SfPrintResult">
+  		SELECT 
+		  bl.`transport_no` mailno,
+		  bl.`zip_code` dest_code,
+		  bl.`address`,
+		  bl.`mobile`,
+		  bl.`user_name`,
+		  bl.`province`,
+		  bl.`city`,
+		  bl.`district`,
+		  (SELECT sales_name FROM `goods`.bs_sales_order WHERE order_no=bl.`order_no` LIMIT 1) goods_name,
+		  (SELECT goods_count FROM `goods`.bs_sales_order WHERE order_no=bl.`order_no` LIMIT 1) goods_num
+		FROM
+		  `goods`.bs_logistics bl 
+		 WHERE bl.logistics_id = #{logisticsId,jdbcType=VARCHAR}
+  	</select>
+  	
+  	<!-- 邮寄 -->
+  	<update id="updateGoodsOrderMailed">
+  		update 
+		  `goods`.bs_order 
+		set
+		  order_status = '3' 
+		WHERE order_status = '2' 
+		and order_no IN (
+			 <foreach collection="orderNos" item="orderNo" index="index" separator="," >  
+        		#{orderNo,jdbcType=VARCHAR}
+    		</foreach>
+		);
+		update 
+		  `goods`.bs_sales_order 
+		set
+		  sub_order_status = '3' 
+		WHERE sub_order_status = '2' 
+		and order_no IN (
+			 <foreach collection="orderNos" item="orderNo" index="index" separator="," >  
+        		#{orderNo,jdbcType=VARCHAR}
+    		</foreach>
+		);
+  	</update>
+  	
+  	<!-- 结算 -->
+  	<update id="checkOrderInfo">
+		update `goods`.bs_order set order_status='3',check_status='2',check_time=now(),check_user=#{checkUser,jdbcType=VARCHAR},check_user_id=#{userId,jdbcType=VARCHAR} where order_no=#{orderNo,jdbcType=VARCHAR};
+		update `goods`.bs_sales_order set sub_order_status='3',check_status='2', sub_order_status='3',check_time=now(),check_user=#{checkUser,jdbcType=VARCHAR},check_user_id=#{userId,jdbcType=VARCHAR} where order_no=#{orderNo,jdbcType=VARCHAR}
+  	</update>
+  	<!-- 批量结算 -->
+  	<update id="batchCheck">
+  		update `goods`.bs_order set order_status='3',check_status='2',check_time=now(),check_user=#{checkUser,jdbcType=VARCHAR},check_user_id=#{userId,jdbcType=VARCHAR} where order_no IN (
+			 <foreach collection="orderNos" item="orderNo" index="index" separator="," >  
+        		#{orderNo,jdbcType=VARCHAR}
+    		</foreach>
+		);
+		update `goods`.bs_sales_order set sub_order_status='3',check_status='2',check_time=now(),check_user=#{checkUser,jdbcType=VARCHAR},check_user_id=#{userId,jdbcType=VARCHAR} where order_no IN (
+			 <foreach collection="orderNos" item="orderNo" index="index" separator="," >  
+        		#{orderNo,jdbcType=VARCHAR}
+    		</foreach>
+		)
+  	</update>
+  	
+  	<!-- 批量同步订单信息 -->
+  	<update id="synchronousJdOrder">
+  		 <foreach collection="orderlist" item="order" index="index" separator=" " >  
+        		update `goods`.bs_order set freight=#{order.freight,jdbcType=VARCHAR},order_price=#{order.orderPrice,jdbcType=VARCHAR},order_status=#{order.orderStatus,jdbcType=VARCHAR} where order_no=#{order.orderNo,jdbcType=VARCHAR};
+				update `goods`.bs_sales_order set price=#{order.jdPrice,jdbcType=VARCHAR},num=#{order.goodsCount,jdbcType=VARCHAR},name=#{order.goodsName,jdbcType=VARCHAR},sub_order_status=#{order.orderStatus,jdbcType=VARCHAR}  where order_no=#{order.orderNo,jdbcType=VARCHAR};
+				update `goods`.bs_logistics set transport_no=#{order.jdOrderId,jdbcType=VARCHAR},logistics_status=#{order.orderStatus,jdbcType=VARCHAR} where order_no=#{order.orderNo,jdbcType=VARCHAR};				
+    	</foreach>
+  	</update>
+  	
+  	
+  	<update id="refreshJdOrder" parameterType="com.yz.model.order.BsOrder">
+		update `goods`.`bs_order`
+		<set>
+			<if test="freight !=null and '' !=freight">
+				freight = #{freight,jdbcType=VARCHAR},
+			</if>
+			<if test="orderPrice !=null and '' !=orderPrice">
+				order_price = #{orderPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus !=null and '' !=orderStatus">
+				order_status = #{orderStatus,jdbcType=VARCHAR},
+			</if>
+			update_time=NOW()
+		</set> 
+		 where order_no=#{orderNo,jdbcType=VARCHAR};
+		 
+		 update `goods`.`bs_sales_order`
+		<set>
+			<if test="goodsCount !=null and '' !=goodsCount">
+				goods_count = #{goodsCount,jdbcType=VARCHAR},
+			</if>
+			<if test="jdPrice !=null and '' !=jdPrice">
+				price = #{jdPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="goodsCount !=null and '' !=goodsCount">
+				num = #{goodsCount,jdbcType=VARCHAR},
+			</if>
+			<if test="goodsName !=null and '' !=goodsName">
+				name = #{goodsName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus !=null and '' !=orderStatus">
+				sub_order_status = #{orderStatus,jdbcType=VARCHAR},
+			</if>
+			update_time=NOW()
+		</set> 
+		 where order_no=#{orderNo,jdbcType=VARCHAR};
+		 
+	</update>
+	
+	
+	
+	<insert id="addNewBsOrder" parameterType="com.yz.model.order.BsOrderInfo">
+		insert into goods.`bs_order` (
+		  `order_no`,
+		  `acc_type`,
+		  `order_type`,
+		  `trans_amount`,
+		  `user_name`,
+		  `mobile`,
+		  `user_id`,
+		  `order_time`,
+		  `order_status`,
+		  `order_desc`,
+		  `jd_order_id`,
+		  `freight`,
+		  `order_price`,
+		  `order_naked_price`,
+		  `order_tax_price`
+		) 
+		values
+		  (#{orderNo,jdbcType=VARCHAR},
+		   #{accType,jdbcType=VARCHAR},
+		   #{orderType,jdbcType=VARCHAR},
+		   #{transAmount,jdbcType=VARCHAR},
+		   #{userName,jdbcType=VARCHAR},
+		   #{mobile,jdbcType=VARCHAR},
+		   #{userId,jdbcType=VARCHAR},
+		   now(),
+		   #{orderStatus,jdbcType=VARCHAR},
+		   #{orderDesc,jdbcType=VARCHAR},
+		   #{jdOrderId,jdbcType=VARCHAR},
+		   #{freight,jdbcType=VARCHAR},
+		   #{orderPrice,jdbcType=VARCHAR},
+		   #{orderNakedPrice,jdbcType=VARCHAR},
+		   #{orderTaxPrice,jdbcType=VARCHAR}
+		  )
+  		</insert>
+	<insert id="addNewBsSerial" parameterType="com.yz.model.order.BsSerialInfo">
+     insert into goods.`bs_serial` (
+	  `serial_no`,
+	  `order_no`,
+	  `trans_amount`,
+	  `user_name`,
+	  `user_id`,
+	  `mobile`,
+	  `acc_type`,
+	  `serial_status`,
+	  `create_time`,
+	  `update_time`,
+	  `out_serial_no`
+	) 
+	values
+	  (#{serialNo,jdbcType=VARCHAR},
+	   #{orderNo,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   #{userName,jdbcType=VARCHAR},
+	   #{userId,jdbcType=VARCHAR},
+	   #{mobile,jdbcType=VARCHAR},
+	   #{accType,jdbcType=VARCHAR},
+	   #{serialStatus,jdbcType=VARCHAR},
+	   now(),
+	   now(),
+	   #{outSerialNo,jdbcType=VARCHAR}
+	  )
+  </insert>
+  
+  <insert id="addNewBsSalesOrder" parameterType="com.yz.model.order.BsSalesOrderInfo">
+    insert into goods.`bs_sales_order` (
+	  `sub_order_no`,
+	  `order_no`,
+	  `cost_price`,
+	  `original_price`,
+	  `unit_price`,
+	  `sales_id`,
+	  `sales_type`,
+	  `sales_name`,
+	  `goods_id`,
+	  `goods_count`,
+	  `goods_name`,
+	  `acc_type`,
+	  `trans_amount`,
+	  `sub_order_time`,
+	  `user_id`,
+	  `sub_order_status`,
+	  `sub_order_desc`,
+	  `unit`,
+	  `goods_type`,
+	  `goods_img`,
+	  `sku_id`,
+	  `num`,
+	  `category`,
+	  `name`,
+	  `tax`,
+	  `price`,
+	  `tax_price`,
+	  `naked_price`,
+	  `type`,
+	  `oid`
+	) 
+	values
+	  (#{subOrderNo,jdbcType=VARCHAR},
+	   #{orderNo,jdbcType=VARCHAR},
+	   #{costPrice,jdbcType=VARCHAR},
+	   #{originalPrice,jdbcType=VARCHAR},
+	   #{unitPrice,jdbcType=VARCHAR},
+	   #{salesId,jdbcType=VARCHAR},
+	   #{salesType,jdbcType=VARCHAR},
+	   #{salesName,jdbcType=VARCHAR},
+	   #{goodsId,jdbcType=VARCHAR},
+	   #{goodsCount,jdbcType=VARCHAR},
+	   #{goodsName,jdbcType=VARCHAR},
+	   #{accType,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   now(),
+	   #{userId,jdbcType=VARCHAR},
+	   #{subOrderStatus,jdbcType=VARCHAR},
+	   #{subOrderDesc,jdbcType=VARCHAR},
+	   #{unit,jdbcType=VARCHAR},
+	   #{goodsType,jdbcType=VARCHAR},
+	   #{goodsImg,jdbcType=VARCHAR},
+	   #{skuId,jdbcType=VARCHAR},
+	   #{num,jdbcType=VARCHAR},
+	   #{category,jdbcType=VARCHAR},
+	   #{name,jdbcType=VARCHAR},
+	   #{tax,jdbcType=VARCHAR},
+	   #{price,jdbcType=VARCHAR},
+	   #{taxPrice,jdbcType=VARCHAR},
+	   #{nakedPrice,jdbcType=VARCHAR},
+	   #{type,jdbcType=VARCHAR},
+	   #{oid,jdbcType=VARCHAR}
+	  )
+  </insert>
+  
+  <insert id="insertBsLogistics" parameterType="com.yz.model.order.BsLogisticsInfo">
+		INSERT INTO goods.`bs_logistics` (
+		  `logistics_id`,
+		  `order_no`,
+		  `transport_no`,
+		  `user_name`,
+		  `mobile`,
+		  `province`,
+		  `city`,
+		  `district`,
+		  `street`,
+		  `address`,
+		  `logistics_status`,
+		  `logistics_name`,
+		  `province_name`,
+		  `city_name`,
+		  `district_name`,
+		  `street_name`
+		) 
+		VALUES
+		  (#{logisticsId,jdbcType=VARCHAR},
+		   #{orderNo,jdbcType=VARCHAR},
+		   #{transportNo,jdbcType=VARCHAR},
+		   #{userName,jdbcType=VARCHAR},
+		   #{mobile,jdbcType=VARCHAR},
+		   #{province,jdbcType=VARCHAR},
+		   #{city,jdbcType=VARCHAR},
+		   #{district,jdbcType=VARCHAR},
+		   #{street,jdbcType=VARCHAR},
+		   #{address,jdbcType = VARCHAR},
+		   #{logisticsStatus,jdbcType=VARCHAR},
+		   #{logisticsName,jdbcType=VARCHAR},
+		   #{provinceName,jdbcType=VARCHAR},
+		   #{cityName,jdbcType=VARCHAR},
+		   #{districtName,jdbcType=VARCHAR},
+		   #{streetName,jdbcType=VARCHAR}
+		   )
+	</insert>
+</mapper>

@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdClassPlanMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.educational.BdClassPlan">
+		<id column="cp_id" property="cpId" jdbcType="VARCHAR" />
+		<result column="cp_date" property="cpDate" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="place_id" property="placeId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="class_time" property="classTime" jdbcType="VARCHAR" />
+		<result column="cp_type" property="cpType" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMap" type="java.util.Map">
+		<result column="cp_id" property="cpId" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="cp_type" property="cpType" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ProResultMap" type="java.util.Map">
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="EditMap" type="java.util.Map">
+		<result column="cp_id" property="cpId" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="cp_type" property="cpType" jdbcType="VARCHAR" />
+		<result column="class_time" property="classTime" jdbcType="VARCHAR" />
+		<result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+		<result column="cp_date" property="cpDate" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="UnvsPfsnMap" type="java.util.Map">
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="MakeScheduleMap" type="java.util.Map">
+		<result column="start_time" property="startTime" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="cp_type" property="cpType" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		cp_id, cp_date, start_time, end_time, place_id, emp_id,
+		course_id,
+		class_time, cp_type,
+		update_time, update_user,
+		update_user_id, create_user_id, create_time,
+		create_user,
+		ext_1, ext_2,
+		ext_3
+	</sql>
+	
+	<update id="updateQingshuInfo" parameterType="java.lang.String">
+		UPDATE 
+		  bd_learn_info 
+		SET
+		  qingshu_id = #{qingshuId},
+		  qingshu_pwd = #{qingshuPwd} 
+		WHERE learn_id = #{learnId}
+	</update>
+	
+	<select id="selectLearnIdBySchoolRoll" parameterType="java.lang.String"  resultType="java.lang.String">
+		select 
+		  l.`learn_id` 
+		from
+		  bd_learn_info l 
+		  left join bd_student_info i 
+		    on i.`std_id` = l.`std_id` 
+		where l.`school_roll` = #{schoolRoll}
+		  and i.`std_name` = #{stdName}
+	</select>
+	
+	<update id="distributionTeacher">
+		update bd_class_plan set emp_id = #{empId,jdbcType=VARCHAR},place_id=#{placeId,jdbcType=VARCHAR}
+		where cp_id
+		in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<delete id="deleteClassPlan">
+		delete from bd_class_plan
+		where cp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	<select id="findUnvsPfsn" resultMap="UnvsPfsnMap"
+		parameterType="com.yz.model.educational.MakeSchedule">
+		SELECT
+		bu.`unvs_name`,bu.`recruit_type`,bup.`pfsn_name`,bup.`grade`,bup.`pfsn_code`,bup.`pfsn_id`
+		FROM
+		bd_university bu
+		LEFT JOIN bd_unvs_profession bup
+		ON bu.`unvs_id` =
+		bup.`unvs_id`
+		WHERE bup.`grade` = #{grade,jdbcType=VARCHAR}
+		AND
+		bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		AND bu.`unvs_name` =
+		#{unvsName,jdbcType=VARCHAR}
+		AND bup.`pfsn_name` =
+		#{pfsnName,jdbcType=VARCHAR}
+	</select>
+	<select id="getTphId" resultType="string"
+		parameterType="com.yz.model.educational.MakeSchedule">
+		SELECT
+		btp.`thp_id`
+		FROM
+		bd_teach_plan btp
+		WHERE btp.`grade` =  #{grade,jdbcType=VARCHAR}
+		AND btp.`pfsn_id` =  #{pfsnId,jdbcType=VARCHAR}
+		AND btp.`semester` =  #{semester,jdbcType=VARCHAR}
+		</select>
+	<select id="findMakeSchedule" resultMap="MakeScheduleMap"
+		parameterType="com.yz.model.educational.MakeSchedule">
+		SELECT
+		bcp.`start_time`,bcp.`end_time`,bcp.`cp_type`,bc.`course_id`,bc.`course_name`,oc.`campus_name`,oc.`address`
+		FROM
+		bd_class_plan bcp
+		LEFT JOIN bd_course bc
+		ON bcp.`course_id` = bc.`course_id`
+		LEFT JOIN oa_campus oc
+		ON oc.`campus_id` = bcp.`place_id`
+		WHERE bc.`course_id` IN
+		(SELECT
+		bpc.`course_id`
+		FROM
+		bd_teach_plan btp
+		LEFT JOIN bd_plan_course bpc
+		ON btp.`thp_id` = bpc.`thp_id`
+		WHERE btp.`grade` =  #{grade,jdbcType=VARCHAR}
+		AND btp.`pfsn_id` =  #{pfsnId,jdbcType=VARCHAR}
+		AND btp.`semester` =  #{semester,jdbcType=VARCHAR})
+		<if test="courseType != null and ''!= courseType">
+		   AND bc.`course_type` = #{courseType,jdbcType=VARCHAR}
+		</if>
+		<if test="grade != null and ''!= grade">
+		   AND bc.`year` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="cpType != null and ''!= cpType">
+		   AND bcp.`cp_type` = #{cpType,jdbcType=VARCHAR}
+		</if>
+		<if test="campusId != null and ''!= campusId">
+		   AND bcp.`place_id` = #{campusId,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and ''!= startTime">
+			and bcp.`start_time` <![CDATA[>=#{startTime,jdbcType=VARCHAR}]]>
+		</if>
+		<if test="endTime != null and ''!= endTime">
+			and bcp.`end_time`  <![CDATA[<=#{endTime,jdbcType=VARCHAR}]]>
+		</if>
+	</select>
+	<select id="findClassPlanById" resultMap="EditMap"
+		parameterType="java.lang.String">
+		select
+		bcp.`cp_id`,
+		bcp.`cp_type`,
+		bcp.`class_time`,
+		bc.`course_type`,
+		bc.`course_name`,
+		bcp.`course_id`,
+		oe.`emp_name`,
+		oe.`emp_id`,
+		oc.`campus_id`,
+		oc.`campus_name`,
+		date_format(bcp.`start_time`,'%H:%i') start_time,
+		date_format(bcp.`end_time`,'%H:%i') end_time,
+		oeo.`other_fee`,
+		bcp.`cp_date`
+		from
+		`bd_class_plan` bcp
+		left join
+		`bd_course` bc
+		on bcp.`course_id` =
+		bc.`course_id`
+		left join oa_employee
+		oe
+		on oe.`emp_id` = bcp.`emp_id`
+		left join oa_campus oc
+		on oc.`campus_id`
+		= bcp.`place_id`
+		LEFT JOIN
+		oa_employee_other oeo
+		ON bcp.`emp_id` =
+		oeo.`emp_id`
+		where bcp.`cp_id` =
+		#{cpId,jdbcType=VARCHAR}
+
+	</select>
+	
+	<select id="findClassPlanByIds" resultMap="ResultMap">
+		SELECT
+		bcp.`cp_id`,
+		bcp.`course_id`,
+		bc.`year`,
+		bc.`course_type`,
+		bc.`course_name`,
+		oe.`emp_name`,
+		oc.`campus_name`,
+		bcp.`cp_type`,
+		bcp.`start_time`,
+		bcp.`end_time`
+		FROM
+		`bd_class_plan` bcp
+		LEFT JOIN
+		`bd_course` bc
+		ON
+		bcp.`course_id` = bc.`course_id`
+		LEFT JOIN oa_employee
+		oe
+		ON bcp.`emp_id`
+		= oe.`emp_id`
+		LEFT JOIN oa_campus oc
+		ON bcp.`place_id`
+		= oc.`campus_id`
+		WHERE 1=1
+		and bcp.`cp_id` in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		order by bcp.`create_time` desc
+	</select>
+	
+	
+	<select id="findAllClassPlan" resultMap="ResultMap"
+		parameterType="com.yz.model.educational.BdClassPlan">
+		SELECT
+		bcp.`cp_id`,
+		bcp.`course_id`,
+		bc.`year`,
+		bc.`course_type`,
+		bc.`course_name`,
+		oe.`emp_name`,
+		oc.`campus_name`,
+		bcp.`cp_type`,
+		bcp.`start_time`,
+		bcp.`end_time`
+		FROM
+		`bd_class_plan` bcp
+		LEFT JOIN
+		`bd_course` bc
+		ON
+		bcp.`course_id` = bc.`course_id`
+		LEFT JOIN oa_employee
+		oe
+		ON bcp.`emp_id`
+		= oe.`emp_id`
+		LEFT JOIN oa_campus oc
+		ON bcp.`place_id`
+		= oc.`campus_id`
+		WHERE 1=1
+		<if test="pfsnName != null and ''!= pfsnName">
+			and (SELECT
+			COUNT(*)
+			FROM
+			`bd_unvs_profession` bup LEFT JOIN
+			`bd_university` bu ON bu.`unvs_id` = bup.`unvs_id`
+			WHERE bup.`pfsn_id`
+			IN
+			(SELECT
+			pfsn_id
+			FROM
+			bd_teach_plan
+			WHERE thp_id IN
+			(SELECT
+			thp_id
+			FROM
+			bd_plan_course
+			WHERE course_id = bcp.`course_id`)) AND bup.`pfsn_name`
+			like CONCAT('%',#{pfsnName},'%') )<![CDATA[>0]]>
+		</if>
+		<if test="empName != null and  ''!= empName">
+			and oe.`emp_name` like CONCAT('%',#{empName},'%')
+		</if>
+		<if test="courseName != null and ''!= courseName">
+			and bc.`course_name` like CONCAT('%',#{courseName},'%')
+		</if>
+		<if test="courseType != null and ''!= courseType">
+			and bc.`course_type` = #{courseType,jdbcType=VARCHAR}
+		</if>
+		<if test="year != null and ''!= year">
+			and bc.`year` = #{year,jdbcType=VARCHAR}
+		</if>
+		<if test="placeId != null and ''!= placeId">
+			and bcp.`place_id` = #{placeId,jdbcType=VARCHAR}
+		</if>
+		<if test="cpType != null and ''!= cpType">
+			and bcp.`cp_type` = #{cpType,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and ''!= startTime">
+			and bcp.`start_time` <![CDATA[>=#{startTime,jdbcType=VARCHAR}]]>
+		</if>
+		<if test="endTime != null and ''!= endTime">
+			and bcp.`end_time`  <![CDATA[<=CONCAT(#{endTime,jdbcType=VARCHAR},' 23:59:59')]]>
+		</if>
+		order by bcp.`create_time` desc
+	</select>
+	<select id="findProfessional" resultMap="ProResultMap">
+		SELECT
+		bup.`pfsn_code`,
+		bup.`pfsn_name`,
+		bup.`pfsn_level`,
+		bup.`grade`,
+		bu.`unvs_name`,
+		bu.`recruit_type`
+		FROM
+		`bd_unvs_profession` bup LEFT JOIN
+		`bd_university` bu ON
+		bu.`unvs_id` = bup.`unvs_id`
+		WHERE bup.`pfsn_id`
+		IN
+		(SELECT
+		pfsn_id
+		FROM
+		bd_teach_plan
+		WHERE thp_id IN
+		(SELECT
+		thp_id
+		FROM
+		bd_plan_course
+		WHERE
+		course_id = #{courseId}))
+		<if test="pfsnName != null and ''!= pfsnName">
+			AND bup.`pfsn_name` like CONCAT('%',#{pfsnName},'%')
+		</if>
+	</select>
+	
+	<select id="getNonExistsCourse" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_classplan_course;
+        CREATE TEMPORARY TABLE tmp_classplan_course (
+        course_type VARCHAR (50),
+        year VARCHAR (50),
+        course_id VARCHAR (50),
+        course_name VARCHAR (100));
+        INSERT INTO tmp_classplan_course (
+        	course_type,
+        	year,
+            course_id,
+            course_name
+        )
+        VALUES
+        <foreach collection="classplanList" item="info" separator=",">
+            ( 
+            #{info.courseType, jdbcType=VARCHAR},
+            #{info.year, jdbcType=VARCHAR},
+            #{info.courseId, jdbcType=VARCHAR},
+            #{info.courseName, jdbcType=VARCHAR}
+           
+            )
+        </foreach>;
+        
+        SELECT
+            a.course_name, a.course_type,a.year
+        FROM tmp_classplan_course a  WHERE NOT  EXISTS(
+        	SELECT bc.course_id,bc.course_name from bd_course bc 
+        	WHERE bc.course_name=a.course_name and bc.year=a.year and bc.course_type=a.course_type
+        ) group by a.course_name
+    </select>
+    
+    <select id="getNonExistsCampus" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_classplan_campus;
+        CREATE TEMPORARY TABLE tmp_classplan_campus (
+        campus_name VARCHAR (100));
+        INSERT INTO tmp_classplan_campus (
+            campus_name
+        )
+        VALUES
+        <foreach collection="classplanList" item="info" separator=",">
+            ( 
+            #{info.placeId, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        
+        SELECT
+            a.campus_name
+        FROM tmp_classplan_campus a  WHERE a.campus_name is not null and  a.campus_name!=''   and  NOT  EXISTS(
+        	SELECT oc.campus_id,oc.campus_name from oa_campus oc 
+        	WHERE oc.campus_name=a.campus_name and oc.`is_stop` ='0'
+        )
+    </select>
+    
+    <select id="getNonExistsEmployee" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_classplan_employee;
+        CREATE TEMPORARY TABLE tmp_classplan_employee (
+        campus_name VARCHAR (100),
+        emp_name VARCHAR (100));
+        INSERT INTO tmp_classplan_employee (
+            campus_name,emp_name
+        )
+        VALUES
+        <foreach collection="classplanList" item="info" separator=",">
+            ( 
+            #{info.placeId, jdbcType=VARCHAR},
+            #{info.empName, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        
+        SELECT
+            a.*
+        FROM tmp_classplan_employee a  WHERE  a.emp_name!='' AND NOT  EXISTS(
+        	
+        	SELECT 
+	        	oe.emp_id,
+				oe.emp_name,
+				oeo.other_fee
+				FROM
+				oa_employee oe
+				LEFT JOIN oa_employee_other oeo
+				ON oeo.`emp_id` = oe.`emp_id`
+				LEFT JOIN oa_employee_job oej
+				ON oej.`emp_id` = oe.`emp_id`
+				LEFT JOIN oa_campus oc
+				ON oc.`campus_id` = oej.campus_id
+				WHERE oe.emp_status = '1'
+				AND oe.emp_type = '3'
+				AND oc.`is_stop` ='0'
+				AND oc.campus_name = a.campus_name 
+				AND oe.emp_name=a.emp_name
+        ) 
+    </select>
+    
+    <select id="selectTmpClassPlan" resultType="java.util.HashMap">
+    	SELECT
+        tc.cp_date cpDate,
+        tc.start_time startTime,
+        tc.end_time endTime,
+        oc.campus_id campusId,
+        oe.emp_id empId,
+        bc.course_id courseId,
+        tc.class_time classTime,
+        tc.cp_type cpType,
+        now() updateTime,  
+        now() createTime, 
+        #{realName, jdbcType=VARCHAR} realName,
+        #{userId, jdbcType=VARCHAR} userId
+        FROM  tmp_classplan tc
+        LEFT JOIN bd_course bc on tc.course_name = bc.course_name and tc.year=bc.year and tc.course_type=bc.course_type 
+        LEFT JOIN oa_campus oc on tc.campus_name = oc.campus_name
+        LEFT JOIN oa_employee oe on oe.emp_name=tc.emp_name
+        where bc.is_allow='1'
+        group by 
+        tc.course_name ,
+        tc.year,
+        tc.course_type, 
+        tc.cp_date,
+        tc.start_time,
+        tc.end_time,
+        oc.campus_id,
+        oe.emp_id,
+        bc.course_id,
+        tc.class_time,
+        tc.cp_type
+        order by tc.sort desc;
+    </select>
+    
+    <insert id="initTmpExcelTable">
+    	DROP  TEMPORARY TABLE IF EXISTS tmp_classplan;
+        CREATE TEMPORARY TABLE tmp_classplan (
+        sort  varchar(50),
+        course_name varchar(50),
+        course_type VARCHAR (50),
+        year VARCHAR (50),
+        campus_name VARCHAR (50),
+        cp_type varchar(50),
+        cp_date varchar(50),
+        class_time varchar(50),
+        start_time varchar(50),
+        end_time varchar(50),
+        money varchar(50),
+        emp_name varchar(50)
+        );
+    	INSERT INTO tmp_classplan(sort,course_name,course_type,year,campus_name,cp_type,cp_date,class_time,start_time,end_time,money,emp_name)
+        VALUES
+        <foreach collection="classplanList" item="info" index="index"  separator=",">
+            (
+            #{index},
+            #{info.courseName, jdbcType=VARCHAR},
+            #{info.courseType, jdbcType=VARCHAR},
+            #{info.year, jdbcType=VARCHAR},
+            #{info.placeId, jdbcType=VARCHAR},
+            #{info.cpType, jdbcType=VARCHAR},
+            #{info.cpDate, jdbcType=VARCHAR},
+            #{info.classTime, jdbcType=VARCHAR},
+            #{info.startTime, jdbcType=VARCHAR},
+            #{info.endTime, jdbcType=VARCHAR},
+            #{info.money, jdbcType=VARCHAR},
+            #{info.empName, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    
+    
+    
+    <select id="selectClassPlanInfoInsert" resultType="java.util.HashMap">
+		SELECT
+        a.std_name,
+        '1' id_type,
+        a.id_card,
+        a.sex,
+        a.birthday,
+        a.nation,
+        '' mobile,
+        'X' std_source,
+        #{user.realName, jdbcType=VARCHAR} create_user,
+        #{user.userId, jdbcType=VARCHAR} create_user_id
+        from 
+        tmp_wbstudent_info a 
+      WHERE NOT  EXISTS(select bsi.id_card from bd_student_info bsi where bsi.id_card=a.id_card);
+	</select>
+	
+    <insert id="insertByExcel">
+        insert into bd_class_plan (
+        cp_id, 
+        cp_date, 
+        start_time,
+		end_time, 
+		place_id, 
+		emp_id,
+		course_id,
+		class_time, 
+		cp_type,
+		update_time,  
+		create_time, 
+		create_user_id, 
+		create_user) 
+		values
+		<foreach collection="classplanList" item="info" index="index"  separator=",">
+            (
+            #{info.cpId, jdbcType=VARCHAR},
+            #{info.cpDate, jdbcType=VARCHAR},
+            #{info.startTime, jdbcType=VARCHAR},
+            #{info.endTime, jdbcType=VARCHAR},
+            #{info.campusId, jdbcType=VARCHAR},
+            #{info.empId, jdbcType=VARCHAR},
+            #{info.courseId, jdbcType=VARCHAR},
+            #{info.classTime, jdbcType=VARCHAR},
+            #{info.cpType, jdbcType=VARCHAR},
+            #{info.updateTime, jdbcType=VARCHAR},
+            #{info.createTime, jdbcType=VARCHAR},
+            #{info.createUserId, jdbcType=VARCHAR},
+            #{info.createUser, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        
+        UPDATE
+		oa_employee_other oeo
+		INNER JOIN oa_employee oe on oe.emp_id=oeo.emp_id
+		INNER JOIN tmp_classplan tc on tc.emp_name=oe.emp_name
+		SET oeo.other_fee = tc.money
+		WHERE tc.emp_name!='' and tc.money!=''
+
+    </insert>
+    
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_class_plan
+		where cp_id = #{cpId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_class_plan
+		where cp_id = #{cpId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdClassPlan">
+		insert into bd_class_plan
+		(cp_id, cp_date, start_time,
+		end_time, place_id, emp_id,
+		course_id,
+		class_time, cp_type,
+		update_time, update_user, update_user_id,
+		create_user_id, create_time, create_user,
+		ext_1, ext_2, ext_3)
+		values
+		(#{cpId,jdbcType=VARCHAR}, #{cpDate,jdbcType=VARCHAR},
+		#{startTime,jdbcType=TIMESTAMP},
+		#{endTime,jdbcType=TIMESTAMP},
+		#{placeId,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR},
+		#{courseId,jdbcType=VARCHAR}, #{classTime,jdbcType=VARCHAR},
+		#{cpType,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{ext1,jdbcType=VARCHAR},
+		#{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdClassPlan">
+		insert into bd_class_plan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			cp_id,
+			<if test="cpDate != null">
+				cp_date,
+			</if>
+			<if test="startTime != null">
+				start_time,
+			</if>
+			<if test="endTime != null">
+				end_time,
+			</if>
+			<if test="placeId != null">
+				place_id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="courseId != null">
+				course_id,
+			</if>
+			<if test="classTime != null">
+				class_time,
+			</if>
+			<if test="cpType != null">
+				cp_type,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="ext1 != null">
+				ext_1,
+			</if>
+			<if test="ext2 != null">
+				ext_2,
+			</if>
+			<if test="ext3 != null">
+				ext_3,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{cpId},
+			<if test="cpDate != null">
+				#{cpDate,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				#{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="placeId != null">
+				#{placeId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				#{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="classTime != null">
+				#{classTime,jdbcType=VARCHAR},
+			</if>
+			<if test="cpType != null">
+				#{cpType,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				#{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				#{ext3,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateEmpIdMoney" parameterType="java.lang.String">
+		UPDATE
+		oa_employee_other SET other_fee = #{money,jdbcType=VARCHAR}
+		WHERE
+		emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdClassPlan">
+		update bd_class_plan
+		<set>
+			<if test="cpDate != null and '' != cpDate">
+				cp_date = #{cpDate,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null and '' != startTime">
+				start_time = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null and '' != endTime">
+				end_time = #{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="placeId != null and '' != placeId">
+				place_id = #{placeId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null and '' != empId">
+				emp_id = #{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null and '' != courseId">
+				course_id = #{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="classTime != null and '' != classTime">
+				class_time = #{classTime,jdbcType=VARCHAR},
+			</if>
+			<if test="cpType != null and '' != cpType">
+				cp_type = #{cpType,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null and '' != updateTime">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null and '' != updateUser">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and '' != updateUserId">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null and '' != createUserId">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null and '' != createTime">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null and '' != createUser">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null and '' != ext1">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null and '' != ext2">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null and '' != ext3">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where cp_id = #{cpId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdClassPlan">
+		update
+		bd_class_plan
+		set cp_date = #{cpDate,jdbcType=VARCHAR},
+		start_time =
+		#{startTime,jdbcType=TIMESTAMP},
+		end_time =
+		#{endTime,jdbcType=TIMESTAMP},
+		place_id = #{placeId,jdbcType=VARCHAR},
+		emp_id = #{empId,jdbcType=VARCHAR},
+		course_id =
+		#{courseId,jdbcType=VARCHAR},
+		class_time =
+		#{classTime,jdbcType=VARCHAR},
+		cp_type = #{cpType,jdbcType=VARCHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR},
+		create_user_id =
+		#{createUserId,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		create_user =
+		#{createUser,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2
+		= #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR}
+		where cp_id
+		= #{cpId,jdbcType=VARCHAR}
+	</update>
+</mapper>

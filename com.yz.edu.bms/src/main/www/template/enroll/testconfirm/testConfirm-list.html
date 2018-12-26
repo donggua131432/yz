@@ -1,0 +1,137 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>考前确认</title>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+    招生管理 <span class="c-gray en">/</span>
+    考前确认
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+       <i class="iconfont icon-shuaxin"></i>
+    </a>
+</nav>
+<div id="tab_demo" class="HuiTab">
+    <div class="tabBar clearfix">
+        <span>待考前确认学员</span><span>我的学员现场确认</span><span>现场确认结果</span>
+    </div>
+    <div class="tabCon">
+        <div class="page-container">
+            <div class="text-l search" style="position: relative">
+                <div class="cl">
+                    <div class="cl">
+                        <div class="f-l">
+                            <span>学员姓名:</span>
+                            <input type="text" class="input-text radius ml-10" style="width: 70%" placeholder="输入学员姓名"
+                                   id="stdName">
+                        </div>
+                        <div class="f-l">
+                            <span>证件号码:</span>
+                            <input type="text" class="input-text radius ml-10" style="width: 70%" placeholder="输入证件号码"
+                                   id="idCard">
+                        </div>
+                        <div class="f-l">
+                            <span>手机号码:</span>
+                            <input type="text" class="input-text radius ml-10" style="width: 70%" placeholder="输入手机号码"
+                                   id="telephone">
+                        </div>
+                        <div class="f-r mr-5">
+                            <a class="btn btn-primary radius" style="width: 100px" href="javascript:;"
+                               onclick="_search();"/> <i class="iconfont icon-sousuo"></i> 搜索 </a> <a
+                                class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:;"><i
+                                class="iconfont icon-shuaxin"></i></a>
+                        </div>
+                    </div>
+                    <div class="cl">
+                        <div class="f-l">
+                            <span>招生类型:</span>
+                            <select class="select" size="1" id="recruitType" style="width: 70%">
+                                <option value="" selected>--请选择招生类型--</option>
+                            </select>
+                        </div>
+                        <div class="f-l">
+                            <span>全额类型:</span>
+                            <select class="select" size="1" id="scholarship" style="width: 70%">
+                                <option value="" selected>--请选择全额类型--</option>
+                            </select>
+                        </div>
+                        <div class="f-l">
+                            <span>学员状态:</span>
+                            <select class="select" size="1" id="stdStage" style="width: 70%">
+                                <option value="" selected>--请选择学员状态--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+                        <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                            <i class="iconfont icon-xiala"></i>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-1">
+                <div class="cl pd-15 bg-1">
+                    <div class="mt-35 bg-fff">
+                        <table class="table table-border table-bordered table-hover table-bg table-sort">
+                            <thead>
+                            <tr class="text-c">
+                                <th width="25"><input type="checkbox" name="all" value=""></th>
+                                <th width="80">学员</th>
+                                <th width="100">年级</th>
+                                <th width="40">招生老师</th>
+                                <th width="90">报考层次</th>
+                                <th width="100">第一志愿</th>
+                                <th width="90">学员状态</th>
+                                <th width="100">招生分校</th>
+                                <th width="100">操作</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tabCon">
+    </div>
+    <div class="tabCon">
+    </div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/webjs/enroll/testconfirm/testConfirm-list.js}"></script>
+</body>
+</html>

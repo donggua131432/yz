@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsGiveStatusMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsGiveStatus" >
+    <id column="give_id" property="giveId" jdbcType="VARCHAR" />
+    <result column="field_name" property="fieldName" jdbcType="VARCHAR" />
+    <result column="field_desc" property="fieldDesc" jdbcType="VARCHAR" />
+    <result column="is_give" property="isGive" jdbcType="CHAR" />
+    <result column="give_time" property="giveTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    give_id, field_name, field_desc, is_give, give_time, user_id, amount
+  </sql>
+  <select id="countBy" resultType="int" parameterType="com.yz.model.UsGiveStatus" >
+    select 
+    count(1)
+    from us_give_status
+    where field_name = #{fieldName,jdbcType=VARCHAR} 
+    and user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsGiveStatus" >
+    insert into us_give_status
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      
+        give_id,
+      <if test="fieldName != null" >
+        field_name,
+      </if>
+      <if test="fieldDesc != null" >
+        field_desc,
+      </if>
+      <if test="isGive != null" >
+        is_give,
+      </if>
+      <if test="giveTime != null" >
+        give_time,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        seq(),
+      <if test="fieldName != null" >
+        #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldDesc != null" >
+        #{fieldDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isGive != null" >
+        #{isGive,jdbcType=CHAR},
+      </if>
+      <if test="giveTime != null" >
+        #{giveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+ 
+</mapper>

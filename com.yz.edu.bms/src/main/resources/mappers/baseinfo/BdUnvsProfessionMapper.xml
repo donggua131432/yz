@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdUnvsProfessionMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdUnvsProfession" >
+    <id column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="CHAR" />
+    <result column="grade" property="grade" jdbcType="CHAR" />
+    <result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+    <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+    <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+    <result column="pfsn_cata" property="pfsnCata" jdbcType="VARCHAR" />
+    <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+    <result column="teach_method" property="teachMethod" jdbcType="VARCHAR" />
+    <result column="pass_score" property="passScore" jdbcType="VARCHAR" />
+    <result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="is_teach" property="isTeach" jdbcType="CHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+    <result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResult" type="java.util.Map" >
+    <result column="pfsn_id" property="id" jdbcType="VARCHAR" />
+    <result column="pfsn_name" property="text" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="GradeResult" type="java.util.Map" >
+     <result column="grade" property="grade" jdbcType="CHAR" />
+   </resultMap>
+  <sql id="Base_Column_List" >
+    pfsn_id, year, grade, unvs_id, pfsn_name, pfsn_code, pfsn_cata, pfsn_level, teach_method, 
+    pass_score, test_subject, group_id, is_teach, is_allow, remark,  update_time, 
+    update_user, update_user_id, create_user_id, create_time, create_user, ext_1, ext_2, 
+    ext_3
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT 
+	  p.pfsn_id,
+	  p.`year`,
+	  p.grade,
+	  p.unvs_id,
+	  p.pfsn_name,
+	  p.pfsn_code,
+	  p.pfsn_cata,
+	  p.pfsn_level,
+	  p.teach_method,
+	  p.pass_score,
+	  p.test_subject,
+	  p.group_id,
+	  p.is_teach,
+	  p.is_allow,
+	  p.remark,
+	  p.update_time,
+	  p.update_user,
+	  p.update_user_id,
+	  p.create_user_id,
+	  p.create_time,
+	  p.create_user,
+	  p.ext_1,
+	  p.ext_2,
+	  p.ext_3,
+	  u.unvs_name,
+	  u.recruit_type,
+	  g.group_name
+	FROM
+	  bd_unvs_profession p 
+	  LEFT JOIN bd_university u 
+	    ON u.unvs_id = p.unvs_id
+	  LEFT JOIN bd_test_group g 
+	  	on g.group_id = p.group_id 
+	WHERE pfsn_id = #{pfsnId,jdbcType=VARCHAR} 
+  </select>
+  
+  <select id="getParamByPfsnCode" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+   <include refid="Base_Column_List" />
+    from bd_unvs_profession
+    where pfsn_code = #{paramName,jdbcType=VARCHAR}
+  </select>
+  <select id="searchGradeJson" resultMap="GradeResult" parameterType="java.lang.String" >
+    select 
+    grade
+    from bd_unvs_profession
+    where 1 = 1 
+       <if test="sName != null and '' != sName" >
+       and grade like  CONCAT('%',#{sName},'%')
+        </if>
+       and pfsn_name = #{pfsnName}
+       and pfsn_level = #{pfsnLevel}
+       and unvs_id = #{unvsId}
+    order by create_time desc   
+  </select>
+  <select id="searchProfessionJson" resultMap="BaseResult" parameterType="java.lang.String" >
+    select 
+    pfsn_id,pfsn_name
+    from bd_unvs_profession
+    where 1 = 1 
+    <if test="pfsnName != null and '' != pfsnName" >
+       and pfsn_name like  CONCAT('%',#{pfsnName},'%')
+    </if>
+    <if test="grade != null and '' != grade">
+    	and grade = #{grade}
+    </if>
+       and pfsn_level = #{pfsnLevel}
+       and unvs_id = #{unvsId}
+     order by create_time desc     
+  </select>
+
+  <select id="findAllKeyValue" resultType="java.util.Map" parameterType="java.lang.String" >
+    select pfsn_id,pfsn_name,pfsn_code
+    from bd_unvs_profession
+    where 1=1
+    <if test="sName != null and '' != sName">
+      and (pfsn_name like CONCAT('%',#{sName},'%') or pfsn_code like CONCAT('%',#{sName},'%'))
+    </if>
+    order by create_time desc
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.yz.model.baseinfo.BdUnvsProfession" >
+    select 
+          pfsn_id,
+		  year,
+		  grade,
+		  unvs_id,
+		  pfsn_name,
+		  pfsn_code,
+		  pfsn_cata,
+		  pfsn_level,
+		  teach_method,
+		  pass_score,
+		  (SELECT 
+		    GROUP_CONCAT(subject_name) 
+		  FROM
+		    bd_tg bt 
+		    LEFT JOIN bd_test_subject bts 
+		      ON bt.`subject_id` = bts.`subject_id` 
+		  WHERE bt.`group_id` = bup.`group_id`) test_subject,
+		  group_id,
+		  is_teach,
+		  is_allow,
+		  remark,
+		  update_time,
+		  update_user,
+		  update_user_id,
+		  create_user_id,
+		  create_time,
+		  create_user,
+		  ext_1,
+		  ext_2,
+		  ext_3 
+    from bd_unvs_profession bup
+    where 1 = 1
+    <if test="year != null and '' != year" >
+       and year = #{year,jdbcType=CHAR}
+      </if>
+      <if test="grade != null and '' != grade" >
+        and grade = #{grade,jdbcType=CHAR}
+      </if>
+      <if test="unvsId != null and '' != unvsId" >
+        and unvs_id = #{unvsId,jdbcType=VARCHAR}
+      </if>
+      <if test="pfsnName != null and '' != pfsnName" >
+        and pfsn_name = #{pfsnName,jdbcType=VARCHAR}
+      </if>
+      <if test="pfsnCode != null and '' != pfsnCode" >
+        and pfsn_code like  CONCAT('%',#{pfsnCode},'%')
+      </if>
+      <if test="pfsnCata != null and '' != pfsnCata" >
+        and pfsn_cata = #{pfsnCata,jdbcType=VARCHAR}
+      </if>
+      <if test="pfsnLevel != null and '' != pfsnLevel" >
+        and pfsn_level = #{pfsnLevel,jdbcType=VARCHAR}
+      </if>
+      <if test="teachMethod != null and '' != teachMethod" >
+        and teach_method = #{teachMethod,jdbcType=VARCHAR}
+      </if>
+      <if test="passScore != null and '' != passScore" >
+        and pass_score = #{passScore,jdbcType=VARCHAR}
+      </if>
+      <if test="1 == testSubject" >
+        and test_subject IS NULL OR test_subject = ''
+      </if>
+       <if test="2 == testSubject" >
+        and test_subject IS NOT NULL and test_subject != ''
+      </if>
+      <if test="groupId != null and '' != groupId" >
+        and group_id = #{groupId,jdbcType=VARCHAR}
+      </if>
+      <if test="isTeach != null and '' != isTeach" >
+        and is_teach = #{isTeach,jdbcType=CHAR}
+      </if>
+      <if test="isAllow != null and '' != isAllow" >
+        and is_allow = #{isAllow,jdbcType=CHAR}
+      </if>
+      <if test="remark != null and '' != remark" >
+        and remark = #{remark,jdbcType=VARCHAR}
+      </if>
+      <if test="updateTime != null and '' != updateTime" >
+        and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateUser != null and '' != updateUser" >
+        and update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="updateUserId != null and '' != updateUserId" >
+        and update_user_id = #{updateUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="createUserId != null and '' != createUserId" >
+        and create_user_id = #{createUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null and '' != createTime" >
+        and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createUser != null and '' != createUser" >
+        and create_user = #{createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="ext1 != null and '' != ext1" >
+        and ext_1 = #{ext1,jdbcType=VARCHAR}
+      </if>
+      <if test="ext2 != null and '' != ext2" >
+        and ext_2 = #{ext2,jdbcType=VARCHAR}
+      </if>
+      <if test="ext3 != null and '' != ext3" >
+        and ext_3 = #{ext3,jdbcType=VARCHAR}
+      </if>
+      order by update_time desc;
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from   bd_unvs_profession 
+    where pfsn_id = #{pfsnId,jdbcType=VARCHAR}
+  </delete>
+  
+   <update id="opendownAllUnvsProfession">
+    update  bd_unvs_profession set 
+      <choose>
+        <when test="exType == 'OPEN'">
+            is_allow = '1'
+        </when>
+        <otherwise>
+            is_allow = '0'
+        </otherwise>
+    </choose>
+    where pfsn_id in
+        <foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+  </update>
+  
+  <delete id="deleteAllUnvsProfession">
+     delete from  bd_unvs_profession
+    where pfsn_id in
+    <foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.baseinfo.BdUnvsProfession" >
+    insert into bd_unvs_profession (pfsn_id, year, grade, 
+      unvs_id, pfsn_name, pfsn_code, 
+      pfsn_cata, pfsn_level, teach_method, 
+      pass_score, test_subject, group_id, 
+      is_teach, is_allow, remark, 
+      update_time, update_user, 
+      update_user_id, create_user_id, create_time, 
+      create_user, ext_1, ext_2, 
+      ext_3)
+    values (#{pfsnId}, #{year,jdbcType=CHAR}, #{grade,jdbcType=CHAR}, 
+      #{unvsId,jdbcType=VARCHAR}, #{pfsnName,jdbcType=VARCHAR}, #{pfsnCode,jdbcType=VARCHAR}, 
+      #{pfsnCata,jdbcType=VARCHAR}, #{pfsnLevel,jdbcType=VARCHAR}, #{teachMethod,jdbcType=VARCHAR}, 
+      #{passScore,jdbcType=VARCHAR}, #{testSubject,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR}, 
+      #{isTeach,jdbcType=CHAR}, #{isAllow,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}, 
+       #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, 
+      #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdUnvsProfession" >
+    insert into bd_unvs_profession
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        pfsn_id,
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="unvsId != null" >
+        unvs_id,
+      </if>
+      <if test="pfsnName != null" >
+        pfsn_name,
+      </if>
+      <if test="pfsnCode != null" >
+        pfsn_code,
+      </if>
+      <if test="pfsnCata != null" >
+        pfsn_cata,
+      </if>
+      <if test="pfsnLevel != null" >
+        pfsn_level,
+      </if>
+      <if test="teachMethod != null" >
+        teach_method,
+      </if>
+      <if test="passScore != null" >
+        pass_score,
+      </if>
+      <if test="testSubject != null" >
+        test_subject,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="isTeach != null" >
+        is_teach,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{pfsnId, jdbcType=VARCHAR},
+      <if test="year != null" >
+        #{year,jdbcType=CHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=CHAR},
+      </if>
+      <if test="unvsId != null" >
+        #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnName != null" >
+        #{pfsnName,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCode != null" >
+        #{pfsnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCata != null" >
+        #{pfsnCata,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnLevel != null" >
+        #{pfsnLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="teachMethod != null" >
+        #{teachMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="passScore != null" >
+        #{passScore,jdbcType=VARCHAR},
+      </if>
+      <if test="testSubject != null" >
+        #{testSubject,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="isTeach != null" >
+        #{isTeach,jdbcType=CHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.baseinfo.BdUnvsProfession" >
+    update bd_unvs_profession
+    <set >
+      <if test="year != null and '' != year" >
+        year = #{year,jdbcType=CHAR},
+      </if>
+      <if test="grade != null and '' != grade" >
+        grade = #{grade,jdbcType=CHAR},
+      </if>
+      <if test="unvsId != null and '' != unvsId" >
+        unvs_id = #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnName != null and '' != pfsnName" >
+        pfsn_name = #{pfsnName,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCode != null and '' != pfsnCode" >
+        pfsn_code = #{pfsnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCata != null and '' != pfsnCata" >
+        pfsn_cata = #{pfsnCata,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnLevel != null and '' != pfsnLevel" >
+        pfsn_level = #{pfsnLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="teachMethod != null and '' != teachMethod" >
+        teach_method = #{teachMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="passScore != null and '' != passScore" >
+        pass_score = #{passScore,jdbcType=VARCHAR},
+      </if>
+      <if test="testSubject != null and '' != testSubject" >
+        test_subject = #{testSubject,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null and '' != groupId" >
+        group_id = #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="isTeach != null and '' != isTeach" >
+        is_teach = #{isTeach,jdbcType=CHAR},
+      </if>
+      <if test="isAllow != null and '' != isAllow" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="remark != null and '' != remark" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null and '' != updateTime" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and '' != updateUser" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null and '' != updateUserId" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and '' != createUserId" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and '' != createTime" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null and '' != createUser" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null and '' != ext1" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null and '' != ext2" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null and '' != ext3" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where pfsn_id = #{pfsnId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.baseinfo.BdUnvsProfession" >
+    update bd_unvs_profession
+    set year = #{year,jdbcType=CHAR},
+      grade = #{grade,jdbcType=CHAR},
+      unvs_id = #{unvsId,jdbcType=VARCHAR},
+      pfsn_name = #{pfsnName,jdbcType=VARCHAR},
+      pfsn_code = #{pfsnCode,jdbcType=VARCHAR},
+      pfsn_cata = #{pfsnCata,jdbcType=VARCHAR},
+      pfsn_level = #{pfsnLevel,jdbcType=VARCHAR},
+      teach_method = #{teachMethod,jdbcType=VARCHAR},
+      pass_score = #{passScore,jdbcType=VARCHAR},
+      test_subject = #{testSubject,jdbcType=VARCHAR},
+      group_id = #{groupId,jdbcType=VARCHAR},
+      is_teach = #{isTeach,jdbcType=CHAR},
+      is_allow = #{isAllow,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where pfsn_id = #{pfsnId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <resultMap type="java.util.HashMap" id="TestGroup">
+     <result column="group_id" property="groupId" jdbcType="VARCHAR"/>
+     <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="findTestGroupByPfsnLevel" resultMap="TestGroup">
+  	SELECT group_id,group_name FROM bd_test_group where pfsn_level=#{pfsnLevel,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findTestSubjectByGroupId" resultType="java.lang.String">
+	select  GROUP_CONCAT(bts.`subject_name`) subject_name from
+	 bd_tg bt left join bd_test_subject bts on bt.`subject_id`=bts.`subject_id` where bt.`group_id`=#{groupId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAllSubject" resultType="java.util.HashMap">
+  	SELECT `subject_id` AS subjectId, subject_name AS subjectName FROM bd_test_subject
+  </select>
+  
+  <select id="selectTestAreaProvince" resultType="com.yz.model.system.SysProvince" parameterType="string">
+  	select 
+	  p.province_code as provinceCode,
+	  p.province_name as provinceName
+	from
+	  sys_province p 
+	where p.`province_code` in 
+	  (select 
+	    ta.`province_code` 
+	  from
+	    bd_test_area ta 
+	  where ta.`is_allow` = '1'
+	  and ta.`ta_id` in 
+	    (select 
+	      ut.ta_id 
+	    from
+	      bd_university_test ut 
+	    where ut.`unvs_id` = #{unvsId, jdbcType=VARCHAR}
+	      ))
+  </select>
+  
+  <select id="selectTestAreaCity" resultType="com.yz.model.system.SysCity" parameterType="string">
+  	SELECT 
+	  c.city_code AS cityCode,
+	  c.`province_code` AS provinceCode,
+	  c.city_name AS cityName
+	FROM
+	  sys_city c
+	WHERE c.`city_code` IN 
+	  (select 
+	    ta.`city_code` 
+	  from
+	    bd_test_area ta 
+	  where ta.`is_allow` = '1'
+	  and ta.`ta_id` in 
+	    (select 
+	      ut.ta_id 
+	    from
+	      bd_university_test ut 
+	    where ut.`unvs_id` = #{unvsId, jdbcType=VARCHAR}
+	      ))
+  </select>
+  
+  <resultMap id="TaMap" type="com.yz.model.baseinfo.BdTestArea" >
+    <id column="ta_id" property="taId" jdbcType="VARCHAR" />
+    <result column="ta_name" property="taName" jdbcType="VARCHAR" />
+    <result column="ta_type" property="taType" jdbcType="VARCHAR" />
+    <result column="ta_code" property="taCode" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceId" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityId" jdbcType="VARCHAR" />
+    <result column="district_code" property="areaId" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+  </resultMap>
+  
+  <select id="selectTestArea" resultMap="TaMap" parameterType="string">
+  	SELECT 
+	  ta_id, ta_name, ta_type, ta_code, province_code, city_code, district_code, is_allow
+	FROM
+	  bd_test_area t 
+	where t.`is_allow` = '1'
+	  and t.`ta_id` in 
+	  (SELECT 
+	    ut.`ta_id` 
+	  FROM
+	    bd_university_test ut 
+	  WHERE ut.unvs_id = #{unvsId, jdbcType=VARCHAR})
+  </select>
+
+  <select id="searchAllowProfessionJson" resultMap="BaseResult" parameterType="java.lang.String" >
+    select
+    pfsn_id,pfsn_name,pfsn_code
+    from bd_unvs_profession
+    where 1 = 1
+    <if test="sName != null and '' != sName" >
+      and (pfsn_name like  CONCAT('%',#{sName},'%') or pfsn_code like  CONCAT('%',#{sName},'%'))
+    </if>
+    <if test="grade != null and '' != grade">
+      and grade = #{grade}
+    </if>
+    and pfsn_level = #{pfsnLevel}
+    and unvs_id = #{unvsId}
+    and is_allow = '1'
+    order by create_time desc
+  </select>
+  
+</mapper>

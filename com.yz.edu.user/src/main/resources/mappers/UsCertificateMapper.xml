@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsCertificateMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsCertificate" >
+    <id column="cert_id" property="certId" jdbcType="VARCHAR" />
+    <result column="cert_no" property="certNo" jdbcType="VARCHAR" />
+    <result column="cert_type" property="certType" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cert_id, cert_no, cert_type, user_id, name, update_time, update_user, update_user_id
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from us_certificate
+    where cert_id = #{certId,jdbcType=VARCHAR}
+  </select>
+ 
+  <insert id="insertSelective" parameterType="com.yz.model.UsCertificate" >
+	<selectKey keyProperty="certId" resultType="string" order="BEFORE">
+	  select seq()
+	</selectKey>
+    insert into us_certificate
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        cert_id,
+      <if test="certNo != null" >
+        cert_no,
+      </if>
+      <if test="certType != null" >
+        cert_type,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      #{certId, jdbcType=VARCHAR},
+      <if test="certNo != null" >
+        #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.UsCertificate" >
+    update us_certificate
+    <set >
+      <if test="certNo != null" >
+        cert_no = #{certNo,jdbcType=VARCHAR},
+      </if>
+      <if test="certType != null" >
+        cert_type = #{certType,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name, jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cert_id = #{certId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="count" parameterType="com.yz.model.UsCertificate" resultType="int">
+  	select 
+    	count(1)
+    from us_certificate
+    where user_id = #{userId, jdbcType=VARCHAR} and cert_type = #{certType, jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="CertMap" type="java.util.HashMap" >
+    <id column="cert_id" property="certId" jdbcType="VARCHAR" />
+    <result column="cert_no" property="certNo" jdbcType="VARCHAR" />
+    <result column="cert_type" property="certType" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getCertBy" resultMap="BaseResultMap">
+  	SELECT 
+	  cert_id,
+	  cert_no,
+	  cert_type,
+	  user_id,
+	  DATE_FORMAT(
+	    update_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS update_time 
+	FROM
+	  us_certificate 
+	WHERE user_id = #{userId, jdbcType=VARCHAR}
+	  AND cert_type = #{certType, jdbcType=VARCHAR}
+	LIMIT 0, 1
+  </select>
+  
+  <select id="countBy" resultType="int">
+  	select 
+  		count(1) from us_certificate 
+  	WHERE user_id = #{userId, jdbcType=VARCHAR}
+	AND cert_type = #{certType, jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <!--/meta 作为公共模版分离出去-->
+
+    <title>转报学员</title>
+</head>
+<body>
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal max-w" id="form-member-add" th:object="${studentChange}">
+        <input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token"/>
+        <input type="hidden" th:value="${exType}" name="exType" id="exType"/>
+        <input type="hidden" th:value="${ifCanUpdate}" name="ifCanUpdate" id="ifCanUpdate" />
+        <input type="hidden" th:value="${isSuper}" name="isSuper" id="isSuper"/>
+        <input type="hidden" name="recruitType" id="recruitType"/>
+        <input type="hidden" name="stdId" id="stdId"/>
+        <input type="hidden" th:value="${studentChange.prevent.learnId}" name="learnId" id="learnId"/>
+        <input type="hidden" th:value="${studentChange.old.learnId}" name="oldLearnId" id="oldLearnId"/>
+        <input type="hidden" th:value="${studentChange.old.stdName}" name="stdName" id="stdName"/>
+        <!-- 执行类型 -->
+        <div class="mb-5 bk-gray radius">
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>请选择学员：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <select class="js-data-example-ajax" style="width: 100%;" id="slearnId" name="slearnId" th:readonly="${exType} == UPDATE ? false : true"></select>
+                </div>
+            </div>
+            <br>
+        </div>
+        <div class="mb-5 bk-gray radius modifyContent">
+            <div class="layui-layer-title">原报读信息</div>
+            <div id="history">
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">年级：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" th:value="${studentChange.old.grade}" id="oldGrade" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">身份证号：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" id="oldIdCard" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">优惠类型：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text"  th:value="${studentChange.old.scholarship}"   id="oldScholarship" style="border: 0;" readonly="readonly" >
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">入围状态：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text"   id="oldInclusionStatus" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">层次：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" th:value="${studentChange.old.pfsnLevel}" id="oldPfsnLevel" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">院校：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" th:value="${studentChange.old.unvsName}" id="oldUnvsName" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">专业：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" th:value="${studentChange.old.pfsnName}" id="oldPfsnName" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">学员阶段：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" th:value="${studentChange.old.stdStage}" id="oldStdStage" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">招生老师：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text"  id="oldRecruit" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+                <div class="row cl" style="margin: 0px; padding: 0px;">
+                    <label class="form-label col-xs-4 col-sm-3">考试县区：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" class="input-text" id="oldTaName" style="border: 0;" readonly="readonly">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-5 bk-gray radius modifyContent">
+            <div class="layui-layer-title">转报内容</div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>报考层次：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <select class="js-data-example-ajax" style="width: 100%;" id="pfsnLevel" name="pfsnLevel"></select>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.pfsnLevel}" id="preventPfsnLevel" hidden="true"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>入学年级：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <select class="js-data-example-ajax" style="width: 100%;" id="grade" name="grade" onchange="gradeChange()">
+                    </select> <input type="text" class="input-text" th:value="${studentChange.prevent.grade}" id="preventGrade" hidden="true"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>第一志愿：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <select class="select" id="unvsId" name="unvsId" style="width: 30%"></select>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.unvsName}" id="preventUnvsName" hidden="true"/>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.unvsId}" id="preventUnvsId" hidden="true"/>
+                    <select id="pfsnId" name="pfsnId" style="width: 30%" disabled="disabled"></select>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.pfsnName}" id="preventPfsnName" hidden="true"/>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.pfsnId}" id="preventPfsnId" hidden="true"/>
+                    <select class="select" id="taId" name="taId" style="width: 30%" disabled="disabled"></select>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.taName}" id="preventTaName" hidden="true"/>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.taId}" id="preventTaId" hidden="true"/>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent}" id="prevent"  hidden="true"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>优惠类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <select class="select" id="scholarship" name="scholarship"></select>
+                    <input type="text" class="input-text" th:value="${studentChange.prevent.scholarship}" id="preventScholarship" hidden="true"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">优惠规则触发条件：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <span id="offerRemark"></span>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">招生老师：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <span id="recruitName"></span>
+                    <input type="hidden" name="assignFlag" id="assignFlag"/>
+                    <input type="hidden" name="recruit" id="recruit"/>
+                    <input type="hidden" name="recruitDpId" id="recruitDpId"/>
+                    <input type="hidden" name="recruitCampusId" id="recruitCampusId"/>
+                    <input type="hidden" name="recruitCampusManager" id="recruitCampusManager"/>
+                    <input class="btn btn-secondary radius ml-10" type="button" value="&nbsp;分配&nbsp;" onclick="showDistrictBox('ZSLS');"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <table id="feeTable" class="table table-border table-bordered table-striped ml-15">
+                    <thead>
+                    <tr class="text-c">
+                        <th>收费项目</th>
+                        <th>收费金额(元)</th>
+                        <th>优惠金额(元)</th>
+                        <th>应缴金额(元)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">备注：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{reason}" placeholder="备注" id="reason" name="reason"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">提交人：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{updateUser}" placeholder="提交人" id="updateUser" style="border: 0;" readonly="readonly"/>
+                </div>
+                <label class="form-label col-xs-4 col-sm-3">提交时间：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{createTime}" placeholder="提交时间" id="createTime" style="border: 0;" readonly="readonly"/>
+                </div>
+            </div>
+        </div>
+        <div class="row cl text-c" id="subButton">
+            <input class="btn btn-success radius" type="submit" value="提交" style="width:90px;">
+        </div>
+        <!--  <div class="row cl">
+          <label class="form-label col-xs-4 col-sm-3">收费标准：</label>
+          <div class="formControls col-xs-8 col-sm-9">
+            <span id="fdName"> </span>
+          </div>
+        </div>
+        <div class="row cl">
+          <label class="form-label col-xs-4 col-sm-3">优惠规则：</label>
+          <div class="formControls col-xs-8 col-sm-9">
+            <span id="offerName"> </span>
+          </div>
+        </div> -->
+    </form>
+</article>
+
+<script type="text/javascript" th:inline="javascript">
+    var recruitEmpInfo=[[${recruitEmpInfo}]], learnId = [[${learnId}]]
+</script>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/transfer/change/student-change-edit.js}"></script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

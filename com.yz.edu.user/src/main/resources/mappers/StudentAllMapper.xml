@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.StudentAllMapper">
+
+	<resultMap id="StudentBaseInfo" type="com.yz.model.BdStudentBaseInfo">
+		<id column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="id_type" jdbcType="VARCHAR" property="idType" />
+		<result column="id_card" jdbcType="VARCHAR" property="idCard" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="birthday" jdbcType="VARCHAR" property="birthday" />
+		<result column="edcs_type" jdbcType="VARCHAR" property="edcsType" />
+		<result column="nation" jdbcType="VARCHAR" property="nation" />
+		<result column="political_status" jdbcType="VARCHAR" property="politicalStatus" />
+		<result column="rpr_type" jdbcType="VARCHAR" property="rprType" />
+		<result column="rpr_province_code" jdbcType="VARCHAR" property="rprProvinceCode" />
+		<result column="rpr_city_code" jdbcType="VARCHAR" property="rprCityCode" />
+		<result column="rpr_district_code" jdbcType="VARCHAR" property="rprDistrictCode" />
+		<result column="now_province_code" jdbcType="VARCHAR" property="nowProvinceCode" />
+		<result column="now_city_code" jdbcType="VARCHAR" property="nowCityCode" />
+		<result column="now_district_code" jdbcType="VARCHAR" property="nowDistrictCode" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="job_type" jdbcType="VARCHAR" property="jobType" />
+		<result column="wp_province_code" jdbcType="VARCHAR" property="wpProvinceCode" />
+		<result column="wp_city_code" jdbcType="VARCHAR" property="wpCityCode" />
+		<result column="wp_district_code" jdbcType="VARCHAR" property="wpDistrictCode" />
+		<result column="wp_time" jdbcType="VARCHAR" property="wpTime" />
+		<result column="wp_address" jdbcType="VARCHAR" property="wpAddress" />
+		<result column="wp_telephone" jdbcType="VARCHAR" property="wpTelephone" />
+		<result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="emergency_contact" jdbcType="VARCHAR" property="emergencyContact" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR"/>
+		<result column="address_edit_time" property="addressEditTime" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="selectTutionPaidCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  `bms`.bd_sub_order so 
+		  LEFT JOIN `bms`.bd_student_order o 
+		    ON so.`order_no` = o.`order_no` 
+		  LEFT JOIN `bms`.bd_serial_suborder ss 
+		    ON ss.`sub_order_no` = so.`sub_order_no` 
+		  LEFT JOIN `bms`.bd_student_serial s 
+		    ON s.`serial_no` = ss.`serial_no` 
+		WHERE o.`learn_id` = #{learnId}
+		  AND so.`item_code` = #{itemCode}
+		  AND so.`sub_order_status` = '2' 
+		  AND s.`serial_status` IN ('2', '3') 
+		  AND s.`pay_time` &gt;= '2018-04-19 21:00:00' 
+		  AND s.`pay_time` &lt;= '2018-04-27 18:00:00' 
+	</select>
+	
+	<select id="selectLearnIdsByMobile" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  l.learn_id learnId,
+		  l.`recruit_type` recruitType
+		FROM
+		  `bms`.bd_learn_info l 
+		  LEFT JOIN `bms`.bd_student_info i 
+		    ON i.`std_id` = l.`std_id` 
+		WHERE i.`mobile` = #{mobile} 
+		  AND l.`is_completed` = '0' 
+	</select>
+	
+	<insert id="insertStdCoupon" parameterType="java.lang.String">
+		INSERT INTO `bms`.bd_student_coupon (sc_id, coupon_id, user_id) 
+		VALUES
+		<foreach collection="couponIds" item="couponId" index="index" separator="," >  
+		  (seq(), #{couponId}, #{userId})
+	    </foreach>
+	</insert>
+	
+	<select id="selectAvailableRegistCouponIds" resultType="java.lang.String" parameterType="java.lang.String">
+		select 
+		  c.`coupon_id`
+		from
+		  `bms`.bd_coupon c 
+		  LEFT JOIN `bms`.bd_coupon_trigger t 
+		    ON t.`coupon_id` = c.`coupon_id` 
+		where now() BETWEEN c.`publish_start_time` 
+		  AND c.`publish_expire_time` 
+		  AND c.`is_allow` = '1' 
+		  AND t.`c_trigger_type` = '2'
+	</select>
+	
+	<select id="selectUserIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		  user_id 
+		from
+		  `bms`.bd_student_info r
+		  left join `bms`.bd_learn_info bli
+		    on bli.`std_id` = r.`std_id` 
+		where bli.learn_id = #{learnId}
+	</select>
+
+	<select id="getStudentBaseInfoByLearnId" parameterType="string" resultMap="StudentBaseInfo">
+		SELECT 
+			b.`std_id`,
+			b.`std_name`,
+			b.`id_type`,
+			b.`id_card`,
+			b.`sex`,
+			b.`birthday`,
+			b.`nation`,
+			b.`political_status`,
+			b.`rpr_type`,
+			b.`rpr_province_code`,
+			b.`rpr_city_code`,
+			b.`rpr_district_code`,
+			b.`zip_code`,
+			b.`now_province_code`,
+			b.`now_city_code`,
+			b.`now_district_code`,
+			b.`address`,
+			b.`mobile`,
+			b.`emergency_contact`,
+			b.`job_type`,
+			b.`wp_province_code`,
+		 	b.`wp_city_code`,
+		  	b.`wp_district_code`,
+		  	b.`wp_address`,
+		  	date_format(b.`wp_time`, '%Y-%m-%d') as wp_time,
+		  	b.`wp_telephone`,
+		  	b.`address_edit_time`,
+		  	l.`grade`
+		FROM
+		  `bms`.`bd_student_info` b 
+		  left join `bms`.bd_learn_info l 
+		   on l.std_id = b.std_id
+		WHERE  l.learn_id = #{learn_id, jdbcType=VARCHAR} limit 1 
+	</select>
+	
+	<select id="getStudentInfoByIdCard" parameterType="string" resultMap="StudentBaseInfo">
+		SELECT 
+			b.`std_id`,
+			b.`std_name`,
+			b.`id_type`,
+			b.`id_card`,
+			b.`sex`,
+			b.`birthday`,
+			b.`nation`,
+			b.`political_status`,
+			b.`rpr_type`,
+			b.`rpr_province_code`,
+			b.`rpr_city_code`,
+			b.`rpr_district_code`,
+			b.`zip_code`,
+			b.`now_province_code`,
+			b.`now_city_code`,
+			b.`now_district_code`,
+			b.`address`,
+			b.`mobile`,
+			b.`emergency_contact`,
+			b.`job_type`,
+			b.`wp_province_code`,
+		 	b.`wp_city_code`,
+		  	b.`wp_district_code`,
+		  	b.`wp_address`,
+		  	date_format(b.`wp_time`, '%Y-%m-%d') as wp_time,
+		  	b.`wp_telephone`,
+		  	b.`user_id`
+		FROM
+		  `bms`.`bd_student_info` b 
+		WHERE b.`id_card` = #{idCard, jdbcType=VARCHAR}
+		limit 0,1
+	</select>
+	
+	<select id="getRecruitMap" parameterType="string" resultType="java.util.HashMap">
+		SELECT 
+		  r.`recruit`,
+		  r.`recruit_dp_id` AS dpId,
+		  r.`recruit_campus_id` AS campusId,
+		  r.`recruit_campus_manager` AS campusManager 
+		FROM
+		  `bms`.bd_learn_rules r 
+		  INNER JOIN `bms`.bd_learn_info l 
+		    ON l.`learn_id` = r.`learn_id` 
+		WHERE l.`std_id` = #{stdId, jdbcType=VARCHAR}
+		ORDER BY l.`create_time` DESC 
+		LIMIT 0, 1
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.goods.GsGoodsPurchasingMapper" >
+	<resultMap type="com.yz.model.goods.GsGoodsPurchasingInfo" id="GsGoodsPurchasing">
+	 <id column="id" property="id" jdbcType="VARCHAR"/>
+	 <result column="apply_name" property="applyName" jdbcType="VARCHAR"/>
+	 <result column="apply_reason" property="applyReason" jdbcType="VARCHAR"/>
+	 <result column="annex_path" property="annexPath" jdbcType="VARCHAR"/>
+	 <result column="goods_sku_id" property="goodsSkuId" jdbcType="VARCHAR"/>
+	 <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+	 <result column="goods_num" property="goodsNum" jdbcType="VARCHAR"/>
+	 <result column="goods_price" property="goodsPrice" jdbcType="VARCHAR"/>
+	 <result column="total_price" property="totalPrice" jdbcType="VARCHAR"/>
+	 <result column="receive_name" property="receiveName" jdbcType="VARCHAR"/>
+	 <result column="receive_mobile" property="receiveMobile" jdbcType="VARCHAR"/>
+	 <result column="province" property="province" jdbcType="VARCHAR"/>
+	 <result column="city" property="city" jdbcType="VARCHAR"/>
+	 <result column="district" property="district" jdbcType="VARCHAR"/>
+	 <result column="street" property="street" jdbcType="VARCHAR"/>
+	 <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+	 <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+	 <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+	 <result column="street_name" property="streetName" jdbcType="VARCHAR"/>
+	 <result column="address" property="address" jdbcType="VARCHAR"/>
+	 <result column="oper_user_name" property="operUserName" jdbcType="VARCHAR"/>
+	 <result column="oper_time" property="operTime" jdbcType="VARCHAR"/>
+	 <result column="remark" property="remark" jdbcType="VARCHAR"/>
+	 <result column="if_success" property="ifSuccess" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsGoodsPurchasing" resultMap="GsGoodsPurchasing" parameterType="com.yz.model.goods.GsGoodsPurchasingQuery">
+		SELECT 
+		  id,
+		  apply_name,
+		  apply_reason,
+		  annex_path,
+		  goods_sku_id,
+		  goods_name,
+		  goods_num,
+		  goods_price,
+		  total_price,
+		  receive_name,
+		  receive_mobile,
+		  province,
+		  city,
+		  district,
+		  street,
+		  province_name,
+		  city_name,
+		  district_name,
+		  street_name,
+		  address,
+		  oper_user_name,
+		  date_format(`oper_time`,'%Y-%m-%d %H:%i:%s') oper_time,
+		  remark 
+		FROM
+		  `goods_purchasing_info`
+		where 1=1
+		<if test="applyName !=null and '' !=applyName">
+			and apply_name like concat('%',#{applyName,jdbcType=VARCHAR},'%')
+		</if>  
+		<if test="receiveName !=null and '' != receiveName">
+			and receive_name like concat('%',#{receiveName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="receiveMobile !=null and '' != receiveMobile">
+			and receive_mobile = #{receiveMobile,jdbcType=VARCHAR}
+		</if>
+		order by oper_time desc
+	</select>
+	
+	<insert id="initGoodsPurchasing" parameterType="com.yz.model.goods.GsGoodsPurchasingInfo">
+		insert into goods_purchasing_info
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+        	id,
+        	<if test="applyName !=null">
+        		apply_name,
+        	</if>
+        	<if test="applyReason !=null">	
+        		apply_reason,
+        	</if>
+        	<if test="annexPath !=null">
+        		annex_path,
+        	</if>
+        	<if test="goodsSkuId !=null">
+        		goods_sku_id,
+        	</if>
+        	<if test="goodsName !=null">
+        		goods_name,
+        	</if>
+        	<if test="goodsNum !=null">
+        		goods_num,
+        	</if>
+        	<if test="goodsPrice !=null">
+        		goods_price,
+        	</if>
+        	<if test="totalPrice !=null">
+        		total_price,
+        	</if>
+        	<if test="receiveName !=null">
+        		receive_name,
+        	</if>
+        	<if test="receiveMobile !=null">
+        		receive_mobile,
+        	</if>
+        	<if test="province !=null">
+        		province,
+        	</if>
+        	<if test="city !=null">
+        		city,
+        	</if>
+        	<if test="district !=null">
+        		district,
+        	</if>
+        	<if test="street !=null">
+        		street,
+        	</if>
+        	<if test="provinceName !=null">
+        		province_name,
+        	</if>
+        	<if test="cityName !=null">
+        		city_name,
+        	</if>
+        	<if test="districtName !=null">
+        		district_name,
+        	</if>
+        	<if test="streetName !=null">
+        		street_name,
+        	</if>
+        	<if test="address !=null">
+        		address,
+        	</if>
+        	<if test="email !=null">
+        		email,
+        	</if>
+        	<if test="jdGoodsType !=null">
+        		jd_goods_type,
+        	</if>
+        	<if test="remark !=null">
+        		remark,
+        	</if>
+        	<if test="ifSuccess !=null">
+        		if_success,
+        	</if>
+        	<if test="jdOrderNo !=null">
+        		jd_order_no,
+        	</if>
+        	<if test="operUserName !=null">
+        		oper_user_name,
+        	</if>
+        	<if test="operUserId !=null">
+        		oper_user_id
+        	</if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      	#{id,jdbcType=VARCHAR},
+	        <if test="applyName !=null">
+        		#{applyName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="applyReason !=null">	
+        		#{applyReason,jdbcType=VARCHAR},
+        	</if>
+        	<if test="annexPath !=null">
+        		#{annexPath,jdbcType=VARCHAR},
+        	</if>
+        	<if test="goodsSkuId !=null">
+        		#{goodsSkuId,jdbcType=VARCHAR},
+        	</if>
+        	<if test="goodsName !=null">
+        		#{goodsName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="goodsNum !=null">
+        		#{goodsNum,jdbcType=VARCHAR},
+        	</if>
+        	<if test="goodsPrice !=null">
+        		#{goodsPrice,jdbcType=VARCHAR},
+        	</if>
+        	<if test="totalPrice !=null">
+        		#{totalPrice,jdbcType=VARCHAR},
+        	</if>
+        	<if test="receiveName !=null">
+        		#{receiveName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="receiveMobile !=null">
+        		#{receiveMobile,jdbcType=VARCHAR},
+        	</if>
+        	<if test="province !=null">
+        		#{province,jdbcType=VARCHAR},
+        	</if>
+        	<if test="city !=null">
+        		#{city,jdbcType=VARCHAR},
+        	</if>
+        	<if test="district !=null">
+        		#{district,jdbcType=VARCHAR},
+        	</if>
+        	<if test="street !=null">
+        		#{street,jdbcType=VARCHAR},
+        	</if>
+        	<if test="provinceName !=null">
+        		#{provinceName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="cityName !=null">
+        		#{cityName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="districtName !=null">
+        		#{districtName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="streetName !=null">
+        		#{streetName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="address !=null">
+        		#{address,jdbcType=VARCHAR},
+        	</if>
+        	<if test="email !=null">
+        		#{email,jdbcType=VARCHAR},
+        	</if>
+        	<if test="jdGoodsType !=null">
+        		#{jdGoodsType,jdbcType=VARCHAR},
+        	</if>
+        	<if test="remark !=null">
+        		#{remark,jdbcType=VARCHAR},
+        	</if>
+        	<if test="ifSuccess !=null">
+        		#{ifSuccess,jdbcType=VARCHAR},
+        	</if>
+        	<if test="jdOrderNo !=null">
+        		#{jdOrderNo,jdbcType=VARCHAR},
+        	</if>
+        	<if test="operUserName !=null">
+        		#{operUserName,jdbcType=VARCHAR},
+        	</if>
+        	<if test="operUserId !=null">
+        		#{operUserId,jdbcType=VARCHAR},
+        	</if>
+	    </trim>
+	</insert>
+	
+	<select id="getPurchasingDetail" resultMap="GsGoodsPurchasing">
+		SELECT 
+		  id,
+		  apply_name,
+		  apply_reason,
+		  annex_path,
+		  goods_sku_id,
+		  goods_name,
+		  goods_num,
+		  goods_price,
+		  total_price,
+		  receive_name,
+		  receive_mobile,
+		  province,
+		  city,
+		  district,
+		  street,
+		  province_name,
+		  city_name,
+		  district_name,
+		  street_name,
+		  address,
+		  oper_user_name,
+		  date_format(`oper_time`,'%Y-%m-%d %H:%i:%s') oper_time,
+		  remark,
+		  if_success 
+		FROM
+		  `goods_purchasing_info`
+		where id = #{id,jdbcType=VARCHAR} limit 1;
+	</select>
+</mapper>

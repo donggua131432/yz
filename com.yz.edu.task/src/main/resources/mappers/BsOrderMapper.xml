@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.BsOrderMapper">
+	<resultMap id="BsOrderInfoMap" type="com.yz.job.model.BsOrderInfo">
+		<id column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+		<result column="orderType" property="orderType" jdbcType="VARCHAR" />
+		<result column="jd_order_id" property="jdOrderId" jdbcType="VARCHAR" />
+		<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="sales_type" property="salesType" jdbcType="VARCHAR" />
+		<result column="sku_id" property="skuId" jdbcType="VARCHAR" />
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 京东需要同步的订单 -->
+	<select id="querySynchronousJdOrderList" resultMap="BsOrderInfoMap">
+		SELECT
+		bo.`order_no`,
+		bo.`jd_order_id`,
+		bso.`sku_id`,
+		bso.`sales_type`,
+		bso.`goods_name`,
+		bo.`order_status`
+		FROM
+		  goods.bs_order bo
+		LEFT JOIN goods.bs_sales_order bso
+		ON bo.`order_no` = bso.`order_no`
+		LEFT JOIN goods.bs_logistics bl
+		ON bo.`order_no` = bl.`order_no`
+		where bo.`jd_order_id` is not null and bso.`sales_type`=1 and bo.order_status!='3'
+		and bo.order_status!='5'
+		ORDER BY bo.`order_time` DESC
+	</select>
+
+	<!-- 批量同步订单信息 -->
+	<update id="updateOrderStatus">
+		<foreach collection="orderlist" item="order" index="index"
+			separator=" ">
+			update goods.bs_order set freight=#{order.freight,jdbcType=VARCHAR},order_price=#{order.orderPrice,jdbcType=VARCHAR},order_status=#{order.orderStatus,jdbcType=VARCHAR}
+			where order_no=#{order.orderNo,jdbcType=VARCHAR};
+			update goods.bs_sales_order set
+			price=#{order.jdPrice,jdbcType=VARCHAR},num=#{order.goodsCount,jdbcType=VARCHAR},name=#{order.goodsName,jdbcType=VARCHAR},sub_order_status=#{order.orderStatus,jdbcType=VARCHAR}
+			where order_no=#{order.orderNo,jdbcType=VARCHAR};
+			update goods.bs_logistics set
+			transport_no=#{order.jdOrderId,jdbcType=VARCHAR},logistics_status=#{order.orderStatus,jdbcType=VARCHAR}
+			where order_no=#{order.orderNo,jdbcType=VARCHAR};
+		</foreach>
+	</update>
+	
+	<update id="updateOrderCompletTime">
+  		update goods.`bs_order` set jd_ordercomplete_time=#{orderTime,jdbcType=VARCHAR} where jd_order_id=#{jdOrderId,jdbcType=VARCHAR};
+   </update>
+
+</mapper>

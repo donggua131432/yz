@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.YzTraceMapper">
+	<!-- 保存调用span -->
+	<insert id="saveTraceSpan" parameterType="java.util.List">
+	replace  into utrace.yz_spans
+			(`id` , `p_id` , `trace_id` , `app_name` ,
+			`method_name` , `destination` ,
+			`seq` , `host` , `remark` ,async,
+			`create_date` )
+			values
+		<foreach collection="spans" item="info" index="index"
+			separator=",">
+			(#{info.tid},#{info.pid},#{info.traceId},#{info.appName},#{info.methodName},#{info.destination},#{info.seq},#{info.host},#{info.remark},#{info.async},#{info.date})
+		</foreach>
+	</insert>
+
+	<!-- 保存调用traceInfo -->
+	<insert id="saveTraceInfo" parameterType="java.util.List">
+		replace into utrace.yz_trace_info(`id` ,
+	    app_name,
+		`service_name` ,
+		`remark` ,
+		`addr` ,
+		`destination` ,
+		`is_exception` ,
+		`error_code` ,
+		`create_date` )
+		values
+		<foreach collection="infos" item="info" index="index"
+			separator=",">
+			(#{info.traceId},#{info.appName},#{info.serviceName},#{info.remark},#{info.addr},#{info.destination},#{info.isError},#{info.errorCode},#{info.date})
+		</foreach>
+	</insert>
+
+  <!-- 保存调用TraceAnnotation -->
+	<insert id="saveTraceAnnotation" parameterType="java.util.List">
+		replace into utrace.yz_annotations
+		(trace_id,span_id,resouce_type,resouce_uri,destination,operation,sort,create_date)
+		values
+		<foreach collection="annotations" item="an" index="index"
+			separator=",">
+			(#{an.traceId},#{an.spanId},#{an.resouceType},#{an.resouceURI},#{an.destination},#{an.operation},#{an.sort},#{an.date})
+		</foreach>
+	</insert>
+</mapper>

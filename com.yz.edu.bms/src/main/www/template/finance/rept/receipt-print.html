@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收据单打印</title>
+    <link rel="stylesheet" th:href="@{/css/custom/shouju.css}">
+</head>
+<body>
+<div class="printDiv">
+    <div th:each="rept : ${repts}" class="YZSDReceipt rela">
+        <div class="YZSDReceipt-t"><h2>代收费收据</h2></div>
+        <div class="YZSDReceipt-t2 cl">
+            <div class="fl">
+                <span>缴费日期：</span>
+                <span th:text="${rept.payTime}"></span>
+            </div>
+            <div class="fr mr-10">
+                <span>收据编号：</span>
+                <span th:text="${rept.serialMark}"></span>
+            </div>
+        </div>
+        <div class="YZSDReceipt-m rela">
+            <table class="YZSDReceipt-m-table">
+                <tr>
+                    <td>姓名</td>
+                    <td th:text="${rept.stdName}"></td>
+                    <td>院校</td>
+                    <td th:text="${rept.unvsName}"></td>
+                    <td>报考层次</td>
+                    <td><span th:text="${rept.pfsnLevel}" name="pfsnLevel">
+                </span></td>
+                </tr>
+                <tr>
+                    <td>专业</td>
+                    <td th:text="${rept.pfsnName}" colspan="3"></td>
+                    <td>年级</td>
+                    <td><span th:text="${rept.grade}"></span>级</td>
+                </tr>
+            </table>
+            <table class="YZSDReceipt-m-table2">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>缴费项目</th>
+                    <th>收款金额</th>
+                    <th>收款方式</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item,stat : ${rept.items}">
+                    <td th:text="${stat.count}"></td>
+                    <td><span th:text="${item.itemCode}"></span>:
+                        <span th:text="${item.itemName}">
+		                </span>
+                    </td>
+                    <td th:text="${item.amount}"></td>
+                    <td><span name="paymentType"></span></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td></td>
+                    <td>合计</td>
+                    <td th:text="${rept.amount}"></td>
+                    <td></td>
+                </tr>
+                </tfoot>
+            </table>
+            <div class="ab">
+                <span>白联</span><br><span>：</span><br><span>记账</span>
+                <span class="mt-10">红联</span><br><span>：</span><br><span>客户</span>
+            </div>
+        </div>
+        <div class="YZSDReceipt-b">
+            <div class="YZSDReceipt-b-t cl">
+                <div class="fl">
+                    <span>实收金额合计：</span>
+
+                    <span th:text="${rept.cnAmount}"></span>
+                </div>
+                <div class="fl">
+                    <span>收费点：</span><span th:text="${rept.paySite}"></span>
+                    <span>收款人：</span><span th:text="${rept.payee}"></span>
+                </div>
+            </div>
+            <div class="YZSDReceipt-b-b cl fr mr-10">
+                <span>服务热线:&nbsp;400&nbsp;833&nbsp;6013</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+	$(function(){
+		
+		$(".YZSDReceipt-m-table span[name='pfsnLevel']").each(function(i,e){
+			$(e).text(_findDict("pfsnLevel",$(e).text()));
+		});
+		var paymentType = /*[[${repts[0].paymentType}]]*/;
+		var paym = _findDict("paymentType",paymentType);
+		$(".YZSDReceipt-m-table2 span[name='paymentType']").text(paym);
+		window.print();
+	})
+	function obj2string(o){ 
+ var r=[]; 
+ if(typeof o=="string"){ 
+ return "\""+o.replace(/([\'\"\\])/g,"\\$1").replace(/(\n)/g,"\\n").replace(/(\r)/g,"\\r").replace(/(\t)/g,"\\t")+"\""; 
+ } 
+ if(typeof o=="object"){ 
+ if(!o.sort){ 
+  for(var i in o){ 
+  r.push(i+":"+obj2string(o[i])); 
+  } 
+  if(!!document.all&&!/^\n?function\s*toString\(\)\s*\{\n?\s*\[native code\]\n?\s*\}\n?\s*$/.test(o.toString)){ 
+  r.push("toString:"+o.toString.toString()); 
+  } 
+  r="{"+r.join()+"}"; 
+ }else{ 
+  for(var i=0;i<o.length;i++){ 
+  r.push(obj2string(o[i])) 
+  } 
+  r="["+r.join()+"]"; 
+ } 
+ return r; 
+ } 
+ return o.toString(); 
+}
+</script>
+</html>

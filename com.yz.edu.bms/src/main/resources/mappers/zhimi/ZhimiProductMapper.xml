@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.zhimi.ZhimiProductMapper" >
+
+  <resultMap id="ProductInfoMap" type="com.yz.model.zhimi.ZhimiProductInfo" >
+    <result column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_desc" property="productDesc" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="zhimi" property="zhimi" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+   
+  </resultMap>
+  <resultMap id="ProductListMap" type="com.yz.model.zhimi.ZhimiProductList" extends="ProductInfoMap" >
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getProductList" parameterType="com.yz.model.condition.zhimi.ZhimiProductQuery" resultMap="ProductListMap">
+  	SELECT 
+	  `product_id`,
+	  `product_name`,
+	  `product_desc`,
+	  `price`,
+	  `zhimi`,
+	  `is_allow`,
+	  `sort`,
+	  DATE_FORMAT(`update_time`, '%Y-%m-%d %H:%i:%s') AS update_time,
+	  `update_user`,
+	  DATE_FORMAT(`create_time`, '%Y-%m-%d %H:%i:%s') AS create_time,
+	  `create_user` 
+	FROM
+	  goods.`ats_zhimi_product`
+	  <where>
+	  	<if test="productId != null and productId != ''">
+	  		`product_id` LIKE CONCAT('%',#{productId, jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="productName != null and productName != ''">
+	  		AND `product_name` LIKE CONCAT('%',#{productName, jdbcType=VARCHAR},'%')
+	  	</if>
+	  	<if test="isAllow != null and isAllow != ''">
+	  		AND `is_allow` = #{isAllow, jdbcType=VARCHAR}
+	  	</if>
+	  </where> 
+	ORDER BY sort ASC, update_time DESC
+  </select>
+  
+  <select id="getProductInfo" parameterType="string" resultMap="ProductInfoMap">
+  	SELECT 
+	  `product_id`,
+	  `product_name`,
+	  `product_desc`,
+	  `price`,
+	  `zhimi`,
+	  `is_allow`,
+	  `sort`
+	FROM
+	  goods.`ats_zhimi_product`
+	WHERE product_id = #{productId, jdbcType=VARCHAR}
+  </select>
+ 
+  <insert id="addProduct" parameterType="com.yz.model.zhimi.ZhimiProductInfo" >
+    insert into goods.`ats_zhimi_product`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        product_id,
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productDesc != null" >
+        product_desc,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="zhimi != null" >
+        zhimi,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      
+        #{productId,jdbcType=VARCHAR},
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDesc != null" >
+        #{productDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimi != null" >
+        #{zhimi,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateProduct" parameterType="com.yz.model.zhimi.ZhimiProductInfo">
+  	UPDATE 
+	  goods.`ats_zhimi_product` 
+	<set>
+		<if test="productName != null and productName != ''">
+			`product_name` = #{productName, jdbcType=VARCHAR},
+		</if>
+		<if test="productDesc != null and productDesc != ''">
+			`product_desc` = #{productDesc, jdbcType=VARCHAR},
+		</if>
+		<if test="price != null and price != ''">
+			`price` = #{price, jdbcType=VARCHAR},
+		</if>
+		<if test="zhimi != null and zhimi != ''">
+			`zhimi` = #{zhimi, jdbcType=VARCHAR},
+		</if>
+		<if test="isAllow != null and isAllow != ''">
+			`is_allow` = #{isAllow, jdbcType=VARCHAR},
+		</if>
+		<if test="sort != null">
+			`sort` = #{sort, jdbcType=INTEGER},
+		</if>
+		<if test="updateUser != null and updateUser != ''">
+			`update_user` = #{updateUser, jdbcType=VARCHAR},
+		</if>
+		<if test="updateUserId != null and updateUserId != ''">
+			`update_user_id` = #{updateUserId, jdbcType=VARCHAR},
+		</if>
+	</set>
+	WHERE `product_id` = #{productId, jdbcType=VARCHAR}
+  </update>
+  
+  <select id="countBy" parameterType="com.yz.model.zhimi.ZhimiProductInfo" resultType="int">
+  	select 
+  		count(1) 
+  	from goods.`ats_zhimi_product`
+  	<where>
+  		<if test="productId != null and productId != ''">
+  			product_id != #{productId, jdbcType=VARCHAR}
+  		</if>
+  		and product_name = #{productName, jdbcType=VARCHAR}
+  	</where>
+  </select>
+  
+  <update id="sortByAdd" parameterType="com.yz.model.zhimi.ZhimiProductInfo">
+  	UPDATE 
+	  goods.`ats_zhimi_product` p 
+	SET
+	  p.`sort` = (p.`sort` + 1) 
+	WHERE p.`sort` >= #{sort, jdbcType=INTEGER}
+  </update>
+  
+  <update id="sortByUpdate" parameterType="com.yz.model.zhimi.ZhimiProductInfo">
+  	<![CDATA[ 
+  	UPDATE 
+	  goods.`ats_zhimi_product` p 
+	SET
+	  p.`sort` = (p.`sort` + 1) 
+	WHERE p.`sort` >= #{sort, jdbcType=INTEGER} 
+	and p.`sort` < #{oldSort, jdbcType=INTEGER}
+	]]>
+  </update>
+  
+  <select id="getListCount" resultType="int">
+  	select count(1) from goods.`ats_zhimi_product`
+  </select>
+  
+  <resultMap id="ProductMap" type="com.yz.model.zhimi.ZhimiProductRecords" >
+    <id column="records_no" property="recordsNo" jdbcType="VARCHAR" />
+    <result column="acc_id" property="accId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="payment_status" property="paymentStatus" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="zhimi" property="zhimi" jdbcType="VARCHAR" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="out_serial_no" property="outSerialNo" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="complete_time" property="completeTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getProductRecords" parameterType="com.yz.model.condition.zhimi.ZhimiProductRecordsQuery" resultMap="ProductMap">
+  	select 
+	  r.`records_no`,
+	  r.`acc_id`,
+	  r.`std_id`,
+	  r.`emp_id`,
+	  r.`user_id`,
+	  r.`payment_status`,
+	  r.`amount`,
+	  r.`zhimi`,
+	  r.`payment_type`,
+	  r.`remark`,
+	  r.`out_serial_no`,
+	  r.`reason`,
+	  DATE_FORMAT(r.`create_time`, '%Y-%m-%d %H:%i:%s') AS create_time,
+	  DATE_FORMAT(r.`complete_time`, '%Y-%m-%d %H:%i:%s') AS complete_time
+	from
+	  goods.`ats_recharge_records` r
+	  left join goods.`ats_zhimi_product` p on p.product_id = r.product_id 
+	<where>
+		<if test="productName != null and productName != ''">
+			and p.product_name like concat('%', #{productName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="outSerialNo != null and outSerialNo != ''">
+			and r.out_serial_no like concat('%', #{outSerialNo, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="paymentStatus != null and paymentStatus != ''">
+			and r.payment_status = #{paymentStatus, jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and r.`create_time` &gt; str_to_date(#{startTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and r.create_time &lt; str_to_date(#{endTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="userIds != null and userIds.size() > 0">
+			and r.user_id in (
+				<foreach collection="userIds" item="userId" separator=",">
+					#{userId, jdbcType=VARCHAR}
+				</foreach>
+			)
+		</if>
+		<if test="userIds == null or userIds.size() == 0">
+			<if test="(mobile != null and mobile != '') or (yzCode != null and yzCode != '') or (realName != null and realName != '')">
+				and 1=0
+			</if>
+		</if>
+	</where>
+	order by r.`complete_time` desc
+  </select>
+ 
+</mapper>

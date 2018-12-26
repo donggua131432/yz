@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title th:text="UPDATE == ${exType} ? 修改消息: 添加消息"></title>
+</head>
+<body>
+<article class="page-container">
+	<form class="form form-horizontal" id="form-charges-add" th:object="${msg}">
+	<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+		<input type="hidden" th:value="${exType}" name="exType" id="exType" />
+		<input type="hidden" th:value="*{mtpId}" name="mtpId" id="mtpId" />
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>消息类型：</label>
+		<div class="formControls col-xs-8 col-sm-9" id="mtpTypeDiv">
+			<select class="select" id="mtpType" name="mtpType">
+            </select>
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>发送方式：</label>
+		<div class="formControls col-xs-8 col-sm-9"  id="msgChannelDiv">
+			<select class="select" id="msgChannel" name="msgChannel" >
+            </select>
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>计划发送时间：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input th:value="*{sendTime}" type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="sendTime" name="sendTime" class="input-text Wdate" style="width: 300px;" />
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>发送人：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" th:value="*{sender}" id="sender" name="sender">
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>消息标题：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" th:value="*{msgTitle}" id="msgTitle" name="msgTitle" placeholder="可用[NAME]代替学员姓名">(可用"[NAME]"代替学员姓名)
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>消息名称：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" th:value="*{msgName}" id="msgName" name="msgName">
+		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>消息编码：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" th:value="*{msgCode}" id="msgCode" name="msgCode">
+		</div>
+	</div>
+	
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>消息详情：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<textarea name="msgContent" id="msgContent" th:text="*{msgContent}" cols="" rows="" class="textarea"  dragonfly="true" onKeyUp="$.Huitextarealength(this,250)"></textarea>
+			<p class="textarea-numberbar"><em class="textarea-length">0</em>/250</p>
+		</div>
+	</div>
+	
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3">跳转URL：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" th:value="*{skipUrl}" id="skipUrl" name="skipUrl">
+		</div>
+	</div>
+	
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-3">备注：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<textarea name="msgOther" id="msgOther" th:text="*{msgOther}" cols="" rows="" class="textarea"  dragonfly="true" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+			<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
+		</div>
+	</div>
+	<div class="row cl">
+		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+		</div>
+	</div>
+	</form>
+</article>
+
+<!--_footer 作为公共模版分离出去--> 
+ 		<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+var msg = /*[[${msg}]]*/;
+</script> 
+<script type="text/javascript" th:src="@{/js/webjs/message/regist/msg-edit.js}"></script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

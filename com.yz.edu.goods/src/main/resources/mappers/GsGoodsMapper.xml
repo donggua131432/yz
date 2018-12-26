@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.GsGoodsMapper" >
+	<resultMap type="com.yz.model.GsGoodsDetailInfo" id="GsGoodsDetailInfo">
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<result column="course_start_time" property="courseStartTime" jdbcType="VARCHAR"/>
+		<result column="course_end_time" property="courseEndTime" jdbcType="VARCHAR"/>
+		<result column="course_type" property="courseType" jdbcType="VARCHAR"/>
+		<result column="course_address" property="courseAddress" jdbcType="VARCHAR"/>
+		<result column="activity_start_time" property="activityStartTime" jdbcType="VARCHAR"/>
+		<result column="activity_end_time" property="activityEndTime" jdbcType="VARCHAR"/>
+		<result column="activity_address" property="activityAddress" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsGoodsDetailInfo" resultMap="GsGoodsDetailInfo" parameterType="String">
+	  SELECT 
+		  gg.`goods_id`,
+		  gcg.`start_time` course_start_time,
+		  gcg.`end_time` course_end_time,
+		  gcg.`course_type`,
+		  gcg.`address` course_address,
+		  gag.`start_time` activity_start_time,
+		  gag.`end_time` activity_end_time,
+		  gag.`address` activity_address 
+		FROM
+		  gs_goods gg 
+		  LEFT JOIN gs_course_goods gcg 
+		    on gg.`goods_id` = gcg.`goods_id` 
+		  left join gs_activities_goods gag 
+		    on gg.`goods_id` = gag.`goods_id` 
+		where gg.`goods_id` = #{goodsId}
+	</select>
+	
+	<resultMap type="com.yz.model.GsCourseGoods" id="GsCourseGoods">
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="course_type" property="courseType" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="location" property="location" jdbcType="VARCHAR"/>
+		<result column="takein" property="takein" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsCourseGoods" resultMap="GsCourseGoods" parameterType="String">
+		select * from gs_course_goods where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</select>
+	<select id="getGsActivitiesGoods" resultMap="GsCourseGoods" parameterType="String">
+		select * from gs_activities_goods where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateGoodsCount">
+  	   UPDATE gs_goods_store SET goods_count = goods_count-#{count} WHERE goods_id=#{goodsId} 
+  	</update>
+  	
+  	
+  	<resultMap type="com.yz.model.GsSalesPlan" id="GsSalesPlan">
+		<id column="plan_id" property="planId" jdbcType="VARCHAR"/>
+		<id column="total_count" property="totalCount" jdbcType="VARCHAR"/>
+		<id column="cur_count" property="curCount" jdbcType="VARCHAR"/>
+		<id column="less_count" property="lessCount" jdbcType="VARCHAR"/>
+		<id column="plan_status" property="planStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsSalesPlan" resultMap="GsSalesPlan">
+		SELECT 
+		  `plan_id`,
+		  `total_count`,
+		  `cur_count`,
+		  `less_count`,
+		  `plan_status`
+		FROM
+		  `gs_sales_plan` 
+		WHERE `plan_id`=#{planId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateGsSalesPlan" parameterType="com.yz.model.GsSalesPlan">
+		update 
+		  gs_sales_plan
+		set 
+		  <if test="totalCount !=null and '' != totalCount">
+		   	total_count=#{totalCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="curCount !=null and '' !=curCount">
+		  	cur_count=#{curCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="lessCount !=null and '' !=lessCount">
+		 	 less_count=#{lessCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="reason !=null and '' != reason">
+		     reason=#{reason,jdbcType=VARCHAR},
+		  </if>
+		  <if test="planStatus !=null and '' != planStatus">
+		     plan_status = #{planStatus,jdbcType=VARCHAR},
+		  </if>
+		  <if test="startTime !=null and '' != startTime">
+		  	 start_time = #{startTime,jdbcType=VARCHAR},
+		  </if>
+		  <if test="endTime !=null and '' != endTime">
+		  	  end_time = #{endTime,jdbcType=VARCHAR},
+		  </if>
+		 	update_time =now()
+		where plan_id =#{planId,jdbcType=VARCHAR} 
+	</update>
+</mapper>

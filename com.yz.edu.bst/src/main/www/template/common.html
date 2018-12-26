@@ -1,0 +1,78 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebar">
+    <ul id="sidebar">
+        <li><a th:data-href="@{/index.do}" title="">我的信息</a></li>
+        <li><a th:data-href="@{/resource.do}" title="">课程资源</a></li>
+        <li><a th:data-href="@{/course.do}" title="">我的课表</a></li>
+        <li id="btnPaper" style="display: none"><a th:data-href="@{/paper/index.do}" title="">毕业论文及报告</a></li>
+        <li id="schoolRoll" style="display: none"><a th:data-href="@{/schoolRoll/index.do}" title="">新生学籍表</a></li>
+    </ul>
+    <script>
+        $(function () {
+            $('#sidebar a[data-href="'+window.location.pathname+'"]').parent().addClass('active');
+
+            $('#sidebar a').on('click', function (e) {
+                e.preventDefault();
+                if ($(this).text() === '课程资源') {
+                    window.location.href = $(this).data('href') + ($(this).data('href').indexOf('?')>-1 ? '&' : '?') + 'learnId=' + store.get('learnId');
+                }else {
+                    window.location.href = $(this).data('href');
+                }
+            });
+
+            getLearnInfoMenu();
+        });
+        
+        function getLearnInfoMenu() {
+            $.ajax({
+                type: 'post',
+                url: '[[@{/paper/getLearnInfo.do?learnId=}]]' + store.get("learnId"),
+                data: {},
+                success: function (data) {
+                    if (data.code === '00') {
+                        var unvsId = data.body.unvs_id;
+                        var pfsnLevel = data.body.pfsn_level;
+                        var grade = data.body.grade;
+                        var pfsn_code = data.body.pfsn_code;
+                        if ('function' === typeof initPager) {
+                            initPager(unvsId, pfsnLevel, grade);
+                        }
+
+                        // 控制新生学籍表菜单
+                        if (['29', '36', '55'].indexOf(unvsId) !== -1 && grade === '2018') {
+                            $('#schoolRoll').show();
+                        } else {
+                            $('#schoolRoll').hide();
+                        }
+
+                        // 控制毕业论文及报告菜单
+                        if ((['1', '2','29'].indexOf(unvsId) !== -1 && grade === '2016') || ( /*处理韩师2017汉语专业 专业 = 汉语*/pfsn_code === '4098' && unvsId === '29' && grade === '2017' && pfsnLevel === '1')) {
+                            $('#btnPaper').show();
+                        } else {
+                            $('#btnPaper').hide();
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+<div th:fragment="footer">
+    <div class="inner cl">
+        <div class="f-l">
+            <p>远智热线: 400-833-6013</p>
+            <p>微信公众号: yz2686013</p>
+            <p>地址: 惠州市惠城区江北三新南路22号润宇豪庭3楼 </p>
+            <p class="copyright">惠州市远智文化教育培训学校版权所有Copyright&copy;2015-2020粤ICP备12034252号-1</p>
+        </div>
+        <div class="f-r">
+            <p><img th:src="@{/css/image/erweima.png}"  alt=""/></p>
+            <p class="mt-10">欢迎关注远智教育,最新资讯即时掌握</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

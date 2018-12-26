@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.GwReceiverMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.job.model.GwReceiver" >
+    <id column="receiver_id" property="receiverId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="mail" property="mail" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="dingding" property="dingding" jdbcType="VARCHAR" />
+    <result column="wechat_no" property="wechatNo" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+    <result column="sender" property="sender" jdbcType="VARCHAR"/>
+    <result column="mtp_id" property="mtpId" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="selectRecerverByMtpId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT 
+	  r.receiver_id, name, user_id, std_id,learn_id, emp_id, mail, mobile, open_id, qq, dingding, 
+      wechat_no, ext_1, ext_2, ext_3,gmt.`sender`,m.`mtp_id`
+	FROM
+	  bms.`gw_receiver` r 
+	  LEFT JOIN bms.`gw_msg_receiver` m 
+	    ON m.`receiver_id` = r.`receiver_id` 
+	 LEFT JOIN bms.`gw_msg_template` gmt
+	    ON gmt.`mtp_id` = m.`mtp_id` 
+	WHERE m.`mtp_id` = #{mtpId} 
+  </select>
+  
+   <update id="updateMtpStatus">
+  	UPDATE 
+	  bms.`gw_msg_template` 
+	SET
+	  mtp_status = #{status} 
+	WHERE mtp_id = #{mtpId}
+  </update>
+  
+  <insert id="insertSendRecords" parameterType="com.yz.job.disruptor.CollectMsgSendRespCmd">
+  	INSERT INTO bms.`gw_send_records`(sr_id,mtp_id,receiver,receiver_id,send_status,operator,send_time)
+	VALUES(#{srId,jdbcType=VARCHAR},#{mappingId,jdbcType=VARCHAR},#{receiverName,jdbcType=VARCHAR},
+	#{receiverId,jdbcType=VARCHAR},'2',#{sender,jdbcType=VARCHAR},NOW())
+  </insert>
+</mapper>

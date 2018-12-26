@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.MendZhiMiMapper">
+    <select id="selectEvenReadMendStdList" resultType="java.util.HashMap">
+        select bli.std_id,bli.learn_id,bsi.std_name,bsi.id_card,bsi.mobile,bsi.user_id,bli.grade,bli.std_stage,bso.order_no,bsubo.create_time
+        from bms.yz_read_apply_info yrai
+        left join bms.bd_student_info bsi on bsi.id_card = yrai.idno
+        left join bms.bd_learn_info bli on bli.std_id = bsi.std_id
+        left join bms.bd_student_order bso on bso.learn_id = bli.learn_id
+        left join bms.bd_sub_order bsubo on bsubo.order_no = bso.order_no
+        where bli.grade!='2015' and std_stage='7'
+        and bsubo.item_code='Y1' and bsubo.sub_order_status='2'
+        and bsubo.create_time &lt; '2018-03-01'
+    </select>
+
+    <select id="selectReferralStdList" resultType="java.util.HashMap">
+        select bsi.std_id,bsi.std_name,bsi.id_card,bsi.mobile,bsi.user_id,bli.grade,bli.std_stage,bli.recruit_type,
+          bso.order_no,bsubo.create_time,us.reg_time,us.p_id
+        from bms.bd_learn_info bli
+        left join bms.bd_student_info bsi on bsi.std_id=bli.std_id
+        left join bms.bd_student_order bso on bso.learn_id = bli.learn_id
+        left join bms.bd_sub_order bsubo on bsubo.order_no = bso.order_no
+        left join us.us_base_info us on us.user_id=bsi.user_id
+        where bli.std_id in (
+          select bli1.std_id from bms.bd_learn_info bli1 where
+          not exists(select 1 from bms.bd_learn_info bli2 where bli1.std_id=bli2.std_id and std_stage='8')
+          and bli1.grade in('2018','2019') and std_stage='10' group by bli1.std_id
+        )
+        and bli.recruit_type='2' and bli.std_stage!='10'
+        and bsubo.item_code='Y1' and bsubo.sub_order_status='2'
+        and bsubo.create_time &lt; '2018-03-01'
+        and us.reg_time &lt;'2017-11-03' and p_id is not null
+    </select>
+
+    <select id="selectAwardRecordByRuleCode" resultType="java.lang.String" parameterType="java.lang.String">
+        select trigger_user_id from goods.ats_award_record where rule_code = #{ruleCode, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectReferralByPidList" resultType="java.util.HashMap">
+        select bsi.std_id,bsi.std_name,bsi.id_card,bsi.mobile,bsi.user_id,bli.grade,bli.std_stage,bli.recruit_type,
+        us.reg_time,us.p_id,bso.order_no,bsubo.item_code,sum(bsubo.fee_amount) as fee_amount
+        from bms.bd_learn_info bli
+        left join bms.bd_student_info bsi on bsi.std_id=bli.std_id
+        left join us.us_base_info us on us.user_id=bsi.user_id
+        left join bms.bd_student_order bso on bso.learn_id = bli.learn_id
+        left join bms.bd_sub_order bsubo on bsubo.order_no = bso.order_no
+        left join goods.ats_account aa on aa.user_id=us.p_id and acc_type='2'
+        where bli.std_id in (
+        select bli1.std_id from bms.bd_learn_info bli1 where
+        not exists(select 1 from bms.bd_learn_info bli2 where bli1.std_id=bli2.std_id and std_stage in ('7','8','9','14'))
+        and bli1.grade in('2019') and std_stage='10' group by bli1.std_id
+        )
+        and bli.recruit_type='2' and bli.std_stage!='10'
+        and us.reg_time &gt; '2017-11-03' and us.p_id is not null and bsubo.sub_order_status='2'
+        and bsubo.create_time &lt;= '2018-06-12' group by bsi.user_id
+        order by bsubo.create_time asc
+    </select>
+</mapper>

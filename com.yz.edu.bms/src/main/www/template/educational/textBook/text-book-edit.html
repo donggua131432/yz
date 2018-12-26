@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/webuploader/html5uploader.css}" />
+<style type="text/css">
+#del:hover {
+	background-color: red;
+}
+</style>
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title th:text="UPDATE == ${exType} ? 修改教材: 添加教材"></title>
+<meta name="keywords" content="H-ui.admin v3.0,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
+<meta name="description" content="H-ui.admin v3.0，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+</head>
+<body>
+  <!--  <div id="tab_demo" class="HuiTab">
+    </br>
+    <div class="tabBar clearfix">
+      <span>基本信息</span><span>变更记录</span>
+    </div>
+    <div class="tabCon"> -->
+  <article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" th:object="${textBookInfo}">
+      <input type="hidden" th:value="${exType}" name="exType" id="exType" />
+      <input type="hidden" th:value="*{textbookId}" name="textbookId" id="textbookId" />
+      <!-- 执行类型 -->
+      <!--  <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>往年教材搜索：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="js-data-example-ajax" style="width: 100%;" id="beYearSearch">
+          </select>
+        </div>
+      </div>
+      <div align="center" class="mt-10">
+        <hr style="width: 90%"></hr>
+      </div> -->
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>教材名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{textbookName}" placeholder="教材名称" id="textbookName" name="textbookName" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>教材类型：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="select" size="1" id="textbookType" name="textbookType">
+            <option th:value="*{textbookType}" selected>--请选择教材类型--</option>
+          </select>
+        </div>
+      </div>
+      <div class="row cl" id="testSubjectd" hidden>
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>入学考试科目：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="select" id="testSubject" name="testSubject" width="100%">
+            <option th:each="s : ${subjects}" th:value="${s.subjectId}" th:text="${s.subjectName}" th:selected="${s.subjectId} == *{testSubject}"></option>
+          </select>
+          <input type="hidden" class="input-text" th:value="*{testSubject}" id="testSubjecth" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">代号标记：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{alias}" placeholder="代号标记" id="alias" name="alias" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否为书籍：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <div class="radio-box">
+            <input type="radio" id="isBook" name="isBook" value="1" th:checked="1 == *{isBook}? true : (1 == *{isBook}? false : true)">
+            <label for="radio-1">是</label>
+          </div>
+          <div class="radio-box">
+            <input type="radio" id="isBook" name="isBook" value="2" th:checked="2 == *{isBook}? true : false">
+            <label for="radio-2">否</label>
+          </div>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">出版社：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{publisher}" id="publisher" name="publisher" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">出版时间：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="publisherTime" name="publisherTime" class="input-text Wdate" style="width: 180px;" />
+          <input type="hidden" class="input-text" th:value="*{publisherTime}" placeholder="出版时间" id="pub" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">ISBN：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{isbn}" placeholder="ISBN" id="isbn" name="isbn" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">作者：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{author}" placeholder="作者" id="author" name="author" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">价格：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{price}" placeholder="价格" id="price" name="price" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">备注：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{remark}" placeholder="备注" id="remark" name="remark" />
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3 mt-10">
+          <input class="btn btn-success radius inputW9" type="submit" value="提交">
+          <input class="btn btn-normal-outline radius inputW9 ml-5" type="button" onclick="layer_close();" value="取消">
+        </div>
+      </div>
+    </form>
+  </article>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webuploader/jquery.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/laydate/laydate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webuploader/jquery.html5uploader.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/webjs/educational/textBook/text-book-edit.js}"></script>
+  <!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

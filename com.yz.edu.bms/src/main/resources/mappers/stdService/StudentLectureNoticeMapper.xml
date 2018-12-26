@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentLectureNoticeMapper">
+
+	<resultMap type="com.yz.model.stdService.StudentLectureNoticeInfo" id="StudentLectureMap">
+		<result column="lecture_id" property="lectureId" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+		<result column="is_view" property="isView" jdbcType="VARCHAR"/>
+		<result column="view_time" property="viewTime" jdbcType="VARCHAR"/>
+		<result column="is_receive_book" property="isReceiveBook" jdbcType="VARCHAR"/>
+		<result column="is_know_timetables" property="isKnowTimetables" jdbcType="VARCHAR"/>
+		<result column="is_know_course_type" property="isKnowCourseType" jdbcType="VARCHAR"/>
+		<result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="submit_time" property="submitTime" jdbcType="VARCHAR"/>
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="is_reset" property="isReset" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!--开课通知跟进列表数据 -->
+	<select id="findAllLectureNoticeList" resultMap="StudentLectureMap">
+		SELECT
+		a.lecture_id,
+		oti.task_title,
+		bli.std_no,
+		bli.school_roll,
+		bsi.std_name,
+		bli.grade,
+		bsi.id_card,
+		u.unvs_name,
+		p.pfsn_code,
+		p.pfsn_level,
+		p.pfsn_name,
+		bli.std_stage,
+		a.is_view,
+		date_format(a.view_time,'%Y-%m-%d %H:%i:%S') view_time,
+		a.is_receive_book,
+		a.is_know_timetables,
+		a.is_know_course_type,
+		oe.emp_name,
+		a.submit_time,
+		a.is_reset,
+		a.remark,
+		a.task_id,
+		a.learn_id,
+		bss.logistics_no
+		FROM
+		oa_student_lecture_notice_task a
+		LEFT JOIN bd_learn_info bli ON a.learn_id = bli.learn_id
+		LEFT JOIN bd_student_info bsi ON bli.std_id = bsi.std_id
+		LEFT JOIN bd_student_send bss ON bss.learn_id = bli.learn_id and bss.order_book_status='3' and bss.semester='1'
+		LEFT JOIN oa_task_info oti ON a.task_id = oti.task_id
+		LEFT JOIN bd_learn_rules blr ON a.learn_id = blr.learn_id
+		LEFT JOIN oa_employee oe ON blr.tutor = oe.emp_id
+		LEFT JOIN bd_university u ON bli.unvs_id = u.unvs_id
+		LEFT JOIN bd_unvs_profession p ON bli.pfsn_id = p.pfsn_id
+		WHERE 1=1
+			<if test="queryInfo.lectureId !=null and '' != queryInfo.lectureId">
+				and a.`lecture_id` = #{queryInfo.lectureId,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+		  		and bsi.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.stdNo !=null and '' != queryInfo.stdNo">
+				and bli.`std_no` like concat('%',#{queryInfo.stdNo,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+				and bli.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+		  		and bsi.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.remark !=null and '' != queryInfo.remark">
+				and a.`remark` like concat('%',#{queryInfo.remark,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+				and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType !=null and '' != queryInfo.recruitType">
+				and bli.`recruit_type` = #{queryInfo.recruitType,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.grade !=null and '' != queryInfo.grade">
+		  		and bli.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+		  		and bli.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+		  		and p.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+		  		and bli.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.isView !=null and '' != queryInfo.isView">
+		  		and a.`is_view` = #{queryInfo.isView,jdbcType=VARCHAR}
+		  	</if>
+			<if test="queryInfo.isReset !=null and '' != queryInfo.isReset">
+				and a.`is_reset` = #{queryInfo.isReset,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+		  		and oe.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.isReceiveBook !=null and '' != queryInfo.isReceiveBook">
+				<if test="queryInfo.isReceiveBook == '--'">
+					and a.is_receive_book = ''
+				</if>
+				<if test="queryInfo.isReceiveBook != '--'">
+					and a.is_receive_book = #{queryInfo.isReceiveBook,jdbcType=VARCHAR}
+				</if>	
+		  	</if>
+		  	<if test="queryInfo.isKnowTimetables !=null and '' != queryInfo.isKnowTimetables">
+		  		<if test="queryInfo.isKnowTimetables == '--'">
+					and a.is_know_timetables = ''
+				</if>
+				<if test="queryInfo.isKnowTimetables != '--'">
+					and a.is_know_timetables = #{queryInfo.isKnowTimetables,jdbcType=VARCHAR}
+				</if>
+		  	</if>
+		  	<if test="queryInfo.isKnowCourseType !=null and '' != queryInfo.isKnowCourseType">
+		  		<if test="queryInfo.isKnowCourseType == '--'">
+					and a.is_know_course_type = ''
+				</if>
+				<if test="queryInfo.isKnowCourseType != '--'">
+					and a.is_know_course_type = #{queryInfo.isKnowCourseType,jdbcType=VARCHAR}
+				</if>
+		  	</if>
+		  	<if test="queryInfo.logisticsNo !=null and '' != queryInfo.logisticsNo">
+				and bss.`logistics_no` like concat('%',#{queryInfo.logisticsNo,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.isRemark !=null and '' != queryInfo.isRemark">
+				<if test="queryInfo.isRemark == 0">
+					and a.remark is null
+				</if>
+				<if test="queryInfo.isRemark == 1">
+					and LENGTH(a.remark)>0
+				</if>
+			</if>	
+			
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 6">
+						and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+					</when>
+					<otherwise>
+						and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		order by a.create_time desc
+	</select>
+	<!--开课通知跟进编辑备注 -->
+	<update id="updateRemark">
+		UPDATE oa_student_lecture_notice_task SET remark= #{remark,jdbcType=VARCHAR}
+		WHERE lecture_id =#{lectureId,jdbcType=VARCHAR}
+	</update>
+	<!--开课通知跟进任务重置 -->
+	<update id="resetTask">
+		UPDATE oa_student_lecture_notice_task SET is_view=0,view_time=NULL,
+		is_receive_book = '',is_know_timetables='',is_know_course_type='',
+		is_reset = 1,reset_time=now()
+		WHERE lecture_id = #{lectureId,jdbcType=VARCHAR};
+		
+		UPDATE oa_student_task set task_status = 0
+		WHERE task_id = #{taskId,jdbcType=VARCHAR} and learn_id = #{learnId,jdbcType=VARCHAR};
+	</update>
+	<!-- 批量初始化 开课通知跟进数据 -->
+	<insert id="addStuLectureNotcieInfo">
+		INSERT INTO oa_student_lecture_notice_task (lecture_id,task_id,learn_Id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.lectureId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<!-- 单个初始化 开课通知跟进数据 -->
+	<insert id="singleAddStuLectureNotcieInfo" parameterType="com.yz.model.stdService.StudentLectureNoticeInfo">
+		INSERT INTO oa_student_lecture_notice_task (lecture_id,task_id,learn_Id,create_time) 
+        VALUES (#{lectureId, jdbcType=VARCHAR},
+			 #{taskId, jdbcType=VARCHAR},
+			 #{learnId,jdbcType=VARCHAR},
+			 NOW())
+	</insert>
+	
+	<!-- 批量删除 开课通知跟进数据 -->
+	<delete id="delStuLectureNotcieInfo">
+		delete from oa_student_lecture_notice_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<!-- 单个删除 -->
+	<delete id="aloneDelStuLectureNotcieInfo">
+		delete from oa_student_lecture_notice_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+
+</mapper>

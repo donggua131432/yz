@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdReptMapper" >
+	
+	<resultMap type="com.yz.model.finance.receipt.BdReceipt" id="BaseResultMap">
+		<result column="rept_id" property="reptId" />
+		<result column="std_id" property="stdId" />
+		<result column="std_name" property="stdName" />
+		<result column="learn_id" property="learnId" />
+		<result column="apply_time" property="applyTime" />
+		<result column="rept_status" property="reptStatus" />
+		<result column="send_time" property="sendTime" />
+		<result column="emp_id" property="empId" />
+		<result column="sf_mailno" property="sfMailno" />
+		<result column="address" property="address" />
+		<result column="payable" property="payable" />
+		<result column="paidAmount" property="paidAmount" />
+		<result column="mobile" property="mobile" />
+		<result column="remark" property="remark" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="district" property="district" />
+		<result column="grade" property="grade" />
+		<result column="campus_name" property="campusName" />
+		<result column="reptCampusName" property="reptCampusName" />
+		<result column="payment_type" property="paymentType" />
+		<result column="rept_type" property="reptType" />
+		<result column="out_serial_no" property="outSerialNo" />
+		<result column="express_amount" property="expressAmount" />
+		<result column="has_inform" property="hasInform" />
+		<result column="user_name" property="userName" />
+		<association property="items" column="rept_id" select="selectItemsByReptId"/>
+		<association property="serialMarks" column="rept_id" select="selectSerialMarksByReptId"/>
+	</resultMap>
+	
+	<select id="selectReptById" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select * from bd_student_rept where rept_id = #{reptId}
+	</select>
+	
+	<resultMap type="com.yz.model.finance.receipt.BdReceiptPrint" id="ReptPrintReulst">
+		<result column="std_name" property="stdName" />
+		<result column="rept_id" property="reptId" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="pfsn_level" property="pfsnLevel" />
+		<result column="grade" property="grade" />
+		<result column="pay_time" property="payTime" />
+		<result column="rept_id" property="reptId" />
+		<result column="amount" property="amount" />
+		<result column="payee" property="payee" />
+		<result column="finance_code" property="paySite" />
+		<result column="payment_type" property="paymentType" />
+		<result column="serial_mark" property="serialMark" />
+		<!-- <association property="items" column="serial_mark" select="selectItemsBySerialMark"/> -->
+	</resultMap>
+	
+	<resultMap type="com.yz.model.finance.receipt.BdPayItem" id="ItemsResult">
+		<result column="item_code" property="itemCode" />
+		<result column="item_name" property="itemName" />
+		<result column="payable" property="amount" />
+		<result column="fee_amount" property="feeAmount" />
+	</resultMap>
+	
+	<resultMap type="com.yz.model.finance.receipt.BdSfPrint" id="SfPrintResult">
+		<result column="mailno" property="mailno" />
+		<result column="dest_code" property="destCode" />
+		<result column="address" property="dAddress" />
+		<result column="mobile" property="dMobile" />
+		<result column="grade" property="grade" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="pfsn_code" property="pfsnCode" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="pfsn_level" property="pfsnLevel" />
+		<result column="custid" property="custid" />
+		<result column="user_name" property="dContact" />
+		<result column="recruit_type" property="recruitType" />
+	</resultMap>
+	
+	<resultMap id="SfResultMap" type="com.yz.model.sf.SFExpressRequest">
+		<result column="dContact" property="dContact" jdbcType="VARCHAR" />
+		<result column="dTel" property="dTel" jdbcType="VARCHAR" />
+		<result column="dMobile" property="dMobile" jdbcType="VARCHAR" />
+		<result column="province" property="dProvince" jdbcType="VARCHAR" />
+		<result column="city" property="dCity" jdbcType="VARCHAR" />
+		<result column="district" property="dCountry" jdbcType="VARCHAR" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+		<result column="address" property="dAddress" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="insertReptSerial" parameterType="java.lang.String">
+		insert into bd_rept_serial(rs_id,rept_id,serial_mark)
+		values(#{rsId},#{reptId},#{serialMark})
+	</insert>
+	
+	<select id="selectReptIdBySerialMark" parameterType="java.lang.String" resultType="java.lang.String">
+		select rept_id from bd_rept_serial where serial_mark = #{serialMark} group by rept_id
+	</select>
+	
+	<select id="selectReptCountBySerialMark" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from bd_rept_serial where serial_mark = #{serialMark}
+	</select>
+	
+	<update id="updateReptStatus" parameterType="java.lang.String">
+		update bd_student_rept set rept_status = #{status} where rept_id = #{reptId}
+	</update>
+	
+	<select id="selectStdInfoBySerialMark" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  s.std_id stdId,
+		  o.learn_id learnId,
+		  i.std_name stdName 
+		FROM
+		  bd_student_serial s 
+		  LEFT JOIN bd_student_order o 
+		    ON s.order_no = o.order_no 
+		  LEFT JOIN bd_student_info i 
+		    ON i.std_id = s.std_id 
+		WHERE s.serial_mark = #{serialMark}
+		GROUP BY s.std_id 
+	</select>
+	
+	<update id="updateSendInform" parameterType="java.lang.String">
+		update bd_student_rept set has_inform = '1' where rept_id = #{reptId}
+	</update>
+	
+	<select id="selectReptType" parameterType="java.lang.String" resultType="java.lang.String">
+		select rept_type from bd_student_rept where rept_id = #{reptId}
+	</select>
+	
+	<select id="selectUserIdByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		select r.user_id from bd_student_rept s left join bd_student_info r
+		on r.std_id = s.std_id where s.rept_id = #{reptId}
+	</select>
+	
+	<select id="selectHasInformByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT has_inform FROM bd_student_rept WHERE rept_id = #{reptId}
+	</select>
+	
+	<select id="selectMailNoByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT sf_mailno FROM bd_student_rept WHERE rept_id = #{reptId}
+	</select>
+	
+	<select id="selectSerialMarksByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		select serial_mark from bd_rept_serial where rept_id = #{reptId}
+	</select>
+	
+	<select id="selectReptCampusAddress" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT CONCAT(c.`campus_name`,'-',c.`address`) FROM bd_student_rept r LEFT JOIN oa_campus c ON c.`campus_id` = r.`campus_id` WHERE r.`rept_id` = #{reptId}
+	</select>
+	
+	<select id="selectApplyTimeByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT apply_time FROM bd_student_rept WHERE rept_id = #{reptId}
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.yz.model.finance.receipt.BdReceipt" >
+	    insert into bd_student_rept
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="reptId != null" >
+	        rept_id,
+	      </if>
+	      <if test="stdId != null" >
+	        std_id,
+	      </if>
+	      <if test="learnId != null" >
+	        learn_id,
+	      </if>
+	      <if test="applyTime != null" >
+	        apply_time,
+	      </if>
+	      <if test="reptStatus != null" >
+	        rept_status,
+	      </if>
+	      <if test="sendTime != null" >
+	        send_time,
+	      </if>
+	      <if test="empId != null" >
+	        emp_id,
+	      </if>
+	      <if test="address != null" >
+	        address,
+	      </if>
+	      <if test="mobile != null" >
+	        mobile,
+	      </if>
+	      <if test="userName != null" >
+	        user_name,
+	      </if>
+	      <if test="province != null" >
+	        province,
+	      </if>
+	      <if test="provinceCode != null" >
+	        province_code,
+	      </if>
+	      <if test="city != null" >
+	        city,
+	      </if>
+	      <if test="cityCode != null" >
+	        city_code,
+	      </if>
+	      <if test="district != null" >
+	        district,
+	      </if>
+	      <if test="districtCode != null" >
+	        district_code,
+	      </if>
+	      <if test="remark != null" >
+	        remark,
+	      </if>
+	      <if test="custid != null" >
+	        custid,
+	      </if>
+	      <if test="destCode != null" >
+	        dest_code,
+	      </if>
+	      <if test="sfMailno != null" >
+	        sf_mailno,
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user,
+	      </if>
+	      <if test="updateUserId != null" >
+	        update_user_id,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="reptId != null" >
+	        #{reptId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="stdId != null" >
+	        #{stdId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="learnId != null" >
+	        #{learnId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="applyTime != null" >
+	        #{applyTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="reptStatus != null" >
+	        #{reptStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sendTime != null" >
+	        #{sendTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="empId != null" >
+	        #{empId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="address != null" >
+	        #{address,jdbcType=VARCHAR},
+	      </if>
+	      <if test="mobile != null" >
+	        #{mobile,jdbcType=VARCHAR},
+	      </if>
+	      <if test="userName != null" >
+	        #{userName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="province != null" >
+	        #{province,jdbcType=VARCHAR},
+	      </if>
+	      <if test="provinceCode != null" >
+	        #{provinceCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="city != null" >
+	        #{city,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cityCode != null" >
+	        #{cityCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="district != null" >
+	        #{district,jdbcType=VARCHAR},
+	      </if>
+	      <if test="districtCode != null" >
+	        #{districtCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="remark != null" >
+	        #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="custid != null" >
+	        #{custid,jdbcType=VARCHAR},
+	      </if>
+	      <if test="destCode != null" >
+	        #{destCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="sfMailno != null" >
+	        #{sfMailno,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUser != null" >
+	        #{updateUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateUserId != null" >
+	        #{updateUserId,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+	  </insert>
+	
+	<select id="selectSfInfoByLearnId" resultMap="SfResultMap" parameterType="java.lang.String">
+		SELECT 
+		  rept_id AS orderid,
+		  user_name AS dContact,
+		  mobile AS dTel,
+		  mobile AS dMobile,
+		  province,
+		  city,
+		  district,
+		  address
+		FROM
+		  bd_student_rept 
+		WHERE rept_id = #{reptId}
+	</select>
+	
+	<update id="updateRept">
+		update 
+		  bd_student_rept 
+		<set>
+			send_time = now(),
+			<if test="destCode != null and destCode != ''">
+			 	dest_code = #{destCode},
+			</if>
+			<if test="sfMailno != null and sfMailno != ''">
+			 	sf_mailno = #{sfMailno},
+			</if>
+			<if test="reptStatus != null and reptStatus != ''">
+			 	rept_status = #{reptStatus},
+			</if>
+			<if test="remark != null and remark != ''">
+			 	remark = #{remark},
+			</if>
+			<if test="custid != null and custid != ''">
+			 	custid = #{custid},
+			</if>
+		</set>
+		where rept_id = #{reptId}
+	</update>
+	
+	<update id="updateReptMailed">
+		update 
+		  bd_student_rept 
+		set
+		  rept_status = '3' 
+		WHERE rept_status = '2' 
+		and rept_id IN (
+			 <foreach collection="reptIds" item="reptId" index="index" separator="," >  
+        		#{reptId}
+    		</foreach>
+		)
+	</update>
+	
+	<update id="updateReptRemark">
+		update 
+		  bd_student_rept 
+		set
+		  remark = #{errMsg} 
+		where rept_id = #{reptId}
+	</update>
+	
+	<select id="selectReptByPage" resultMap="BaseResultMap">
+		SELECT 
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  DATE_FORMAT(
+		    bsr.`apply_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) apply_time,
+		  bsr.`rept_status`,
+		  bsr.`rept_id`,
+		  DATE_FORMAT(
+		    bsr.`send_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) send_time,
+		  bsr.`sf_mailno`,
+		  bsr.`mobile`,
+		  bsr.`address`,
+		  bsr.`province`,
+		  bsr.`city`,
+		  bsr.`district`,
+		  bsr.remark,
+		  bli.`grade`,
+		  oc.`campus_name`,
+		  om.`campus_name` reptCampusName,
+		  bsr.`payment_type`,
+		  bsr.`rept_type`,
+		  bsr.`out_serial_no`,
+		  bsr.`express_amount`,
+		  bsr.`has_inform`,
+		  bsr.`user_name`
+		FROM
+		  bd_student_rept bsr 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.learn_id = bsr.learn_id 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_student_campus oc 
+		    ON oc.`id` = bli.`home_campus_id` 
+		  LEFT JOIN oa_campus om 
+		    ON om.`campus_id` = bsr.`campus_id` 
+		WHERE 1 = 1 
+		 <if test="stdName != null and stdName != ''">
+		 	and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		 <if test="mobile != null and mobile != ''">
+		 	and bsr.mobile = #{mobile}
+		 </if>
+		 <if test="reptStatus != null and reptStatus != ''">
+		 	and bsr.rept_status = #{reptStatus}
+		 </if>
+		 <if test="idCard != null and idCard != ''">
+		 	and bsi.id_card = #{idCard}
+		 </if>
+		 <if test="homeCampusId != null and homeCampusId != ''">
+		 	and bli.home_campus_id = #{homeCampusId}
+		 </if>
+		 <if test="campusId != null and campusId != ''">
+		 	and bsr.campus_id = #{campusId}
+		 </if>
+		 <if test="applyTime != null and applyTime != ''">
+		 	and date_format(bsr.apply_time,'%Y-%m-%d') = date_format(#{applyTime},'%Y-%m-%d') 
+		 </if>
+		 <if test="sendTime != null and sendTime != ''">
+		 	and date_format(bsr.send_time,'%Y-%m-%d') = date_format(#{sendTime},'%Y-%m-%d') 
+		 </if>
+		 <if test="sfMailno != null and sfMailno != ''">
+		 	and bsr.sf_mailno = #{sfMailno}
+		 </if>
+		 <if test="reptType != null and reptType != ''">
+		 	and bsr.rept_type = #{reptType}
+		 </if>
+		 <if test="paymentType != null and paymentType != ''">
+		 	and bsr.payment_type = #{paymentType}
+		 </if>
+		 GROUP BY bsr.`rept_id` 
+		 ORDER BY bsr.`update_time` desc
+	</select>
+	
+	<select id="selectReptAmount" resultType="java.lang.String">
+		select sum(amount) from 
+		(SELECT 
+		  bsr.express_amount amount
+		FROM
+		  bd_student_rept bsr 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.learn_id = bsr.learn_id 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_student_campus oc 
+		    ON oc.`id` = bli.`home_campus_id` 
+		  LEFT JOIN oa_campus om 
+		    ON om.`campus_id` = bsr.`campus_id` 
+		WHERE 1 = 1 
+		  and bsr.rept_status in ('1','2','3')
+		 <if test="stdName != null and stdName != ''">
+		 	and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		 <if test="mobile != null and mobile != ''">
+		 	and bsr.mobile = #{mobile}
+		 </if>
+		 <if test="reptStatus != null and reptStatus != ''">
+		 	and bsr.rept_status = #{reptStatus}
+		 </if>
+		 <if test="idCard != null and idCard != ''">
+		 	and bsi.id_card = #{idCard}
+		 </if>
+		 <if test="homeCampusId != null and homeCampusId != ''">
+		 	and bli.home_campus_id = #{homeCampusId}
+		 </if>
+		 <if test="campusId != null and campusId != ''">
+		 	and bsr.campus_id = #{campusId}
+		 </if>
+		 <if test="applyTime != null and applyTime != ''">
+		 	and date_format(bsr.apply_time,'%Y-%m-%d') = date_format(#{applyTime},'%Y-%m-%d') 
+		 </if>
+		 <if test="sendTime != null and sendTime != ''">
+		 	and date_format(bsr.send_time,'%Y-%m-%d') = date_format(#{sendTime},'%Y-%m-%d') 
+		 </if>
+		 <if test="sfMailno != null and sfMailno != ''">
+		 	and bsr.sf_mailno = #{sfMailno}
+		 </if>
+		 <if test="reptType != null and reptType != ''">
+		 	and bsr.rept_type = #{reptType}
+		 </if>
+		 <if test="paymentType != null and paymentType != ''">
+		 	and bsr.payment_type = #{paymentType}
+		 </if>
+		 GROUP BY bsr.`rept_id` 
+		 ORDER BY bsr.`update_time` desc) a
+	</select>
+	
+	<select id="selectItemsBySerialMark" parameterType="java.lang.String" resultMap="ItemsResult">
+		SELECT 
+		  bso.`item_code`,
+		  bfi.`item_name`,
+		  s.`payable`,
+		  bso.`fee_amount`
+		FROM
+		  bd_student_serial s
+		  LEFT JOIN bd_serial_suborder bss
+		    ON bss.serial_no = s.serial_no
+		  LEFT JOIN bd_sub_order bso 
+		    ON bss.`sub_order_no` = bso.`sub_order_no` 
+		  LEFT JOIN bd_fee_item bfi 
+		    ON bfi.`item_code` = bso.`item_code` 
+		WHERE s.`serial_mark` = #{serialMark}
+	</select>
+	
+	<select id="selectItemsByReptId" parameterType="java.lang.String" resultMap="ItemsResult">
+		SELECT 
+		  bso.`item_code`,
+		  bfi.`item_name`,
+		  s.`payable`,
+		  bso.`fee_amount`
+		FROM
+		  bd_rept_serial rs 
+		  LEFT JOIN bd_student_serial s 
+		    ON s.`serial_mark` = rs.`serial_mark` 
+		  LEFT JOIN bd_serial_suborder bss 
+		    ON bss.serial_no = s.serial_no 
+		  LEFT JOIN bd_sub_order bso 
+		    ON bss.`sub_order_no` = bso.`sub_order_no` 
+		  LEFT JOIN bd_fee_item bfi 
+		    ON bfi.`item_code` = bso.`item_code` 
+		WHERE rs.`rept_id` = #{reptId}
+	</select>
+	
+	<select id="selectLearnIdByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bsr.`learn_id` 
+		FROM
+		  bd_student_rept bsr 
+		WHERE bsr.`rept_id` = #{reptId}
+		  and bsr.rept_status = '1'
+	</select>
+  	
+  	<select id="selectReceiptPrints" resultMap="ReptPrintReulst" >
+  		SELECT 
+		  bsr.rept_id,
+		  i.`std_name`,
+		  bss.`emp_name` payee,
+		  DATE_FORMAT(
+		    bss.`pay_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) pay_time,
+		  sum(bss.`payable`) amount,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bup.`grade`,
+		  bss.serial_no,
+		  bss.payment_type,
+		  bss.finance_code,
+		  rs.serial_mark
+		FROM
+		  bd_rept_serial rs 
+		  LEFT JOIN bd_student_rept bsr 
+		    ON bsr.`rept_id` = rs.`rept_id` 
+		  LEFT JOIN bd_student_serial bss 
+		    ON bss.`serial_mark` = rs.`serial_mark` 
+		  LEFT JOIN bd_student_order bs 
+		    ON bs.`order_no` = bss.`order_no` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bs.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id`
+		  LEFT JOIN bd_student_info i 
+    		ON i.`std_id` = bli.`std_id` 
+		WHERE bsr.`rept_id` IN (
+			 <foreach collection="reptIds" item="reptId" index="index" separator="," >  
+        		#{reptId}
+    		</foreach>
+		)
+		GROUP BY rs.rept_id
+  	</select>
+  	
+  	<select id="selectSfPrint" parameterType="java.lang.String" resultMap="SfPrintResult">
+  		SELECT 
+		  bsr.`sf_mailno` mailno,
+		  bsr.`dest_code`,
+		  CONCAT(
+		    bsr.`province`,
+		    bsr.`city`,
+		    bsr.`district`,
+		    bsr.`address`
+		  ) as address,  
+		  bsr.`mobile`,
+		  bu.`unvs_name`,
+		  bup.`grade`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`recruit_type`,
+		  bsi.`std_name`,
+		  bsr.`user_name`,
+		  bsr.`custid`
+		FROM
+		  bd_student_rept bsr 
+		  LEFT JOIN bd_shopping_address bsa 
+		    ON bsa.`std_id` = bsr.`std_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bsr.`std_id` 
+		  LEFT JOIN sys_province sp 
+		    ON sp.`province_code` = bsa.`province_code` 
+		  LEFT JOIN sys_city sc 
+		    ON sc.`city_code` = bsa.`city_code` 
+		  LEFT JOIN sys_district sd 
+		    ON sd.`district_code` = bsa.`district_code` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`learn_id` = bsr.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		 WHERE bsr.rept_id = #{reptId}
+  	</select>
+  	
+  	<select id="selectSfPrints" resultMap="SfPrintResult">
+  		SELECT 
+		  bsr.`sf_mailno` mailno,
+		  bsr.`dest_code`,
+		   CONCAT(
+		    bsr.`province`,
+		    bsr.`city`,
+		    bsr.`district`,
+		    bsr.`address`
+		  ) AS address,
+		  bsr.`mobile`,
+		  bu.`unvs_name`,
+		  bup.`grade`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`recruit_type`,
+		  bsi.`std_name`,
+		  bsr.`user_name`,
+		  bsr.`custid`
+		FROM
+		    bd_student_rept bsr 
+		  LEFT JOIN bd_shopping_address bsa 
+		    ON bsa.`std_id` = bsr.`std_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bsr.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`learn_id` = bsr.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		 WHERE bsr.rept_id IN (
+			 <foreach collection="reptIds" item="reptId" index="index" separator="," >  
+        		#{reptId}
+    		</foreach>
+		)
+  	</select>
+  	
+</mapper>

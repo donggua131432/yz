@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.enroll.BdStdRegisterMapper">
+  <resultMap type="com.yz.model.enroll.regist.BdStudentRegist" id="RegisterInfoResultMap">
+  	 <result column="std_id" property="stdId" />
+  	 <result column="learn_id" property="learnId" />
+  	 <result column="std_no" property="stdNo" />
+  	 <result column="std_name" property="stdName" />
+  	 <result column="std_stage" property="stdStage" />
+  	 <result column="grade" property="grade" />
+  	 <result column="recruit_type" property="recruitType" />
+  	 <result column="unvs_name" property="unvsName" />
+  	 <result column="pfsn_code" property="pfsnCode" />
+  	 <result column="pfsn_name" property="pfsnName" />
+  	 <result column="pfsn_level" property="pfsnLevel" />
+  	 <result column="school_roll" property="schoolRoll" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.enroll.regist.BdStudentRegist" id="StdRegisterInfoResultMap" extends="RegisterInfoResultMap">
+  	<result column="recruit" property="recruit" />
+  	<result column="campus_name" property="campusName" />
+  	<result column="emp_name" property="empName"/>
+  	<result column="points" property="points" />
+  	<result column="fee_name" property="feeName"/>
+  	<result column="scholarship" property="scholarship"/>
+  	<result column="id_card" property="idCard"/>
+  	<association property="application" column="learn_id" select="selectApplication"/>
+  	<association property="score" column="learn_id" select="selectEnrollScore"/>
+  	<association property="payInfos" column="learn_id" select="selectPayInfo"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.educational.BdStudentEScore" id="StdEnrollScoreResultMap">
+  	<result column="subject_name" property="courseName" />
+  	<result column="score" property="score" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.enroll.stdenroll.BdStdEnroll" id="StdApplicationResultMap">
+  	<result column="pfsn_level" property="pfsnLevel" />
+  	<result column="recruit_type" property="recruitType" />
+  	<result column="unvs_name" property="unvsName" />
+  	<result column="pfsn_name" property="pfsnName" />
+  	<result column="pfsn_code" property="pfsnCode" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.stdfee.BdStdPayInfoResponse" id="PayInfoResultMap">
+  	<result column="item_code" property="itemCode"/>
+  	<result column="item_name" property="itemName"/>
+  	<result column="payable" property="payable"/>
+  	<result column="refund_amount" property="refundAmount"/>
+  	<result column="sub_order_status" property="subOrderStatus"/>
+  </resultMap>
+  
+  <select id="selectRecruitTypeByLearnId" resultType="java.lang.String" parameterType="java.lang.String" >
+  	select recruit_type from bd_learn_info where learn_id = #{learnId}
+  </select>
+  
+  <update id="updateSchoolRollStdNo">
+	  UPDATE
+	  bd_learn_info bli
+	  <set>
+		  <if test="schoolRoll != null and schoolRoll != ''">
+			  bli.`school_roll` = #{schoolRoll},
+		  </if>
+		  <if test="stdNo != null and stdNo != ''">
+			  bli.`std_no` = #{stdNo},
+		  </if>
+	  </set>
+	  WHERE bli.`learn_id` in
+	  <foreach collection="learnIds" item="learnId" open="(" close=")" separator=",">
+		  #{learnId}
+	  </foreach>
+  </update>
+  
+  <select id="selectLearnId" resultType="java.lang.String">
+  	SELECT 
+	  bli.`learn_id` 
+	FROM
+	  bd_student_info bsi 
+	  LEFT JOIN bd_learn_info bli 
+	    ON bli.`std_id` = bsi.`std_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bli.`pfsn_id` = bup.`pfsn_id` 
+	  LEFT JOIN bd_university bu 
+	    ON bli.`unvs_id` = bu.`unvs_id` 
+	WHERE bsi.`id_card` = #{idCard}
+	  AND bsi.`std_name` = #{stdName}
+	  AND bup.`pfsn_name` = #{pfsnName}
+	  AND bu.`unvs_name` = #{unvsName}
+	  AND bup.`grade` = #{grade}
+  </select>
+  
+  <select id="selectUnPaidItemCodes" resultType="java.lang.String">
+  	SELECT 
+	  bso.item_code
+	FROM
+	  bd_student_order bs 
+	  LEFT JOIN bd_sub_order bso 
+	    ON bso.`order_no` = bs.`order_no` 
+	WHERE bs.`learn_id` = #{learnId}
+	  AND bso.`sub_order_status` = '1' 
+	  AND bso.`item_code` IN 
+	  (SELECT 
+		  bri.`item_code` 
+		FROM
+		  bd_rt_item bri 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`recruit_type` = bri.`recruit_type` 
+		  LEFT JOIN bd_fee_item bfi 
+		    ON bfi.`item_code` = bri.`item_code` 
+	  WHERE bli.`learn_id` = #{learnId}
+	     AND bfi.`item_year` = #{grade})
+  </select>
+  
+  <select id="selectSchoolRoll" resultType="java.lang.String" parameterType="java.lang.String">
+  	SELECT 
+	  brr.`school_roll` 
+	FROM
+	  bd_register_record brr 
+	WHERE brr.`learn_id` = #{learnId} 
+  </select>
+  
+  <select id="selectPayInfo" parameterType="java.lang.String" resultMap="PayInfoResultMap">
+  	SELECT 
+	  bfi.`item_code`,
+	  bfi.`item_name`,
+	  bso.`payable`,
+	  bso.`sub_order_status` 
+	FROM
+	  bd_student_order bs 
+	  LEFT JOIN bd_sub_order bso 
+	    ON bso.`order_no` = bs.`order_no` 
+	  LEFT JOIN bd_fee_item bfi 
+	    ON bfi.`item_code` = bso.`item_code` 
+	WHERE bs.`learn_id` = #{learn_id}
+		and bso.sub_order_status != '4'
+	ORDER BY bfi.order_num
+  </select>
+  
+  <select id="selectTmpAddRecord" resultType="java.util.HashMap">
+  	SELECT 
+	  bli.std_id,
+	  bli.learn_id,
+	  bli.pfsn_id,
+	  bli.unvs_id,
+	  bli.grade,
+	  1 register_timer,
+	  #{updateUser} update_user,
+	  #{updateUserId} update_user_id
+	FROM
+	  bd_learn_info bli 
+	WHERE bli.learn_id = #{learnId} 
+  </select>
+  
+  <insert id="insertFirstRegist">
+  	INSERT INTO bd_register_record (
+	  register_id,
+	  std_id,
+	  learn_id,
+	  pfsn_id,
+	  unvs_id,
+	  grade,
+	  register_timer,
+	  update_user,
+	  update_user_id
+	) values
+	<foreach collection="list" item="item" index="index" separator="," >  
+       	(
+       	#{item.register_id},
+       	#{item.std_id},
+       	#{item.learn_id},
+       	#{item.pfsn_id},
+       	#{item.unvs_id},
+       	#{item.grade},
+       	#{item.register_timer},
+       	#{item.update_user},
+       	#{item.update_user_id}
+       	)
+   	</foreach>
+	
+  </insert>
+  
+   <select id="selectEnrollScore" parameterType="java.lang.String" resultMap="StdEnrollScoreResultMap">
+  	SELECT 
+	  bts.`subject_name`,
+	  bss.`score` 
+	FROM
+	  bd_student_e_score bss 
+	  LEFT JOIN bd_test_subject bts
+	  on bts.subject_id = bss.course_id
+	WHERE bss.`learn_id` = #{learnId} 
+  </select>
+  
+  <select id="selectNextRegistInsertInfo" resultType="java.util.HashMap">
+  	SELECT 
+	  brr.std_id,
+	  brr.learn_id,
+	  brr.school_roll,
+	  brr.pfsn_id,
+	  brr.unvs_id,
+	  brr.grade,
+	  (brr.register_timer + 1) register_timer,
+	  0 is_register,
+	  #{updateUser} update_user,
+	  #{updateUserId} update_user_id
+	FROM
+	  bd_register_record brr 
+	WHERE brr.learn_id = #{learnId}
+	  AND brr.register_timer = #{grade}
+  </select>
+  
+  <insert id="insertNextRegistInfo">
+  	INSERT INTO bd_register_record (
+	  register_id,
+	  std_id,
+	  learn_id,
+	  school_roll,
+	  pfsn_id,
+	  unvs_id,
+	  grade,
+	  register_timer,
+	  is_register,
+	  update_user,
+	  update_user_id
+	) values
+	<foreach collection="list" item="item" index="index" separator="," >  
+       	(
+       	#{item.register_id},
+       	#{item.std_id},
+       	#{item.learn_id},
+       	#{item.school_roll},
+       	#{item.pfsn_id},
+       	#{item.unvs_id},
+       	#{item.grade},
+       	#{item.register_timer},
+       	#{item.is_register},
+       	#{item.update_user},
+       	#{item.update_user_id}
+       	)
+   	</foreach>
+  </insert>
+  
+  <select id="selectNextRegistInfoBatch" resultType="java.util.HashMap">
+  	SELECT 
+	  brr.std_id,
+	  brr.learn_id,
+	  brr.school_roll,
+	  brr.pfsn_id,
+	  brr.unvs_id,
+	  brr.grade,
+	  (brr.register_timer + 1) register_timer,
+	  0 is_register,
+	  #{updateUser} update_user,
+	  #{updateUserId} update_user_id
+	FROM
+	  bd_register_record brr 
+	WHERE brr.learn_id in
+	<foreach collection="learnIds" item="learnId" open="(" close=")" separator=",">
+    	#{learnId}
+    </foreach>
+	  AND brr.register_timer = #{grade}
+  </select>
+  
+  <insert id="insertNextRegistInfos">
+  	INSERT INTO bd_register_record (
+	  register_id,
+	  std_id,
+	  learn_id,
+	  school_roll,
+	  pfsn_id,
+	  unvs_id,
+	  grade,
+	  register_timer,
+	  is_register,
+	  update_user,
+	  update_user_id
+	) values
+	<foreach collection="list" item="item" index="index" separator="," >  
+       	(
+       	#{item.register_id},
+       	#{item.std_id},
+       	#{item.learn_id},
+       	#{item.school_roll},
+       	#{item.pfsn_id},
+       	#{item.unvs_id},
+       	#{item.grade},
+       	#{item.register_timer},
+       	#{item.is_register},
+       	#{item.update_user},
+       	#{item.update_user_id}
+       	)
+   	</foreach>
+  </insert>
+  
+  
+   <!-- 批量注册学员 -->
+  <update id="stdRegisterBatchs">
+  	UPDATE 
+	  `bd_register_record` brr 
+	SET
+	  brr.`is_register` = '1',
+	  update_user = #{updateUser},
+	  update_user_id = #{updateUserId}  
+	where learn_id in
+	<foreach collection="learnIds" item="learnId" open="(" close=")" separator=",">
+    	#{learnId}
+    </foreach>
+    and register_timer = #{grade}
+  </update>
+  
+  <update id="stdRegisterBatch" parameterType="java.lang.String">
+  	UPDATE 
+	  `bd_register_record` brr 
+	SET
+	  brr.`is_register` = '1',
+	  update_user = #{updateUser},
+	  update_user_id = #{updateUserId}  
+	where learn_id = #{learnId}
+  </update>
+  
+  <select id="selectStdStatus" parameterType="java.lang.String" resultType="java.lang.String" >
+  	SELECT 
+	  bli.std_stage 
+	FROM
+	  `bd_learn_info` bli 
+	WHERE bli.`learn_id` = #{learnId} 
+  </select>
+  
+  <select id="selectApplication" parameterType="java.lang.String" resultMap="StdApplicationResultMap">
+  	SELECT 
+	  bse.`pfsn_level`,
+	  bu.`unvs_name`,
+	  bu.recruit_type,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_code` 
+	FROM
+	  bd_student_enroll bse 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bse.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.`pfsn_id` = bse.`pfsn_id` 
+	  LEFT JOIN bd_learn_info bli 
+	    ON bli.`learn_id` = bse.`learn_id` 
+	WHERE bse.`learn_id` = #{learnId}
+  </select>
+  
+  <!-- 学员注册信息 -->
+  <select id="selectRegisterInfoById" resultMap="StdRegisterInfoResultMap" parameterType="java.lang.String">
+  	SELECT 
+  	  bli.learn_id,
+	  bsi.`std_id`,
+	  bsi.`std_name`,
+	  bli.`std_no`,
+	  bli.`learn_id`,
+	  bli.std_type,
+	  blr.recruit,
+	  oc.`campus_name`,
+	  bu.`unvs_name`,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  bli.grade,
+	  oe.`emp_name`,
+	  bbr.`points`,
+	  bf.`fee_name`,
+	  bli.`scholarship`,
+	  bsi.`id_card` 
+	FROM
+	  bd_learn_info bli 
+	  LEFT JOIN bd_student_info bsi 
+	    ON bli.`std_id` = bsi.`std_id` 
+	  LEFT JOIN bd_register_record brr 
+	    ON brr.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_student_admit bsa 
+	    ON bsa.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.pfsn_id = bsa.`pfsn_id` 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bsa.unvs_id 
+	  LEFT JOIN bd_learn_rules blr 
+	    ON blr.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN oa_employee oe 
+	    ON oe.`emp_id` = blr.`recruit` 
+	  LEFT JOIN oa_employee_job oej 
+	    ON oej.`emp_id` = oe.`emp_id` 
+	  LEFT JOIN oa_campus oc 
+	    ON oc.`campus_id` = oej.`campus_id` 
+	 <!--  LEFT JOIN bd_bp_records bbr 
+	    ON bbr.`learn_id` = bli.`learn_id`  -->
+	  LEFT JOIN bd_student_enroll bbr 
+	    ON bbr.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_fee bf 
+	    ON bli.`fee_id` = bf.`fee_id` 
+	WHERE bli.learn_id = #{learnId}
+		and brr.register_timer = #{grade}
+  </select>
+  
+  <select id="selectRegisterInfoByPage" parameterType="com.yz.model.enroll.stdenroll.BdStdEnrollQuery" resultType="java.util.HashMap">
+	SELECT
+		bli.learn_id,bli.std_no,bli.std_stage,bli.recruit_type,bli.std_type,bli.school_roll,bli.grade,
+		bsi.std_id,bsi.std_name,buli.unvs_name,bup.pfsn_code,bup.pfsn_name,bup.pfsn_level,
+		bsa.unvs_id as unvs_id_admit,busa.unvs_name as unvs_name_admit,bsa.pfsn_id as pfsn_id_admit,bupsa.pfsn_code as pfsn_code_admit,
+		bupsa.pfsn_name as pfsn_name_admit, bupsa.pfsn_level as pfsn_level_admit
+	FROM bd_learn_info bli
+	LEFT JOIN bd_student_info bsi  ON bli.`std_id` = bsi.`std_id`
+	LEFT JOIN bd_student_order bs on bs.learn_id = bli.learn_id
+	LEFT JOIN bd_register_record brr ON brr.`learn_id` = bli.`learn_id`
+	LEFT JOIN bd_university buli ON buli.unvs_id = bli.unvs_id
+	LEFT JOIN bd_unvs_profession bup ON bup.pfsn_id = bli.`pfsn_id`
+	LEFT JOIN bd_learn_rules blr on blr.learn_id=bli.learn_id
+	LEFT JOIN oa_campus oc on oc.campus_id = blr.recruit_campus_id
+	LEFT JOIN oa_department od on od.dp_id = blr.recruit_dp_id
+	LEFT JOIN oa_employee oe on oe.emp_id = blr.recruit
+	LEFT JOIN bd_test_confirm btc on btc.learn_id = bli.learn_id
+	LEFT JOIN bd_test_prove_info btpi on btpi.learn_id = bli.learn_id
+	LEFT JOIN bd_student_enroll bse on bse.learn_id = bli.learn_id
+	LEFT JOIN (select learn_id,std_id, sum(score) as score_sum from bd_student_e_score group by learn_id,std_id) bses on bses.learn_id=bli.learn_id
+	LEFT JOIN bd_student_admit bsa ON bsa.`learn_id` = bli.`learn_id`
+	LEFT JOIN bd_university busa ON busa.unvs_id = bsa.unvs_id
+	LEFT JOIN bd_unvs_profession bupsa ON bsa.pfsn_id = bupsa.pfsn_id
+	WHERE brr.`is_register` = '0' and bli.`std_stage` in ('6','7') AND brr.`register_timer` = #{registerTimer}
+	<if test="stdName != null and stdName != ''">
+	  and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+	</if>
+	<if test="idCard != null and idCard != ''">
+	  and bsi.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+	</if>
+	<if test="mobile != null and mobile != ''">
+	  and bsi.mobile LIKE CONCAT('%', CONCAT(#{mobile}, '%'))
+	</if>
+	<if test="unvsId != null and unvsId != ''">
+	  and buli.unvs_id = #{unvsId}
+	</if>
+	<if test="pfsnId != null and pfsnId != ''">
+	  and bup.pfsn_id = #{pfsnId}
+	</if>
+	<if test="grade != null and grade != ''">
+	  and bli.grade = #{grade}
+	</if>
+	<if test="pfsnLevel != null and pfsnLevel != ''">
+	  and bup.pfsn_level = #{pfsnLevel}
+	</if>
+	<if test="stdStage != null and stdStage != ''">
+	  and bli.std_stage = #{stdStage}
+	</if>
+	<if test="recruitType != null and recruitType != ''">
+	  and bli.recruit_type = #{recruitType}
+	</if>
+	<if test="scholarship != null and scholarship != ''">
+	  and bli.scholarship = #{scholarship}
+	</if>
+	<if test="campusId != null and campusId != ''">
+	  and oc.campus_id = #{campusId}
+	</if>
+	<if test="dpId != null and dpId != ''">
+	  and od.dp_id = #{dpId}
+	</if>
+	<if test="taName != null and taName != ''">
+	  and bs.ta_name = #{taName}
+	</if>
+	<if test="recruitName != null and recruitName != ''">
+	  and oe.emp_name LIKE CONCAT('%', CONCAT(#{recruitName}, '%'))
+	</if>
+	<if test="recruitStatus != null and recruitStatus != ''">
+	  and oe.emp_status = #{recruitStatus}
+	</if>
+	<if test="isOk == '0'.toString()">
+	  and (btc.is_ok = #{isOk} or btc.is_ok is null)
+	</if>
+	<if test="isOk == '1'.toString()">
+	  and btc.is_ok = #{isOk}
+	</if>
+	<if test="isExamNo == '0'.toString()">
+	  and btpi.exam_no is null
+	</if>
+	<if test="isExamNo == '1'.toString()">
+	  and btpi.exam_no is not null
+	</if>
+	<if test="isExamSign == '0'.toString()">
+	  and (btc.is_exam_sign = #{isExamSign} or btc.is_exam_sign is null)
+	</if>
+	<if test="isExamSign == '1'.toString()">
+	  and btc.is_exam_sign = #{isExamSign}
+	</if>
+	<if test="isScore == '0'.toString()">
+	  and bses.score_sum is null
+	</if>
+	<if test="isScore == '1'.toString()">
+	  and bses.score_sum is not null
+	</if>
+	<if test="scoreMax != null and scoreMax != ''">
+	  and (if(bses.score_sum = null,0,bses.score_sum) + bse.points) &gt; #{scoreMax}
+	</if>
+	<if test="scoreMin != null and scoreMin != ''">
+	  and (if(bses.score_sum = null,0,bses.score_sum) + bse.points) &lt; #{scoreMin}
+	</if>
+	<if test="isAddScore == '0'.toString()">
+	  and bse.points &lt;= 0
+	</if>
+	<if test="isAddScore == '1'.toString()">
+	  and bse.points &gt; 0
+	</if>
+	<if test="isAdmit != null and isAdmit != ''">
+	  and bsa.is_admit = #{isAdmit}
+	</if>
+	<if test="unvsIdAdmit != null and unvsIdAdmit != ''">
+	  and bsa.unvs_id = #{unvsIdAdmit}
+	</if>
+	<if test="pfsnIdAdmit != null and pfsnIdAdmit != ''">
+	  and bsa.pfsn_id = #{pfsnIdAdmit}
+	</if>
+	<if test="isAdmitEnroll == '0'.toString()">
+	  and IFNULL(bli.unvs_id,0) <![CDATA[<>]]> IFNULL(bsa.unvs_id,0)
+	</if>
+	<if test="isAdmitEnroll == '1'.toString()">
+	  and bsa.unvs_id = buli.unvs_id
+	</if>
+	<if test="stdType != null and stdType != ''">
+	  and bli.std_type = #{stdType}
+	</if>
+	order by brr.update_time desc
+  </select>
+  
+  <select id="selectSecondRegisterInfoByPage" resultMap="RegisterInfoResultMap">
+  	SELECT 
+  	  bli.learn_id,
+	  bsi.`std_id`,
+	  bli.`std_no`,
+	  bsi.`std_name`,
+	  bli.`std_stage`,
+	  bli.std_type,
+	  bu.`unvs_name`,
+	  bu.recruit_type,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  brr.school_roll,
+	  bli.grade 
+	FROM
+	  bd_learn_info bli 
+	  LEFT JOIN bd_student_info bsi 
+	    ON bli.`std_id` = bsi.`std_id` 
+	  LEFT JOIN bd_register_record brr 
+	    ON brr.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.pfsn_id = bli.`pfsn_id` 
+	  LEFT JOIN bd_student_admit bsa 
+	    ON bsa.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bli.unvs_id 
+	WHERE bli.std_stage = '7' 
+	  AND brr.`register_timer` = (bli.`grade` + 1) 
+	  AND brr.`is_register` = '0' 
+  </select>
+  
+  <select id="selectThirdRegisterInfoByPage" resultMap="RegisterInfoResultMap">
+  	SELECT 
+  	  bli.learn_id,
+	  bsi.`std_id`,
+	  bli.`std_no`,
+	  bsi.`std_name`,
+	  bli.`std_stage`,
+	  bli.std_type,
+	  bu.`unvs_name`,
+	  bu.recruit_type,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  brr.school_roll,
+	  bli.grade 
+	FROM
+	  bd_learn_info bli 
+	  LEFT JOIN bd_student_info bsi 
+	    ON bli.`std_id` = bsi.`std_id` 
+	  LEFT JOIN bd_register_record brr 
+	    ON brr.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.pfsn_id = bli.`pfsn_id` 
+	  LEFT JOIN bd_student_admit bsa 
+	    ON bsa.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bli.unvs_id 
+	WHERE bli.std_stage = '7' 
+	  AND brr.`register_timer` = (bli.`grade` + 2) 
+	  AND brr.`is_register` = '0' 
+  </select>
+  
+  <select id="getMpCondition" resultType="com.yz.model.communi.Body" parameterType="string">
+  	SELECT 
+	  l.`recruit_type` AS recruitType,
+	  l.`std_stage` AS stdStage,
+	  ubi.`p_id` AS pId,
+	  ubi.`p_type` AS pType,
+	  ubi.`user_id` AS userId,
+	  ubi.`user_type` AS userType
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN us.`us_base_info`  ubi
+	    ON ubi.`std_id` = l.`std_id`
+	WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getMpConditions" resultType="com.yz.model.communi.Body">
+  	SELECT 
+	  l.`recruit_type` AS recruitType,
+	  l.learn_id as learnId,
+	  l.std_id as stdId,
+	  l.`std_stage` AS stdStage,
+	  ubi.`p_id` AS pId,
+	  ubi.`p_type` AS pType,
+	  ubi.`user_id` AS userId,
+	  ubi.`user_type` AS userType,
+	  l.create_time createTime
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN us.`us_base_info`  ubi
+	    ON ubi.`std_id` = l.`std_id`
+	WHERE l.`learn_id` in(
+	<foreach collection="learnIds" item="learnId" separator=",">
+		#{learnId, jdbcType=VARCHAR}
+	</foreach>
+	) 
+  </select>
+  
+  <select id="selectLearnIdByCond" resultType="java.lang.String">
+  	SELECT 
+	  bli.`learn_id` 
+	FROM
+	  bd_student_info bsi 
+	  LEFT JOIN bd_learn_info bli 
+	    ON bli.`std_id` = bsi.`std_id` 
+	WHERE bsi.`id_card` = #{idCard} AND bli.`grade` = #{grade}
+  </select>
+</mapper>

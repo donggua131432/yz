@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.refund.StdRefundMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.refund.BdStudentRefund">
+		<id column="refund_id" property="refundId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="refund_amount" property="refundAmount" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+		<result column="check_type" property="checkType" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="is_complete" property="isComplete" jdbcType="CHAR" />
+		<result column="remark" property="remark" jdbcType="CHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="CheckWeightMap" type="com.yz.model.refund.BdCheckWeight" >
+	    <result column="cw_id" property="cwId" jdbcType="VARCHAR" />
+	    <result column="check_type" property="checkType" jdbcType="VARCHAR" />
+	    <result column="jt_id" property="jtId" jdbcType="VARCHAR" />
+	    <result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+	    <result column="check_rule_type" property="checkRuleType" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+	    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+	    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+	    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="RefundResultMap" type="com.yz.model.refund.BdRefundReponse">
+		<result column="refund_id" property="refundId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="refund_amount" property="refundAmount" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="scholarship" property="scholarship" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="is_complete" property="isComplete" jdbcType="VARCHAR" />
+		<result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+		<association property="checks" column="refund_id" select="selectChecks"/>
+	</resultMap>
+	
+	<resultMap id="CheckResultMap" type="com.yz.model.transfer.BdCheckRecord">
+		<result column="cr_id" property="crId" jdbcType="VARCHAR" />
+		<result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="jt_id" property="jtId" jdbcType="VARCHAR" />
+		<result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+		<result column="check_type" property="checkType" jdbcType="VARCHAR" />
+		<result column="cr_status" property="crStatus" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+		<result column="title_name" property="titleName" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StudentMap" type="java.util.Map">
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<update id="finishRefund" parameterType="java.lang.String">
+		update 
+		  bd_student_refund 
+		set
+		  is_complete = '1',
+		  update_user = #{updateUser},
+		  update_user_id = #{updateUserId},
+		  update_time = now()
+		where refund_id = #{refundId}
+	</update>
+	
+	<select id="selectPrincipalApproval" resultMap="RefundResultMap">
+		SELECT 
+		  bso.`refund_id`,
+		  bso.`order_no`,
+		  bso.`refund_amount`,
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bso.`create_user`,
+		  bse.`grade`,
+		  bu.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bse.`scholarship`,
+		  bli.`std_stage`,
+		  bso.`remark`,
+		  bcr.`check_status`,
+		  DATE_FORMAT(
+		    bso.`create_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) create_time 
+		FROM
+		  bd_student_refund bso 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bso.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bso.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bso.`learn_id` = bse.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id`
+		  LEFT JOIN bd_check_record bcr 
+    		ON bcr.`mapping_id` = bso.`refund_id`
+    	  left join bd_learn_rules r
+    	    on r.learn_id = bli.learn_id
+		WHERE bso.`check_order` = '3' 
+			  AND bso.`check_type` = '9' 
+			  AND bso.`is_complete` = '0' 
+			  AND bcr.`check_type` = '9' 
+			  AND bcr.`check_order` = '3' 
+			  AND bcr.`check_status` != '4' 
+			<if test="query.stdName != null and query.stdName != ''">
+				and bsi.`std_name` like CONCAT('%',#{query.stdName},'%')
+			</if>
+			<if test="query.mobile != null and query.mobile != ''">
+				and bsi.`mobile` = #{query.mobile}
+			</if>
+			<if test="query.idCard != null and query.idCard != ''">
+				and bsi.`id_card` = #{query.idCard}
+			</if>
+			<if test="query.checkStatus != null and query.checkStatus != ''">
+				and 
+				(SELECT 
+				  COUNT(*) 
+				FROM
+				  bd_student_refund f 
+				  LEFT JOIN bd_check_record c 
+				    ON c.`mapping_id` = f.`refund_id` 
+				WHERE c.`check_order` = '3' 
+				  AND c.`check_status` = #{query.checkStatus}
+				  AND f.`refund_id` = bso.refund_id) > 0
+			</if>
+			<if test="query.stdStage != null and query.stdStage != ''">
+				and bli.`std_stage` = #{query.stdStage}
+			</if>
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and r.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		  ORDER BY bso.`update_time` DESC
+	</select>
+	
+	<select id="selectFinancialApproval" resultMap="RefundResultMap">
+		SELECT 
+		  bso.`refund_id`,
+		  bso.`order_no`,
+		  bso.`refund_amount`,
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bso.`create_user`,
+		  bse.`grade`,
+		  bu.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bse.`scholarship`,
+		  bli.`std_stage`,
+		  bso.`remark`,
+		  bcr.`check_status`,
+		  DATE_FORMAT(
+		    bso.`create_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) create_time 
+		FROM
+		  bd_student_refund bso 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bso.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bso.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bso.`learn_id` = bse.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id`
+		  LEFT JOIN bd_check_record bcr 
+    		ON bcr.`mapping_id` = bso.`refund_id`  
+		WHERE (
+			    bso.`check_order` = '3' 
+			    OR bso.`check_order` = '2'
+			  ) 
+			  AND bso.`check_type` = '9' 
+			  AND bso.`is_complete` = '0' 
+			  AND bcr.`check_type` = '9' 
+			  AND bcr.`check_order` = '2' 
+			  AND bcr.`check_status` != '4' 
+			<if test="stdName != null and stdName != ''">
+				and bsi.`std_name` like CONCAT('%',#{stdName},'%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and bsi.`mobile` = #{mobile}
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and bsi.`id_card` = #{idCard}
+			</if>
+			<if test="checkStatus != null and checkStatus != ''">
+				and 
+				(SELECT 
+				  COUNT(*) 
+				FROM
+				  bd_student_refund f 
+				  LEFT JOIN bd_check_record c 
+				    ON c.`mapping_id` = f.`refund_id` 
+				WHERE c.`check_order` = '2' 
+				  AND c.`check_status` = #{checkStatus}
+				  AND f.`refund_id` = bso.refund_id) > 0
+			</if>
+			<if test="stdStage != null and stdStage != ''">
+				and bli.`std_stage` = #{stdStage}
+			</if>
+		  ORDER BY bso.`update_time` DESC
+	</select>
+	
+	<update id="updateReject">
+		UPDATE 
+		  bd_check_record 
+		SET
+		  check_status = #{checkStatus},
+		  reason = #{reason},
+		  update_user = #{updateUser},
+		  update_user_id = #{updateUserId},
+		  emp_id = #{empId},
+		  update_time = now()
+		WHERE mapping_id = #{mappingId} 
+		  AND check_order = #{checkOrder} 
+	</update>
+	
+	<update id="updateRefundCheckOrder">
+		UPDATE 
+		  bd_student_refund 
+		SET
+		  check_order = #{checkOrder},
+		  update_user = #{updateUser},
+		  update_user_id = #{updateUserId},
+		  update_time = now()
+		WHERE refund_id = #{refundId}
+	</update>
+	
+	<select id="selectStdId" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  std_id 
+		FROM
+		  bd_learn_info 
+		WHERE learn_id = #{learnId}
+	</select>
+	
+	<select id="selectByLearnId" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select 
+		  count(1) 
+		from
+		  bd_student_refund 
+		where learn_Id = #{learnId}
+		and is_complete = '0'
+		and check_type = '9'
+	</select>
+	
+	<select id="selectUnCheckRefund" resultType="java.lang.String">
+		SELECT 
+	      s.`refund_id` 
+	    FROM
+	      bd_student_refund s 
+	     LEFT JOIN  bd_check_record c 
+	        ON s.`refund_id` = c.`mapping_id` 
+	    WHERE s.`refund_id` in 
+		    <foreach collection="refundIds" item="refundId" open="(" close=")" separator=",">
+		    	#{refundId}
+		    </foreach>
+	      AND s.`check_order` = '1' 
+	      AND c.`check_status` = '1'
+	      AND c.`check_order` = '2' 
+	      AND s.is_complete = '0'
+	      group by s.`refund_id`
+	</select>
+	
+	<delete id="deleteRefunds">
+		DELETE 
+		  bsr,
+		  bcr 
+		FROM
+		  bd_student_refund bsr,
+		  bd_check_record bcr 
+		WHERE bsr.refund_id = bcr.mapping_id
+			and bsr.`refund_id` in 
+		<foreach collection="refundIds" item="refundId" open="(" close=")" separator=",">
+	    	#{refundId}
+	    </foreach>
+	</delete>
+	
+	<select id="getCheckWeight" resultMap="CheckWeightMap"
+		parameterType="java.lang.String">
+		SELECT check_order,check_type,jt_id FROM bd_check_weight
+		WHERE
+		check_type = #{checkType,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findStudentInfo" resultMap="StudentMap"
+		parameterType="java.lang.String">
+		SELECT 
+		  bli.`std_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`std_stage`,
+		  bli.`learn_id` 
+		FROM
+		  bd_student_info bsi 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.learn_id = bli.learn_id 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = r.`recruit` 
+		WHERE 
+		  (SELECT 
+		    COUNT(*) 
+		  FROM
+		    bd_student_refund f 
+		  WHERE f.learn_id = bli.`learn_id` 
+		    AND f.`is_complete` = '0' 
+		    AND f.`check_type` = '9') = 0 
+		<if test="stdName != null and stdName != ''">
+			and (bsi.`std_name` like CONCAT('%',#{stdName},'%')
+		</if>
+		<if test="phone != null and phone != ''">
+			or bsi.`mobile` = #{phone}
+		</if>
+		<if test="idCard != null and idCard != ''">
+			or bsi.`id_card` = #{idCard})
+		</if>
+		<if test="user.userLevel != 1">
+			<choose>
+				<when test="user.userLevel == 2">
+					and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id in (
+					<foreach collection="user.myCampusList" item="info" separator=",">
+						#{info.campusId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<when test="user.userLevel == 3">
+					and (r.recruit = #{user.empId, jdbcType=VARCHAR} or (r.recruit_dp_id in (
+					<foreach collection="user.myDpList" item="info" separator=",">
+						#{info.dpId, jdbcType=VARCHAR}
+					</foreach>
+					) and oe.`emp_status`='2'))
+				</when>
+				<when test="user.userLevel == 4">
+					and (r.recruit = #{user.empId, jdbcType=VARCHAR} or (r.recruit in (
+					<foreach collection="user.myEmplyeeList" item="info" separator=",">
+						#{info.empId, jdbcType=VARCHAR}
+					</foreach>
+					) and oe.`emp_status`='2'))
+				</when>
+				<when test="user.userLevel == 6">
+				  and ((r.recruit =#{user.empId, jdbcType=VARCHAR} and bli.`std_stage` !='7') or r.`tutor`= #{user.empId, jdbcType=VARCHAR})
+				</when>
+				<when test="user.userLevel == 7">
+				  and bli.`std_stage` ='7'
+				</when>
+				<otherwise>
+					and r.recruit = #{user.empId, jdbcType=VARCHAR} and bli.`std_stage` !='7'
+				</otherwise>
+			</choose>
+		</if>
+		GROUP BY bsi.`std_id`,bli.`learn_id`
+	</select>
+	
+	<select id="selectDirectorApproval" resultMap="RefundResultMap">
+		SELECT 
+		  bso.`refund_id`,
+		  bso.`order_no`,
+		  bso.`refund_amount`,
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bso.`create_user`,
+		  bse.`grade`,
+		  bu.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bse.`scholarship`,
+		  bli.`std_stage`,
+		  bso.`remark`,
+		  bcr.`check_status`,
+		  DATE_FORMAT(
+		    bso.`create_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) create_time 
+		FROM
+		  bd_student_refund bso 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bso.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bso.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.learn_id = bli.learn_id 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bso.`learn_id` = bse.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id`
+		  LEFT JOIN bd_check_record bcr 
+    		ON bcr.`mapping_id` = bso.`refund_id`  
+		WHERE (
+			    bso.`check_order` = '2' 
+			    OR bso.`check_order` = '1'
+			  ) 
+			  AND bso.`check_type` = '9'
+			  AND bso.`is_complete` = '0' 
+			  AND bcr.`check_type` = '9'
+			  AND bcr.`check_order` = '1' 
+			  AND bcr.`check_status` != '4'
+			<if test="query.stdName != null and query.stdName != ''">
+				and bsi.`std_name` like CONCAT('%',#{query.stdName},'%')
+			</if>
+			<if test="query.mobile != null and query.mobile != ''">
+				and bsi.`mobile` like CONCAT('%',#{query.mobile},'%')
+			</if>
+			<if test="query.idCard != null and query.idCard != ''">
+				and bsi.`id_card` like CONCAT('%',#{query.idCard},'%')
+			</if>
+			<if test="query.checkStatus != null and query.checkStatus != ''">
+				and 
+				(SELECT 
+				  COUNT(*) 
+				FROM
+				  bd_student_refund f 
+				  LEFT JOIN bd_check_record c 
+				    ON c.`mapping_id` = f.`refund_id` 
+				WHERE c.`check_order` = '1' 
+				  AND c.`check_status` = #{query.checkStatus}
+				  AND f.`refund_id` = bso.refund_id) > 0
+			</if>
+			<if test="query.stdStage != null and query.stdStage != ''">
+				and bli.`std_stage` = #{query.stdStage}
+			</if>
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and r.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		  ORDER BY bso.`update_time` DESC
+	</select>
+
+	<select id="selectRefundInfo" parameterType="java.lang.String" resultMap="RefundResultMap">
+		SELECT 
+		  bso.`refund_id`,
+		  bso.`is_complete`,
+		  bso.`learn_id`,
+		  bso.`order_no`,
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bso.`create_user`,
+		  bse.`grade`,
+		  bu.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bse.`scholarship`,
+		  bli.`std_stage`,
+		  bso.`remark`,
+		  bso.`refund_amount`,
+		 DATE_FORMAT(
+		    bso.`create_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) create_time 
+		FROM
+		  bd_student_refund bso 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bso.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bso.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bso.`learn_id` = bse.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id` 
+		WHERE bso.`refund_id` = #{refundId}
+	</select>
+	
+	<select id="selectChecks" resultMap="CheckResultMap" parameterType="java.lang.String">
+		  SELECT 
+			  bcr.*,
+			  ojt.`title_name`,
+			  oe.`emp_name`  
+		  FROM   bd_check_record bcr 
+		  LEFT JOIN oa_employee oe 
+		    ON bcr.`emp_id` = oe.`emp_id` 
+		  LEFT JOIN oa_job_title ojt 
+		    ON ojt.`jt_id` = bcr.`jt_id` 
+		    WHERE bcr.`mapping_id` = #{refundId}
+	</select>
+	
+	<select id="selectRefundByPage" resultMap="RefundResultMap">
+		SELECT 
+		  bso.`refund_id`,
+		  bso.`refund_amount`,
+		  bsi.`std_name`,
+		  bso.`order_no`,
+		  bsi.`std_id`,
+		  bso.`create_user`,
+		  bse.`grade`,
+		  bu.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bse.`scholarship`,
+		  bli.`std_stage`,
+		  bso.`remark`,
+		  DATE_FORMAT(
+		    bso.`create_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) create_time 
+		FROM
+		  bd_student_refund bso 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bso.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bso.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bso.`learn_id` = bse.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id` 
+		  LEFT JOIN bd_learn_rules r
+		    ON r.learn_id = bli.learn_id
+		WHERE 1 = 1 
+		  AND bso.`check_type` = '9' 
+			<if test="query.stdName != null and query.stdName != ''">
+				and bsi.`std_name` like CONCAT('%',#{query.stdName},'%')
+			</if>
+			<if test="query.mobile != null and query.mobile != ''">
+				and bsi.`mobile` like CONCAT('%',#{query.mobile},'%')
+			</if>
+			<if test="query.idCard != null and query.idCard != ''">
+				and bsi.`id_card` like CONCAT('%',#{query.idCard},'%')
+			</if>
+			<if test="query.checkStatus != null and query.checkStatus != ''">
+				and bso.`is_complete` = #{query.checkStatus}
+			</if>
+			<if test="query.stdStage != null and query.stdStage != ''">
+				and bli.`std_stage` = #{query.stdStage}
+			</if>
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and r.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		  ORDER BY bso.`update_time` DESC
+	</select>
+	
+	<insert id="insertSelective">
+		insert into bd_student_refund (
+		  refund_id,
+		  order_no,
+		  learn_id,
+		  refund_amount,
+		  emp_id,
+		  std_id,
+		  check_type,
+		  std_stage,
+		  remark,
+		  update_user,
+		  update_user_id,
+		  create_user,
+		  create_user_id
+		) 
+		SELECT 
+		  #{refundId} refund_id,
+		  bs.`order_no`,
+		  bli.`learn_id`,
+		  #{refundAmount} refund_amount,
+		  #{empId} emp_id,
+		  bli.`std_id`,
+		  #{checkType} check_type,
+		  bli.`std_stage`,
+		  #{remark} remark,
+		  #{updateUser} update_user,
+		  #{updateUserId} update_user_id,
+		  #{createUser} create_user,
+		  #{createUserId} create_user_id
+		FROM
+		  bd_learn_info bli 
+		  LEFT JOIN bd_student_order bs 
+		    ON bs.`learn_id` = bli.`learn_id` 
+		WHERE bli.`learn_id` = #{learnId}
+	</insert>
+	
+</mapper>

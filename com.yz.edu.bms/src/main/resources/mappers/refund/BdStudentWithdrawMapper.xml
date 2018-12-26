@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.refund.BdStudentWithdrawMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.refund.BdStudentWithdraw" >
+    <id column="withdraw_id" property="withdrawId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.refund.BdWithdrawResponse" id="WithdrawResult" extends="BaseResultMap">
+  	<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+  	<result column="sex" property="sex" jdbcType="VARCHAR" />
+  	<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+  	<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+  	<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+  	<result column="bank_card" property="bankCard" jdbcType="VARCHAR" />
+  	<result column="bank_type" property="bankType" jdbcType="VARCHAR" />
+  	<result column="bank_open" property="bankOpen" jdbcType="VARCHAR"/>
+  	<result column="province_code" property="provinceCode" jdbcType="VARCHAR"/>
+  	<result column="city_code" property="cityCode" jdbcType="VARCHAR"/>
+  	<result column="bank_open" property="bankOpen" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    withdraw_id, std_id, amount, apply_time, check_status, emp_id, remark, update_time, 
+    update_user, update_user_id
+  </sql>
+  
+  <select id="selectUserIdByStdId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select user_id from bd_student_info where std_id = #{stdId}
+  </select>
+  
+  <select id="selectWithdrawById"  parameterType="java.lang.String" resultMap="WithdrawResult">
+  	SELECT 
+	  bw.`withdraw_id`,
+	  bw.`std_id`,
+	  bw.`amount`,
+	  date_format(bw.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+	  bw.`check_status`,
+	  bw.`emp_id`,
+	  bw.`remark`,
+	  bs.`std_name`,
+	  bs.`sex`,
+	  bs.`id_card`,
+	  bs.`mobile`,
+	  oe.`emp_name`,
+	  bw.`bank_card`,
+	  bw.`bank_type`,
+	  bw.`bank_open`,
+	  bw.`province_code`,
+	  bw.`city_code`
+	FROM
+	  bd_student_withdraw bw 
+	  LEFT JOIN bd_student_info bs 
+	    ON bs.`std_id` = bw.`std_id` 
+	  left join oa_employee oe
+  		on oe.`emp_id` = bw.`emp_id`
+  	WHERE bw.withdraw_id = #{withdrawId}
+  </select>
+  
+  <select id="selectUserIdByWithId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  r.`user_id` 
+	FROM
+	  bd_student_withdraw w 
+	  LEFT JOIN bd_student_info r 
+	    ON r.`std_id` = w.`std_id` 
+	WHERE w.withdraw_id = #{withdrawId}
+  </select>
+  
+  <select id="selectWithdrawByPage" resultMap="WithdrawResult">
+  	SELECT 
+	  bw.`withdraw_id`,
+	  bw.`std_id`,
+	  bw.`amount`,
+	  date_format(bw.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+	  bw.`check_status`,
+	  bw.`emp_id`,
+	  bw.`remark`,
+	  bs.`std_name`,
+	  bs.`sex`,
+	  bs.`id_card`,
+	  bs.`mobile`,
+	  bw.`update_user` AS `emp_name`,
+	  bw.`bank_card`,
+	  bw.`bank_type`,
+	  date_format(bw.`update_time`,'%Y-%m-%d %H:%i:%s') update_time
+	FROM
+	  bd_student_withdraw bw 
+	  LEFT JOIN bd_student_info bs 
+	    ON bs.`std_id` = bw.`std_id` 
+	  left join oa_employee oe
+  		on oe.`emp_id` = bw.`emp_id`
+	<where>
+		<if test="stdName != null and stdName !=''">
+			and bs.std_name like CONCAT('%', CONCAT(#{stdName}, '%'))
+		</if>
+		<if test="mobile != null and mobile !=''">
+			and bs.mobile = #{mobile}
+		</if>
+		<if test="idCard != null and idCard !=''">
+			and bs.id_card = #{idCard}
+		</if>
+		<if test="checkStatus != null and checkStatus !=''">
+			and bw.check_status = #{checkStatus}
+		</if>
+		<if test="beginTime !=null and '' != beginTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`apply_time`, '%Y-%m-%d')>=  DATE_FORMAT(#{beginTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endTime !=null and '' != endTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`apply_time`, '%Y-%m-%d')<=  DATE_FORMAT(#{endTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="operBeginTime !=null and '' != operBeginTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`update_time`, '%Y-%m-%d')>=  DATE_FORMAT(#{operBeginTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="operEndTime !=null and '' != operEndTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`update_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{operEndTime}, '%Y-%m-%d')   ]]>
+		</if>
+	</where>
+	ORDER BY bw.apply_time desc
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_student_withdraw
+    where withdraw_id = #{withdrawId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_student_withdraw
+    where withdraw_id = #{withdrawId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.refund.BdStudentWithdraw" >
+    insert into bd_student_withdraw (withdraw_id, std_id, amount, 
+      apply_time, check_status, emp_id, 
+      remark, update_time, update_user, 
+      update_user_id)
+    values (#{withdrawId,jdbcType=VARCHAR}, #{stdId,jdbcType=VARCHAR}, #{amount,jdbcType=VARCHAR}, 
+      #{applyTime,jdbcType=TIMESTAMP}, #{checkStatus,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateUserId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.refund.BdStudentWithdraw" >
+    insert into bd_student_withdraw
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="withdrawId != null" >
+        withdraw_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="applyTime != null" >
+        apply_time,
+      </if>
+      <if test="checkStatus != null" >
+        check_status,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="withdrawId != null" >
+        #{withdrawId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null" >
+        #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkStatus != null" >
+        #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.refund.BdStudentWithdraw" >
+    update bd_student_withdraw
+    <set >
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null" >
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkStatus != null" >
+        check_status = #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="rejectReason != null" >
+        reject_reason = #{rejectReason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where withdraw_id = #{withdrawId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.refund.BdStudentWithdraw" >
+    update bd_student_withdraw
+    set std_id = #{stdId,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=VARCHAR},
+      apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      check_status = #{checkStatus,jdbcType=VARCHAR},
+      emp_id = #{empId,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR}
+    where withdraw_id = #{withdrawId,jdbcType=VARCHAR}
+  </update>
+  
+  <select  id="selectWithdrawByExport" resultMap="WithdrawResult">
+  	SELECT 
+  	  bs.`std_id`,
+	  bs.`std_name`,
+	  bs.`id_card`,
+	  bs.`mobile`,
+	  (SELECT dict_name FROM sys_dict WHERE dict_value = bw.`bank_type`) bank_type,
+	  bw.`bank_open`,
+	  bw.`bank_card`,
+	  bw.`amount`,
+	  date_format(bw.`apply_time`,'%Y-%m-%d %H:%i:%s') apply_time,
+	  CASE
+	    bw.`check_status` 
+	    WHEN '2' 
+	    THEN '待处理' 
+	    ELSE '已处理' 
+	  END AS check_status 
+	FROM
+	 `bd_student_withdraw` bw 
+	 LEFT JOIN bd_student_info bs 
+	   ON bs.`std_id` = bw.`std_id`
+	 <where>
+		<if test="stdName != null and stdName !=''">
+			and bs.std_name like CONCAT('%', CONCAT(#{stdName}, '%'))
+		</if>
+		<if test="mobile != null and mobile !=''">
+			and bs.mobile = #{mobile}
+		</if>
+		<if test="idCard != null and idCard !=''">
+			and bs.id_card = #{idCard}
+		</if>
+		<if test="checkStatus != null and checkStatus !=''">
+			and bw.check_status = #{checkStatus}
+		</if>
+		<if test="beginTime !=null and '' != beginTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`apply_time`, '%Y-%m-%d')>=  DATE_FORMAT(#{beginTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endTime !=null and '' != endTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`apply_time`, '%Y-%m-%d')<=  DATE_FORMAT(#{endTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="operBeginTime !=null and '' != operBeginTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`update_time`, '%Y-%m-%d')>=  DATE_FORMAT(#{operBeginTime}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="operEndTime !=null and '' != operEndTime">
+		    <![CDATA[  and DATE_FORMAT(bw.`update_time`, '%Y-%m-%d') <=  DATE_FORMAT(#{operEndTime}, '%Y-%m-%d')   ]]>
+		</if>
+	</where>  
+	ORDER BY bw.apply_time desc
+  </select>
+  <select id="selectUnvsInfoByStdId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  bli.`std_stage` stdStage,
+		  bli.`grade` grade,
+		  bu.`unvs_name` unvsName
+		from
+		  bd_learn_info bli 
+		  left join bd_university bu
+		    on bli.unvs_id = bu.unvs_id
+		where bli.`std_id` = #{stdId}
+   </select>
+  
+</mapper>

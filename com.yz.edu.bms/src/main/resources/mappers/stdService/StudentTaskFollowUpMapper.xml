@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentTaskFollowUpMapper">
+
+	<resultMap id="StudentTaskFollowUpMap" type="com.yz.model.stdService.StudentTaskFollowUp">
+		<id column="task_id" property="taskId"  jdbcType="VARCHAR"/>
+		<result column="task_type" property="taskType" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+		<result column="task_status" property="taskStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="getStudentTaskFollowUp" resultMap="StudentTaskFollowUpMap" parameterType="com.yz.model.stdService.StudentTaskFollowUpQuery">
+	    SELECT 
+		  oti.`task_id`,
+		  oti.`task_type`,
+		  bli.`std_stage`,
+		  oti.`task_title`,
+		  bli.`std_no`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  oe.`emp_name`,
+		  ost.`task_status`,
+		  ost.`learn_id` 
+		FROM
+		  oa_student_task ost 
+		  LEFT JOIN oa_task_info oti 
+		    ON ost.`task_id` = oti.`task_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON ost.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bli.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bse.`learn_id` = ost.`learn_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = ost.`tutor_id` 
+		WHERE oti.`is_allow`='1'
+		<if test="tutorId !=null and '' !=tutorId">
+			and ost.`tutor_id`=#{tutorId,jdbcType=VARCHAR}
+		</if>
+		<if test="unvsName !=null and '' != unvsName">
+		      and bu.`unvs_name` like  CONCAT('%', CONCAT(#{unvsName}, '%'))
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+	</select>
+	
+	<update id="finishTask">
+		UPDATE oa_student_task SET task_status='1' WHERE task_id=#{taskId,jdbcType=VARCHAR} AND learn_id=#{learnId,jdbcType=VARCHAR}
+	</update>
+	
+	<select	id="getStudentServiceLog" resultMap="StudentTaskFollowUpMap" >
+		SELECT 
+		  oti.`task_id`,
+		  oti.`task_type`,
+		  bli.`std_stage`,
+		  oti.`task_title`,
+		  bli.`std_no`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  oe.`emp_name`,
+		  ost.`task_status`,
+		  ost.`learn_id` 
+		FROM
+		  oa_student_task ost 
+		  LEFT JOIN oa_task_info oti 
+		    ON ost.`task_id` = oti.`task_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON ost.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bli.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bse.`learn_id` = ost.`learn_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = ost.`tutor_id` 
+		WHERE oti.`is_allow`='1' and ost.`learn_id`=#{learnId,jdbcType=VARCHAR}
+	</select>
+</mapper>

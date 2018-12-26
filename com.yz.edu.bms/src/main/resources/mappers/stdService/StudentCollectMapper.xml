@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentCollectMapper">
+    <resultMap type="com.yz.model.stdService.StudentCollectInfo" id="StudentCollectMap">
+        <result column="ct_id" property="ctId" jdbcType="VARCHAR"/>
+        <result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+        <result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+        <result column="receive_status" property="receiveStatus" jdbcType="VARCHAR"/>
+        <result column="unqualified_reason" property="unqualifiedReason" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+        <result column="is_qualified" property="isQualified" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findAllCollectList" resultMap="StudentCollectMap">
+        SELECT
+        a.ct_id,
+        c.std_name,
+        b.grade,
+        g.unvs_name,
+        h.pfsn_level,
+        h.pfsn_name,
+        h.pfsn_code,
+        b.school_roll,
+        d.task_title,
+        f.emp_name,
+        a.is_qualified,
+        a.receive_status,
+        a.remark,
+        c.id_card,
+        b.learn_id,
+        b.unvs_id,
+        a.unqualified_reason,
+        b.std_no
+        FROM
+        oa_student_collect_task a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN oa_task_info d ON a.task_id = d.task_id
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.tutor = f.emp_id
+        LEFT JOIN bd_university g ON b.unvs_id = g.unvs_id
+        LEFT JOIN bd_unvs_profession h ON b.pfsn_id = h.pfsn_id
+        WHERE 1=1
+        <if test="queryInfo.ctId !=null and '' != queryInfo.ctId">
+            and a.`ct_id` = #{queryInfo.ctId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.stdNo !=null and '' != queryInfo.stdNo">
+            and b.`std_no` like concat('%',#{queryInfo.stdNo,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+            and c.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+            and b.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+            and c.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+            and f.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.unqualifiedReason !=null and '' != queryInfo.unqualifiedReason">
+            and a.unqualified_reason like concat('%',#{queryInfo.unqualifiedReason,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+            and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.grade !=null and '' != queryInfo.grade">
+            and b.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+            and b.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+            and h.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+            and b.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.receiveStatus !=null and '' != queryInfo.receiveStatus">
+            and a.`receive_status` = #{queryInfo.receiveStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.isRemark !=null and '' != queryInfo.isRemark">
+            <if test="queryInfo.isRemark == 0">
+                and a.remark is null
+            </if>
+            <if test="queryInfo.isRemark == 1">
+                and LENGTH(a.remark)>0
+            </if>
+        </if>
+        <if test="queryInfo.isQualified !=null and '' != queryInfo.isQualified">
+            and a.`is_qualified` = #{queryInfo.isQualified,jdbcType=VARCHAR}
+        </if>
+        <if test="user.userLevel != 1">
+            <choose>
+                <when test="user.userLevel == 6">
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </otherwise>
+            </choose>
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <update id="updateRemark">
+        UPDATE oa_student_collect_task SET remark= #{remark,jdbcType=VARCHAR}
+        WHERE ct_id =#{ctId,jdbcType=VARCHAR}
+    </update>
+    
+    <update id="updateCollect">
+        update oa_student_collect_task
+        <set >
+            <if test="isQualified != null" >
+                <choose>
+                    <when test="isQualified ==''">
+                        is_qualified = null,
+                    </when>
+                    <otherwise>
+                         is_qualified = #{isQualified},
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="receiveStatus != null and receiveStatus != ''" >
+                receive_status = #{receiveStatus},
+            </if>
+            <if test="unqualifiedReason != null" >
+                unqualified_reason = #{unqualifiedReason},
+            </if>
+        </set>
+        where ct_id = #{ctId};
+    </update>
+    
+    <!-- 检查是否已存在 -->
+    <select id="checkIfExistByLearnId" resultType="java.lang.Integer">
+    	select count(1) from oa_student_collect_task where learn_id =#{learnId,jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 批量初始化 学籍收集跟进数据 -->
+	<insert id="addStuCollectInfo">
+		INSERT INTO oa_student_collect_task (ct_id,task_id,learn_Id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.ctId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<!-- 单个初始化 学籍收集跟进数据 -->
+	<insert id="singleAddStuCollectInfo" parameterType="com.yz.model.stdService.StudentCollectInfo">
+		INSERT INTO oa_student_collect_task (ct_id,task_id,learn_Id,create_time) 
+        VALUES (#{ctId, jdbcType=VARCHAR},
+			 #{taskId, jdbcType=VARCHAR},
+			 #{learnId,jdbcType=VARCHAR},
+			 NOW())
+	</insert>
+	
+	<!-- 批量删除 学籍收集跟进数据 -->
+	<delete id="delStuCollectInfo">
+		delete from oa_student_collect_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<!-- 单个删除 -->
+	<delete id="aloneDelStuCollectInfo">
+		delete from oa_student_collect_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

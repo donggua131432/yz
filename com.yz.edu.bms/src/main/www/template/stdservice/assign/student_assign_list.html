@@ -1,0 +1,218 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>辅导员分配</title>
+</head>
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+    学员服务
+    <span class="c-gray en">/</span>
+    辅导员分配
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="iconfont icon-shuaxin"></i>
+    </a>
+  </nav>
+  <div class="page-container">
+    <div class="text-l search" style="position: relative">
+      <div class="cl">
+        <form id="searchForm">
+          <div class="cl">
+            <div class="f-l">
+              <span>学员姓名：</span>
+              <input type="text" name="stdName" placeholder="学员姓名" class="input-text radius ml-10" />
+            </div>
+            <div class="f-l">
+              <span>证件号码：</span>
+              <input type="text" name="idCard" placeholder="身份证" class="input-text radius ml-10">
+            </div>
+            <div class="f-l">
+              <span>手机号：</span>
+              <input type="text" name="mobile" placeholder="手机号" class="input-text radius ml-10">
+            </div>
+            <div class="f-r mr-5">
+              <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" />
+              <i class="iconfont icon-sousuo"></i>
+             		 搜索
+              </a>
+              <a class="btn btn-normal-outline radius" href="javascript:" onclick="_reset();">
+                <i class="iconfont icon-shuaxin"></i>
+              </a>
+            </div>
+          </div>
+          <div class="cl">
+           <div class="f-l">
+           		<span>入学年级:</span>
+           		 <select class="select" size="1" id="grade" name="grade">
+  				  <option value="" selected>--选择年级--</option>
+  			    </select>
+           </div>
+           <div class="f-l">
+             <span>院校:</span>
+              <select class="select" size="1" id="unvsId" name="unvsId">
+  				 <option value="" selected>--选择院校--</option>
+  			  </select>
+           </div>
+           <div class="f-l">
+           		<span>专业层次:</span>
+           		 <select class="select" size="1" id="pfsnLevel" name="pfsnLevel">
+  				  <option value="" selected>--选择层次--</option>
+  			    </select>
+           </div>
+          </div>
+          <div class="cl">
+            <div class="f-l">
+           	  <span>专业名称:</span>
+           	   <select class="select" size="1" id="pfsnId" name="pfsnId"  disabled="disabled">
+               </select>
+            </div>
+          	<div class="f-l">
+             <span>录取院校:</span>
+              <select class="select" size="1" id="enrollUnvsId" name="enrollUnvsId">
+  				 <option value="" selected>--选择院校--</option>
+  			  </select>
+           </div>
+           <div class="f-l">
+           	  <span>录取专业:</span>
+           	  <input type="text" class="input-text radius ml-10" placeholder="输入录取专业" id="enrollPfsnName" name="enrollPfsnName">
+           </div>
+          </div>
+          <div class="cl">
+           <div class="f-l">
+           		<span>招生类型:</span>
+           		 <select class="select" size="1" id="recruitType" name="recruitType">
+  				  <option value="" selected>--选择招生类型--</option>
+  			    </select>
+           </div>
+           <div class="f-l">
+           		<span>优惠分组:</span>
+           		 <select class="select" size="1" id="sg" name="sg">
+  				  <option value="" selected>--选择优惠分组--</option>
+  			    </select>
+           </div>   
+           <div class="f-l">
+	         <span> 优惠类型:</span>
+	         <select class="select" size="1" id="scholarship" name="scholarship">
+	 		   <option value="" selected>--选择优惠类型--</option>
+   			 </select>
+		   </div>
+		   </div>
+		 <div class="cl">
+          <div class="f-l">
+            <span> 入围状态:</span>
+        	<select class="select" size="1" id="inclusionStatus" name="inclusionStatus">
+			  <option value="" selected>--选择入围状态--</option>
+		     </select>				        				       
+          </div>	
+          <div class="f-l">
+               <span>考试县区:</span>
+           	   <input type="text" name="taName" id="taName" class="input-text radius ">	
+           </div> 
+            <div class="f-l">
+           		<span>是否外校:</span>
+           		 <select class="select" size="1" id="stdType" name="stdType">
+  				  <option value="" selected>--是否外校--</option>
+  			    </select>
+           </div>                   	
+          </div>
+           <div class="cl">
+          	<div class="f-l">
+                <span>学员阶段:</span>
+                <select class="select" size="1" id="stdStage" name="stdStage">
+  				  <option value="" selected>--选择学员阶段--</option>
+  			    </select>
+                
+              </div>
+              <div class="f-l">
+            	<span>班主任：</span>
+            	<input type="text" id="tutorName" name="tutorName" class="input-text radius ml-10" placeholder="输入班主任姓名" />
+          	  </div>
+          	   <div class="f-l">
+           		<span>是否分配辅导员:</span>
+           		 <select class="select" size="1" id="isAssign" name="isAssign">
+  				  <option value="" selected>--是否分配辅导员--</option>
+  			    </select>
+           </div>    
+           </div>
+        </form>
+        <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+          <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+            <i class="iconfont icon-xiala"></i>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-1">
+      <div class="cl pd-15 bg-1">
+        <span class="l mt-15 mb-15">
+          <a href="javascript:;" onclick="queryDistribution('3')" class="btn btn-primary radius">
+            <i class="iconfont icon-edit"></i>
+           查询批量分配辅导员
+          </a>
+          <a href="javascript:;" onclick="showAddPage('2')" class="btn btn-primary radius">
+            <i class="iconfont icon-edit"></i>
+           勾选批量分配辅导员
+          </a>
+          <a href="javascript:;" onclick="student_out()" class="btn btn-danger radius">
+            <i class="iconfont icon-tuichu"></i>
+            退学申请
+          </a>
+        </span>
+        <div class="mt-35 bg-fff">
+          <table class="table table-border table-bordered table-hover table-bg table-sort">
+            <thead>
+              <tr class="text-c">
+                <th index="0" width="25"><input type="checkbox" value=""></th>
+                <th index="1" width="40">学员编号</th>
+                <th index="2" width="80">学员姓名</th>
+                <th index="3" width="40">年级</th>
+                <th index="4" width="100">院校与专业</th>
+                <th index="5" width="60">高校学号</th>
+                <th index="6" width="60">学员阶段</th>
+                <th index="6" width="60">是否分配辅导员</th>
+                <th index="7" width="30">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/stdservice/assign/student_assign_list.js}"></script>
+
+</body>
+</html>

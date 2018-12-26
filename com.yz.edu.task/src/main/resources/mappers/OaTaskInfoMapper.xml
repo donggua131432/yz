@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.OaTaskInfoMapper" >
+   
+	<resultMap type="com.yz.job.model.OaStudentTask" id="OaStudentTask">
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="tutor_id" property="tutorId" jdbcType="VARCHAR"/>
+		<result column="task_status" property="taskStatus" jdbcType="VARCHAR"/>
+		<result column="is_notify" property="isNotify" jdbcType="VARCHAR"/>
+		<result column="open_id" property="openId" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="task_content" property="taskContent" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getTaskUnfinishedStudent" resultMap="OaStudentTask">
+		SELECT 
+		  ost.`task_id`,
+		  oti.`task_title`,
+		  oti.`task_content`,
+		  DATE_FORMAT(oti.`end_time`, '%Y-%m-%d') end_time,
+		  ost.`learn_id`,
+		  ost.`tutor_id`,
+		  ost.`task_status`,
+		  ost.`is_notify`,
+		  ubi.`bind_id` open_id 
+		FROM
+		  bms.`oa_student_task` ost 
+		  LEFT JOIN bms.`oa_task_info` oti 
+		    ON ost.`task_id` = oti.`task_id` 
+		  LEFT JOIN bms.`bd_learn_info` bli
+		    ON bli.`learn_id` = ost.`learn_id`
+		  LEFT JOIN us.`us_base_info` ubi
+		    ON ubi.`std_id` = bli.`std_id`  
+		WHERE ost.`task_id` = #{taskId,jdbcType=VARCHAR} 
+		  AND ost.`task_status` = '0' AND ubi.`bind_id` IS NOT NULL
+	</select>
+	
+	<select id="getUserIdByLearnId" resultType="String" parameterType="String">
+		SELECT 
+		  br.`user_id` 
+		FROM
+		  bms.`bd_learn_info` bli 
+		  LEFT JOIN bms.`bd_student_info` br 
+		    ON bli.`std_id` = br.`std_id` 
+		WHERE learn_id = #{learnId,jdbcType=VARCHAR};
+	</select>
+	
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdExcelMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.statistics.BdExcel" >
+    <id column="excel_id" property="excelId" jdbcType="VARCHAR" />
+    <result column="excel_name" property="excelName" jdbcType="VARCHAR" />
+    <result column="excel_url" property="excelUrl" jdbcType="VARCHAR" />
+    <result column="excel_type" property="excelType" jdbcType="CHAR" />
+    <result column="export_status" property="exportStatus" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    excel_id, excel_name, excel_url, excel_type, export_status, remark, update_time, 
+    update_user, update_user_id, create_user_id, 
+    date_format(create_time,'%Y-%m-%d %H:%i:%s') create_time,
+    create_user
+  </sql>
+  
+  <select id="selectExcel" resultMap="BaseResultMap">
+  	 select 
+     <include refid="Base_Column_List" />
+     from bd_excel
+     order by update_time desc
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_excel
+    where excel_id = #{excelId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_excel
+    where excel_id = #{excelId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.finance.statistics.BdExcel" >
+    insert into bd_excel (excel_id, excel_name, excel_url, 
+      excel_type, export_status, remark, 
+      update_time, update_user, update_user_id, 
+      create_user_id, create_time, create_user
+      )
+    values (#{excelId,jdbcType=VARCHAR}, #{excelName,jdbcType=VARCHAR}, #{excelUrl,jdbcType=VARCHAR}, 
+      #{excelType,jdbcType=CHAR}, #{exportStatus,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.finance.statistics.BdExcel" >
+    insert into bd_excel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="excelId != null" >
+        excel_id,
+      </if>
+      <if test="excelName != null" >
+        excel_name,
+      </if>
+      <if test="excelUrl != null" >
+        excel_url,
+      </if>
+      <if test="excelType != null" >
+        excel_type,
+      </if>
+      <if test="exportStatus != null" >
+        export_status,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="excelId != null" >
+        #{excelId,jdbcType=VARCHAR},
+      </if>
+      <if test="excelName != null" >
+        #{excelName,jdbcType=VARCHAR},
+      </if>
+      <if test="excelUrl != null" >
+        #{excelUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="excelType != null" >
+        #{excelType,jdbcType=CHAR},
+      </if>
+      <if test="exportStatus != null" >
+        #{exportStatus,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.finance.statistics.BdExcel" >
+    update bd_excel
+    <set >
+      <if test="excelName != null" >
+        excel_name = #{excelName,jdbcType=VARCHAR},
+      </if>
+      <if test="excelUrl != null" >
+        excel_url = #{excelUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="excelType != null" >
+        excel_type = #{excelType,jdbcType=CHAR},
+      </if>
+      <if test="exportStatus != null" >
+        export_status = #{exportStatus,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where excel_id = #{excelId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.finance.statistics.BdExcel" >
+    update bd_excel
+    set excel_name = #{excelName,jdbcType=VARCHAR},
+      excel_url = #{excelUrl,jdbcType=VARCHAR},
+      excel_type = #{excelType,jdbcType=CHAR},
+      export_status = #{exportStatus,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR}
+    where excel_id = #{excelId,jdbcType=VARCHAR}
+  </update>
+</mapper>

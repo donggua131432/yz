@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.AtsRechargeMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.AtsZhimiProduct" >
+    <id column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_desc" property="productDesc" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="zhimi" property="zhimi" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    product_id, product_name, product_desc, price, zhimi, is_allow, sort
+  </sql>
+  
+  <resultMap id="ProductMap" type="java.util.HashMap" >
+    <id column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_desc" property="productDesc" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="VARCHAR" />
+    <result column="zhimi" property="zhimi" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getProductList" parameterType="int" resultMap="ProductMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from goods.ats_zhimi_product
+  	where is_allow = '1'
+  	order by sort
+  	limit 0, #{size, jdbcType=INTEGER}
+  </select>
+  
+  <select id="getProductById" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from goods.ats_zhimi_product
+    where product_id = #{productId,jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="RecordsMap" type="com.yz.model.AtsRechargeRecords" >
+    <id column="records_no" property="recordsNo" jdbcType="VARCHAR" />
+    <result column="acc_id" property="accId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="payment_status" property="paymentStatus" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="zhimi" property="zhimi" jdbcType="VARCHAR" />
+    <result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="out_serial_no" property="outSerialNo" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="wechat_open_id" property="wechatOpenId" jdbcType="VARCHAR" />
+    <result column="wechat_union_id" property="wechatUnionId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="complete_time" property="completeTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <select id="getRecordsInfo" parameterType="string" resultMap="RecordsMap">
+  	select 
+	    records_no, 
+	    acc_id, 
+	    std_id, 
+	    emp_id, 
+	    user_id, 
+	    payment_status, 
+	    amount, 
+	    zhimi, 
+	    payment_type, 
+	    remark, 
+	    wechat_open_id, 
+	    wechat_union_id, 
+	    out_serial_no, 
+	    reason, 
+	    create_time, 
+	    complete_time
+    from goods.ats_recharge_records
+    where records_no = #{recordsNo,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertRecordsNoG" parameterType="com.yz.model.AtsRechargeRecords" >
+  	insert into goods.ats_recharge_records
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        records_no,
+      <if test="accId != null" >
+        acc_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="paymentStatus != null" >
+        payment_status,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="zhimi != null" >
+        zhimi,
+      </if>
+      <if test="paymentType != null" >
+        payment_type,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="wechatOpenId != null" >
+        wechat_open_id,
+      </if>
+      <if test="wechatUnionId != null" >
+        wechat_union_id,
+      </if>
+      <if test="outSerialNo != null" >
+        out_serial_no,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="completeTime != null" >
+        complete_time,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{recordsNo,jdbcType=VARCHAR},
+      <if test="accId != null" >
+        #{accId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentStatus != null" >
+        #{paymentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimi != null" >
+        #{zhimi,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentType != null" >
+        #{paymentType,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatOpenId != null" >
+        #{wechatOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatUnionId != null" >
+        #{wechatUnionId,jdbcType=VARCHAR},
+      </if>
+      <if test="outSerialNo != null" >
+        #{outSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completeTime != null" >
+        #{completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productId != null" >
+      	#{productId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertRecords" parameterType="com.yz.model.AtsRechargeRecords" >
+  	<selectKey keyProperty="recordsNo" order="BEFORE" resultType="string">
+  		select seq()
+  	</selectKey>
+    insert into goods.ats_recharge_records
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        records_no,
+      <if test="accId != null" >
+        acc_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="paymentStatus != null" >
+        payment_status,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="zhimi != null" >
+        zhimi,
+      </if>
+      <if test="paymentType != null" >
+        payment_type,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="wechatOpenId != null" >
+        wechat_open_id,
+      </if>
+      <if test="wechatUnionId != null" >
+        wechat_union_id,
+      </if>
+      <if test="outSerialNo != null" >
+        out_serial_no,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="completeTime != null" >
+        complete_time,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{recordsNo,jdbcType=VARCHAR},
+      <if test="accId != null" >
+        #{accId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentStatus != null" >
+        #{paymentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimi != null" >
+        #{zhimi,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentType != null" >
+        #{paymentType,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatOpenId != null" >
+        #{wechatOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatUnionId != null" >
+        #{wechatUnionId,jdbcType=VARCHAR},
+      </if>
+      <if test="outSerialNo != null" >
+        #{outSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completeTime != null" >
+        #{completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productId != null" >
+      	#{productId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateRecords" parameterType="com.yz.model.AtsRechargeRecords" >
+    update goods.ats_recharge_records
+    <set >
+      <if test="accId != null" >
+        acc_id = #{accId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentStatus != null" >
+        payment_status = #{paymentStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimi != null" >
+        zhimi = #{zhimi,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentType != null" >
+        payment_type = #{paymentType,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatOpenId != null" >
+        wechat_open_id = #{wechatOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatUnionId != null" >
+        wechat_union_id = #{wechatUnionId,jdbcType=VARCHAR},
+      </if>
+      <if test="outSerialNo != null" >
+        out_serial_no = #{outSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="completeTime != null" >
+        complete_time = #{completeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productId != null" >
+      	product_id = #{productId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where records_no = #{recordsNo,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

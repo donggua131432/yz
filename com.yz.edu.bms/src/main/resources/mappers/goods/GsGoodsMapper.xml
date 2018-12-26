@@ -1,0 +1,1342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.goods.GsGoodsMapper" >
+	<resultMap type="com.yz.model.goods.GsGoodsShowInfo" id="GsGoodsShowInfo">
+	   <id column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+	   <result column="annex_url" property="annexUrl" jdbcType="VARCHAR"/>
+	   <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+	   <result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+	   <result column="cost_price" property="costPrice" jdbcType="VARCHAR"/>
+	   <result column="original_price" property="originalPrice" jdbcType="VARCHAR"/>
+	   <result column="goods_use" property="goodsUse" jdbcType="VARCHAR"/>
+	   <result column="is_allow" property="isAllow" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getGsGoodsShowInfo" resultMap="GsGoodsShowInfo" parameterType="com.yz.model.goods.GsGoodsQueryInfo">
+	   SELECT 
+		  gg.`goods_id`,
+		  gga.`annex_url`,
+		  gg.`goods_name`,
+		  ggs.`goods_count`,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  gg.`goods_use`,
+		  gg.`is_allow`
+		FROM
+		  goods.gs_goods gg 
+		  LEFT JOIN goods.gs_goods_store ggs 
+		    ON gg.`goods_id` = ggs.`goods_id` 
+		  left join goods.gs_goods_annex gga 
+		    on gg.`goods_id` = gga.`goods_id` 
+		    and gs_annex_type = '1' 
+		 where '1'='1' and gg.sku_id is null
+		 <if test="goodsType !=null and '' != goodsType">
+		 	and  gg.`goods_type`=#{goodsType} 
+		 </if>
+		 <if test="goodsName !=null and '' != goodsName">
+		    and gg.`goods_name` like CONCAT('%', CONCAT(#{goodsName}, '%'))
+		 </if>
+		 <if test="goodsUse !=null and '' != goodsUse">
+		    and gg.`goods_use` like CONCAT('%', CONCAT(#{goodsUse}, '%'))
+		 </if>
+		 <if test="isAllow !=null and '' != isAllow">
+		    and gg.`is_allow`=#{isAllow}
+		 </if>
+		 order by gg.`update_time` desc 
+	</select>
+
+	<insert id="addNewGoodsInfo" parameterType="com.yz.model.goods.GsGoodsInsertInfo">
+	   INSERT INTO goods.gs_goods (
+		  goods_id,
+		  sku_id,
+		  jd_goods_type,
+		  goods_name,
+		  goods_desc,
+		  goods_content,
+		  goods_type,
+		  goods_use,
+		  is_allow,
+		  unit,
+		  cost_price,
+		  original_price,
+		  update_user,
+		  update_user_id,
+		  update_time
+		) 
+		VALUES
+		  (#{goodsId,jdbcType=VARCHAR},
+		   #{skuId,jdbcType=VARCHAR},
+		   #{jdGoodsType,jdbcType=VARCHAR},
+		   #{goodsName,jdbcType=VARCHAR},
+		   #{goodsDesc,jdbcType=VARCHAR},
+		   #{goodsContent,jdbcType=VARCHAR},
+		   #{goodsType,jdbcType=VARCHAR},
+		   #{goodsUse,jdbcType=VARCHAR},
+		   #{isAllow,jdbcType=VARCHAR},
+		   #{unit,jdbcType=VARCHAR},
+		   #{costPrice,jdbcType=VARCHAR},
+		   #{originalPrice,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR},
+		   NOW()
+		  )
+	</insert>
+	<insert id="addNewGsGoodsStore" parameterType="com.yz.model.goods.GsGoodsStore">
+	   insert into goods.gs_goods_store (
+		  goods_id,
+		  goods_count,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  (#{goodsId,jdbcType=VARCHAR},
+		   #{goodsCount,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR}
+		  ) 
+	</insert>
+	<insert id="addZmcGoodsSales" parameterType="com.yz.model.goods.GsGoodsSalesInsertInfo">
+		insert into goods.gs_goods_sales (
+		  sales_id,
+		  goods_id,
+		  sku_id,
+		  sales_name,
+		  sales_type,
+		  sales_price,
+		  sales_count,
+		  show_after_over,
+		  sales_rules,
+		  start_time,
+		  end_time,
+		  sales_status,
+		  `interval`,
+		  `show_seq`,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  (#{salesId,jdbcType=VARCHAR},
+		   #{goodsId,jdbcType=VARCHAR},
+		   #{skuId,jdbcType=VARCHAR},
+		   #{salesName,jdbcType=VARCHAR},
+		   #{salesType,jdbcType=VARCHAR},
+		   #{salesPrice,jdbcType=VARCHAR},
+		   #{salesCount,jdbcType=VARCHAR},
+		   #{showAfterOver,jdbcType=VARCHAR},
+		   #{salesRules,jdbcType=VARCHAR},
+		   #{startTime,jdbcType=VARCHAR},
+		   #{endTime,jdbcType=VARCHAR},
+		   #{salesStatus,jdbcType=VARCHAR},
+		   #{interval,jdbcType=VARCHAR},
+		   #{showSeq,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR}
+		  )
+	</insert>
+	<insert id="addGsSalesExchange" parameterType="com.yz.model.goods.GsSalesExchange">
+		insert into goods.gs_sales_exchange (
+		  sales_id,
+		  once_count,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  (#{salesId,jdbcType=VARCHAR},
+		   #{onceCount,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<insert id="addGsGoodsAnnex" parameterType="com.yz.model.goods.GsGoodsAnnex">
+		insert into goods.gs_goods_annex (
+		  annex_id,
+		  annex_name,
+		  gs_annex_type,
+		  annex_url,
+		  goods_id,
+		  update_user_id,
+		  update_user
+		) 
+		values
+		  (#{annexId,jdbcType=VARCHAR},
+		   #{annexName,jdbcType=VARCHAR},
+		   #{gsAnnexType,jdbcType=VARCHAR},
+		   #{annexUrl,jdbcType=VARCHAR},
+		   #{goodsId,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<resultMap type="com.yz.model.goods.GsGoodsInsertInfo" id="GsGoodsInsertInfo">
+		<id column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+		<result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR"/>
+		<result column="goods_content" property="goodsContent" jdbcType="VARCHAR"/>
+		<result column="goods_type" property="goodsType" jdbcType="VARCHAR"/>
+		<result column="goods_use" property="goodsUse" jdbcType="VARCHAR"/>
+		<result column="cost_price" property="costPrice" jdbcType="VARCHAR"/>
+		<result column="original_price" property="originalPrice" jdbcType="VARCHAR"/>
+		<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+		<result column="annexUrlPortrait" property="annexUrlPortrait" jdbcType="VARCHAR"/>
+	    <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+	    <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	    <result column="location" property="location" jdbcType="VARCHAR"/>
+	    <result column="takein" property="takein" jdbcType="VARCHAR"/>
+	    <result column="address" property="address" jdbcType="VARCHAR"/>
+	    <result column="course_type" property="courseType" jdbcType="VARCHAR"/>
+	    <result column="is_allow" property="isAllow" jdbcType="VARCHAR"/>
+	    
+	    <association property="annexList" column="goods_id" select="getGoodsAnnexList"/>
+	</resultMap>
+	<select id="getGoodsDetailInfo" resultMap="GsGoodsInsertInfo" parameterType="string">
+		 select 
+		  gg.`goods_id`,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  gg.`goods_use`,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  gga.`annex_url` as annexUrlPortrait,
+		  ggs.`goods_count`,
+		  gg.`is_allow`
+		from
+		  goods.gs_goods gg 
+		  left join goods.gs_goods_store ggs
+		    on gg.`goods_id`=ggs.`goods_id`
+		  left join goods.gs_goods_annex gga 
+		    on gg.`goods_id` = gga.`goods_id` 
+		    and gga.`gs_annex_type` = '1' 
+		where gg.`goods_id` = #{goodsId}
+	</select>
+	
+	
+	<select id="getActivityGoodsDetailInfo" resultMap="GsGoodsInsertInfo" parameterType="string">
+		 select 
+		  gg.`goods_id`,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  gg.`goods_use`,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  gga.`annex_url` as annexUrlPortrait,
+		  ggs.`goods_count`,
+		  gag.`address`,
+		  date_format(gag.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  gag.`location`,
+		  date_format(gag.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  gag.`takein`,
+		  gg.`is_allow`
+		from
+		  goods.gs_goods gg 
+		  LEFT JOIN goods.gs_activities_goods gag
+		    ON gg.`goods_id`=gag.`goods_id`
+		  left join goods.gs_goods_store ggs
+		    on gg.`goods_id`=ggs.`goods_id`
+		  left join goods.gs_goods_annex gga 
+		    on gg.`goods_id` = gga.`goods_id` 
+		    and gga.`gs_annex_type` = '1' 
+		where gg.`goods_id` = #{goodsId}
+	</select>
+	
+	<select id="getCourseGoodsDetailInfo" resultMap="GsGoodsInsertInfo" parameterType="string">
+		 select 
+		  gg.`goods_id`,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  gg.`goods_use`,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  gga.`annex_url` as annexUrlPortrait,
+		  ggs.`goods_count`,
+		  gcg.`address`,
+		  gcg.`course_type`,
+		  date_format(gcg.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  gcg.`location`,
+		  date_format(gcg.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  gg.`is_allow`
+		from
+		  `goods`.gs_goods gg 
+		  LEFT JOIN `goods`.gs_course_goods gcg
+		    ON gg.`goods_id`=gcg.`goods_id`
+		  left join `goods`.gs_goods_store ggs
+		    on gg.`goods_id`=ggs.`goods_id`
+		  left join `goods`.gs_goods_annex gga 
+		    on gg.`goods_id` = gga.`goods_id` 
+		    and gga.`gs_annex_type` = '1' 
+		where gg.`goods_id` = #{goodsId}
+	</select>
+	
+	<resultMap type="com.yz.model.goods.GsGoodsSalesInsertInfo" id="ZmcGoodsSalesInsertInfo"> 
+	   <id column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+	   <result column="sales_price" property="salesPrice" jdbcType="VARCHAR"/>
+	   <result column="show_after_over" property="showAfterOver" jdbcType="VARCHAR"/>
+	   <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+	   <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	   <result column="sales_status" property="salesStatus" jdbcType="VARCHAR"/>
+	   <result column="once_count" property="onceCount" jdbcType="VARCHAR"/>
+	   <result column="interval" property="interval" jdbcType="VARCHAR"/>
+	   <result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+	   <result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getZmcGoodsSalesInsertInfo" resultMap="ZmcGoodsSalesInsertInfo" parameterType="String">
+		select 
+		  zgs.`sales_id`,
+		  zgs.`sales_price`,
+		  zgs.`show_after_over`,
+		  date_format(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  zgs.`sales_status`,
+		  gse.`once_count` 
+		from
+		  `goods`.gs_goods_sales zgs 
+		  left join `goods`.gs_goods gg 
+		    on zgs.`goods_id` = gg.`goods_id` 
+		    and zgs.`sales_type` = '1' 
+		  left join `goods`.gs_sales_exchange gse 
+		    on zgs.`sales_id` = gse.`sales_id` 
+		where gg.`goods_id` = #{goodsId} 
+	</select>
+	
+	<update id="updateGoodsInfo" parameterType="com.yz.model.goods.GsGoodsInsertInfo">
+		update `goods`.`gs_goods`
+		<set>
+		   <if test="goodsName !=null and '' != goodsName">
+		     goods_name=#{goodsName,jdbcType=VARCHAR},
+		   </if>
+		   <if test="goodsDesc !=null and '' != goodsDesc">
+		     goods_desc=#{goodsDesc,jdbcType=VARCHAR},
+		   </if>
+		   <if test="goodsContent !=null and '' != goodsContent">
+		     goods_content=#{goodsContent,jdbcType=VARCHAR},
+		   </if>
+		   <if test="goodsUse !=null and '' != goodsUse">
+		   	 goods_use=#{goodsUse,jdbcType=VARCHAR},
+		   </if>
+		   <if test="costPrice !=null and '' != costPrice">
+		   	 cost_price=#{costPrice,jdbcType=VARCHAR},	
+		   </if>
+		   <if test="originalPrice !=null and '' != originalPrice">
+		     original_price=#{originalPrice,jdbcType=VARCHAR},
+		   </if>
+		   <if test="isAllow !=null and '' != isAllow">
+		   	 is_allow = #{isAllow,jdbcType=VARCHAR},
+		   </if>
+		   <if test="updateUser !=null and '' != updateUser">
+		     update_user=#{updateUser,jdbcType=VARCHAR},
+		   </if>
+		   <if test="updateUserId !=null and '' != updateUserId">
+		   	 update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		   </if>
+		   update_time=NOW()
+		</set>
+		where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateGsGoodsStore" parameterType="com.yz.model.goods.GsGoodsStore">
+		update `goods`.`gs_goods_store`
+		<set>
+		   <if test="goodsCount !=null and '' != goodsCount">
+		      goods_count=#{goodsCount,jdbcType=VARCHAR},
+		   </if>
+		   <if test="updateUser !=null and '' != updateUser">
+		     update_user=#{updateUser,jdbcType=VARCHAR},
+		   </if>
+		   <if test="updateUserId !=null and '' != updateUserId">
+		   	 update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		   </if>
+		   update_time=NOW()
+		</set>
+		where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateZmcGoodsSales" parameterType="com.yz.model.goods.GsGoodsSalesInsertInfo">
+		update `goods`.`gs_goods_sales`
+		<set>
+			<if test="salesName !=null and '' != salesName">
+			   sales_name = #{salesName,jdbcType=VARCHAR},
+			</if>
+			<if test="salesPrice !=null and '' != salesPrice">
+			   sales_price = #{salesPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="salesCount !=null and '' != salesCount">
+				sales_count = #{salesCount,jdbcType=VARCHAR},
+			</if>
+			<if test="showAfterOver !=null and '' !=showAfterOver">
+			   show_after_over=#{showAfterOver,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+			   start_time=#{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+			   end_time=#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="salesStatus !=null and '' != salesStatus">
+				sales_status=#{salesStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="salesRules !=null and '' !=salesRules">
+			    sales_rules = #{salesRules,jdbcType=VARCHAR},
+			</if>
+			<if test="isPlan !=null and '' != isPlan">
+				is_plan=#{isPlan,jdbcType=VARCHAR},
+			</if>
+			<if test="planId !=null and '' != planId">
+				plan_id=#{planId,jdbcType=VARCHAR},
+			</if>
+			<if test="planCount !=null and '' != planCount">
+				plan_count=#{planCount,jdbcType=VARCHAR},
+			</if>
+			<if test="interval !=null and '' != interval">
+				`interval` =#{interval,jdbcType=VARCHAR},
+			</if>
+			<if test="showSeq !=null and '' != showSeq">
+				`show_seq` = #{showSeq,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' != updateUser">
+		     update_user=#{updateUser,jdbcType=VARCHAR},
+		    </if>
+		    <if test="updateUserId !=null and '' != updateUserId">
+		   	 update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		    </if>
+		    update_time=NOW()
+		</set>
+		where sales_id=#{salesId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateGsSalesExchange" parameterType="com.yz.model.goods.GsSalesExchange">
+		update `goods`.`gs_sales_exchange`
+		<set>
+			<if test="dailyCount !=null and '' != dailyCount">
+			  daily_count=#{dailyCount,jdbcType},
+			</if>
+			<if test="sumCount !=null and '' != sumCount">
+			  sum_count=#{sumCount,jdbcType=VARCHAR},
+			</if>
+			<if test="onceCount !=null and '' != onceCount">
+			  once_count=#{onceCount,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' != updateUser">
+		     update_user=#{updateUser,jdbcType=VARCHAR},
+		    </if>
+		    <if test="updateUserId !=null and '' != updateUserId">
+		   	 update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		    </if>
+		    update_time=NOW()
+		</set>
+		where sales_id=#{salesId,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addGsCourseGoods" parameterType="com.yz.model.goods.GsCourseGoods">
+	   INSERT INTO `goods`.gs_course_goods (
+		  goods_id,
+		  start_time,
+		  end_time,
+		  course_type,
+		  location,
+		  address
+		) 
+		VALUES
+		  (#{goodsId,jdbcType=VARCHAR},
+		   #{startTime,jdbcType=VARCHAR},
+		   #{endTime,jdbcType=VARCHAR},
+		   #{courseType,jdbcType=VARCHAR},
+		   #{location,jdbcType=VARCHAR},
+		   #{address,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<insert id="addGsActivitiesGoods" parameterType="com.yz.model.goods.GsActivitiesGoods">
+		INSERT INTO `goods`.gs_activities_goods (
+		  goods_id,
+		  start_time,
+		  end_time,
+		  location,
+		  takein,
+		  address
+		) 
+		VALUES
+		  (#{goodsId,jdbcType=VARCHAR},
+		   #{startTime,jdbcType=VARCHAR},
+		   #{endTime,jdbcType=VARCHAR},
+		   #{location,jdbcType=VARCHAR},
+		   #{takein,jdbcType=VARCHAR},
+		   #{address,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="updateGsGoodsAnnex" parameterType="com.yz.model.goods.GsGoodsAnnex">
+		UPDATE 
+		  `goods`.`gs_goods_annex`
+		<set>
+		   <if test="annexName !=null and '' != annexName"> 
+		     annex_name=#{annexName,jdbcType=VARCHAR},
+		   </if>
+		   <if test="annexUrl !=null and '' != annexUrl">
+		     annex_url=#{annexUrl,jdbcType=VARCHAR},
+		   </if>
+		   <if test="updateUser !=null and '' != updateUser">
+		   	 update_user=#{updateUser,jdbcType=VARCHAR},
+		   </if>
+		    <if test="updateUserId !=null and '' != updateUserId">
+		   	 update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		   </if>
+		</set>   
+		WHERE goods_id =#{goodsId,jdbcType=VARCHAR} and gs_annex_type='1'
+	</update>
+	<update id="updateGsActivitiesGoods" parameterType="com.yz.model.goods.GsActivitiesGoods">
+		UPDATE `goods`.`gs_activities_goods`
+		<set>
+			<if test="startTime !=null and '' != startTime">
+			  start_time=#{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+			  end_time=#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="location !=null and '' != location">
+			  location = #{location,jdbcType=VARCHAR},
+			</if>
+			<if test="takein !=null and '' !=takein">
+			  takein = #{takein,jdbcType=VARCHAR},
+			</if>
+			<if test="address !=null and '' != address">
+			  address = #{address,jdbcType=VARCHAR}
+			</if>
+		</set>
+		 WHERE goods_id=#{goodsId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateGsCourseGoods" parameterType="com.yz.model.goods.GsCourseGoods">
+		UPDATE `goods`.`gs_course_goods`
+		<set>
+		 <if test="startTime !=null and '' !=startTime">
+		 `start_time`=#{startTime,jdbcType=VARCHAR},
+		 </if>
+		 <if test="endTime !=null and '' !=endTime">
+		 `end_time`=#{endTime,jdbcType=VARCHAR},
+		 </if>
+		 <if test="location !=null and '' !=location">
+		 `location`=#{location,jdbcType=VARCHAR},
+		 </if>
+		 <if test="courseType !=null and '' !=courseType">
+		 `course_type`=#{courseType,jdbcType=VARCHAR},
+		 </if>
+		 <if test="address !=null and '' !=address">
+		 `address`=#{address,jdbcType=VARCHAR}
+		 </if>
+		</set>
+		where `goods_id`=#{goodsId,jdbcType=VARCHAR}
+	</update>
+	
+	
+	
+	<resultMap type="com.yz.model.goods.GsExchangeGoodsSales" id="ZmcExchangeGoodsSales">
+		<result column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+		<result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+		<result column="jd_goods_type" property="jdGoodsType" jdbcType="VARCHAR"/>
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<result column="annex_url" property="annexUrl" jdbcType="VARCHAR"/>
+		<result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+		<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+		<result column="cost_price" property="costPrice" jdbcType="VARCHAR"/>
+		<result column="original_price" property="originalPrice" jdbcType="VARCHAR"/>
+		<result column="sales_price" property="salesPrice" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="sales_status" property="salesStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap type="com.yz.model.goods.GsExchangeGoodsSalesDetail" id="ZmcExchangeGoodsSalesDetail" extends="ZmcExchangeGoodsSales">
+        <result column="goods_type" property="goodsType" jdbcType="VARCHAR"/>
+        <result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+        <result column="sku_id" property="skuId" jdbcType="VARCHAR"/> 
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR"/>
+        <result column="goods_content" property="goodsContent" jdbcType="VARCHAR"/>
+        <result column="once_count" property="onceCount" jdbcType="VARCHAR"/>
+        <result column="show_after_over" property="showAfterOver" jdbcType="VARCHAR"/>
+        <result column="interval" property="interval" jdbcType="VARCHAR"/>
+        <result column="show_seq" property="showSeq" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getZmcExchangeGoodsSales" resultMap="ZmcExchangeGoodsSales" parameterType="com.yz.model.goods.GsGoodsSalesQuery">
+		SELECT 
+		  zgs.`sales_id`,
+		  zgs.`sku_id`,
+		  zgs.`goods_id`,
+		  gga.`annex_url`,
+		  zgs.`sales_name`,
+		  zgs.`sales_count` as goods_count,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  zgs.`sales_price`,
+		  date_format(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  zgs.`sales_status` 
+		FROM
+		  `goods`.`gs_goods_sales` zgs 
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON zgs.`goods_id` = gg.`goods_id` 
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON zgs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1'
+         where '1' ='1'
+         <if test="salesType !=null and '' != salesType">
+         	and zgs.`sales_type`=#{salesType,jdbcType=VARCHAR}
+         </if> 
+         <if test="salesName !=null and '' != salesName">
+         	and zgs.`sales_name` like CONCAT('%', CONCAT(#{salesName}, '%'))
+         </if>
+         <if test="salesStatus !=null and '' != salesStatus">
+         	and zgs.`sales_status`=#{salesStatus,jdbcType=VARCHAR}
+         </if>
+         order by zgs.update_time desc
+	</select>
+	
+	
+	<select id="findAllGoodsByType" resultMap="GsGoodsShowInfo" parameterType="String">
+		SELECT 
+		  goods_id,
+		  goods_name 
+		FROM
+		  `goods`.gs_goods 
+		WHERE goods_type = #{goodsType,jdbcType=VARCHAR} 
+		  AND is_allow = '1'
+	</select>
+	
+	<select id="getZmcExchangeGoodsSalesDetail" resultMap="ZmcExchangeGoodsSalesDetail" parameterType="string">
+		SELECT 
+		  zgs.`sales_id`,
+		  zgs.`sku_id`,
+		  gg.`jd_goods_type`,
+		  gga.`annex_url`,
+		  zgs.`sales_name`,
+		  zgs.`sales_count` as goods_count,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  zgs.`sales_price`,
+		  date_format(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  zgs.`sales_status`,
+		  gg.`goods_type`,
+		  gg.`goods_id`,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  gse.`once_count`,
+		  zgs.`show_after_over`,
+		  zgs.`interval` ,
+		  zgs.`show_seq`
+		FROM
+		  `goods`.`gs_goods_sales` zgs 
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON zgs.`goods_id` = gg.`goods_id` 
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON zgs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1'
+		  left join `goods`.gs_sales_exchange gse 
+		    on zgs.`sales_id` = gse.`sales_id`
+		  where zgs.`sales_id`=#{salesId,jdbcType=VARCHAR}
+		
+	</select>
+	
+	<resultMap type="com.yz.model.goods.GsLotteryGoodsSales" id="ZmcLotteryGoodsSales">
+	   <result column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+	   <result column="annex_url" property="annexUrl" jdbcType="VARCHAR"/>
+	   <result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+	   <result column="sales_price" property="salesPrice" jdbcType="VARCHAR"/>
+	   <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+	   <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	   <result column="cur_count" property="curCount" jdbcType="VARCHAR"/>
+	   <result column="total_count" property="totalCount" jdbcType="VARCHAR"/>
+	   <result column="run_count" property="runCount" jdbcType="VARCHAR"/>
+	   <result column="winner_count" property="winnerCount" jdbcType="VARCHAR"/>
+	   <result column="run_time" property="runTime" jdbcType="VARCHAR"/>
+	   <result column="sales_status" property="salesStatus" jdbcType="VARCHAR"/>
+	   <result column="plan_status" property="planStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.model.goods.GsLotteryGoodsSalesDetail" id="ZmcLotteryGoodsSalesDetail" extends="ZmcLotteryGoodsSales">
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+		<result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR"/>
+		<result column="goods_content" property="goodsContent" jdbcType="VARCHAR"/>
+		<result column="show_after_over" property="showAfterOver" jdbcType="VARCHAR"/>
+		<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+		<result column="sales_rules" property="salesRules" jdbcType="VARCHAR"/>
+		<result column="cost_price" property="costPrice" jdbcType="VARCHAR"/>
+		<result column="original_price" property="originalPrice" jdbcType="VARCHAR"/>
+		<result column="plan_id" property="planId" jdbcType="VARCHAR"/>
+		<result column="interval" property="interval" jdbcType="VARCHAR"/>
+		<result column="plan_count" property="planCount" jdbcType="VARCHAR"/>
+		<result column="show_seq" property="showSeq" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getZmcLotteryGoodsSales" resultMap="ZmcLotteryGoodsSales" parameterType="com.yz.model.goods.GsGoodsSalesQuery">
+	  SELECT 
+		  zgs.`sales_id`,
+		  zgs.`sales_name`,
+		  zgs.`sales_price`,
+		  gsp.`cur_count`,
+		  gsp.`total_count`,
+		  gsp.`plan_status`,
+		  gsl.`run_count`,
+		  gsl.`winner_count`,
+		  zgs.`sales_status`,
+		  DATE_FORMAT(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  DATE_FORMAT(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  DATE_FORMAT(gsl.`run_time`,'%Y-%m-%d %H:%i:%s') run_time,
+		  gga.`annex_url`,
+		  zgs.`show_seq`
+		FROM
+		 `goods`.`gs_sales_plan` gsp
+		  LEFT JOIN `goods`.`gs_goods_sales` zgs 
+		    ON zgs.`plan_id` = gsp.`plan_id`
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON zgs.`goods_id` = gg.`goods_id` 
+		  LEFT JOIN `goods`.`gs_sales_lottery` gsl 
+		    ON zgs.`sales_id` = gsl.`sales_id`
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON zgs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1' 
+		  WHERE '1'='1'
+		   <if test="salesType !=null and '' != salesType">
+         	and zgs.`sales_type`=#{salesType,jdbcType=VARCHAR}
+         </if> 
+         <if test="salesName !=null and '' != salesName">
+         	and zgs.`sales_name` like CONCAT('%', CONCAT(#{salesName}, '%'))
+         </if>
+         <if test="salesStatus !=null and '' != salesStatus">
+         	and zgs.`sales_status`=#{saleseStatus,jdbcType=VARCHAR}
+         </if>
+	</select>
+	
+	<select id="getZmcLotteryGoodsSalesDetail" resultMap="ZmcLotteryGoodsSalesDetail">
+		SELECT 
+		  zgs.`sales_id`,
+		  gga.`annex_url`,
+		  zgs.`sales_name`,
+		  zgs.`sales_price`,
+		  date_format(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  zgs.`plan_count`,
+		  gsp.`total_count`,
+		  gsp.`cur_count`,
+		  gsp.`plan_status`,
+		  gsl.`run_count`,
+		  gsl.`winner_count`,
+		  gg.`goods_id`,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  zgs.`show_after_over`,
+		  zgs.`sales_rules`,
+		  zgs.`sales_count` as goods_count,
+		  date_format(gsl.`run_time`,'%Y-%m-%d %H:%i:%s') run_time,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  zgs.`plan_id`,
+		  zgs.`interval`,
+		  zgs.`sales_status`,
+		  zgs.`show_seq`
+		FROM
+		  `goods`.`gs_goods_sales` zgs 
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON zgs.`goods_id` = gg.`goods_id`
+		  LEFT JOIN `goods`.gs_goods_store ggs 
+		    ON zgs.`goods_id` = ggs.`goods_id`  
+		  LEFT JOIN `goods`.`gs_sales_lottery` gsl 
+		    ON zgs.`sales_id` = gsl.`sales_id`
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON zgs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1' 
+		  LEFT JOIN `goods`.`gs_sales_plan` gsp
+		    ON zgs.`plan_id` = gsp.`plan_id`
+		  where zgs.`sales_id`=#{salesId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="addGsSalesLottery" parameterType="com.yz.model.goods.GsSalesLottery">
+		INSERT INTO `goods`.gs_sales_lottery (
+		  sales_id,
+		  run_count,
+		  winner_count,
+		  run_time,
+		  update_user,
+		  update_user_id,
+		  update_time
+		) 
+		VALUES
+		  (#{salesId,jdbcType=VARCHAR},
+		   #{runCount,jdbcType=VARCHAR},
+		   #{winnerCount,jdbcType=VARCHAR},
+		   #{runTime,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR},
+		  	now()
+		  )
+	</insert>
+	<update id="updateGsSalesLottery" parameterType="com.yz.model.goods.GsSalesLottery">
+		UPDATE `goods`.gs_sales_lottery
+		<set>
+			<if test="runCount !=null and '' != runCount">
+			  run_count=#{runCount,jdbcType=VARCHAR},
+			</if>
+			<if test="winnerCount !=null and '' !=winnerCount">
+			 winner_count=#{winnerCount,jdbcType=VARCHAR},
+			</if>
+			<if test="runTime != null and '' !=runTime">
+				run_time=#{runTime,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' !=updateUser ">
+				update_user =#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId !=null and '' != updateUserId">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},	
+			</if>
+			update_time=now()
+		</set>
+        WHERE sales_id=#{salesId,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="addGsSalesPlan" parameterType="com.yz.model.goods.GsSalesPlan">
+		INSERT INTO `goods`.gs_sales_plan (
+		  plan_id,
+		  total_count,
+		  cur_count,
+		  less_count,
+		  plan_status,
+		  start_time,
+		  update_user,
+		  update_user_id,
+		  update_time
+		) 
+		VALUES
+		  (#{planId,jdbcType=VARCHAR},
+		   #{totalCount,jdbcType=VARCHAR},
+		   #{curCount,jdbcType=VARCHAR},
+		   #{lessCount,jdbcType=VARCHAR},
+		   #{planStatus,jdbcType=VARCHAR},
+		   #{startTime,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR},
+		   now()
+		  )
+	</insert>
+	
+	<update id="updateGsSalesPlan" parameterType="com.yz.model.goods.GsSalesPlan">
+		update 
+		  `goods`.gs_sales_plan
+		set 
+		  <if test="totalCount !=null and '' != totalCount">
+		   	total_count=#{totalCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="curCount !=null and '' !=curCount">
+		  	cur_count=#{curCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="lessCount !=null and '' !=lessCount">
+		 	 less_count=#{lessCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="reason !=null and '' != reason">
+		     reason=#{reason,jdbcType=VARCHAR},
+		  </if>
+		  <if test="planStatus !=null and '' != planStatus">
+		     plan_status = #{planStatus,jdbcType=VARCHAR},
+		  </if>
+		  <if test="startTime !=null and '' != startTime">
+		  	 start_time = #{startTime,jdbcType=VARCHAR},
+		  </if>
+		  <if test="endTime !=null and '' != endTime">
+		  	  end_time = #{endTime,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUser !=null and '' !=updateUser">
+		  	update_user=#{updateUser,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUserId !=null and '' != updateUserId">
+		  	update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		  </if>
+		 	update_time =now()
+		where plan_id =#{planId,jdbcType=VARCHAR} 
+	</update>
+	
+	
+	<resultMap type="com.yz.model.goods.GsAuctionGoodsSales" id="GsAuctionGoodsSales">
+		<result column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+		<result column="annex_url" property="annexUrl" jdbcType="VARCHAR"/>
+		<result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+		<result column="total_count" property="totalCount" jdbcType="VARCHAR"/>
+		<result column="cur_count" property="curCount" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="upset_price" property="upsetPrice" jdbcType="VARCHAR"/>
+		<result column="plan_count" property="planCount" jdbcType="VARCHAR"/>
+		<result column="sales_status" property="salesStatus" jdbcType="VARCHAR"/>
+		<result column="activity_status" property="activityStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap type="com.yz.model.goods.GsAuctionGoodsSalesDetail" id="GsAuctionGoodsSalesDetail" extends="GsAuctionGoodsSales">
+		<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+		<result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+		<result column="goods_desc" property="goodsDesc" jdbcType="VARCHAR"/>
+		<result column="goods_content" property="goodsContent" jdbcType="VARCHAR"/>
+		<result column="show_after_over" property="showAfterOver" jdbcType="VARCHAR"/>
+		<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+		<result column="sales_rules" property="salesRules" jdbcType="VARCHAR"/>
+		<result column="cost_price" property="costPrice" jdbcType="VARCHAR"/>
+		<result column="original_price" property="originalPrice" jdbcType="VARCHAR"/>
+		<result column="plan_id" property="planId" jdbcType="VARCHAR"/>
+		<result column="raise_price" property="raisePrice" jdbcType="VARCHAR"/>
+		<result column="interval" property="interval" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getGsAuctionGoodsSales" resultMap="GsAuctionGoodsSales" parameterType="com.yz.model.goods.GsGoodsSalesQuery">
+		SELECT 
+		  ggs.`sales_id`,
+		  gga.`annex_url`,
+		  ggs.`sales_name`,
+		  gsp.`total_count`,
+		  gsp.`cur_count`,
+		  ggs.`plan_count`,
+		   <![CDATA[ (SELECT CASE
+      	  WHEN plan_status=0 THEN 2 
+          WHEN plan_status=1 THEN 3 
+          WHEN plan_status=3 THEN 1
+          ELSE 1 END AS order_num  FROM `goods`.gs_sales_plan WHERE plan_id = ggs.`plan_id`) ]]> activity_status,
+		  date_format(ggs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(ggs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  gsa.`upset_price`,
+		  ggs.`sales_status` 
+		FROM
+		   `goods`.gs_sales_plan gsp 
+		  LEFT JOIN  `goods`.gs_goods_sales ggs 
+		    ON gsp.`plan_id` = ggs.`plan_id` 
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON ggs.`goods_id` = gg.`goods_id` 
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON ggs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1' 
+		  LEFT JOIN `goods`.gs_sales_auction gsa 
+		    ON ggs.`sales_id` = gsa.`sales_id` 
+		  where '1'='1'
+		 <if test="salesType !=null and '' != salesType">
+         	and ggs.`sales_type`=#{salesType,jdbcType=VARCHAR}
+         </if> 
+         <if test="salesName !=null and '' != salesName">
+         	and ggs.`sales_name` like CONCAT('%', CONCAT(#{salesName}, '%'))
+         </if>
+         <if test="salesStatus !=null and '' != salesStatus">
+         	and ggs.`sales_status`=#{saleseStatus,jdbcType=VARCHAR}
+         </if> 
+	</select>
+	
+	
+	<select id="getGsAuctionGoodsSalesDetail" resultMap="GsAuctionGoodsSalesDetail">
+	 SELECT 
+		  ggs.`sales_id`,
+		  gga.`annex_url`,
+		  ggs.`sales_name`,
+		  gsp.`total_count`,
+		  gsp.`cur_count`,
+		  date_format(ggs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(ggs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  gsa.`upset_price`,
+		  gg.`goods_id` ,
+		  gg.`goods_name`,
+		  gg.`goods_desc`,
+		  gg.`goods_content`,
+		  ggs.`sales_rules`,
+		  ggs.`plan_id`,
+		  gg.`cost_price`,
+		  gg.`original_price`,
+		  ggss.`goods_count`,
+		  gsa.`raise_price`,
+		  ggs.`show_after_over`,
+		  ggs.`sales_status`,
+		  ggs.`interval`
+		FROM
+		  `goods`.gs_goods_sales ggs 
+		  LEFT JOIN `goods`.gs_goods gg 
+		    ON ggs.`goods_id` = gg.`goods_id` 
+		  LEFT JOIN `goods`.gs_goods_store ggss
+		    ON ggs.`goods_id`=ggss.`goods_id`
+		  LEFT JOIN `goods`.gs_goods_annex gga 
+		    ON ggs.`goods_id` = gga.`goods_id` 
+		    AND gga.`gs_annex_type` = '1' 
+		  LEFT JOIN `goods`.gs_sales_auction gsa 
+		    ON ggs.`sales_id` = gsa.`sales_id` 
+		  LEFT JOIN `goods`.gs_sales_plan gsp 
+		    ON ggs.`plan_id` = gsp.`plan_id`
+		  WHERE ggs.`sales_id`=#{salesId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="addGsSalesAuction" parameterType="com.yz.model.goods.GsSalesAuction">
+		INSERT INTO `goods`.gs_sales_auction (
+		  sales_id,
+		  upset_price,
+		  raise_price,
+		  auction_count,
+		  cur_price,
+		  update_user,
+		  update_user_id,
+		  update_time
+		) 
+		VALUES
+		  (#{salesId,jdbcType=VARCHAR},
+		   #{upsetPrice,jdbcType=VARCHAR},
+		   #{raisePrice,jdbcType=VARCHAR},
+		   #{auctionCount,jdbcType=VARCHAR},
+		   #{curPrice,jdbcType=VARCHAR},
+		   #{updateUser,jdbcType=VARCHAR},
+		   #{updateUserId,jdbcType=VARCHAR},
+		   now()
+		  )
+	</insert>
+	<update id="updateGsSalesAuction" parameterType="com.yz.model.goods.GsSalesAuction">
+		update `goods`.gs_sales_auction
+		<set>
+		  <if test="upsetPrice !=null and '' != upsetPrice">
+		     upset_price=#{upsetPrice,jdbcType=VARCHAR},
+		  </if>
+		  <if test="raisePrice !=null and '' !=raisePrice">
+		  	 raise_price=#{raisePrice,jdbcType=VARCHAR},
+		  </if>
+		  <if test="auctionCount !=null and '' != auctionCount">
+		     auction_count=#{auctionCount,jdbcType=VARCHAR},
+		  </if>
+		  <if test="curPrice !=null and '' != curPrice">
+		  	cur_price=#{curPrice,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUser !=null and '' != updateUser">
+		  	update_user=#{updateUser,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUserId !=null and '' != updateUserId">
+		   update_user_id=#{updateUserId,jdbcType=VARCHAR},
+		  </if>
+		  update_time=NOW()
+		</set>
+		where sales_id=#{salesId,jdbcType=VARCHAR}
+	</update>
+	<!-- 批量禁用商品 -->
+	<delete id="batchStopGoods">
+		update `goods`.gs_goods set is_allow='0'
+		where goods_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach> 
+	</delete>
+	<!-- 批量启用商品 -->
+	<delete id="batchStartGoods">
+		update `goods`.gs_goods set is_allow='1'
+		where goods_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach> 
+	</delete>
+	
+	<delete id="batchDeleteExchange">
+		delete from `goods`.gs_goods
+		where sku_id!='' and goods_id in 
+		<foreach collection="goodsIds" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		
+		delete from `goods`.gs_goods_annex
+		where goods_id in 
+		<foreach collection="goodsIds" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		
+		delete from `goods`.gs_goods_sales
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_comment
+		where sales_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_notify
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_logistics
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_exchange
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_exchange_part
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+	</delete>
+	<delete id="batchDeleteLottery">
+	delete from `goods`.gs_goods_sales
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_comment
+		where sales_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_notify
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_logistics
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_lottery
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_lottery_part
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+	</delete>
+	<delete id="batchDeleteAuction">
+		delete from `goods`.gs_goods_sales
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_comment
+		where sales_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_notify
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_goods_logistics
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_sales_auction
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from `goods`.gs_auction_part
+		where sales_id in 
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	
+	<insert id="initGoodsAnnexImgs" parameterType="list">
+	   insert into `goods`.gs_goods_annex (
+		  annex_id,
+		  annex_name,
+		  gs_annex_type,
+		  annex_url,
+		  goods_id,
+		  update_user_id,
+		  update_user
+		) 
+		VALUES
+		<foreach collection="list" item="info" index="index"
+			separator=",">
+			(
+			#{info.annexId},
+		    #{info.annexName,jdbcType=VARCHAR},
+		    #{info.gsAnnexType,jdbcType=VARCHAR},
+		    #{info.annexUrl,jdbcType=VARCHAR},
+		    #{info.goodsId,jdbcType=VARCHAR},
+		    #{info.updateUserId,jdbcType=VARCHAR},
+		    #{info.updateUser,jdbcType=VARCHAR}
+		  )
+		</foreach>
+	</insert>
+	<delete id="deleteGoodsAnnex">
+		delete from `goods`.gs_goods_annex where goods_id=#{goodsId,jdbcType=VARCHAR} and gs_annex_type='2'
+	</delete>
+	<resultMap type="com.yz.model.goods.GsGoodsAnnex" id="GsGoodsAnnex">
+	  <result column="annex_id" property="annexId" jdbcType="VARCHAR"/>
+	  <result column="annex_name" property="annexName" jdbcType="VARCHAR"/>
+	  <result column="gs_annex_type" property="gsAnnexType" jdbcType="VARCHAR"/>
+	  <result column="annex_url" property="annexUrl" jdbcType="VARCHAR"/>
+	  <result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGoodsAnnexList" resultMap="GsGoodsAnnex">
+		select * from `goods`.gs_goods_annex where goods_id=#{goods_id,jdbcType=VARCHAR} and gs_annex_type='2'
+	</select>
+	
+	
+	<resultMap type="com.yz.model.goods.GsCourseGoods" id="GsCourseGoods">
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="course_type" property="courseType" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="location" property="location" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.model.goods.GsActivitiesGoods" id="GsActivitiesGoods">
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="location" property="location" jdbcType="VARCHAR"/>
+		<result column="takein" property="takein" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsCourseGoods" resultMap="GsCourseGoods" parameterType="String">
+		select * from `goods`.gs_course_goods where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</select>
+	<select id="getGsActivitiesGoods" resultMap="GsActivitiesGoods" parameterType="String">
+		select * from `goods`.gs_activities_goods where goods_id=#{goodsId,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap type="com.yz.model.goods.GsLotteryPart" id="GsLotteryPart">
+		<result column="user_name" property="userName" jdbcType="VARCHAR"/>
+		<result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+		<result column="win_time" property="winTime" jdbcType="VARCHAR"/>
+		<result column="plan_count" property="planCount" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+    </resultMap>
+	<select id="getGsLotteryParts" resultMap="GsLotteryPart">
+	 SELECT 
+	  glp.`user_name`,
+	  glp.`head_img_url`,
+	  DATE_FORMAT(glp.`win_time`,'%Y-%m-%d %H:%i:%s') win_time,
+	  glp.`plan_count`,
+	  glp.`mobile`
+	FROM
+	  `goods`.`gs_lottery_part` glp
+	     WHERE glp.`sales_id`=#{salesId,jdbcType=VARCHAR} AND is_win='1'
+  	  ORDER BY glp.`plan_count` DESC
+	</select>
+	
+	
+	<resultMap type="com.yz.model.goods.GsSalesPlan" id="GsSalesPlan">
+		<id column="plan_id" property="planId" jdbcType="VARCHAR"/>
+		<id column="total_count" property="totalCount" jdbcType="VARCHAR"/>
+		<id column="cur_count" property="curCount" jdbcType="VARCHAR"/>
+		<id column="less_count" property="lessCount" jdbcType="VARCHAR"/>
+		<id column="plan_status" property="planStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsSalesPlan" resultMap="GsSalesPlan">
+		SELECT 
+		  `plan_id`,
+		  `total_count`,
+		  `cur_count`,
+		  `less_count`,
+		  `plan_status`
+		FROM
+		  `goods`.`gs_sales_plan` 
+		WHERE `plan_id`=#{planId,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap type="com.yz.model.goods.GsAuctionPart" id="GsAuctionPart">
+		<result column="plan_count" property="planCount" jdbcType="VARCHAR"/>
+		<result column="user_name" property="userName" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+		<result column="auction_price" property="auctionPrice" jdbcType="VARCHAR"/>
+		<result column="mine_time" property="mineTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsAuctionParts" resultMap="GsAuctionPart">
+		 SELECT 
+		  gap.`user_name`,
+		  DATE_FORMAT(gap.`mine_time`,'%Y-%m-%d %H:%i:%s') mine_time,
+		  gap.`plan_count`,
+		  gap.`mobile`,
+		  gap.`auction_price`
+		FROM
+		  `goods`.`gs_auction_part` gap
+		     WHERE gap.`sales_id`=#{salesId,jdbcType=VARCHAR} AND gap.is_mine='1'
+	  	  ORDER BY gap.`plan_count` DESC
+	</select>
+	
+  	 	
+  	<select id="getGoodsCountById" parameterType="string" resultType="int">
+  	   select goods_count from `goods`.gs_goods_store where goods_id=#{goodsId} for update
+  	</select>
+  	
+  	<update id="updateGoodsCount">
+  	   UPDATE `goods`.gs_goods_store SET goods_count = goods_count-#{count} WHERE goods_id=#{goodsId} 
+  	</update>
+  	
+  	<resultMap type="com.yz.model.goods.GsSalesLottery" id="GsSalesLottery">
+		<result column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+		<result column="run_count" property="runCount" jdbcType="VARCHAR"/>
+		<result column="winner_count" property="winnerCount" jdbcType="VARCHAR"/>
+		<result column="run_time" property="runTime" jdbcType="VARCHAR"/>
+  	</resultMap>
+  	<select id="getGsSalesLottery" resultMap="GsSalesLottery">
+  		SELECT * FROM `goods`.`gs_sales_lottery` WHERE sales_id=#{salesId,jdbcType=VARCHAR}
+  	</select>
+  	
+  	<select id="getJdGoodsSalesInsertInfo" resultMap="ZmcGoodsSalesInsertInfo" parameterType="String">
+		select 
+		  zgs.`sales_id`,
+		  zgs.`goods_id`,
+		  zgs.`sku_id`,
+		  zgs.`sales_price`,
+		  zgs.`show_after_over`,
+		  date_format(zgs.`start_time`,'%Y-%m-%d %H:%i:%s') start_time,
+		  date_format(zgs.`end_time`,'%Y-%m-%d %H:%i:%s') end_time,
+		  zgs.`sales_status`,
+		  gse.`once_count` 
+		from
+		  `goods`.gs_goods_sales zgs 
+		  left join `goods`.gs_goods gg 
+		    on zgs.`goods_id` = gg.`goods_id` 
+		    and zgs.`sales_type` = '1' 
+		  left join `goods`.gs_sales_exchange gse 
+		    on zgs.`sales_id` = gse.`sales_id` 
+		where zgs.`sku_id` = #{skuId} 
+	</select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdPlanTextbookMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdPlanTextbookKey" >
+    <id column="thp_id" property="thpId" jdbcType="VARCHAR" />
+    <id column="textbook_id" property="textbookId" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.yz.model.baseinfo.BdPlanTextbookKey" >
+    delete from bd_plan_textbook
+    where thp_id = #{thpId,jdbcType=VARCHAR}
+      and textbook_id = #{textbookId,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectPlanTextbook" parameterType="com.yz.model.baseinfo.BdPlanTextbookKey"
+		resultType="boolean"> 
+    <![CDATA[ select count(thp_id) from bd_plan_textbook where thp_id = #{thpId,jdbcType=VARCHAR}
+      and textbook_id = #{textbookId,jdbcType=VARCHAR}]]>
+	</select>
+  <insert id="insert" parameterType="com.yz.model.baseinfo.BdPlanTextbookKey" >
+    insert into bd_plan_textbook (thp_id, textbook_id)
+    values (#{thpId,jdbcType=VARCHAR}, #{textbookId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdPlanTextbookKey" >
+    insert into bd_plan_textbook
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="thpId != null" >
+        thp_id,
+      </if>
+      <if test="textbookId != null" >
+        textbook_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="thpId != null" >
+        #{thpId,jdbcType=VARCHAR},
+      </if>
+      <if test="textbookId != null" >
+        #{textbookId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

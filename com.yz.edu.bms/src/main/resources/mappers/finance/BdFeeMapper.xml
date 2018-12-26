@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdFeeMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.fee.BdFee" >
+    <id column="fee_id" property="feeId" jdbcType="VARCHAR" />
+    <result column="fee_name" property="feeName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BdFeePageResultMap" extends="BaseResultMap" type="com.yz.model.finance.fee.BdFeeResponse">
+  	<result column="scholarship" property="scholarship"/>
+  	<association property="payable" column="fee_id" select="selectPayableDetail"/>
+  	<association property="pfsnInfo" column="fee_id" select="selectPfsnInfo"/>
+  	<association property="testArea" column="fee_id" select="selectTestArea"/>
+  </resultMap>
+
+  <resultMap id="PayableDetailResultMap" type="com.yz.model.finance.stdfee.BdPayableDetailResponse">
+  	<result column="fd_id" property="fdId" />
+  	<result column="define_amount" property="defineAmount" />
+  	<result column="turnover_amount" property="turnoverAmount" />
+  	<result column="item_code" property="itemCode" />
+  	<result column="item_name" property="itemName" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.fee.PfsnInfoResponse" id="PfsnInfoResultMap">
+  	<result column="pfsn_id" property="pfsnId"/>
+  	<result column="pfsn_code" property="pfsnCode"/>
+  	<result column="pfsn_name" property="pfsnName"/>
+  	<result column="pfsn_level" property="pfsnLevel"/>
+  	<result column="grade" property="grade"/>
+  	<result column="unvs_id" property="unvsId"/>
+  	<result column="unvs_name" property="unvsName"/>
+  	<result column="scholarship" property="scholarship"/>
+  	<result column="unvs_code" property="unvsCode"/>
+  	<result column="recruit_type" property="recruitType"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.fee.FeeInfoResponse" id="FeeInfoResultMap">
+  	<result column="fee_name" property="feeName"/>
+ 	<result column="fee_id" property="feeId"/>
+  	<result column="status" property="status"/>
+  	<association property="pfsnInfo" column="fee_id" select="selectPfsnInfo"/>
+  	<association property="feeItem" column="fee_id" select="selectFeeItemInfo"/>
+  	<association property="taInfo" column="fee_id" select="selecTaInfo"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.fee.FeeItemResponse" id="FeeItemResultMap">
+  	<result column="item_code" property="itemCode"/>
+  	<result column="item_name" property="itemName"/>
+  	<result column="define_amount" property="defineAmount"/>
+  </resultMap>
+  
+  <resultMap type="java.util.HashMap" id="TestAreaResultMap">
+  	<result column="ta_name" property="taName"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.fee.TestAreaResponse" id="TaResultMap">
+  	<result column="ta_id" property="taId"/>
+  	<result column="ta_code" property="taCode"/>
+  	<result column="ta_name" property="taName"/>
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    fee_id, fee_name, scholarship, grade, status, remark, pfsn_id, unvs_id, update_time, 
+    update_user, update_user_id, create_user_id, create_time, create_user
+  </sql>
+  
+  <update id="blockFee" parameterType="java.lang.String">
+  	UPDATE 
+	  bd_fee 
+	SET
+	  `status` = #{status}
+	WHERE fee_id = #{feeId}
+  </update>
+  
+  <select id="selecTaInfo" parameterType="java.lang.String" resultMap="TaResultMap">
+  	SELECT
+	  bta.`ta_id`,
+	  bta.`ta_code`,
+	  CONCAT('(', bta.`ta_code`, ')', bta.`ta_name`) taName
+	FROM
+	   bd_test_area bta 
+	  LEFT JOIN bd_ptf bp 
+	    ON bta.`ta_id` = bp.`ta_id` 
+	WHERE bp.`fee_id` = #{feeId}
+	group by bta.`ta_id`
+  </select>
+  
+  <delete id="deleteBdFeePtf" parameterType="java.lang.String" >
+  	delete 
+	from
+	  bd_ptf 
+	where fee_id = #{feeId}
+  </delete>
+  
+  <select id="selectTmpAddPtf" resultType="java.util.HashMap">
+  	SELECT 
+	  p.`pfsn_id`,
+	  p.`ta_id`,
+	  #{feeId} AS fee_id,
+	  #{scholarship} AS scholarship 
+	FROM
+	  bd_proferssion_ta p 
+	WHERE p.`ta_id` IN (
+	    <foreach collection="testAreas" item="area" index="index" separator="," >  
+       		#{area}
+   		</foreach>
+	  ) 
+	  AND p.`pfsn_id` IN (
+	    <foreach collection="pfsns" item="pfsn" index="index" separator="," >  
+       		#{pfsn}
+   		</foreach>
+	  )
+  </select>
+  
+  <insert id="insertUpdatePtf">
+  	insert into bd_ptf(ptf_id,pfsn_id,ta_id,fee_id,scholarship) values
+  	<foreach collection="list" item="item" index="index" separator="," >  
+       	(#{item.ptf_id},#{item.pfsn_id},#{item.ta_id},#{item.fee_id},#{item.scholarship})
+   	</foreach>
+  </insert>
+  
+  <update id="updateBdFee">
+  	update bd_fee 
+	<set >
+      <if test="feeName != null and feeName !=''" >
+        fee_name = #{feeName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fee_id = #{feeId};
+    delete from bd_fee_define where fee_id = #{feeId};
+    insert into bd_fee_define(fd_id,fee_id,item_code,define_amount)
+		values
+		<foreach collection="items" item="item" index="index" separator="," >  
+        	(#{item.fdId},#{feeId},#{item.itemCode},#{item.amount})
+    	</foreach>
+  </update>
+  
+  <delete id="deleteBdFees">
+  	delete from bd_fee where fee_id in 
+  	<foreach collection="feeIds" item="feeId" open="(" close=")" separator=",">
+    	#{feeId}
+    </foreach>
+    ;
+  	delete from bd_ptf where fee_id in
+  	<foreach collection="feeIds" item="feeId" open="(" close=")" separator=",">
+    	#{feeId}
+    </foreach>;
+  	delete from bd_fee_define where fee_id in
+  	<foreach collection="feeIds" item="feeId" open="(" close=")" separator=",">
+    	#{feeId}
+    </foreach>;
+  </delete>
+  
+  <delete id="deleteBdFee" parameterType="java.lang.String">
+  	delete from bd_fee where fee_id = #{feeId};
+  	delete from bd_ptf where fee_id = #{feeId};
+  	delete from bd_fee_define where fee_id = #{feeId};
+  </delete>
+  
+  <select id="selectFeePfsnIds" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  p.`pfsn_id` 
+	from
+	  bd_ptf p 
+	  left join bd_fee f 
+	    on f.`fee_id` = p.`fee_id` 
+	where p.`fee_id` = #{feeId}
+	group by p.`pfsn_id` 
+  </select>
+  
+  <select id="selectFeeScholarship" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  p.`scholarship` 
+	from
+	  bd_ptf p 
+	  left join bd_fee f 
+	    on f.`fee_id` = p.`fee_id` 
+	where p.`fee_id` = #{feeId} 
+	group by p.`scholarship` 
+  </select>
+  
+  <select id="selectFeeTaIds" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  p.`ta_id` 
+	FROM
+	  bd_ptf p 
+	  LEFT JOIN bd_fee f 
+	    ON f.`fee_id` = p.`fee_id` 
+	WHERE p.`fee_id` = #{feeId} 
+	GROUP BY p.`ta_id` 
+  </select>
+  
+  <select id="selectExistFee" resultType="java.util.HashMap">
+  	SELECT 
+	  p.pfsn_name pfsnName,
+	  a.ta_name taName
+	FROM
+	  `bd_ptf` bp 
+	  left join bd_fee f
+	  on f.fee_id = bp.fee_id 
+	  left join bd_unvs_profession p
+	  on p.pfsn_id = bp.pfsn_id
+	  left join bd_test_area a
+	    on a.ta_id = bp.ta_id
+	WHERE bp.`ta_id` IN (
+			<foreach collection="testAreas" item="area" index="index" separator="," >  
+        		#{area}
+    		</foreach>
+		) 
+	
+	  AND bp.`pfsn_id` IN (
+			<foreach collection="pfsns" item="pfsn" index="index" separator="," >  
+        		#{pfsn}
+    		</foreach>
+		) 
+	  
+	  and scholarship = #{scholarship}
+	  and f.status = '1'
+	  limit 0,1
+  </select>
+  
+  <insert id="insertBdFee">
+  	insert into bd_fee(fee_id, fee_name, `status`,
+  		update_user,update_user_id,create_user_id,create_user
+  	) 
+		values(#{feeId},#{feeName},#{status},
+			#{updateUser}, #{updateUserId}, #{createUserId}, #{createUser}
+		);
+	insert into bd_fee_define(fd_id,fee_id,item_code,define_amount)
+		values
+		<foreach collection="items" item="item" index="index" separator="," >  
+        	(#{item.fdId},#{feeId},#{item.itemCode},#{item.amount})
+    	</foreach>
+  </insert>
+  
+  <select id="selectTestArea" parameterType="java.lang.String" resultMap="TestAreaResultMap">
+  	SELECT distinct
+	  bta.`ta_name`
+	FROM
+	  bd_test_area bta 
+	  LEFT JOIN bd_ptf bp 
+	    ON bta.`ta_id` = bp.`ta_id` 
+	WHERE bp.`fee_id` = #{feeId}
+  </select>
+  
+  <select id="selectFeeItemInfo" parameterType="java.lang.String" resultMap="FeeItemResultMap">
+  	select
+	  bfi.`item_code`,
+	  bfi.`item_name`,
+	  bfd.`define_amount` 
+	from
+	  bd_fee_define bfd 
+	  left join bd_fee_item bfi 
+	    on bfi.`item_code` = bfd.`item_code` 
+	where bfd.`fee_id` = #{feeId}
+	order by bfi.order_num asc 
+  </select>
+ 
+ 
+ 
+  <select id="selectPfsnInfo" parameterType="java.lang.String" resultMap="PfsnInfoResultMap">
+  	select distinct
+	  bup.`pfsn_id`,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  bup.`grade`,
+	  bu.`unvs_id`,
+	  bu.`unvs_name`,
+	  bu.`unvs_code`,
+	  bu.`recruit_type`,
+  	  bp.scholarship
+	from
+	  bd_ptf bp 
+	  left join bd_unvs_profession bup 
+	    on bup.`pfsn_id` = bp.`pfsn_id` 
+	  left join bd_university bu 
+	    on bu.`unvs_id` = bup.`unvs_id` 
+	where bp.`fee_id` = #{feeId}
+  </select>
+  
+  <select id="selectStandardById" parameterType="java.lang.String" resultMap="FeeInfoResultMap">
+  	SELECT 
+  	  bf.fee_id,
+	  bf.`fee_name`,
+	  bf.status 
+	FROM
+	  bd_fee bf 
+	  WHERE bf.`fee_id` = #{feeId}
+  </select>
+  
+  <select id="selectPayableDetail" parameterType="java.lang.String" resultMap="PayableDetailResultMap">
+  	SELECT 
+	  bfd.`fd_id`,
+	  bfd.define_amount,
+	  bfd.turnover_amount,
+	  bfi.`item_code`,
+	  bfi.`item_name` 
+	FROM
+	  bd_fee_define bfd 
+	  LEFT JOIN bd_fee_item bfi 
+	    ON bfi.`item_code` = bfd.`item_code` 
+	WHERE bfd.`fee_id` = #{feeId}
+	ORDER BY bfi.order_num 
+  </select>
+  
+  <select id="selectStandardByPage" resultMap="BdFeePageResultMap">
+  	SELECT 
+	  bf.`fee_id`,
+	  bf.`fee_name`,
+	  bf.`status`,
+	  bp.scholarship
+	FROM
+	  bd_fee bf 
+	 left join bd_ptf bp
+	 on bp.fee_id = bf.fee_id
+	 LEFT JOIN bd_unvs_profession bup 
+     ON bup.`pfsn_id` = bp.`pfsn_id` 
+    LEFT JOIN bd_university bu 
+     ON bu.`unvs_id` = bup.`unvs_id` 
+	 where 1 = 1
+	 <if test="fee.feeName != null and fee.feeName != ''">  
+         and bf.fee_name LIKE CONCAT('%', CONCAT(#{fee.feeName}, '%'))
+     </if>  
+     <if test="fee.status != null and fee.status != ''">  
+         and bf.status = #{fee.status}
+     </if> 
+     <if test="fee.scholarship != null and fee.scholarship != ''">  
+         and bp.scholarship = #{fee.scholarship}
+     </if>
+     <if test="fee.unvsId != null and fee.unvsId != ''">  
+         and bu.`unvs_id` = #{fee.unvsId}
+     </if> 
+     <if test="fee.pfsnId != null and fee.pfsnId != ''">  
+         and bup.`pfsn_id` = #{fee.pfsnId}
+     </if>
+     <if test="fee.grade != null and fee.grade != ''">  
+         and bup.`grade` = #{fee.grade}
+     </if>
+     <if test="fee.pfsnLevel != null and fee.pfsnLevel != ''">  
+        and bup.`pfsn_level` = #{fee.pfsnLevel}
+     </if>
+     GROUP BY bf.fee_id,
+  			bp.`scholarship` 
+     order by bf.`update_time` desc
+     
+  </select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_fee
+    where fee_id = #{feeId,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.yz.model.finance.fee.BdFee" >
+    insert into bd_fee (fee_id, fee_name, scholarship, 
+      grade, status, remark, 
+      pfsn_id, unvs_id, 
+      update_time, update_user, update_user_id, 
+      create_user_id, create_time, create_user, 
+      ext_1, ext_2, ext_3)
+    values (#{feeId,jdbcType=VARCHAR}, #{feeName,jdbcType=VARCHAR}, #{scholarship,jdbcType=VARCHAR}, 
+      #{grade,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{pfsnId,jdbcType=VARCHAR}, #{unvsId,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.finance.fee.BdFee" >
+    insert into bd_fee
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="feeId != null" >
+        fee_id,
+      </if>
+      <if test="feeName != null" >
+        fee_name,
+      </if>
+      <if test="scholarship != null" >
+        scholarship,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="pfsnId != null" >
+        pfsn_id,
+      </if>
+      <if test="unvsId != null" >
+        unvs_id,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="feeId != null" >
+        #{feeId,jdbcType=VARCHAR},
+      </if>
+      <if test="feeName != null" >
+        #{feeName,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnId != null" >
+        #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsId != null" >
+        #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.finance.fee.BdFee" >
+    update bd_fee
+    <set >
+      <if test="feeName != null" >
+        fee_name = #{feeName,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        scholarship = #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnId != null" >
+        pfsn_id = #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsId != null" >
+        unvs_id = #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fee_id = #{feeId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.finance.fee.BdFee" >
+    update bd_fee
+    set fee_name = #{feeName,jdbcType=VARCHAR},
+      scholarship = #{scholarship,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      pfsn_id = #{pfsnId,jdbcType=VARCHAR},
+      unvs_id = #{unvsId,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+    where fee_id = #{feeId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,26 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<script th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:inline="javascript">
+	$(function(){
+		
+		var errorMsg = /*[[${errorMsg}]]*/;
+		var errorCode = /*[[${errorMsg}]]*/;
+		
+		if(errorMsg != null && errorMsg.length >0){
+			alert(errorMsg);
+		}
+		
+		var loginUrl = /*[[@{/toLogin.do}]]*/;
+		
+	    if(window.parent.length>0){ 
+	        window.parent.location = loginUrl; 
+	    }else{
+	    	window.location = loginUrl; 
+	    }
+	})
+	</script>
+</head>
+</html>

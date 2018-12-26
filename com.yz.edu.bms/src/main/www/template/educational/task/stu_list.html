@@ -1,0 +1,226 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" th:href="@{/favicon.ico}">
+<link rel="Shortcut Icon" th:href="@{/favicon.ico}" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<style type="text/css">
+    .checkDiv{margin: 20px 30px 20px 50px;font-size:12px;}
+    .checkDiv span label{margin-left: 10px;}
+</style>
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>配置学员</title>
+</head>
+<body>
+		<div class="page-container">
+			<div class="text-l search" style="position: relative">
+			<input type="hidden" id="taskId" name="taskId" th:value="*{taskId}">
+			<div class="cl" style="padding-left: 30px;">
+			<div class="cl">
+		       <div class="cl">
+	            <div class="f-l">
+		           <span>年级:</span> <select class="select" size="1" id="grade" >
+		            <option value="" selected>--请选择年级--</option>
+		          </select>
+	            </div>
+		        <div class="f-l">
+		          <span>院校名称:</span> <select class="select" size="1" id="unvsId" >
+		            <option value="" selected>--请选择院校名称--</option>
+		          </select>
+		        </div>
+	           <div class="f-l">
+			        <span> 报考层次:</span>
+			        <select class="select" size="1" id="pfsnLevel" name="pfsnLevel">
+ 				  			<option value="" selected>--选择层次--</option>
+ 			        </select>
+		        </div>
+		        </div>
+		        <div class="cl">
+		        <div class="f-l">
+			        <span> 专业:</span>
+			        <select class="select" size="1" id="pfsnId" name="pfsnId" disabled="disabled">
+					 <option value="" selected>--选择院校--</option>
+					</select>
+			    </div>
+		        <div class="f-l">
+			        <span> 学员姓名:</span>
+			        <input type="text" class="input-text radius ml-10"  placeholder="输入学员姓名" id="stdName">
+			    </div>
+			    <div class="f-l">
+			        <span> 证件号码:</span>
+			        <input type="text" class="input-text radius ml-10"  placeholder="输入证件号码" id="idCard">
+			     </div>
+		        </div>
+			    <div class="f-r mr-5" style="position: absolute; right: 0;">
+					<a class="btn btn-primary radius" style="width: 100px" href="javascript:;" onclick="searchStudent()"> <i class="Hui-iconfont">&#xe665;</i> 搜索
+					</a> <a class="btn btn-normal-outline radius" onclick="_reset()">重置</a>
+			    </div>
+			    
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 是否目标学员:</span>
+				        <select class="select" size="1" id="isChecked">
+			  				<option value="" selected>--是否目标学员--</option>
+			  			</select>
+			        </div>
+			       <div class="f-l">
+			           <span>招生类型:</span> <select class="select" size="1" id="recruitType" >
+			            <option value="" selected>--请选择招生类型--</option>
+			          </select>
+		           </div>
+		           <div class="f-l">
+				        <span> 手机号:</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入手机号" id="mobile">
+			        </div>
+		          </div>
+		          <div class="cl"> 
+			        <div class="f-l">
+				        <span> 班主任:</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入班主任" id="tutorName">
+			        </div>
+			        <div class="f-l">
+				        <span> 考试区县:</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入考试区县" id="taName">
+			        </div>
+			        <div class="f-l">
+				        <span> 收件地址:</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入收件地址" id="address">
+			        </div>	
+			    </div>
+			    <div class="cl">
+				    <div class="f-l">
+				        <span> 优惠分组:</span>
+				        <select class="select" size="1" id="sg" name="sg">
+  				  			 <option value="" selected>--选择优惠分组--</option>
+  			            </select>
+			        </div>
+			        
+			        <div class="f-l">
+				         <span> 优惠类型:</span>
+				         <select class="select" size="1" id="scholarship" name="scholarship">
+  				 		  <option value="" selected>--选择优惠类型--</option>
+  			   			 </select>
+			        </div>
+			        <div class="f-l">
+				        <span> 入围状态:</span>
+		           		 <select class="select" size="1" id="inclusionStatus" name="inclusionStatus">
+		  				  <option value="" selected>--选择入围状态--</option>
+		  			     </select>				        				       
+			        </div>				    	
+			    </div>
+			    <div class="cl">
+				    
+			        <div class="f-l">
+				        <span> 考前资料审核:</span>
+				        <select class="select" size="1" id="examDataCheck" name="examDataCheck">
+  				  			<option value="" selected>--考前资料审核--</option>
+  			            </select>
+			        </div>
+			        <div class="f-l">
+				        <span> 毕业资料审核:</span>
+				        <select class="select" size="1" id="graduateDataCheck" name="graduateDataCheck">
+		  				  <option value="" selected>--毕业资料审核--</option>
+		  			    </select>
+			        </div>	
+			         <div class="f-l">
+				        <span> 毕业财务审核:</span>
+		           		 <select class="select" size="1" id="graduateFinanceCheck" name="graduateFinanceCheck">
+		  				  <option value="" selected>--毕业财务审核--</option>
+		  			    </select>				        
+			        </div>			    	
+			    </div>
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 是否外校:</span>
+				         <select class="select" size="1" id="stdType" name="stdType">
+		  				  <option value="" selected>--是否外校--</option>
+		  			    </select>
+			        </div>
+			    </div>				    
+			    <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+		          <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+		           		 <i  class="iconfont  icon-xiala"></i>
+		          </p>
+               </div>
+			    </div>
+			</div>
+			</div>
+			</div>
+			<div class="checkDiv">
+            <label>学员阶段：</label>
+            <span>
+                <label><input type="checkbox" value="1" name="stdStage">意向学员</label>
+                <label><input type="checkbox" value="2" name="stdStage">考前辅导</label>
+                <label><input type="checkbox" value="3" name="stdStage">考前确认</label>
+                <label><input type="checkbox" value="4" name="stdStage">入学考试</label>
+                <label><input type="checkbox" value="5" name="stdStage">已录取</label>
+                <label><input type="checkbox" value="6" name="stdStage" checked="checked">注册学员</label>
+                <label><input type="checkbox" value="7" name="stdStage" checked="checked">在读学员</label>
+                <label><input type="checkbox" value="8" name="stdStage">毕业学员</label>
+                <label><input type="checkbox" value="9" name="stdStage">留级学员</label>
+                <label><input type="checkbox" value="10" name="stdStage">退学学员</label>
+                <label><input type="checkbox" value="11" name="stdStage">其他</label>
+                <label><input type="checkbox" value="12" name="stdStage">待录取</label>
+                <label><input type="checkbox" value="13" name="stdStage">待注册</label>
+                <label><input type="checkbox" value="14" name="stdStage">休学学员</label>
+            </span>
+           </div>
+			<div class="bg-1">
+			<div class="cl pd-5 bg-1 bk-gray mt-20">
+					<span class="r"> 
+						<a href="javascript:;" onclick="addStu()" class="btn btn-primary radius"> 添加选中 </a>
+						<a href="javascript:;" onclick="delStu()" class="btn btn-success radius"> 清除选中</a>
+						<a href="javascript:;" onclick="addAllStu()" class="btn btn-primary radius"> 添加全部 </a>
+						<a href="javascript:;" onclick="delAllStu()" class="btn btn-success radius"> 清除全部</a>
+						<a href="javascript:;" onclick="stuImport()" class="btn btn-danger radius"> <i class="Hui-iconfont">&#xe70c;</i> 目标学员导入</a>
+					</span>
+					<div class="mt-35 bg-fff">
+                        <table class="table table-border table-bordered table-bg table-sort" id="tab">
+							<thead>
+						  <tr class="text-c">
+							<th width="25"><input type="checkbox" name="all" value=""></th>
+							<th width="60">是否目标学员</th>
+							<th width="30">学员姓名</th>
+							<th width="30">班主任</th>
+							<th width="30">年级</th>
+							<th width="100">院校专业</th>
+							<th width="50">学员阶段</th>
+						</tr>
+					</thead>
+					</table>
+				</div>
+		</div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/educational/task/stu_list.js}"></script>
+</body>
+</html>

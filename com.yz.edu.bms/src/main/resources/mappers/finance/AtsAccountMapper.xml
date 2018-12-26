@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.AtsAccountMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.finance.AtsAccount">
+		<id column="acc_id" property="accId" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="acc_type" property="accType" jdbcType="VARCHAR" />
+		<result column="acc_amount" property="accAmount" jdbcType="VARCHAR" />
+		<result column="acc_status" property="accStatus" jdbcType="VARCHAR" />
+		<result column="thaw_time" property="thawTime" jdbcType="VARCHAR" />
+		<result column="frez_time" property="frezTime" jdbcType="VARCHAR" />
+		<result column="can_deposit" property="canDeposit" jdbcType="CHAR" />
+		<result column="is_visiable" property="isVisiable" jdbcType="CHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		acc_id, user_id, acc_type, acc_amount, acc_status, thaw_time, frez_time, can_deposit,
+		is_visiable, std_id, emp_id
+	</sql>
+	
+	<resultMap id="AccountMap" type="java.util.HashMap">
+		<id column="acc_id" property="accId" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="acc_type" property="accType" jdbcType="VARCHAR" />
+		<result column="acc_amount" property="accAmount" jdbcType="VARCHAR" />
+		<result column="acc_status" property="accStatus" jdbcType="VARCHAR" />
+		<result column="thaw_time" property="thawTime" jdbcType="VARCHAR" />
+		<result column="frez_time" property="frezTime" jdbcType="VARCHAR" />
+		<result column="can_deposit" property="canDeposit" jdbcType="CHAR" />
+	</resultMap>
+
+	<select id="getAccount" parameterType="com.yz.model.finance.AtsAccount" resultMap="BaseResultMap">
+		SELECT acc_id, user_id, acc_type, acc_amount, acc_status,
+			date_format(thaw_time, '%Y-%m-%d %H:%i:%s') as thaw_time,
+			date_format(frez_time, '%Y-%m-%d %H:%i:%s') as frez_time,
+			can_deposit, is_visiable, std_id, emp_id
+		FROM goods.ats_account
+		<where>
+			<if test="userId != null and userId != ''">
+				and user_id = #{userId, jdbcType=VARCHAR}
+			</if>
+			<if test="empId != null and empId != ''">
+				and emp_id = #{empId, jdbcType=VARCHAR}
+			</if>
+			<if test="stdId != null and stdId != ''">
+				and std_id = #{stdId, jdbcType=VARCHAR}
+			</if>
+			and acc_type = #{accType, jdbcType=VARCHAR}
+		</where>
+		limit 0,1
+	</select>
+	
+	<select id="getStudentAllAccountSerial" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		 '2' transType,
+		  bss.`serial_no` accSerialNo,
+		  '1' `action`,
+		  bss.`payable` amount,
+		  '' beforeAmount,
+		  '' afterAmount,
+		  bss.`pay_time` updateTime 
+		FROM
+		  bms.bd_student_serial bss 
+		  LEFT JOIN bms.`bd_student_order` bs 
+		    ON bss.order_no = bs.order_no 
+		  LEFT JOIN bms.`bd_student_rept` bsr 
+		    ON bsr.serial_mark = bss.serial_mark 
+		WHERE bs.std_id = #{stdId}
+		  AND bss.`serial_status` IN ('2', '3') 
+		  and bss.payable &gt; 0
+		UNION
+		SELECT 
+		  `acc_type` transType,
+		  `acc_serial_no` accSerialNo,
+		  `action` `action`,
+		  `amount`,
+		  `before_amount` beforeAmount,
+		  `after_amount` afterAmount,
+		  DATE_FORMAT(
+		    `update_time`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) updateTime 
+		FROM
+		  goods.`ats_account_serial` 
+		WHERE acc_type IN ('1', '3') 
+  		  AND (user_id = #{userId}
+		    OR std_id = #{stdId}) 
+		  AND acc_serial_status = '2' 
+		ORDER BY updateTime,
+		  accSerialNo 
+	</select>
+
+	<select id="getAccountByAccType" resultMap="BaseResultMap">
+		SELECT acc_id,user_id,acc_type,acc_amount,acc_status,
+			date_format(thaw_time, '%Y-%m-%d %H:%i:%s') as thaw_time,
+			date_format(frez_time, '%Y-%m-%d %H:%i:%s') as frez_time,
+			can_deposit,is_visiable,std_id,emp_id
+		FROM goods.ats_account where user_id = #{userId, jdbcType=VARCHAR} and acc_type = #{accType, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAccountList" parameterType="string" resultMap="AccountMap">
+		SELECT
+			acc_id,
+			user_id,
+			acc_type,
+			acc_amount,
+			acc_status,
+			date_format(thaw_time, '%Y-%m-%d %H:%i:%s') as thaw_time,
+			date_format(frez_time, '%Y-%m-%d %H:%i:%s') as frez_time,
+			can_deposit,
+			is_visiable,
+			std_id,
+			emp_id
+		FROM
+		goods.ats_account
+		where user_id = #{userId, jdbcType=VARCHAR}
+		and is_visiable = '1'
+	</select>
+	
+	<select id="getAccountSerial" parameterType="java.lang.String" resultType="java.util.Map">
+		select 
+		  `acc_serial_no` accSerialNo,
+		  `acc_id` accId,
+		  `std_id` stdId,
+		  `emp_id` empId,
+		  `mapping_id` mappingId,
+		  `user_id` userId,
+		  `acc_type` accType,
+		  `action` `action`,
+		  `acc_serial_status` accSerialStatus,
+		  `amount`,
+		  `before_amount` beforeAmount,
+		  `after_amount` afterAmount,
+		  `acc_serial_type` accSerialType,
+		  `exc_desc` excDesc,
+		  `is_visiable` isVisiable,
+		  date_format(`update_time`,'%Y-%m-%d %H:%i:%s') updateTime,
+		  `update_user` updateUser,
+		  `update_user_id` updateUserId,
+		  `reason`
+		from
+		  goods.`ats_account_serial` 
+		  where acc_type = #{accType, jdbcType=VARCHAR}
+		  and (user_id = #{userId, jdbcType=VARCHAR} or std_id = #{stdId})
+		order by update_time desc
+				
+	</select>
+	
+	<select id="getStudentAccountSerial" parameterType="java.lang.String" resultType="java.util.Map">
+		select 
+		  `acc_serial_no` accSerialNo,
+		  `acc_id` accId,
+		  `std_id` stdId,
+		  `emp_id` empId,
+		  `mapping_id` mappingId,
+		  `user_id` userId,
+		  `acc_type` accType,
+		  `action` `action`,
+		  `acc_serial_status` accSerialStatus,
+		  `amount`,
+		  `before_amount` beforeAmount,
+		  `after_amount` afterAmount,
+		  `acc_serial_type` accSerialType,
+		  `exc_desc` excDesc,
+		  `is_visiable` isVisiable,
+		  date_format(`update_time`,'%Y-%m-%d %H:%i:%s') updateTime,
+		  `update_user` updateUser,
+		  `update_user_id` updateUserId,
+		  `reason`
+		from
+		  goods.`ats_account_serial` 
+		  where acc_type = #{accType, jdbcType=VARCHAR}
+		  and (user_id = #{userId, jdbcType=VARCHAR} or std_id = #{stdId})
+		ORDER BY update_time,acc_serial_no
+				
+	</select>
+	
+</mapper>

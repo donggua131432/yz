@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.system.SysDictPlusMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.system.SysDictPlus">
+		<id column="dict_id" property="dictId" jdbcType="VARCHAR" />
+		<result column="p_id" property="pId" jdbcType="VARCHAR" />
+		<result column="dict_name" property="dictName" jdbcType="VARCHAR" />
+		<result column="dict_value" property="dictValue" jdbcType="VARCHAR" />
+		<result column="is_enable" property="isEnable" jdbcType="VARCHAR" />
+		<result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getList" parameterType="com.yz.model.system.SysDictPlus"
+		resultMap="BaseResultMap">
+		SELECT
+			d.`dict_id`,
+			d.`dict_name`,
+			d.`dict_value`,
+			d.`is_enable`,
+			d.`order_num`,
+			DATE_FORMAT(d.`update_time`, '%Y-%m-%d %H:%i:%s') AS update_time,
+			d.`update_user`,
+			DATE_FORMAT(d.`create_time`, '%Y-%m-%d %H:%i:%s') AS create_time,
+			d.`create_user`,
+			d.`description`,
+			d.`ext_1`,
+			d.`ext_2`,
+			d.`p_id`
+		FROM
+			sys_dict d
+		<where>
+			d.`p_id` = #{pId, jdbcType=VARCHAR}
+			<if test="ext1 != null and ext1 != ''">
+				and d.ext_1 = #{ext1, jdbcType=VARCHAR}
+			</if>
+			<if test="dictName != null and dictName != ''">
+				and d.dict_name like concat('%', #{dictName, jdbcType=VARCHAR}, '%')
+			</if>
+		</where>
+		order by d.update_time desc
+	</select>
+
+	<select id="getOne" parameterType="string" resultMap="BaseResultMap">
+		SELECT
+			d.`dict_id`,
+			d.`dict_name`,
+			d.`dict_value`,
+			d.`is_enable`,
+			d.`order_num`,
+			d.`p_id`,
+			DATE_FORMAT(d.`update_time`, '%Y-%m-%d %H:%i:%s') AS update_time,
+			d.`update_user`,
+			DATE_FORMAT(d.`create_time`, '%Y-%m-%d %H:%i:%s') AS create_time,
+			d.`create_user`,
+			d.`description`,
+			d.`ext_1`,
+			d.`ext_2`
+		FROM
+			sys_dict d
+		WHERE d.`dict_id` = #{dictId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="countBy" parameterType="string" resultType="int">
+		select count(1) from sys_dict where dict_id = #{dictId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="countByName" resultType="int">
+		select count(1) from sys_dict where dict_name = #{dictName, jdbcType=VARCHAR} and p_id = #{pId, jdbcType=VARCHAR}
+	</select>
+
+	<insert id="add" parameterType="com.yz.model.system.SysDictPlus">
+		insert into sys_dict(dict_id, p_id, dict_name, dict_value, order_num,
+		description, update_user, update_user_id, create_user, create_user_id,
+		ext_1, ext_2) values (
+		#{dictId,jdbcType=VARCHAR},
+		#{pId, jdbcType=VARCHAR},
+		#{dictName,jdbcType=VARCHAR},
+		#{dictValue,jdbcType=VARCHAR},
+		#{orderNum,jdbcType=CHAR},
+		#{description,jdbcType=VARCHAR},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR},
+		#{createUser,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		#{ext1, jdbcType=VARCHAR},
+		#{ext2, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.yz.model.system.SysDictPlus">
+		update sys_dict
+		<set>
+			<if test="dictName != null and dictName != ''">
+				dict_name = #{dictName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderNum != null and orderNum != ''">
+				order_num = #{orderNum,jdbcType=CHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="isEnable != null and isEnable != ''">
+				is_enable = #{isEnable,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null and ext2 != ''">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateUnCache" parameterType="com.yz.model.system.SysDictPlus">
+		update sys_dict
+		<set>
+			<if test="dictName != null and dictName != ''">
+				dict_name = #{dictName,jdbcType=VARCHAR},
+			</if>
+			<if test="orderNum != null and orderNum != ''">
+				order_num = #{orderNum,jdbcType=CHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="isEnable != null and isEnable != ''">
+				is_enable = #{isEnable,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null and ext2 != ''">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</update>
+
+	<update id="batch">
+		update sys_dict set is_enable = #{isEnable,jdbcType=VARCHAR},
+		update_user = #{pubInfo.updateUser,jdbcType=VARCHAR},
+		update_user_id = #{pubInfo.updateUserId,jdbcType=VARCHAR}
+		where dict_id in
+		<foreach collection="dictIds" item="dId" separator="," open="("
+			close=")">
+			#{dId, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<select id="seq" parameterType="string" resultType="int">
+		SELECT MAX(CAST(dict_value AS SIGNED INTEGER)+1) dictValue FROM bms.`sys_dict` WHERE p_id=#{pId,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

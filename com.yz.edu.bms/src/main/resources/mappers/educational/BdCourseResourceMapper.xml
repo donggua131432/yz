@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdCourseResourceMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdCourseResource" >
+    <id column="resource_id" property="resourceId" jdbcType="VARCHAR" />
+    <result column="resource_name" property="resourceName" jdbcType="VARCHAR" />
+    <result column="resource_url" property="resourceUrl" jdbcType="VARCHAR" />
+    <result column="resource_type" property="resourceType" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    resource_id, resource_name, resource_url, resource_type, course_id, is_allow,update_user, 
+    update_time, update_user_id, create_user_id, create_time, create_user, ext_2, ext_3
+  </sql>
+   <select id="getCourseResource" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_course_resource
+    where course_id = #{courseId,jdbcType=VARCHAR} order by is_allow desc 
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_course_resource
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByCourseId" parameterType="java.lang.String" >
+    delete from bd_course_resource
+    where course_id = #{courseId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_course_resource
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.educational.BdCourseResource" >
+    insert into bd_course_resource (resource_id, resource_name, resource_url, 
+      resource_type, course_id, update_user, 
+      update_time, update_user_id, create_user_id, 
+      create_time, create_user, ext_2, 
+      ext_3)
+    values (#{resourceId,jdbcType=VARCHAR}, #{resourceName,jdbcType=VARCHAR}, #{resourceUrl,jdbcType=VARCHAR}, 
+      #{resourceType,jdbcType=VARCHAR}, #{courseId,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, 
+      #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.educational.BdCourseResource" >
+    insert into bd_course_resource
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        resource_id,
+      </if>
+      <if test="resourceName != null" >
+        resource_name,
+      </if>
+      <if test="resourceUrl != null" >
+        resource_url,
+      </if>
+      <if test="resourceType != null" >
+        resource_type,
+      </if>
+      <if test="courseId != null" >
+        course_id,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="resourceId != null" >
+        #{resourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceName != null" >
+        #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceUrl != null" >
+        #{resourceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceType != null" >
+        #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="courseId != null" >
+        #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdCourseResource" >
+    update bd_course_resource
+    <set >
+      <if test="resourceName != null" >
+        resource_name = #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceUrl != null" >
+        resource_url = #{resourceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceType != null" >
+        resource_type = #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="courseId != null" >
+        course_id = #{courseId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdCourseResource" >
+    update bd_course_resource
+    set resource_name = #{resourceName,jdbcType=VARCHAR},
+      resource_url = #{resourceUrl,jdbcType=VARCHAR},
+      resource_type = #{resourceType,jdbcType=VARCHAR},
+      course_id = #{courseId,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="deleteBatch">
+  	delete from bd_course_resource
+    where resource_id in (
+  	<foreach collection="delResourceIds" item="rId" separator=",">
+  		#{rId, jdbcType=VARCHAR}
+  	</foreach>
+  	)
+  </delete>
+  
+  <select id="getCourseByPfsnId" resultType="java.util.Map">
+    SELECT
+          c.`course_id`,
+          c.course_name,
+          f.pfsn_name,
+          f.pfsn_id
+      FROM
+          bms.bd_course c
+      LEFT JOIN bms.bd_plan_course p ON p.`course_id` = c.`course_id`
+      LEFT JOIN bms.bd_teach_plan t ON t.`thp_id` = p.`thp_id`
+      LEFT JOIN bms.bd_unvs_profession f ON f.`pfsn_id` = t.`pfsn_id`
+      LEFT JOIN bd_class_plan cp on c.course_id = cp.course_id
+      WHERE cp.cp_type in ('5','6','7')
+      AND f.pfsn_id = #{pfsnId}
+      AND t.semester = #{semester}
+      GROUP BY
+				c.`course_id`
+  </select>
+  
+  <select id="getTeacherInfo" resultType="java.util.Map">
+      SELECT
+          b.emp_name,
+          CASE b.sex
+      WHEN 1 THEN
+          '男'
+      WHEN 2 THEN
+          '女'
+      ELSE
+          ''
+      END sex,
+       c.job_title
+      FROM
+          bd_class_plan a
+      LEFT JOIN oa_employee b ON a.emp_id = b.emp_id
+      LEFT JOIN oa_employee_other c ON b.emp_id = c.emp_id
+      WHERE
+          a.course_id = #{courseId}
+      LIMIT 1
+  </select>
+</mapper>

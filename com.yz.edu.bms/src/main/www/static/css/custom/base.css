@@ -1,0 +1,235 @@
+.yzStudyContent input:focus {
+    border: 1px solid #0E90D2;
+}
+.yzStudyContent input[type='checkbox'],input[type='radio']{
+    width: 20px;
+    height: 20px;
+    display: none;
+    vertical-align: middle;
+    background-color: #fff;
+}
+.yzStudyContent input[type='checkbox']+label,input[type='radio']+label{
+    background-image: url("../../images/custom/woyaojiaofei_ico_kuang@3x.png");
+    background-size: 100%;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    position: relative;
+    /*margin: 0 10px;*/
+}
+.yzStudyContentinput[type='radio']+label{
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+.yzStudyContent input[type='checkbox']:checked + label:after,.yzStudyContent input[type='radio']:checked + label:after{
+    content: " ";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    color: red;
+    width: 15px;
+    height: 15px;
+    background-image: url("../../images/custom/woyaojiaofei_ico_xuanzhong@3x.png");
+    background-size: 100%;
+    text-align: center;
+    font-size: 1.4em;
+    vertical-align: text-top;
+}
+.yzStudyContent input[type='radio']:checked + label:after{
+    background-size: 120%;
+    background-position: center;
+    top: -1px;
+    left: -1px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.infoHead,.yzStudyHead{
+    height: 35px;
+    padding-left: 15px;
+    line-height: 43px;
+    font-size: 0.9rem;
+}
+.infoHead p,.yzStudyHead p{
+    color: #666;
+}
+
+
+.yzStudyContent input:focus {
+    border: 1px solid #0E90D2;
+}
+
+
+.viewport{
+    max-width: 640px;
+    min-width: 320px;
+    width: 100%;
+    /*font-family: 'microsoft yahei';*/
+    font-family: 'sans-serif';
+    background-color: #FAFAFC;
+    margin: 0 auto;
+    /*padding:45px 0 50px;*/
+    padding-bottom: 92px;
+}
+
+.yzStudyContent,.payedTable {
+    border-top: 1px solid #EFEFEF;
+    border-bottom: 1px solid #EFEFEF;
+    background-color: #fff;
+}
+.yzStudyContent table{
+    width:100%;
+    border-collapse:collapse;
+    font-size: 0.8rem;
+    color: #666;
+    text-indent: 10px;
+    text-align: left;
+}
+.yzStudyContent table td,.yzStudyContent table th{
+    vertical-align: middle;
+    border:1px solid #efefef;
+    height: 35px;
+    line-height: 35px;
+}
+.yzStudyContent table th:nth-of-type(4),.yzStudyContent table td:nth-of-type(4){
+    text-align: center;
+    text-indent: 0;
+}
+.infoHead p{
+    color: #666;
+}
+/*��Ҫ�ɷ�2*/
+.yzStudyPayInfo-t,.yzStudyPayInfo-m,.yzStudyPayInfo-t span,.yzStudyPayInfo-m span,.yzStudyPayInfo-t div,.yzStudyPayInfo-m div{
+    font-size: 0.8rem;
+    text-indent: 7px;
+    color: #666;
+    box-sizing: border-box;
+}
+ .yzStudyPayInfo-t div.c-gray{
+     color: #808C95;
+ }
+.yzStudyPayInfo-m .yzStudyPayInfo-m-c .yzStudyPayInfo-check{
+	text-indent: 0px;
+}
+.yzStudyPayInfo-m .yzStudyPayInfo-m-c .yzStudyPayInfo-year{
+	text-align: center;
+	text-indent: 0px;
+}
+.yzStudyPayInfo-t{
+    border: 1px solid #E4E4E4;
+    border-left: none;
+    border-right: none;
+    height: 40px;
+    line-height: 40px;
+    background-color: #F5F8F9;
+}
+.yzStudyPayInfo-t div{
+    height: 40px;
+    line-height: 40px;
+    float: left;
+    width: 23%;
+    border-right:1px solid #E4E4E4;
+}
+.yzStudyPayInfo-t div:nth-of-type(2){
+    width: 25%;
+}
+.yzStudyPayInfo-t div:nth-of-type(3){
+    width: 41%;
+}
+.yzStudyPayInfo-t div:nth-of-type(1){
+    width: 11%;
+    text-align: center;
+    line-height: 43px;
+    text-indent: 0px;
+    border-left: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-m-c{
+    border-bottom: 1px solid #E4E4E4;
+    height: 80px;
+}
+.yzStudyPayInfo-m-c.PayTest{
+    height: 40px;
+    box-sizing: content-box;
+}
+.yzStudyPayInfo-m-c>div{
+    height: 100%;
+    float: left;
+}
+.yzStudyPayInfo-year{
+    border-right: 1px solid #E4E4E4;
+    width: 25%;
+    line-height: 80px;
+}
+.yzStudyPayInfo-year.PayTest{
+    height: 40px;
+    line-height: 40px;
+}
+.yzStudyPayInfo-count{
+    width: 64%;
+    border-right: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-count>div{
+    border-bottom: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-count div:last-child{
+    border-bottom: none;
+}
+.yzStudyPayInfo-count >div>div{
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.yzStudyPayInfo-count >div>div:first-child{
+    width: 64%;
+    border-right: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-count >div>div:last-child{
+    width: 36%;
+    display: flex;
+    flex-direction: column;
+    justify-content:center ;
+}
+
+.yzStudyPayInfo-count .shouldPay,.yzStudyPayInfo-count .payed{
+    height: 16px;
+    line-height: 16px;
+    width: 100%;
+    float: left;
+}
+.yzStudyPayInfo-count .payed{
+    font-size: 0.7rem;
+    color: #F26662;
+}
+
+.yzStudyPayInfo-count-1,.yzStudyPayInfo-count-2{
+    height: 40px ;
+    line-height: 40px;
+}
+.yzStudyPayInfo-count-1{
+    border-bottom: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-count-1.PayTest{
+    border: none;
+}
+.yzStudyPayInfo-check{
+    width: 11%;
+    height: 80px;
+    line-height: 93px;
+    text-align: center;
+    border-right: 1px solid #E4E4E4;
+    border-left: 1px solid #E4E4E4;
+}
+.yzStudyPayInfo-check.PayTest{
+    height: 40px;
+    line-height: 48px;
+    border-right: 1px solid #E4E4E4;
+}
+
+
+
+
+
+
+

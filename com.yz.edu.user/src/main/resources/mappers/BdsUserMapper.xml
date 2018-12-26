@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsUserMapper" >
+	<!-- 员工下的所有职称 -->
+	  <resultMap type="java.util.HashMap" id="EmpTitleMap">
+	  	<result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+	  	<result column="jt_id" property="jtId" jdbcType="VARCHAR"/>
+	  </resultMap>
+	  <select id="findEmpTitle" resultMap="EmpTitleMap" parameterType="string">
+	  	select emp_id,jt_id from `bms`.oa_employee_title where emp_id=#{depId,jdbcType=VARCHAR}
+	  </select>
+	  
+	<select id="getEmpInfoByNameOrMobile"  resultType="java.util.HashMap" parameterType="string">
+		SELECT 
+		  oe.`emp_id` AS empId, 
+		  (SELECT annex_url FROM `bms`.oa_employee_annex oea WHERE oea.`emp_id` = oe.`emp_id` AND oea.`emp_annex_type` = '4') AS headShot,
+		  oe.`emp_name` AS empName, 
+		  oe.`id_card` AS idCard,
+		  oe.`mobile` As mobile, 
+		  oe.`emp_type` AS empType,
+		  oe.`emp_status` AS empStatus
+		FROM
+		  `bms`.oa_employee oe 
+		WHERE oe.`emp_type`='1' and oe.`id_card`!='441381198508273215'  and (oe.`emp_name` = #{keywords, jdbcType=VARCHAR} or oe.`mobile`=  #{keywords, jdbcType=VARCHAR}) order by oe.`emp_status`
+	</select>
+	
+	
+	<select id="getEmpInfo"  resultType="java.util.HashMap" parameterType="string">
+		SELECT 
+		  e.`emp_id` AS empId,
+		  d.`dp_id` AS dpId,
+		  c.`campus_id` AS campusId,
+		  d.`emp_id` AS dpManager,
+		  c.`emp_id` AS campusManager 
+		FROM
+		  `bms`.oa_employee e 
+		  LEFT JOIN `bms`.oa_employee_job j 
+		    ON j.`emp_id` = e.`emp_id` 
+		  LEFT JOIN `bms`.oa_department d 
+		    ON d.`dp_id` = j.`dp_id` 
+		  LEFT JOIN `bms`.oa_campus c 
+		    ON c.`campus_id` = j.`campus_id` 
+		WHERE e.`emp_id` = #{empId, jdbcType=VARCHAR} 
+		AND e.`emp_status` != '2'
+	</select>
+	
+	<select id="countByMobile" resultType="int" parameterType="string">
+		select count(1) from `bms`.bd_student_info where mobile = #{mobile, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCloseAndOnJob" resultType="java.util.HashMap" parameterType="string">
+		SELECT 
+		  s.std_name AS `name`,
+		  s.id_card AS idCard,
+		  s.mobile,
+		  s.std_id as stdId,
+		  p.pfsn_level AS pfsnLevel,
+		  l.pfsn_id AS pfsnId,
+		  p.pfsn_name AS pfsnName,
+		  l.unvs_id AS unvsId,
+		  u.unvs_name AS unvsName,
+		  l.scholarship,
+		  l.grade,
+		  r.recruit AS empId,
+		  r.recruit_dp_id AS dpId,
+		  r.recruit_campus_id AS campusId,
+		  date_format(l.create_time, '%Y-%m-%d %H:%i:%s') AS enrollTime,
+		  l.sg
+		FROM
+		  `bms`.bd_learn_info l 
+		  INNER JOIN `bms`.bd_student_info s 
+		    ON s.std_id = l.std_id 
+		  INNER JOIN `bms`.bd_learn_rules r 
+		    ON r.learn_id = l.learn_id 
+		  LEFT JOIN `bms`.oa_employee e 
+		    ON e.emp_id = r.recruit AND e.emp_status != '2'
+		  INNER JOIN `bms`.bd_unvs_profession p ON p.pfsn_id = l.pfsn_id
+		  INNER JOIN `bms`.bd_university u ON u.unvs_id = l.unvs_id
+		WHERE s.mobile = #{mobile, jdbcType=VARCHAR} 
+		ORDER BY l.create_time DESC 
+		LIMIT 0, 1 
+	</select>
+
+	<select id="getCloseAndOnJobByIdCard" resultType="java.util.HashMap" parameterType="string">
+		SELECT 
+		  s.std_name AS `name`,
+		  s.id_card AS idCard,
+		  s.mobile,
+		  s.std_id as stdId,
+		  p.pfsn_level AS pfsnLevel,
+		  l.pfsn_id AS pfsnId,
+		  p.pfsn_name AS pfsnName,
+		  l.unvs_id AS unvsId,
+		  u.unvs_name AS unvsName,
+		  l.scholarship,
+		  l.grade,
+		  r.recruit AS empId,
+		  r.recruit_dp_id AS dpId,
+		  r.recruit_campus_id AS campusId,
+		  date_format(l.create_time, '%Y-%m-%d %H:%i:%s') AS enrollTime,
+		  l.sg
+		FROM
+		  `bms`.bd_learn_info l 
+		  INNER JOIN `bms`.bd_student_info s 
+		    ON s.std_id = l.std_id 
+		  INNER JOIN `bms`.bd_learn_rules r 
+		    ON r.learn_id = l.learn_id 
+		  INNER JOIN `bms`.oa_employee e 
+		    ON e.emp_id = r.recruit 
+		  INNER JOIN `bms`.bd_unvs_profession p ON p.pfsn_id = l.pfsn_id
+		  INNER JOIN `bms`.bd_university u ON u.unvs_id = l.unvs_id
+		WHERE s.id_card = #{idCard, jdbcType=VARCHAR} 
+		  AND e.emp_status != '2'
+		ORDER BY l.create_time DESC 
+		LIMIT 0, 1 
+	</select>
+	
+	<select id="getStdIdByIdCard" parameterType="string" resultType="string">
+		select std_id from `bms`.bd_student_info where id_card = #{idCard, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getStdIdByMobile" parameterType="string" resultType="string">
+		select std_id from `bms`.bd_student_info where mobile = #{mobile, jdbcType=VARCHAR} limit 0, 1
+	</select>
+	
+	<update id="bindEmp">
+		update bms.`oa_employee` set user_id = #{userId,jdbcType=VARCHAR} where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+</mapper>

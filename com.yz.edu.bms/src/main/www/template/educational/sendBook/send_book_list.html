@@ -1,0 +1,255 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>外包发书</title>
+  <style>
+    .select2-container.select2-container--default.select2-container--open{
+      z-index:99999999;
+    }
+  </style>
+</head>
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+    教务管理
+    <span class="c-gray en">/</span>
+    外包发书
+    <span class="c-gray en"></span>
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="iconfont icon-shuaxin"></i>
+    </a>
+  </nav>
+  <div id="tab_demo" class="HuiTab">
+    <div class="tabCon">
+      <div class="page-container">
+      <form id="export-form" th:action="@{/sendBooks/export.do}">
+        <div class="text-l search" style="position: relative">
+          <div class="cl">
+            <div class="cl">
+              <div class="f-l">
+                <span>收件人:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入收件人姓名" id="userName" name="userName">
+              </div>
+              <div class="f-l">
+                <span>手机号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入手机号" id="mobileo" name="mobile">
+              </div>
+              <div class="f-r mr-5">
+                <a class="btn btn-primary radius" href="javascript:;" onclick="_search_order();" />
+                <i class="iconfont icon-sousuo"></i> 搜索
+                </a>
+                <a class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:;">
+                  <i class="iconfont icon-shuaxin"></i>
+                </a>
+              </div>
+              <div class="f-l">
+                <span>订书状态:</span>
+                <select class="select" size="1" id="orderBookStatuso" name="orderBookStatus">
+                  <option value="" selected>--请选择订书状态--</option>
+                </select>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>年级:</span>
+                <select class="select" size="1" id="gradeo" name="grade">
+                  <option value="" selected>--请选择年级--</option>
+                </select>
+              </div>
+              <div class="f-l">
+                <span>院校:</span>
+                <select class="select" size="1" id="unvsId" name="unvsId"></select>
+              </div>
+              <div class="f-l">
+                 <span>专业层次:</span> 
+                 <select class="select" size="1" id="pfsnLevel" name="pfsnLeve">
+                     <option value="" selected>--请选择专业层次--</option>
+                 </select>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>专业:</span>
+                <select class="select" size="1" id="pfsnId" name="pfsnId" disabled="disabled">
+                </select>
+              </div>
+              <div class="f-l">
+                <span>订书批次:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入订书批次" id="batchIdo" name="batchId">
+              </div>
+              <div class="f-l">
+                <span>学期:</span>
+                <select class="select" size="1" id="semestero" name="semester">
+                  <option value="" selected>--请选择学期--</option>
+                </select>
+              </div>
+            </div>
+       		<div class="cl">
+       		  <div class="f-l">
+	            <span>教材类型:</span> 
+	            <select class="select" size="1" id="textbookType" name="textbookType">
+	              <option value="" selected>--请选择教材类型--</option>
+	            </select>
+               </div>
+              <div class="f-l">
+	              <span>下单起:</span>
+	              <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'endTime\')}'})" id="beginTime" name="beginTime" class="input-text Wdate"/>
+              </div>
+           	  <div class="f-l">
+	              <span>下单止:</span>
+	              <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'beginTime\')}'})" id="endTime" name="endTime" class="input-text Wdate"/>
+           	  </div>
+       		</div>
+       		<div class="cl">
+       			<div class="f-l">
+       				<span>快递单号:</span>
+       				<input type="text" class="input-text radius ml-10" placeholder="输入快递单号" id="logisticsNo" name="logisticsNo">
+       			</div>
+                <div class="f-l">
+	              <span>地址审核时间起:</span>
+	              <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'checkTimeEnd\')}'})" id="checkTimeBegin" name="checkTimeBegin" class="input-text Wdate"/>
+                </div>
+           	    <div class="f-l">
+	              <span>地址审核时间止:</span>
+	              <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'checkTimeBegin\')}'})" id="checkTimeEnd" name="checkTimeEnd" class="input-text Wdate"/>
+           	    </div>
+       		</div>
+       		<div class="cl">
+       			<div class="f-l">
+                <span>下单状态:</span>
+                <select class="select" size="1" id="ifOrder" name="ifOrder">
+                  <option value="" selected>--下单状态--</option>
+                </select>
+              </div>
+              <div class="f-l">
+	            <span>快递公司：</span>
+	            <select class="select" id="logisticsName" name="logisticsName"></select>
+	          </div>
+	          <div class="f-l">
+                <span>班主任:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入班主任" id="tutorName" name="tutorName">
+              </div>
+       		</div>
+       		<div class="cl">
+       		 <div class="f-l">
+                <span>招生老师:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入招生老师" id="recruitName" name="recruitName">
+              </div>
+              <div class="f-l">
+                <span>学员姓名:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入学员姓名" id="stdName" name="stdName">
+              </div>
+              <div class="f-l">
+	            <span>新增发书记录：</span>
+	            <select class="select" id="ifNewRepeatBook" name="ifNewRepeatBook"></select>
+	          </div>
+       		</div>
+       		<div class="cl">
+       		 <div class="f-l">
+                <span>备注:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="备注" id="remark" name="remark">
+              </div>
+             
+       		</div>
+            <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther(this)">
+              <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                <i class="iconfont icon-xiala"></i>
+              </p>
+            </div>
+          </div>
+        </div>
+        </form>
+        <div class="bg-1">
+          <div class="cl pd-15 bg-1">
+             <span class="l mt-15 mb-15"> 
+              <a href="javascript:;" onclick="sfOrders()" id="sfOrders" class="btn btn-primary radius"><i class="iconfont icon-edit"></i> 顺丰批量下单 </a>
+              <a href="javascript:;" onclick="querySfOrders()"  id="querySfOrders" class="btn btn-success2 radius"><i class="iconfont icon-edit"></i> 顺丰查询批量下单 </a> 
+              <a href="javascript:;" onclick="jdOrders()" id="jdOrders" class="btn btn-primary radius"><i class="iconfont icon-edit"></i> 京东批量下单 </a>
+              <a href="javascript:;" onclick="queryJdOrders()"  id="queryJdOrders" class="btn btn-success2 radius"><i class="iconfont icon-edit"></i> 京东查询批量下单 </a> 
+			  <a href="javascript:;" onclick="printSfs()"  id="printSfs" class="btn btn-success radius"><i class="iconfont icon-edit"></i> 批量打印顺丰快递单</a> 
+			  <a href="javascript:;" onclick="printJds()"  id="printJds" class="btn btn-success radius"><i class="iconfont icon-edit"></i> 批量打印京东快递单</a> 
+			  <a href="javascript:;" onclick="exportSendInfo()" class="btn btn-warning radius"><i class="iconfont icon-daochu"></i> 导出 </a> 
+            </span>
+            <div class="mt-35 bg-fff">
+              <table class="table table-border table-bordered table-hover table-bg table-sort-order-book">
+                <thead>
+                  <tr class="text-c">
+                    <th width="10"><input type="checkbox" name="all" value=""></th>
+                    <th width="40">学年</th>
+                    <th width="40">学期</th>
+                    <th width="40">学员</th>
+                    <th width="80">院校与专业</th>
+                    <th width="60">招生老师</th>
+                    <th width="60">班主任</th>
+                    <th width="40">收件人</th>
+                    <th width="50">收件:省-市-区</th>
+                    <th width="60">收件详细地址</th>
+                    <th width="60">收件电话</th>
+                    <th width="60">快递单号</th>
+                    <th width="70">打印快递单</th>
+                    <th width="80">下单时间</th>
+                    <th width="80">备注</th>
+                    <th width="30">订书批次</th>
+                    <th width="30">操作</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="rejectContent" style="display: none">
+  	  <input type="hidden" id="rejectReason" name="rejectReason">
+      <div class="row cl mt-15 form-horizontal">
+        <label class="form-label col-xs-4 col-sm-3 text-r">驳回原因：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <select class="select" size="1" id="rejectSelect" name="rejectSelect">
+            <option value="" selected>--选择驳回原因--</option>
+          </select>
+        </div>
+      </div>
+      <div class="row cl mt-10 form-horizontal">
+        <label class="form-label col-xs-4 col-sm-3 text-r">其他原因：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <input type="text" class="input-text radius" id="otherReject" style="width: 250px;" name="otherReject" disabled>
+        </div>
+      </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/educational/sendBook/send_book_list.js}"></script>
+</body>
+</html>

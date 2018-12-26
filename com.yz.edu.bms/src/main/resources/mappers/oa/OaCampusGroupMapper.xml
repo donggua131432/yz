@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.oa.OaCampusGroupMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.oa.OaCampusGroup">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="campus_group_id" jdbcType="VARCHAR" property="campusGroupId" />
+    <result column="campus_id" jdbcType="VARCHAR" property="campusId" />
+    <result column="ext1" jdbcType="VARCHAR" property="ext1" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+    <result column="campus_name" jdbcType="VARCHAR" property="campusName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, campus_group_id, campus_id, ext1, date_format(create_time,'%Y-%m-%d %H:%i:%s') as create_time, create_user, create_user_id
+  </sql>
+
+  <select id="selectCampusGroupById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from oa_campus_group where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectCampusGroupByCampusId" resultType="java.lang.String">
+    select campus_id from oa_campus_group
+    where campus_group_id in(
+      select campus_group_id from  oa_campus_group where campus_id = #{campusId,jdbcType=VARCHAR}
+    )
+ </select>
+
+  <select id="selectCampusGroupList" parameterType="com.yz.model.oa.OaCampusGroup" resultMap="BaseResultMap">
+    select ocg.id, ocg.campus_group_id, ocg.campus_id, ocg.ext1, date_format(ocg.create_time,'%Y-%m-%d %H:%i:%s') as create_time,
+    ocg.create_user, ocg.create_user_id, oc.campus_name
+    from oa_campus_group ocg
+    left join oa_campus oc on oc.campus_id = ocg.campus_id
+    where 1=1
+    <if test="id != null and id != ''">
+      and ocg.id = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="campusGroupId != null and campusGroupId != ''">
+      and ocg.campus_group_id = #{campusGroupId,jdbcType=VARCHAR}
+    </if>
+    <if test="campusId != null and campusId != ''">
+      and ocg.campus_id = #{campusId,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <delete id="deleteCampusGroupById" parameterType="java.lang.String">
+    delete from oa_campus_group where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <delete id="deleteCampusGroupByIds" parameterType="java.lang.String">
+    delete from oa_campus_group where id in
+    <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+
+  <insert id="insertCampusGroup" parameterType="com.yz.model.oa.OaCampusGroup">
+    insert into oa_campus_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,
+      <if test="campusGroupId != null">
+        campus_group_id,
+      </if>
+      <if test="campusId != null">
+        campus_id,
+      </if>
+      <if test="ext1 != null">
+        ext1,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      create_time
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+       seq(),
+      </if>
+      <if test="campusGroupId != null">
+        #{campusGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null">
+        #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null">
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      now()
+    </trim>
+  </insert>
+
+  <update id="updateCampusGroup" parameterType="com.yz.model.oa.OaCampusGroup">
+    update oa_campus_group
+    <set>
+        <if test="campusGroupId != null">
+            campus_group_id = #{campusGroupId,jdbcType=VARCHAR},
+        </if>
+        <if test="campusId != null">
+            campus_id = #{campusId,jdbcType=VARCHAR},
+        </if>
+        <if test="updateUser != null">
+            update_user = #{updateUser,jdbcType=VARCHAR},
+        </if>
+        <if test="updateUserId != null">
+            update_user_id = #{updateUserId,jdbcType=VARCHAR},
+        </if>
+        <if test="ext1 != null">
+            ext1 = #{ext1,jdbcType=VARCHAR},
+        </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

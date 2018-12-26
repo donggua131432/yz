@@ -1,0 +1,155 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+  <article class="page-container">
+    <span class="c-red">说明："*"表示必填项，"<span style="color: green">*</span>"表示审核必须完善的资料</span>
+    <form method="post" class="form form-horizontal yz-form-box" id="form-history-info">
+      <input type="hidden" name="learnId" th:value="${history.learnId}" />
+      <input type="hidden" name="stdId" th:value="${history.stdId}" />
+      <input type="hidden" id="recruitType" name="recruitType" th:value="${recruitType}" />
+      <!--------基本信息------->
+      <div class="form">
+        <div class="cl">
+          <div class="fullPage">
+            <p>学历信息</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="edcsType" name="edcsType" style="width: 100%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业院校：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入原毕业院校" id="unvsName" name="unvsName" />
+              </div>
+            </div>
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3">原毕业院校居地：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="oldProvinceCode" name="oldProvinceCode" style="width: 30%">
+                </select> <select class="select" id="oldCityCode" name="oldCityCode" style="width: 30%">
+                </select> <select class="select" id="oldDistrictCode" name="oldDistrictCode" style="width: 30%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">原毕业入学时间：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <!--<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'graduateTime\')||\'%y-%M-%d\'}' })" id="adminssionTime" name="adminssionTime"
+                  class="input-text Wdate" style="width: 180px;" />-->
+                <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="adminssionTime" name="adminssionTime" class="input-text Wdate" style="width:180px;"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业时间：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <!--<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'adminssionTime\')||\'%y-%M-%d\'}' })" id="graduateTime" name="graduateTime"
+                  class="input-text Wdate" style="width: 180px;" />-->
+                <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="graduateTime" name="graduateTime" class="input-text Wdate" style="width:180px;"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业专业：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入原毕业专业" id="profession" name="profession" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业证编号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入原毕业证编号" id="diploma" name="diploma" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">原毕业专业学制：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="edcsSystem" name="edcsSystem" style="width: 100%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl" th:classappend="${recruitType}=='2'?'show':'invisible'">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>是否电大毕业：</label>
+              <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                <div class="radio-box">
+                  <input type="radio" name="isOpenUnvs" id="isOpenUnvs-1" value="1" />
+                  <label for="isOpenUnvs-1">是</label>
+                </div>
+                <div class="radio-box">
+                  <input type="radio" name="isOpenUnvs" id="isOpenUnvs-0" value="0" />
+                  <label for="isOpenUnvs-0">否</label>
+                </div>
+              </div>
+            </div>
+            <div class="row cl invisible">
+              <label class="form-label col-xs-4 col-sm-3">原学科：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text"  id="subject" name="subject" class="input-text" placeholder="请输入原学科"/>
+              </div>
+            </div>
+            <div class="row cl invisible">
+              <label class="form-label col-xs-4 col-sm-3">原学科门类：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text"  id="subjectCategory" name="subjectCategory" class="input-text" placeholder="请输入原学科门类"/>
+              </div>
+            </div>
+            <div class="row cl invisible">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历学习类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="studyType" name="studyType" style="width: 100%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl invisible">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历证明材料：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="materialType" name="materialType" style="width: 100%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl invisible">
+              <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>证明材料编号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text"  id="materialCode" name="materialCode" class="input-text" placeholder="请输入证明材料编号"/>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="text-r mt-10">
+        <input type="submit" class="submit btn btn-primary radius" value="保存" />
+        <input type="button" class="previous btn btn-normal-outline radius mr-10" value="取消" id="bt_cancel" onclick="layer_close();"/>
+      </div>
+    </form>
+    <script type="text/javascript" th:inline="javascript">
+  	  var recruitType_global = [[${recruitType}]];
+  	  var history_global=[[${history}]];
+  	  //console.log(history_global);
+  	  var updateUrl=[[${updateUrl}]];
+  </script>
+  <script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_history.js}"></script>
+  </article>
+</body>
+</html>

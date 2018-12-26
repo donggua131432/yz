@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Administrator</Author>
+  <LastAuthor>Windows User</LastAuthor>
+  <Revision>1</Revision>
+  <Created>2016-11-30T09:21:00Z</Created>
+  <LastSaved>2018-05-28T02:06:52Z</LastSaved>
+  <Version>12.00</Version>
+ </DocumentProperties>
+ <CustomDocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <KSOProductBuildVer dt:dt="string">2052-10.1.0.7245</KSOProductBuildVer>
+ </CustomDocumentProperties>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12630</WindowHeight>
+  <WindowWidth>28695</WindowWidth>
+  <WindowTopX>0</WindowTopX>
+  <WindowTopY>0</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+  <DisplayInkNotes>False</DisplayInkNotes>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s65" ss:Name="常规 2">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="12"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s59" ss:Name="常规 2 2">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s67" ss:Parent="s59">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Bold="1"/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s68" ss:Parent="s59">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Bold="1"/>
+   <Interior/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s69" ss:Parent="s59">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="9" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="9" ss:Color="#000000"/>
+   <Interior/>
+  </Style>
+  <Style ss:ID="s72" ss:Parent="s65">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Sheet1">
+  <Names>
+   <NamedRange ss:Name="Print_Titles" ss:RefersTo="=Sheet1!R1:R2"/>
+  </Names>
+  <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="142" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultColumnWidth="54" ss:DefaultRowHeight="13.5">
+   <Column ss:AutoFitWidth="0" ss:Width="35.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="45"/>
+   <Column ss:AutoFitWidth="0" ss:Width="84"/>
+   <Column ss:AutoFitWidth="0" ss:Width="46.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="109.5"/>
+   <Column ss:Index="7" ss:AutoFitWidth="0" ss:Width="96.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="64.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="55.5"/>
+   <Row ss:AutoFitHeight="0" ss:Height="18">
+    <Cell ss:MergeAcross="8" ss:StyleID="s72"><Data ss:Type="String">$eyName远智教育成教期末考试$epName$examTime$placeName考场签到表</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="18">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">座位</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">姓名</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">学号</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">年级</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">院校名称</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">层次</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">专业</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s69"><Data ss:Type="String">编码</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">签到</Data><NamedCell
+      ss:Name="Print_Titles"/></Cell>
+   </Row>
+   $rowdetail
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0"/>
+    <Footer x:Margin="0" x:Data="&amp;C$epName$examTime$placeName考场，第 &amp;P 页，共 &amp;N 页"/>
+    <PageMargins x:Bottom="0.4" x:Left="0.16" x:Right="0.16" x:Top="0.21"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <Scale>95</Scale>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <PageBreakZoom>60</PageBreakZoom>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <RangeSelection>R1C1:R1C9</RangeSelection>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

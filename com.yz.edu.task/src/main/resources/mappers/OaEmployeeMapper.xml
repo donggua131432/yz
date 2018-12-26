@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.OaEmployeeMapper">
+
+	<resultMap type="com.yz.job.model.OaEmployeeJobInfo" id="EmployeeJobInfo">
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="yz_id" property="yzId" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="group_id" property="groupId" jdbcType="VARCHAR" />
+		<result column="recruit_code" property="recruitCode" jdbcType="VARCHAR" />
+		<result column="entry_date" property="entryDate" jdbcType="VARCHAR" />
+		<result column="leave_date" property="leaveDate" jdbcType="VARCHAR" />
+		<result column="is_check" property="isCheck" jdbcType="VARCHAR" />
+		<result column="pact_start_time" property="pactStartTime" jdbcType="VARCHAR" />
+		<result column="pact_end_time" property="pactEndTime" jdbcType="VARCHAR" />
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="turn_right_time" property="turnRightTime" jdbcType="VARCHAR"/>
+		<result column="user_id" property="userId" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.job.model.OaEmployeeModifyInfo" id="EmployeeModifyInfo">
+	 <result column="modify_id" property="modifyId" jdbcType="VARCHAR"/>
+	 <result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+	 <result column="old_campus_id" property="oldCampusId" jdbcType="VARCHAR"/>
+	 <result column="old_dp_id" property="oldDpId" jdbcType="VARCHAR"/>
+	 <result column="old_group_id" property="oldGroupId" jdbcType="VARCHAR"/>
+	 <result column="old_recruit_code" property="oldRecruitCode" jdbcType="VARCHAR"/>
+	 <result column="old_title" property="oldTitle" jdbcType="VARCHAR"/>
+	 <result column="status" property="status" jdbcType="VARCHAR"/>
+	 <result column="effect_time" property="effectTime" jdbcType="VARCHAR"/>
+	 <result column="job_info" property="jobInfo" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <resultMap type="com.yz.job.model.OaEmployeeLearnInfo" id="EmployeeLearnInfo">
+	   <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	   <result column="recruit" property="recruit" jdbcType="VARCHAR"/>
+	   <result column="recruit_campus_id" property="recruitCampusId" jdbcType="VARCHAR"/>
+	   <result column="recruit_dp_id" property="recruitDpId" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<update id="clearFollow">
+  	update us.`us_follow` set emp_status=#{empStatus, jdbcType=VARCHAR} where emp_id = #{empId, jdbcType=VARCHAR}
+  </update>
+	
+	<update id="empJobUpdate" parameterType="com.yz.job.model.OaEmployeeJobInfo">
+		update `bms`.oa_employee_job
+		<set>
+			<if test="yzId != null">
+				yz_id = #{yzId,jdbcType=VARCHAR},
+			</if>
+			<if test="campusId != null">
+				campus_id = #{campusId,jdbcType=VARCHAR},
+			</if>
+			<if test="dpId != null">
+				dp_id = #{dpId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupId != null">
+				group_id = #{groupId,jdbcType=VARCHAR},
+			</if>
+			<if test="recruitCode != null">
+				recruit_code = #{recruitCode,jdbcType=VARCHAR},
+			</if>
+			<if test="entryDate != null">
+				entry_date = #{entryDate,jdbcType=VARCHAR},
+			</if>
+			<if test="leaveDate != null">
+				leave_date = #{leaveDate,jdbcType=VARCHAR},
+			</if>
+			<if test="isCheck != null">
+				is_check = #{isCheck,jdbcType=VARCHAR},
+			</if>
+			<if test="pactStartTime != null">
+				pact_start_time = #{pactStartTime,jdbcType=VARCHAR},
+			</if>
+			<if test="pactEndTime != null">
+				pact_end_time = #{pactEndTime,jdbcType=VARCHAR},
+			</if>
+			<if test="turnRightTime !=null">
+				turn_right_time = #{turnRightTime,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR};
+
+		update `bms`.oa_employee
+		<set>
+			<if test="empStatus !=null">
+				emp_status = #{empStatus,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteEmpTitle">
+  	delete from `bms`.oa_employee_title where emp_id=#{empId,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insertEmpJdIds">
+	insert into `bms`.oa_employee_title(`emp_id`,`jt_id`)
+	values
+	<foreach collection="ids" item="id" separator=",">
+		(
+		#{empId, jdbcType=VARCHAR},
+		#{id,jdbcType=VARCHAR}
+		)
+	</foreach> 
+  </insert>
+	
+	<insert id="insertEmpLearnInfos" parameterType="list">
+		INSERT INTO `bms`.`oa_employee_learn_info` (
+		  `recrods_no`,
+		  `learn_id`,
+		  `modify_id`,
+		  `old_emp_id`,
+		  `old_dp_id`,
+		  `old_campus_id`,
+		  `create_time` 
+		)
+		VALUES
+		<foreach collection="list" item="info" index="index"
+			separator=",">
+			(
+			seq(),
+			#{info.learnId, jdbcType=VARCHAR},
+			#{info.modifyId,jdbcType=VARCHAR},
+			#{info.recruit,jdbcType=VARCHAR},
+			#{info.recruitDpId,jdbcType=VARCHAR},
+			#{info.recruitCampusId,jdbcType=VARCHAR},
+			NOW()
+			)
+		</foreach>
+	</insert>
+	
+	<select id="getEmpLearnInfos" resultMap="EmployeeLearnInfo">
+		SELECT 
+		  bli.`learn_id`,
+		  blr.`recruit`,
+		  blr.`recruit_campus_id`,
+		  blr.`recruit_dp_id` 
+		FROM
+		  	`bms`.bd_learn_info bli
+		  LEFT JOIN  `bms`.bd_learn_rules blr  
+		    ON blr.`learn_id` = bli.`learn_id` 
+		WHERE blr.recruit = #{recruit,jdbcType=VARCHAR} 
+		  AND blr.`recruit_dp_id` = #{dpId,jdbcType=VARCHAR} 
+	</select>
+    
+    <select id="getEmpModifyEndTime" resultType="java.lang.String">
+	  	SELECT end_time FROM `bms`.oa_employee_modify WHERE modify_id=#{modifyId,jdbcType=VARCHAR} ORDER BY create_time DESC LIMIT 0,1
+	  </select>
+    
+    <select id="finishLearnCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) total_count FROM `bms`.`oa_employee_learn_info` 
+		WHERE old_dp_id=#{dpId,jdbcType=VARCHAR} AND old_emp_id=#{empId,jdbcType=VARCHAR} AND oper_status='1'
+	</select>
+    
+    <select id="totalLearnCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) total_count FROM `bms`.`oa_employee_learn_info` 
+		WHERE old_dp_id=#{dpId,jdbcType=VARCHAR} and old_emp_id=#{empId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getEmployeeJobInfo" resultMap="EmployeeJobInfo"
+		parameterType="String">
+		SELECT
+		oe.`emp_id`,
+		oe.`emp_status`,
+		oej.`yz_id`,
+		oej.`campus_id`,
+		oej.`dp_id`,
+		oej.`group_id`,
+		oej.`recruit_code`,
+		date_format(oej.`entry_date`,'%Y-%m-%d') entry_date,
+		date_format(oej.`leave_date`,'%Y-%m-%d') leave_date,
+		oej.`is_check`,
+		date_format(oej.`pact_start_time`,'%Y-%m-%d') pact_start_time,
+		date_format(oej.`pact_end_time`,'%Y-%m-%d') pact_end_time,
+		date_format(oej.`turn_right_time`,'%Y-%m-%d') turn_right_time,
+		oe.`user_id`
+		FROM
+		`bms`.oa_employee oe LEFT JOIN `bms`.oa_employee_job oej ON oe.`emp_id`=oej.`emp_id`
+		WHERE oe.`emp_id`= #{empId,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 员工下的所有职称 -->
+	  <resultMap type="java.util.HashMap" id="EmpTitleMap">
+	  	<result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+	  	<result column="jt_id" property="jtId" jdbcType="VARCHAR"/>
+	  </resultMap>
+	  <select id="findEmpTitle" resultMap="EmpTitleMap" parameterType="string">
+	  	select emp_id,jt_id from `bms`.oa_employee_title where emp_id=#{depId,jdbcType=VARCHAR}
+	  </select>
+	  
+	 <!-- 最新一条变更信息 -->
+	 <select id="getEmpModifyInfoId" resultMap="EmployeeModifyInfo">
+	  SELECT * FROM `bms`.oa_employee_modify WHERE emp_Id=#{empId,jdbcType=VARCHAR} and is_delete = '0' and status = '2' ORDER BY create_time DESC LIMIT 0,1
+	 </select>
+	 
+	 <select id="selectModifyIdByEffectTime" parameterType="java.lang.String" resultType="java.lang.String">
+	 	SELECT modify_id FROM `bms`.oa_employee_modify WHERE emp_Id=#{empId,jdbcType=VARCHAR} and effect_time = #{effectTime,jdbcType=VARCHAR} and is_delete = '0' and status = '1'
+	 </select>
+
+	 <update id="updateModifyStatus" parameterType="java.lang.String">
+	 	update `bms`.oa_employee_modify set status = #{status} where modify_id = #{modifyId}
+	 </update>
+	 
+	 <update id="updateEmpUserIdByEmpId">
+		UPDATE bms.`oa_employee` SET user_id=NULL WHERE emp_id=#{empId,jdbcType=VARCHAR}
+	 </update>
+	 
+	 <update id="updateUserRelationByUserId">
+		UPDATE us.`us_base_info` SET emp_id=NULL,relation=
+		( CASE WHEN '6' = (SELECT a.relation FROM (SELECT relation FROM us.`us_base_info` ubi WHERE ubi.user_id=#{userId,jdbcType=VARCHAR}) a)
+		 THEN '4'
+		 ELSE '0' END)
+		 WHERE user_id=#{userId,jdbcType=VARCHAR}
+	 </update>
+</mapper>

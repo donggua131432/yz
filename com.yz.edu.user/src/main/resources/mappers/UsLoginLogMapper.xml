@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsLoginLogMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsLoginLog" >
+    <id column="log_id" property="logId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="login_type" property="loginType" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="mac" property="mac" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="coordinate" property="coordinate" jdbcType="VARCHAR" />
+    <result column="is_success" property="isSuccess" jdbcType="CHAR" />
+    <result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="reason" property="reason" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    log_id, user_id, login_type, ip, mac, address, coordinate, is_success, reason, login_time
+  </sql>
+ 
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from us_login_log
+    where log_id = #{logId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsLoginLog" >
+    insert into us_login_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        log_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="loginType != null" >
+        login_type,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="mac != null" >
+        mac,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="coordinate != null" >
+        coordinate,
+      </if>
+      <if test="isSuccess != null" >
+        is_success,
+      </if>
+      <if test="loginTime != null" >
+        login_time,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      seq(),
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="loginType != null" >
+        #{loginType,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="mac != null" >
+        #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="coordinate != null" >
+        #{coordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="isSuccess != null" >
+        #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="loginTime != null" >
+        #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.UsLoginLog" >
+    update us_login_log
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="loginType != null" >
+        login_type = #{loginType,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="mac != null" >
+        mac = #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="coordinate != null" >
+        coordinate = #{coordinate,jdbcType=VARCHAR},
+      </if>
+      <if test="isSuccess != null" >
+        is_success = #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="loginTime != null" >
+        login_time = #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where log_id = #{logId,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

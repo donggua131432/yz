@@ -1,0 +1,244 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+	<script type="text/javascript" th:inline="javascript">
+	var varBaseInfo=/*[[${baseInfo}]]*/;
+	var varOther=/*[[${other}]]*/;
+	</script>
+	<script type="text/javascript" th:src="@{/js/webjs/baseinfo/student/student_baseInfo.js}"></script>
+<body>
+
+  <article class="page-container">
+    <form method="post" class="form form-horizontal yz-form-box" id="form-base-info" enctype="multipart/form-data">
+      <input type="hidden" name="stdId" th:value="${baseInfo.stdId}" />
+      <input type="hidden" id="learnId" name="learnId" th:value="${baseInfo.learnId}" />
+      <!--------基本信息------->
+      <div class="form">
+        <div class="cl">
+          <div class="f-l halfPage">
+            <p>基础资料</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">姓名：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="stdName"></span>
+                <input type="hidden" name="stdName" th:value="${baseInfo.stdName}"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">证件类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="idType"></span>
+                 <input type="hidden" name="idType" th:value="${baseInfo.idType}" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">证件号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="idCard"></span>
+                 <input type="hidden" name="idCard" th:value="${baseInfo.idCard}" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">性别：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="sex"></span>
+                 <input type="hidden" name="sex" th:value="${baseInfo.sex}" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">生日：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="birthday"></span>
+                 <input type="hidden" name="birthday" th:value="${baseInfo.birthday}" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">民族：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="nation" name="nation" style="width: 100%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">政治面貌：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="politicalStatus" name="politicalStatus" style="width: 100%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">户口类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="rprType" name="rprType" style="width: 100%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3">户口所在地：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select js-data-example-ajax" id="rprProvinceCode" name="rprProvinceCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="rprCityCode" name="rprCityCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="rprDistrictCode" name="rprDistrictCode" style="width: 30%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3">收教材地址：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="nowProvinceCode" name="nowProvinceCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="nowCityCode" name="nowCityCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="nowDistrictCode" name="nowDistrictCode" style="width: 30%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"></label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入详细地址" id="address" name="address"  disabled="disabled"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">职业：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="jobType" name="jobType" style="width: 100%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">入职时间：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'wpTime\')||\'%y-%M-%d\'}' })" id="wpTime" name="wpTime"
+                  class="input-text Wdate" style="width: 180px;" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3">在职单位所在地：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select js-data-example-ajax" id="wpProvinceCode" name="wpProvinceCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="wpCityCode" name="wpCityCode" style="width: 30%" disabled="disabled">
+                </select> <select class="select" id="wpDistrictCode" name="wpDistrictCode" style="width: 30%" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"></label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入在职单位详细地址" id="wpAddress" name="wpAddress" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">在职单位联系电话：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入在职单位联系电话" id="wpTelephone" name="wpTelephone" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">邮编：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" id="zipCode" name="zipCode" disabled="disabled"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入手机" id="s_mobile" name="s_mobile" disabled="disabled"/>
+                <input type="hidden" id="mobile" name="mobile"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">紧急电话：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入紧急电话" id="emergencyContact" name="emergencyContact" disabled="disabled" />
+              </div>
+            </div>
+          </div>
+          <div class="f-r halfPage ">
+            <p>其他资料(选填)</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">照片：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="member-photo"></span>
+                <span class="btn-upload mb-30">
+                  <input type="hidden" name="headPortrait" id="headPortrait" value="" />
+                  <input type="hidden" name="isPhotoChange" id="isPhotoChange" value="" />
+                </span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">座机：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入座机" id="telephone" name="telephone" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">Email：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入Email" id="email" name="email" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">QQ：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入QQ" id="qq" name="qq" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">微信：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入微信" id="wechat" name="wechat" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">职称：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入职称" id="jobTitle" name="jobTitle" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">工作单位：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入工作单位" id="workPlace" name="workPlace" disabled="disabled" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">婚姻状况：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="maritalStatus" name="maritalStatus" disabled="disabled">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">备注：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <textarea name="remark" id="remark" cols="" rows="" class="textarea" placeholder="请输入备注...最少输入10个字符" onKeyUp="$.Huitextarealength(this,100)" disabled="disabled"></textarea>
+                <p class="textarea-numberbar">
+                  <em class="textarea-length">0</em>/100
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.EmpExpenseMapper">
+	<select id="selectAllEmpNoContains" parameterType="java.lang.String" resultType="java.lang.String">
+	  	SELECT 
+		  e.emp_id
+		FROM
+		  bms.`oa_employee` e 
+		  LEFT JOIN bms.`oa_expense` o 
+		    ON (o.`emp_id` = e.`emp_id` AND o.`year` = #{year})
+		WHERE o.`emp_id` IS NULL 
+	</select>
+	
+	 <insert id="insertExpenses">
+	  	INSERT INTO bms.`oa_expense` (
+		  `expense_id`,
+		  `emp_id`,
+		  `year`
+		) 
+		VALUES
+		  <foreach collection="empIds" item="empId" index="index" separator="," >  
+	       	(seq(),#{empId},#{year})
+	   	  </foreach>
+	</insert>
+</mapper>

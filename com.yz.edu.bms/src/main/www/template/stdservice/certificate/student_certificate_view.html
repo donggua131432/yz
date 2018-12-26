@@ -1,0 +1,202 @@
+﻿<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="Bookmark" href="/favicon.ico" >
+	<link rel="Shortcut Icon" href="/favicon.ico" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="lib/html5shiv.js"></script>
+	<script type="text/javascript" src="lib/respond.min.js"></script>
+	<![endif]-->
+	<script type="text/javascript" th:src="@{/js/html5shiv.js}"></script>
+	<script type="text/javascript" th:src="@{/js/respond.min.js}"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+	<!--[if IE 6]>
+	<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+	<![endif]-->
+	<!--/meta 作为公共模版分离出去-->
+	<title>查看</title>
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" th:object="${dataInfo}" id="form-xuexin-edit">
+		<input type="hidden" th:value="*{certId}" name="certId" id="certId" />
+		<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+		<input type="hidden" name="ifSubmit" id="ifSubmit" />
+		
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">姓名：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+			  	<span id="stdName" th:text="*{stdName}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">年级：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="grade" th:text="*{grade}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">学号：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="stdNo" th:text="*{schoolRoll}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">院校专业及层次：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="unvs"></span>
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">证明类型：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<span id="applyType1" th:if="*{applyType == '1'}">在读证明</span>
+				<span id="applyType2" th:if="*{applyType == '2'}">课时证明</span>
+				<span id="applyType3" th:if="*{applyType == '3'}">发票</span><span style="color:red" th:if="*{applyType == '3'}">（统一开取时间5月份，11月份）</span>
+				<span id="applyType4" th:if="*{applyType == '4'}">收据</span><span style="color:red" th:if="*{applyType == '4'}">（五个工作日）</span>
+				<span id="applyType5" th:if="*{applyType == '5'}">其它</span>
+				<span id="applyType6" th:if="*{applyType == '6'}">报读证明</span>
+			</div>
+		</div>
+		<div class="row cl"  th:if="*{applyType =='5'}">
+			<label class="form-label col-xs-4 col-sm-3">材料名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="materialName" th:text="*{materialName}"></span>
+			</div>
+		</div>
+		<div class="row cl" th:if="*{applyType =='1' || applyType=='2' || applyType =='5' }">
+			<label class="form-label col-xs-4 col-sm-3">盖章落款：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<span id="stampDown1" th:if="*{stampDown == '1'}">教学点盖章</span><span style="color:red"  th:if="*{stampDown == '1'}">（2-3个工作日）</span>
+				<span id="stampDown2" th:if="*{stampDown == '2'}">高校盖章</span><span style="color:red"  th:if="*{stampDown == '2'}">（10-15个工作日）</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">申请用途：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="applyPurpose" th:text="*{applyPurpose}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">收件方式：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="receiveType1" th:if="*{receiveType == '1'}">邮寄</span>
+				<span id="receiveType2" th:if="*{receiveType == '2'}">自取</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">地址：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="address"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">备注：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="remark" th:text="*{remark}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">审核状态：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span th:if="*{checkStatus == '1' && checkOrder=='1'}">审核中</span>
+				<span th:if="*{checkStatus == '1' && checkOrder=='2'}">已初审</span>
+				<span th:if="*{checkStatus == '2' && checkOrder=='2'}">已受理</span>
+				<span th:if="*{checkStatus == '3'}">已驳回</span>
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">审核备注：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span id="reason" th:text="*{reason}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">快递单号：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span id="expressNo" th:text="*{expressNo}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">申请时间：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span id="createTime" th:text="*{createTime}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='1' || applyType=='2' || applyType=='3'  || applyType=='4' || applyType =='5' }">班主任审核：</label>
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='6' }">招生老师审核：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span th:text="*{check[0].empName}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='1' || applyType=='2' || applyType=='3'  || applyType=='4' || applyType =='5' }">班主任审核时间：</label>
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='6' }">招生老师审核时间：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span th:text="*{check[0].bcrUpdateTime}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='1' || applyType=='2' || applyType=='3'  || applyType=='4' || applyType =='5' }">终审审核：</label>
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='6' }">校监审核：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span th:text="*{check[1].empName}"></span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='1' || applyType=='2' || applyType=='3'  || applyType=='4' || applyType =='5' }">终审时间：</label>
+			<label class="form-label col-xs-4 col-sm-3" th:if="*{applyType =='6' }">校监审核时间：</label>
+			<div class="formControls col-xs-8 col-sm-9 ">
+				<span th:text="*{check[1].bcrUpdateTime}"></span>
+			</div>
+		</div>
+	</form>
+	</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>	
+	<script type="text/javascript" th:inline="javascript">
+		var grade = [[${dataInfo.grade}]] ;
+		var receiverName=[[${dataInfo.receiverName}]];
+		var receiveType=[[${dataInfo.receiveType}]];
+		var receiverMobile=[[${dataInfo.receiverMobile}]];
+		var receiverAddress=[[${dataInfo.receiverAddress}]];
+		var pfsnCode=[[${dataInfo.pfsnCode}]];
+		var pfsnName=[[${dataInfo.pfsnName}]];
+		var unvsName=[[${dataInfo.unvsName}]];
+		var pfsnLevel=[[${dataInfo.pfsnLevel}]];
+		
+	</script>
+	<script type="text/javascript" th:src="@{/js/webjs/stdservice/certificate/student_certificate_view.js}"></script>
+	<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

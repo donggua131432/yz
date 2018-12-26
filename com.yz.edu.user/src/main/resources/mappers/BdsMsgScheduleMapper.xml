@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsMsgScheduleMapper" >
+	
+	<select id="selectExamPlansByDate" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  p.`py_id` pyId,
+		  DATE_FORMAT(
+		    p.start_time,
+		    '%Y-%m-%d %p %H:%i'
+		  ) startTime,
+		  DATE_FORMAT(p.end_time, '%H:%i') endTime,
+		   e.address,
+		  e.ep_name epName,
+		  d.province_name provinceName,
+		  g.city_name cityName,
+		  f.district_name districtName
+		FROM
+		  bms.bd_place_year p
+		  LEFT JOIN bms.bd_exam_place e ON e.`ep_id` = p.`place_id`
+		  LEFT JOIN bms.sys_province d 
+		    ON e.province_code = d.province_code 
+		  LEFT JOIN bms.sys_city g 
+		    ON e.city_code = g.city_code 
+		  LEFT JOIN bms.sys_district f 
+		    ON e.district_code = f.district_code 
+		WHERE DATE_FORMAT(start_time, '%Y-%m-%d') = DATE_FORMAT(#{date}, '%Y-%m-%d');
+	</select>
+	
+	<select id="selectStdExamInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		 CONCAT(s.`es_num`,'') esNum,
+		  p.`place_name` placeName,
+		  i.`user_id` userId,
+		  i.std_name stdName
+		FROM
+		  bms.`bd_student_exam_affirm` a 
+		  LEFT JOIN bms.bd_exam_seats s 
+		    ON s.`learn_id` = a.`learn_id` AND a.py_id = s.py_id
+		  LEFT JOIN bms.bd_place_info p 
+		    ON p.`place_id` = s.`place_id` 
+		  LEFT JOIN bms.bd_learn_info l 
+		    ON l.`learn_id` = a.`learn_id` 
+		  LEFT JOIN bms.bd_student_info i 
+		    ON i.`std_id` = l.`std_id` 
+		WHERE a.`py_id` = #{pyId}
+	</select>
+	
+</mapper>

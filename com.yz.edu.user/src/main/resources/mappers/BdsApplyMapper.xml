@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsApplyMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.apply.BdsApplyInfo">
+		<result column="apply_id" property="applyId" jdbcType="VARCHAR" />
+		<result column="apply_type" property="applyType" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="apply_desc" property="applyDesc" jdbcType="VARCHAR" />
+		<result column="apply_status" property="applyStatus" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+		<result column="district" property="district" jdbcType="VARCHAR" />
+		<result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+		<result column="apply_time" property="applyTime" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectStdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select std_id from bms.bd_learn_info where learn_id = #{learnId}
+	</select>
+	
+	<select id="selectReptCampusAddress" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT CONCAT(c.`campus_name`,'-',c.`address`) FROM bms.oa_campus c WHERE c.campus_id = #{campusId}
+	</select>
+	
+	<insert id="insertReptApply">
+		<selectKey resultType="java.lang.String" keyProperty="reptId" order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		insert into bms.bd_student_rept (
+		  rept_id,
+		  std_id,
+		  learn_id,
+		  address,
+		  mobile,
+		  user_name,
+		  province,
+		  province_code,
+		  city,
+		  city_code,
+		  district,
+		  district_code,
+		  rept_status,
+		  rept_type,
+		  campus_id,
+		  express_amount
+		) 
+		values
+		 (#{reptId,jdbcType=VARCHAR}, #{stdId,jdbcType=VARCHAR}, #{learnId,jdbcType=VARCHAR},
+		   #{address,jdbcType=VARCHAR},
+		   #{mobile,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
+		   #{provinceCode,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR},
+		   #{district,jdbcType=VARCHAR}, #{districtCode,jdbcType=VARCHAR},
+		   #{reptStatus,jdbcType=VARCHAR}, #{reptType,jdbcType=VARCHAR},
+		   #{campusId,jdbcType=VARCHAR}, #{expressAmount,jdbcType=VARCHAR}
+		 )
+	</insert>
+	
+	<insert id="insertReptSerialMark">
+		insert into bms.bd_rept_serial(rs_id,rept_id,serial_mark)
+		values 
+		<foreach collection="serials" item="serial" index="index" separator="," >  
+	         (seq(),#{reptId,jdbcType=VARCHAR},#{serial,jdbcType=VARCHAR}
+		    )
+	    </foreach>
+	</insert>
+	
+	<update id="updateReptPaySuccess" parameterType="java.lang.String">
+		UPDATE 
+		  bms.bd_student_rept r 
+		SET
+		  r.`pay_time` = NOW(),
+		  r.`payment_type` = #{paymentType},
+		  r.`out_serial_no` = #{outSerialNo},
+		  r.`rept_status` = '1' 
+		WHERE r.`rept_id` = #{reptId}
+	</update>
+	
+	<select id="selectPaidRept" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from bms.bd_student_rept where rept_id = #{reptId} and rept_status != '6'
+	</select>
+	
+	<select id="selectExpressAmountByReptId" parameterType="java.lang.String" resultType="java.lang.String">
+		select express_amount from bms.bd_student_rept where rept_id = #{reptId}
+	</select>
+	
+	<select id="selectCampusInfo" resultType="java.util.HashMap">
+		SELECT 
+		  c.`campus_id` campusId,
+		  c.`campus_name` campusName,
+		  c.`address` 
+		FROM
+		  bms.oa_campus c 
+		WHERE c.`is_stop` = '0' 
+		  AND c.`is_foreign` = '0' 
+	</select>
+	
+	<delete id="deleteReptUnpaid" parameterType="java.lang.String">
+ 		DELETE FROM bms.bd_rept_serial where rept_id in (select rept_id from bms.bd_student_rept WHERE learn_id = #{learnId} AND rept_status = '6');
+		DELETE FROM bms.bd_student_rept WHERE learn_id = #{learnId} AND rept_status = '6';
+	</delete>
+	
+	<select id="selectUnReptSerialInfo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT DISTINCT 
+		  bss.`serial_mark`
+		FROM
+		  bms.bd_student_order bs 
+		  LEFT JOIN bms.bd_sub_order bo 
+		    ON bo.`order_no` = bs.`order_no` 
+		  LEFT JOIN bms.bd_serial_suborder bso 
+		    ON bso.`sub_order_no` = bo.`sub_order_no` 
+		  LEFT JOIN bms.bd_student_serial bss 
+		    ON bss.`serial_no` = bso.`serial_no` 
+		  LEFT JOIN bms.bd_sub_serial sa 
+		    ON sa.`serial_no` = bso.`serial_no` 
+		  LEFT JOIN bms.bd_rept_serial rs
+		  ON rs.serial_mark = bss.serial_mark
+		  LEFT JOIN bms.bd_student_rept bsr 
+		    ON bsr.`rept_id` = rs.rept_id
+		WHERE bs.`learn_id` = #{learnId}
+		  AND bo.`sub_order_status` = '2' 
+		  AND bss.`serial_status` IN ('2', '3') 
+		  AND bss.`payment_type` IN ('3', '4', '6', '9') 
+		  AND (bsr.`rept_id` IS NULL or bsr.rept_status = '6') 
+		  AND sa.`payment_type` IN ('3', '4', '6', '9') 
+		  AND bss.`serial_mark` is not null 
+		group by bss.`serial_mark`
+	</select>
+	
+	<insert id="insertWithdraw" parameterType="com.yz.model.apply.BdStudentWithdraw">
+		<selectKey resultType="java.lang.String" keyProperty="withdrawId" order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		INSERT INTO bms.`bd_student_withdraw` (withdraw_id, std_id, amount, bank_card , bank_type, bank_open, province_code, city_code) 
+		VALUES
+		  (#{withdrawId},#{stdId,jdbcType=VARCHAR},#{amount,jdbcType=VARCHAR},#{bankCard,jdbcType=VARCHAR},#{bankType,jdbcType=VARCHAR},
+		   #{bankOpen,jdbcType=VARCHAR},#{provinceCode,jdbcType=VARCHAR},#{cityCode,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="selectRelationByUserId" parameterType="java.lang.String" resultType="com.yz.model.identity.BdRelation">
+		select 
+		  user_id as userId,
+		  user_type as userType,
+		  emp_id as empId,
+		  std_id as stdId
+		from us.us_base_info
+		where user_id = #{userId}
+	</select>
+	
+	<select id="selectStdId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+		  bsi.`std_id` stdId,
+		  bsi.`std_name` stdName
+		FROM
+		  bms.bd_student_info bsi 
+		WHERE bsi.`id_card` = #{idCard}
+		  AND bsi.`id_type` = #{idType}
+	</select>
+	
+	<select id="selectEmpId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+		  oe.`emp_id` empId,
+		  oe.`emp_name` empName
+		FROM
+		  bms.oa_employee oe 
+		WHERE oe.`id_card` = #{idCard} 
+		  AND oe.`id_type` = #{idType}
+	</select>
+	
+	<select id="selectApplyInfoByLearnId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+		  a.`address`,
+		  a.`apply_desc`,
+		  a.`apply_id`,
+		  a.`apply_status`,
+		  a.`apply_time`,
+		  a.`apply_type`,
+		  a.`city`,
+		  a.`city_code`,
+		  a.`district`,
+		  a.`district_code`,
+		  a.`learn_id`,
+		  a.`mobile`,
+		  a.`province`,
+		  a.`province_code`,
+		  a.`reason`,
+		  a.`user_name` 
+		FROM
+		  bms.bd_apply_info a 
+		WHERE a.`learn_id` = #{learnId}
+		ORDER BY a.`update_time` 
+	</select>
+
+	<insert id="insertStudentCertificate">
+		<selectKey resultType="java.lang.String" keyProperty="certId" order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		insert into bms.bd_student_certificate (cert_id,learn_id,apply_type,apply_purpose,receiver_name,receiver_mobile,receiver_address,receive_type,stamp_down,material_name,remark)
+		values
+		(
+		#{certId},
+		#{learnId,jdbcType=VARCHAR},
+		#{applyType,jdbcType=VARCHAR},
+		#{applyPurpose,jdbcType=VARCHAR},
+		#{receiverName,jdbcType=VARCHAR},
+		#{receiverMobile,jdbcType=VARCHAR},
+		#{receiverAddress,jdbcType=VARCHAR},
+		#{receiveType, jdbcType=VARCHAR},
+		#{stampDown, jdbcType=VARCHAR},
+		#{materialName, jdbcType=VARCHAR},
+		#{remark, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="getCertificateApply" resultType="java.util.Map">
+		SELECT
+		apply_type,
+		apply_purpose,
+		receiver_name,
+		receiver_mobile,
+		receiver_address,
+		express_no,
+		receive_type,
+		stamp_down,
+		material_name,
+		remark,
+		a.create_time,
+		ifnull(b.check_order,1) check_order,
+		ifnull(b.check_status,1) check_status,
+		b.reason,
+		b.update_time
+		FROM
+		bms.bd_student_certificate a
+		LEFT JOIN (
+		SELECT
+		mapping_id,
+		check_status,
+		check_order,
+		reason,
+		update_time
+		FROM
+		bms.bd_check_record
+		WHERE
+		check_type = '11'
+		AND update_time IN (
+		SELECT
+		max(update_time)
+		FROM
+		bms.bd_check_record
+		WHERE
+		check_type = '11'
+		GROUP BY
+		mapping_id
+		)
+		) b ON a.cert_id = b.mapping_id
+		WHERE a.learn_id = #{learnId}
+		ORDER BY a.create_time DESC
+	</select>
+</mapper>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.LiveChannelMapper">
+    <resultMap id="LiveChannelMap" type="java.util.Map">
+        <result column="lc_id" property="lcId" jdbcType="VARCHAR"/>
+        <result column="channel_id" property="channelId" jdbcType="VARCHAR"/>
+        <result column="channel_password" property="channelPassword" jdbcType="VARCHAR"/>
+        <result column="channel_name" property="channelName" jdbcType="VARCHAR"/>
+        <result column="course_id" property="courseId" jdbcType="VARCHAR"/>
+        <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+        <result column="course_type" property="courseType" jdbcType="VARCHAR"/>
+        <result column="year" property="year" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.yz.model.educational.LiveChannel">
+        <id column="lc_id" jdbcType="VARCHAR" property="lcId" />
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+        <result column="channel_password" jdbcType="VARCHAR" property="channelPassword" />
+        <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+        <result column="course_id" jdbcType="VARCHAR" property="courseId" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId" />
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId" />
+        <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+        <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    </resultMap>
+
+    <resultMap id="liveViewLogMap" type="com.yz.model.educational.LiveChannelExport">
+        <result column="play_duration" jdbcType="VARCHAR" property="playDuration" />
+        <result column="std_name" jdbcType="VARCHAR" property="stdName" />
+        <result column="grade" jdbcType="VARCHAR" property="grade" />
+        <result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+        <result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+        <result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+        <result column="ip_address" jdbcType="VARCHAR" property="ipAddress" />
+        <result column="province" jdbcType="VARCHAR" property="province" />
+        <result column="city" jdbcType="VARCHAR" property="city" />
+        <result column="browser" jdbcType="VARCHAR" property="browser" />
+        <result column="is_mobile" jdbcType="VARCHAR" property="isMobile" />
+    </resultMap>
+
+    <select id="findAllLiveChannel" resultMap="LiveChannelMap"
+            parameterType="com.yz.model.educational.LiveChannelQuery">
+        SELECT
+        lc_id,
+        a.channel_id,
+        a.channel_password,
+        a.channel_name,
+        b.course_id,
+        b.course_name,
+        b.course_type,
+        b.`year`,
+        GROUP_CONCAT(c.emp_name) emp_name
+        FROM
+        bd_live_channel a
+        JOIN bd_course b ON a.course_id = b.course_id
+        LEFT JOIN (
+        SELECT
+        course_id,
+        b.emp_name
+        FROM
+        bd_class_plan a
+        LEFT JOIN oa_employee b ON a.emp_id = b.emp_id
+        WHERE
+        a.emp_id IS NOT NULL
+        GROUP BY
+        course_id,
+        a.emp_id
+        ) c ON b.course_id = c.course_id
+        WHERE 1=1
+        <if test="channelId != null and ''!= channelId">
+            AND a.channel_id LIKE CONCAT('%',#{channelId,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="channelName != null and ''!= channelName">
+            AND a.channel_name LIKE CONCAT('%',#{channelName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="courseName != null and ''!= courseName">
+            AND b.course_name LIKE CONCAT('%',#{courseName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="year != null and ''!= year">
+            AND b.year = #{year,jdbcType=VARCHAR}
+        </if>
+        <if test="courseType != null and ''!= courseType">
+            AND b.course_type= #{courseType,jdbcType=VARCHAR}
+        </if>
+        group by a.course_id
+        order by a.create_time desc
+    </select>
+
+    <select id="findCourseByYear" resultType="java.util.Map">
+        SELECT
+        course_id,
+        course_name
+        FROM
+        bd_course
+        WHERE is_allow = '1'
+        <if test="sName != null and '' != sName">
+            and (
+            course_id like CONCAT('%',#{sName},'%')
+            or course_name like CONCAT('%',#{sName},'%')
+            )
+        </if>
+        <if test="year != null and '' != year">
+            and year = #{year,jdbcType=VARCHAR}
+        </if>
+        order by create_time asc
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="lcId">
+        insert into bd_live_channel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            lc_id,
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="channelPassword != null">
+                channel_password,
+            </if>
+            <if test="channelName != null">
+                channel_name,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="updateUser != null">
+                update_user,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{lcId,jdbcType=VARCHAR},
+            <if test="channelId != null">
+                #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="channelPassword != null">
+                #{channelPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="channelName != null">
+                #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                #{courseId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUser != null">
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="update">
+        update bd_live_channel
+        <set>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="channelPassword != null">
+                channel_password = #{channelPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="channelName != null">
+                channel_name = #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            update_time = now()
+        </set>
+        where lc_id = #{lcId,jdbcType=VARCHAR};
+    </update>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select * from bd_live_channel where lc_id = #{lcId,jdbcType=VARCHAR};
+    </select>
+    
+    <select id="countCourseId" resultType="java.lang.Integer">
+        select count(*) from bd_live_channel where course_id = #{courseId,jdbcType=VARCHAR};
+    </select>
+
+    <delete id="deletes">
+        DELETE
+        FROM
+        bd_live_channel
+        WHERE lc_id in (
+        <foreach collection="lcIds" item="lcId" index="index" separator="," >
+            #{lcId}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="findChannel" resultType="java.util.Map">
+        SELECT
+        a.channel_id,
+        a.channel_name,
+        b.`year`,
+        a.course_id,
+        b.course_name,
+        b.grade
+        FROM
+        bd_live_channel a
+        JOIN bd_course b ON a.course_id = b.course_id
+        WHERE 1 = 1
+        <if test="sName != null and '' != sName">
+            and (
+            a.channel_id like CONCAT('%',#{sName},'%')
+            or a.channel_name like CONCAT('%',#{sName},'%')
+            )
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <select id="findLiveDate" resultType="java.util.Map">
+        SELECT
+        cp_date,
+        a.channel_id
+        FROM
+        bd_live_channel a
+        JOIN bd_course b ON a.course_id = b.course_id
+        LEFT JOIN bd_class_plan c ON b.course_id = c.course_id
+        WHERE
+        c.cp_type IN ('6', '7')
+        AND channel_id = #{channelId}
+        GROUP BY
+        cp_date
+    </select>
+
+    <select id="getLiveChannelViewLog" resultMap="liveViewLogMap" >
+      DROP TEMPORARY TABLE IF EXISTS tmp_live_view_log;
+      CREATE TEMPORARY TABLE tmp_live_view_log (
+            user_id VARCHAR (50),
+            play_duration int,
+            ip_address VARCHAR (50),
+            browser VARCHAR (50),
+            is_mobile VARCHAR(10),
+            province VARCHAR(50),
+            city VARCHAR(50)
+    );
+	INSERT INTO tmp_live_view_log (
+			user_id,
+			play_duration,
+			ip_address,
+			browser,
+			is_mobile,
+			province,
+			city
+	) VALUES
+    <foreach collection="livePolyvInfos" item="info" separator=",">
+      (
+        #{info.userId, jdbcType=VARCHAR},
+        #{info.playDuration},
+        #{info.ipAddress, jdbcType=VARCHAR},
+        #{info.browser, jdbcType=VARCHAR},
+        #{info.isMobile, jdbcType=VARCHAR},
+        #{info.province, jdbcType=VARCHAR},
+        #{info.city, jdbcType=VARCHAR}
+      )
+    </foreach>;
+    SELECT
+    a.*, b.std_name,
+    c.grade,
+    c.unvs_name,
+    c.pfsn_level,
+    c.pfsn_name
+    FROM
+    (
+    SELECT
+    user_id,
+    SUM(play_duration) play_duration,
+    ip_address,
+    browser,
+    is_mobile,
+    province,
+    city
+    FROM
+    tmp_live_view_log
+    GROUP BY
+    user_id,
+    browser,
+    ip_address
+    ) a
+    LEFT JOIN bd_student_info b ON a.user_id = b.user_id
+    JOIN (SELECT
+        bli.std_id,bli.grade,unv.unvs_name,f.pfsn_level,f.pfsn_name
+        FROM
+        bms.bd_course c
+        LEFT JOIN bms.bd_plan_course p ON p.`course_id` = c.`course_id`
+        LEFT JOIN bms.bd_teach_plan t ON t.`thp_id` = p.`thp_id`
+        LEFT JOIN bms.bd_unvs_profession f ON f.`pfsn_id` = t.`pfsn_id`
+        LEFT JOIN bms.bd_learn_info bli ON bli.`pfsn_id` = f.`pfsn_id`
+        LEFT JOIN bms.bd_university unv on unv.unvs_id = f.unvs_id
+        WHERE
+        c.course_id =#{courseId}
+        GROUP BY
+        `std_id`) c ON c.std_id = b.std_id
+    </select>
+</mapper>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.SysDictMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.SysDict">
+		<id column="dict_id" property="dictId" jdbcType="VARCHAR" />
+		<result column="p_id" property="pId" jdbcType="VARCHAR" />
+		<result column="dict_name" property="dictName" jdbcType="VARCHAR" />
+		<result column="dict_value" property="dictValue" jdbcType="VARCHAR" />
+		<result column="order_num" property="orderNum" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		dict_id, p_id, dict_name, dict_value, order_num, update_time, update_user,
+		description, update_user_id, ext_1, ext_2
+	</sql>
+	
+	<select id="selectAllButParent" resultMap="BaseResultMap">
+		select
+		dict_id,
+		dict_name,
+		dict_value,
+		p_id,
+		description,
+		order_num
+		from
+		sys_dict
+		where p_id != '0'
+	</select>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from
+		sys_dict
+	</select>
+	
+	<select id="getGroupIds" resultType="java.lang.String">
+		select dict_id from sys_dict
+		where p_id = '0'
+	</select>
+	
+	<select id="getParents" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select dict_id,dict_name from sys_dict
+		where p_id = '0' 
+		<if test="sName != null and '' != sName">
+		   and dict_name like CONCAT('%', #{sName}, '%') 
+		</if>
+	</select>
+	
+	<select id="selectAllBySysDict" resultMap="BaseResultMap" parameterType="com.yz.model.SysDict">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dict
+		<where>
+		<if test="dictId != null and '' != dictId">
+				and dict_id like  CONCAT('%',#{dictId},'%')
+			</if>
+			<if test="dictName != null and '' != dictName">
+				and dict_name like  CONCAT('%',#{dictName},'%')
+			</if>
+			<if test="dictValue != null and '' != dictValue">
+				and dict_value like  CONCAT('%',#{dictValue},'%')
+			</if>
+			<if test="orderNum != null and '' != orderNum">
+				and order_num = #{orderNum,jdbcType=CHAR}
+			</if>
+			<if test="updateTime != null and '' != updateTime">
+				and update_time = #{updateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="updateUser != null and '' != updateUser">
+				and update_user = #{updateUser,jdbcType=VARCHAR}
+			</if>
+			<if test="description != null and '' != description">
+				and description = #{description,jdbcType=VARCHAR}
+			</if>
+			<if test="updateUserId != null and '' != updateUserId">
+				and update_user_id = #{updateUserId,jdbcType=VARCHAR}
+			</if>
+		</where>
+			 order by update_time desc
+	</select>
+	<update id="delete" parameterType="string">
+		delete from sys_dict
+		where dict_id = #{dictId, jdbcType=VARCHAR}
+		or p_id = #{dictId,
+		jdbcType=VARCHAR}
+	</update>
+	<delete id="deleteAllSysDict">
+		delete from sys_dict
+		where dict_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		or
+		p_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	<select id="selectByPid" parameterType="string" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dict where p_id = #{pid, jdbcType=VARCHAR}
+		order by order_num
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from sys_dict
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from sys_dict
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.SysDict">
+		insert into sys_dict (dict_id, p_id, dict_name,
+		dict_value, order_num, update_time,
+		update_user, description,
+		update_user_id)
+		values (#{dictId,jdbcType=VARCHAR}, #{pId,jdbcType=VARCHAR},
+		#{dictName,jdbcType=VARCHAR},
+		#{dictValue,jdbcType=VARCHAR}, #{orderNum,jdbcType=CHAR}, #{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.SysDict">
+		insert into sys_dict
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="dictId != null and dictId != ''">
+				dict_id,
+			</if>
+			<if test="pId != null and pId != ''">
+				p_id,
+			</if>
+			<if test="dictName != null and dictName != ''">
+				dict_name,
+			</if>
+			<if test="dictValue != null and dictValue != ''">
+				dict_value,
+			</if>
+			<if test="orderNum != null and orderNum != ''">
+				order_num,
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time,
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user,
+			</if>
+			<if test="description != null and description != ''">
+				description,
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="dictId != null and dictId != ''">
+				#{dictId,jdbcType=VARCHAR},
+			</if>
+			<if test="pId != null and pId != ''">
+				#{pId,jdbcType=VARCHAR},
+			</if>
+			<if test="dictName != null and dictName != ''">
+				#{dictName,jdbcType=VARCHAR},
+			</if>
+			<if test="dictValue != null and dictValue != ''">
+				#{dictValue,jdbcType=VARCHAR},
+			</if>
+			<if test="orderNum != null and orderNum != ''">
+				#{orderNum,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.SysDict">
+		update sys_dict
+		<set>
+			<if test="pId != null and pId != ''">
+				p_id = #{pId,jdbcType=VARCHAR},
+			</if>
+			<if test="dictName != null and dictName != ''">
+				dict_name = #{dictName,jdbcType=VARCHAR},
+			</if>
+			<if test="dictValue != null and dictValue != ''">
+				dict_value = #{dictValue,jdbcType=VARCHAR},
+			</if>
+			<if test="orderNum != null and orderNum != ''">
+				order_num = #{orderNum,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null and updateTime != ''">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.SysDict">
+		update sys_dict
+		set p_id = #{pId,jdbcType=VARCHAR},
+		dict_name = #{dictName,jdbcType=VARCHAR},
+		dict_value = #{dictValue,jdbcType=VARCHAR},
+		order_num = #{orderNum,jdbcType=CHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user = #{updateUser,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		update_user_id = #{updateUserId,jdbcType=VARCHAR}
+		where dict_id = #{dictId,jdbcType=VARCHAR}
+	</update>
+</mapper>

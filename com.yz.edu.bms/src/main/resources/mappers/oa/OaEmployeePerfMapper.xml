@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaEmployeePerfMapper" >
+	<resultMap type="com.yz.model.oa.OaEmpLearnInfoPerfInfo" id="LearnInfoPerfInfo">
+		<result column="recrods_no" property="recrodsNo" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="scholarship" property="scholarship" jdbcType="VARCHAR"/>
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="old_dp_name" property="oldDpName" jdbcType="VARCHAR"/>
+		<result column="old_campus_name" property="oldCampusName" jdbcType="VARCHAR"/>
+		<result column="oper_status" property="operStatus" jdbcType="VARCHAR"/>
+		<result column="dp_name" property="dpName" jdbcType="VARCHAR"/>
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR"/>
+		<result column="oper_time" property="operTime" jdbcType="VARCHAR"/>
+		<result column="oper_user" property="operUser" jdbcType="VARCHAR"/>
+	</resultMap> 
+	
+	<select id="getOaEmpLearnInfoPerfInfo" resultMap="LearnInfoPerfInfo" parameterType="com.yz.model.oa.OaEmployeePerfQuery">
+		SELECT 
+		  oeli.`recrods_no`,
+		  oeli.`learn_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`scholarship`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  odo.`dp_name` old_dp_name,
+		  oco.`campus_name` old_campus_name,
+		  oeli.`oper_status`,
+		  date_format(oeli.`oper_time`,'%Y-%m-%d %H:%i:%S') oper_time,
+		  oeli.`oper_user`,
+		  od.`dp_name` dp_name,
+		  oc.`campus_name` campus_name 
+		FROM
+		  oa_employee_learn_info oeli 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`learn_id` = oeli.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bli.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bli.`pfsn_id` = bup.`pfsn_id` 
+		  LEFT JOIN oa_campus oco 
+		    ON oeli.`old_campus_id` = oco.`campus_id`
+		  LEFT JOIN oa_department odo 
+		    ON oeli.`old_dp_id` = odo.`dp_id`
+		  LEFT JOIN oa_campus oc
+		    ON oeli.`campus_id` = oc.`campus_id`
+		  LEFT JOIN oa_department od
+		    ON oeli.`dp_id` = od.`dp_id`  
+		WHERE 1=1
+		<if test="modifyId !=null and '' != modifyId">
+			AND oeli.modify_id = #{modifyId,jdbcType=VARCHAR}
+		</if>
+		<if test="empId !=null and '' != empId">
+			AND oeli.`old_emp_id` =#{empId,jdbcType=VARCHAR}  
+		</if>
+		<if test="dpId !=null and '' != dpId">
+			AND oeli.`old_dp_id` =#{dpId,jdbcType=VARCHAR}
+		</if> 
+		<if test="stdName !=null and '' != stdName">
+			AND  bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		</if>
+		<if test="stdPhone !=null and '' != stdPhone">
+			AND bsi.`mobile` = #{stdPhone,jdbcType=VARCHAR}
+		</if>
+		<if test="stdIdCard !=null and '' !=stdIdCard">
+			AND bsi.`id_card` = #{stdIdCard,jdbcType=VARCHAR}
+		</if>
+		<if test="recruitType !=null and '' !=recruitType">
+			AND bli.`recruit_type` = #{recruitType,jdbcType=VARCHAR}
+		</if>
+		<if test="stdUnvsName !=null and '' != stdUnvsName">
+			AND bu.`unvs_name` like CONCAT('%', CONCAT(#{stdUnvsName}, '%'))
+		</if>
+		<if test="stdPfsnName !=null and '' != stdPfsnName">
+			AND bup.`pfsn_name` like CONCAT('%', CONCAT(#{stdPfsnName}, '%'))
+		</if>
+		<if test="stdStage !=null and '' !=stdStage">
+			AND bli.`std_stage` = #{stdStage,jdbcType=VARCHAR}
+		</if>
+		<if test="scholarship !=null and '' !=scholarship">
+			AND bli.`scholarship` = #{scholarship,jdbcType=VARCHAR}
+		</if>
+		<if test="stdGrade !=null and '' !=stdGrade">
+			AND bli.`grade` = #{stdGrade,jdbcType=VARCHAR}
+		</if>
+		<if test="operStatus !=null and '' !=operStatus">
+			AND oeli.`oper_status` = #{operStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="beginTime !=null and '' !=beginTime">
+			<![CDATA[ and DATE_FORMAT(bli.`create_time`, '%Y-%m-%d %H:%i:%S') >=  DATE_FORMAT(#{beginTime}, '%Y-%m-%d %H:%i:%S')   ]]>
+		</if>
+		<if test="endTime !=null and '' != endTime">
+			<![CDATA[ and DATE_FORMAT(bli.`create_time`, '%Y-%m-%d %H:%i:%S') <=  DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%S')   ]]>
+		</if>
+	</select>  
+	<!-- 部分分配到原部门 -->
+	<update id="partChangeToOld">
+		update `oa_employee_learn_info` set
+		emp_id=#{empId,jdbcType=VARCHAR},dp_id=#{dpId,jdbcType=VARCHAR},campus_id=#{campusId,jdbcType=VARCHAR},
+		oper_status='1',oper_user_id=#{userId,jdbcType=VARCHAR},oper_user=#{userName,jdbcType=VARCHAR},oper_time=NOW()
+		where recrods_no IN
+		<foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item.recrodsNo, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<!-- 部分分配到新部门 -->
+	<update id="partChangeToNew">
+		update `oa_employee_learn_info` set
+		emp_id=#{empId,jdbcType=VARCHAR},dp_id=#{dpId,jdbcType=VARCHAR},campus_id=#{campusId,jdbcType=VARCHAR},
+		oper_status='1',oper_user_id=#{userId,jdbcType=VARCHAR},oper_user=#{userName,jdbcType=VARCHAR},oper_time=NOW()
+		where recrods_no IN
+		<foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item.recrodsNo, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	<!-- 全部分配到原部门 -->
+	<update id="allChangeToOld">
+		update `oa_employee_learn_info` set
+		emp_id=#{empId,jdbcType=VARCHAR},dp_id=#{dpId,jdbcType=VARCHAR},campus_id=#{campusId,jdbcType=VARCHAR},
+		oper_status='1',oper_user_id=#{userId,jdbcType=VARCHAR},oper_user=#{userName,jdbcType=VARCHAR},oper_time=NOW()
+		where modify_id =#{modifyId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 全部分配到新部门 -->
+	<update id="allChangeToNew">
+		update `oa_employee_learn_info` set
+		emp_id=#{empId,jdbcType=VARCHAR},dp_id=#{dpId,jdbcType=VARCHAR},campus_id=#{campusId,jdbcType=VARCHAR},
+		oper_status='1',oper_user_id=#{userId,jdbcType=VARCHAR},oper_user=#{userName,jdbcType=VARCHAR},oper_time=NOW()
+		where modify_id =#{modifyId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getUserIdByLearnId" resultType="java.lang.String">
+		SELECT 
+		  br.`user_id` 
+		FROM
+		   bd_student_info br
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`std_id` = br.`std_id` 
+		WHERE bli.learn_id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item.learnId, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+	
+	<update id="updateBdLearnRules">
+		UPDATE bd_learn_rules SET recruit_campus_id=#{campusId,jdbcType=VARCHAR},
+		recruit_dp_id=#{dpId,jdbcType=VARCHAR} WHERE learn_id IN 
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item.learnId, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<update id="updateAllBdLearnRules">
+	   UPDATE bd_learn_rules SET recruit_campus_id=#{campusId,jdbcType=VARCHAR},
+		recruit_dp_id=#{dpId,jdbcType=VARCHAR} WHERE recruit=#{empId,jdbcType=VARCHAR}
+		and recruit_dp_id = #{oldDpId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getAllUserIdByLearnId" resultType="java.lang.String">
+	   SELECT 
+		  br.`user_id` 
+		FROM
+		   bd_student_info br
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`std_id` = br.`std_id`
+		  LEFT JOIN oa_employee_learn_info oeli
+		    ON oeli.`learn_id` = bli.`learn_id`
+		WHERE oeli.`old_emp_id`=#{empId,jdbcType=VARCHAR} 
+			AND  oeli.`old_dp_id`=#{dpId,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.salarykpi.YearKPIMapper">
+    <resultMap id="YearKPIMap" type="java.util.Map">
+        <result column="recruit" property="recruit" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="campus_name" property="campusName" jdbcType="VARCHAR"/>
+        <result column="dp_name" property="dpName" jdbcType="VARCHAR"/>
+        <result column="emp_type" property="empType" jdbcType="VARCHAR"/>
+        <result column="emp_status" property="empStatus" jdbcType="VARCHAR"/>
+        <result column="jt_id" property="jtId" jdbcType="VARCHAR"/>
+        <result column="entry_count" property="entryCount" jdbcType="VARCHAR"/>
+        <result column="leave_count" property="leaveCount" jdbcType="VARCHAR"/>
+        <result column="award" property="award" jdbcType="INTEGER"/>
+        <result column="gk_count" property="gkCount" jdbcType="INTEGER"/>
+        <result column="kqcc_count" property="kqccCount" jdbcType="VARCHAR"/>
+        <result column="ptqe_zc_count" property="ptqeZcCount" jdbcType="VARCHAR"/>
+        <result column="ptqe_ck_count" property="ptqeCkCount" jdbcType="VARCHAR"/>
+        <result column="hzym_rw_count" property="hzymRwCount" jdbcType="VARCHAR"/>
+        <result column="hzym_frw_count" property="hzymFrwCount" jdbcType="VARCHAR"/>
+        <result column="dgym_count" property="dgymCount" jdbcType="VARCHAR"/>
+        <result column="swzx_rw_count" property="swzxRwCount" jdbcType="VARCHAR"/>
+        <result column="swzx_frw_count" property="swzxFrwCount" jdbcType="VARCHAR"/>
+        <result column="jxj_rw_count" property="jxjRwCount" jdbcType="VARCHAR"/>
+        <result column="jxj_frw_count" property="jxjFrwCount" jdbcType="VARCHAR"/>
+        <result column="emp_count" property="empCount" jdbcType="INTEGER"/>
+        <result column="salary_sum" property="salarySum" jdbcType="VARCHAR"/>
+        <result column="receipt_sum" property="receiptSum" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="StudentDetailMap" type="java.util.Map">
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="ta_name" property="taName" jdbcType="VARCHAR"/>
+        <result column="scholarship" property="scholarship" jdbcType="VARCHAR"/>
+        <result column="inclusion_status" property="inclusionStatus" jdbcType="VARCHAR"/>
+        <result column="standard_person" property="standardPerson" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findAllYearKPI" resultMap="YearKPIMap" parameterType="com.yz.model.salarykpi.YearKPIQuery">
+        SELECT
+        c.emp_name,
+        c.id_card,
+        a.recruit,
+        h.campus_name,
+        g.dp_name,
+        c.emp_type,
+        c.emp_status,
+        'ZSLS' jt_id,
+        ifnull(salary.salary_sum, 0) salary_sum,
+        ifnull(receipt.receipt_sum, 0) receipt_sum,
+        CASE
+        WHEN d.entry_date &lt; '2016-11-01' THEN
+        12
+        WHEN d.entry_date BETWEEN '2017-10-16'
+        AND '2017-10-31' THEN
+        0
+        WHEN d.entry_date BETWEEN '2017-09-16'
+        AND '2017-10-15' THEN
+        1
+        WHEN d.entry_date BETWEEN '2017-08-16'
+        AND '2017-09-15' THEN
+        2
+        WHEN d.entry_date BETWEEN '2017-07-16'
+        AND '2017-08-15' THEN
+        3
+        WHEN d.entry_date BETWEEN '2017-06-16'
+        AND '2017-07-15' THEN
+        4
+        WHEN d.entry_date BETWEEN '2017-05-16'
+        AND '2017-06-15' THEN
+        5
+        WHEN d.entry_date BETWEEN '2017-04-16'
+        AND '2017-05-15' THEN
+        6
+        WHEN d.entry_date BETWEEN '2017-03-16'
+        AND '2017-04-15' THEN
+        7
+        WHEN d.entry_date BETWEEN '2017-02-16'
+        AND '2017-03-15' THEN
+        8
+        WHEN d.entry_date BETWEEN '2017-01-16'
+        AND '2017-02-15' THEN
+        9
+        WHEN d.entry_date BETWEEN '2016-12-16'
+        AND '2017-01-15' THEN
+        10
+        WHEN d.entry_date BETWEEN '2016-11-16'
+        AND '2016-12-15' THEN
+        11
+        WHEN d.entry_date BETWEEN '2016-11-01'
+        AND '2016-11-15' THEN
+        12
+        END entry_count,
+        IFNULL(
+        CASE
+        WHEN d.leave_date BETWEEN '2017-10-16'
+        AND '2017-10-31' THEN
+        0
+        WHEN d.leave_date BETWEEN '2017-09-16'
+        AND '2017-10-15' THEN
+        1
+        WHEN d.leave_date BETWEEN '2017-08-16'
+        AND '2017-09-15' THEN
+        2
+        WHEN d.leave_date BETWEEN '2017-07-16'
+        AND '2017-08-15' THEN
+        3
+        WHEN d.leave_date BETWEEN '2017-06-16'
+        AND '2017-07-15' THEN
+        4
+        WHEN d.leave_date BETWEEN '2017-05-16'
+        AND '2017-06-15' THEN
+        5
+        WHEN d.leave_date BETWEEN '2017-04-16'
+        AND '2017-05-15' THEN
+        6
+        WHEN d.leave_date BETWEEN '2017-03-16'
+        AND '2017-04-15' THEN
+        7
+        WHEN d.leave_date BETWEEN '2017-02-16'
+        AND '2017-03-15' THEN
+        8
+        WHEN d.leave_date BETWEEN '2017-01-16'
+        AND '2017-02-15' THEN
+        9
+        WHEN d.leave_date BETWEEN '2016-12-16'
+        AND '2017-01-15' THEN
+        10
+        WHEN d.leave_date BETWEEN '2016-11-16'
+        AND '2016-12-15' THEN
+        11
+        WHEN d.leave_date BETWEEN '2016-11-01'
+        AND '2016-11-15' THEN
+        12
+        END,0) leave_count,
+        -- 减标准任务人数
+        IFNULL(e.award, 0) award,
+        -- 单生工龄奖励
+        count(gk.learn_id) gk_count,
+        -- 国家开放大学注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '11'
+        AND cs_factor.pay_status = 1 THEN
+        cs_factor.factor
+        ELSE
+        kqcc.factor
+        END
+        ),
+        0
+        ) kqcc_count,
+        -- 考前冲刺标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '1'
+        AND cs_factor.pay_status = 1 THEN
+        cs_factor.factor
+        ELSE
+        ptqe_zc.factor
+        END
+        ),
+        0
+        ) ptqe_zc_count,
+        -- 普通全额标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '1' THEN
+        cs_factor.factor
+        ELSE
+        pteq_ck.factor
+        END
+        ),
+        0
+        ) ptqe_ck_count,
+        -- 普通全额标准参考人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '17'
+        AND cs_factor.inclusion_status = '2'
+        AND cs_factor.pay_status = 1 THEN
+        hzym_rw.factor * 0.5
+        ELSE
+        hzym_rw.factor
+        END
+        ),
+        0
+        ) hzym_rw_count,
+        -- 惠州圆梦入围标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '17'
+        AND cs_factor.inclusion_status = '3'
+        AND cs_factor.pay_status = 1 THEN
+        hzym_frw.factor * 0.5
+        ELSE
+        hzym_frw.factor
+        END
+        ),
+        0
+        ) hzym_frw_count,
+        -- 惠州圆梦非入围标准标准人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship IN ('15', '16', '22')
+        AND cs_factor.pay_status = 1 THEN
+        dgym.factor * 0.5
+        ELSE
+        dgym.factor
+        END
+        ),
+        0
+        ) dgym_count,
+        -- 东莞圆梦标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '18'
+        AND cs_factor.inclusion_status = '7'
+        AND cs_factor.pay_status = 1 THEN
+        swzx_rw.factor * 0.5
+        ELSE
+        swzx_rw.factor
+        END
+        ),
+        0
+        ) swzx_rw_count,
+        -- 汕尾肋学入围标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.scholarship = '18'
+        AND cs_factor.inclusion_status = '8'
+        AND cs_factor.pay_status = 1 THEN
+        swzx_frw.factor * 0.5
+        ELSE
+        swzx_frw.factor
+        END
+        ),
+        0
+        ) swzx_frw_count,
+        -- 汕尾肋学非入围标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.inclusion_status IN ('5', '6')
+        AND cs_factor.pay_status = 1 THEN
+        0.5 * 0.5
+        WHEN jxj_rw.factor IS NOT NULL THEN
+        0.5
+        ELSE
+        0
+        END
+        ),
+        0
+        ) jxj_rw_count,
+        -- 奖学金≧ 150分标准注册人数
+        IFNULL(
+        SUM(
+        CASE
+        WHEN cs_factor.factor IS NOT NULL
+        AND cs_factor.inclusion_status = '4'
+        AND cs_factor.pay_status = 1 THEN
+        cs_factor.factor
+        ELSE
+        jxj_frw.factor
+        END
+        ),
+        0
+        ) jxj_frw_count,
+        -- 奖学金&lt;150分标准注册人数
+        IFNULL(emp_recommend.emp_count, 0) emp_count -- 被推荐人标准参考人数
+        FROM
+        bd_learn_rules a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN oa_employee c ON a.recruit = c.emp_id
+        LEFT JOIN oa_employee_job d ON c.emp_id = d.emp_id
+        LEFT JOIN oa_department g ON d.dp_id = g.dp_id
+        LEFT JOIN oa_campus h ON d.campus_id = h.campus_id
+        LEFT JOIN (
+        SELECT
+        emp_id,
+        award
+        FROM
+        oa_employee_award
+        WHERE
+        kpi_year = 2018
+        AND jt_id = 'ZSLS'
+        ) e ON a.recruit = e.emp_id
+        LEFT JOIN (
+        SELECT
+        learn_id
+        FROM
+        bd_learn_info
+        WHERE
+        grade IN ('201703', '201709')
+        AND std_stage = 7
+        ) gk ON a.learn_id = gk.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_unvs_factor d ON a.unvs_id = d.unvs_id
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '11'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) kqcc ON a.learn_id = kqcc.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_unvs_factor d ON a.unvs_id = d.unvs_id
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '1'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) ptqe_zc ON a.learn_id = ptqe_zc.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        c.factor
+        FROM
+        bd_student_e_score a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_unvs_factor c ON b.unvs_id = c.unvs_id
+        WHERE
+        b.grade = '2018'
+        AND b.scholarship = '1'
+        GROUP BY
+        a.learn_id
+        HAVING
+        sum(score) > 0
+        ) pteq_ck ON a.learn_id = pteq_ck.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_learn_unvs_factor d ON a.unvs_id = d.unvs_id
+        AND a.scholarship = d.scholarship
+        AND a.inclusion_status = d.inclusion_status
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '17'
+        AND a.inclusion_status = '2'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) hzym_rw ON a.learn_id = hzym_rw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_learn_unvs_factor d ON a.unvs_id = d.unvs_id
+        AND a.scholarship = d.scholarship
+        AND a.inclusion_status = d.inclusion_status
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '17'
+        AND a.inclusion_status = '3'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) hzym_frw ON a.learn_id = hzym_frw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_learn_unvs_factor d ON a.unvs_id = d.unvs_id
+        AND a.scholarship = d.scholarship
+        AND a.inclusion_status = d.inclusion_status
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship in('15','16','22')
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) dgym ON a.learn_id = dgym.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_learn_unvs_factor d ON a.unvs_id = d.unvs_id
+        AND a.scholarship = d.scholarship
+        AND a.inclusion_status = d.inclusion_status
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '18'
+        AND a.inclusion_status = '7'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) swzx_rw ON a.learn_id = swzx_rw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_learn_unvs_factor d ON a.unvs_id = d.unvs_id
+        AND a.scholarship = d.scholarship
+        AND a.inclusion_status = d.inclusion_status
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.scholarship = '18'
+        AND a.inclusion_status = '8'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) swzx_frw ON a.learn_id = swzx_frw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_unvs_factor d ON a.unvs_id = d.unvs_id
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.inclusion_status IN ('5', '6')
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) jxj_rw ON a.learn_id = jxj_rw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.unvs_id,
+        d.factor
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_order b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_sub_order c ON b.order_no = c.order_no
+        LEFT JOIN bd_unvs_factor d ON a.unvs_id = d.unvs_id
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        a.grade = '2018'
+        AND a.inclusion_status = '4'
+        AND c.item_code = 'Y1'
+        AND c.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) jxj_frw ON a.learn_id = jxj_frw.learn_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id,
+        a.recruit,
+        d.campus_name,
+        f.ta_name,
+        g.cs2other_factor factor,
+        e.scholarship,
+
+        IF (h.learn_id IS NULL, 0, 1) pay_status,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id
+        FROM
+        bd_student_order a
+        LEFT JOIN bd_sub_order b ON a.order_no = b.order_no
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        b.item_code = 'Y1'
+        AND b.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) h ON a.learn_id = h.learn_id
+        LEFT JOIN sys_city i ON f.city_code = i.city_code
+        WHERE
+        e.grade IN ('2018', '201703', '201709')
+        AND a.recruit IS NOT NULL
+        AND d.campus_name IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND i.city_name NOT IN (
+        '潮州市',
+        '汕头市',
+        '汕尾市',
+        '揭阳市'
+        )
+        UNION ALL
+        SELECT
+        a.learn_id,
+        a.recruit,
+        d.campus_name,
+        f.ta_name,
+        g.other2cs_factor factor,
+        e.scholarship,
+
+        IF (h.learn_id IS NULL, 0, 1) pay_status,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN (
+        SELECT
+        a.learn_id
+        FROM
+        bd_student_order a
+        LEFT JOIN bd_sub_order b ON a.order_no = b.order_no
+        LEFT JOIN bd_student_serial e ON e.order_no = b.order_no
+        WHERE
+        b.item_code = 'Y1'
+        AND b.sub_order_status = '2'
+        AND e.pay_time &lt;= '2018-01-11 23:59:59'
+        GROUP BY
+        a.learn_id
+        ) h ON a.learn_id = h.learn_id
+        LEFT JOIN sys_city i ON f.city_code = i.city_code
+        WHERE
+        e.grade IN ('2018', '201703', '201709')
+        AND a.recruit IS NOT NULL
+        AND d.campus_name NOT IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND i.city_name IN (
+        '潮州市',
+        '汕头市',
+        '汕尾市',
+        '揭阳市'
+        )
+        ) cs_factor ON a.learn_id = cs_factor.learn_id
+        AND a.recruit = cs_factor.recruit
+        LEFT JOIN (
+        SELECT
+        emp_id,
+        count(*) emp_count
+        FROM
+        oa_employee_recommend
+        WHERE
+        is_regular = 1
+        GROUP BY
+        emp_id
+        ) emp_recommend ON a.recruit = emp_recommend.emp_id
+        LEFT JOIN (
+        SELECT
+        emp_id,
+        IFNULL(SUM(receipt), 0) receipt_sum
+        FROM
+        oa_employee_receipt
+        GROUP BY
+        emp_id
+        ) receipt ON a.recruit = receipt.emp_id
+        LEFT JOIN (
+        SELECT
+        emp_id,
+        IFNULL(SUM(salary), 0) salary_sum
+        FROM
+        oa_employee_salary
+        GROUP BY
+        emp_id
+        ) salary ON a.recruit = salary.emp_id
+        WHERE
+        b.grade IN ('2018', '201703', '201709')
+        AND a.recruit IS NOT NULL
+        AND c.emp_name IS NOT NULL
+        AND d.entry_date &lt;= '2017-10-31'
+        AND a.learn_id NOT IN (
+        SELECT
+        b.learn_id
+        FROM
+        us.`us_base_info` a
+        LEFT JOIN bd_learn_info b ON a.std_id = b.std_id
+        WHERE
+        IFNULL(a.emp_id, '') &lt;> ''
+        AND b.grade IN ('2018', '201703', '201709')
+        )
+        AND c.emp_type = 1
+        <if test="recruit != null and ''!= recruit">
+            a.recruit = #{recruit,jdbcType=VARCHAR}
+        </if>
+        <if test="empName != null and ''!= empName">
+            AND c.emp_name LIKE CONCAT('%',#{empName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="empStatus != null and ''!= empStatus">
+            AND c.emp_status = #{empStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="campusId != null and ''!= campusId">
+            AND d.campus_id = #{campusId,jdbcType=VARCHAR}
+        </if>
+        <if test="dpId != null and ''!= dpId">
+            AND d.dp_id = #{dpId,jdbcType=VARCHAR}
+        </if>
+        GROUP BY
+        a.recruit
+    </select>
+
+    <select id="getKPIValue" parameterType="java.lang.Double" resultType="java.lang.Integer">
+        SELECT
+	    per_person_value
+        FROM
+            bd_kpi_gradient
+        WHERE
+            #{ckSum} >= min_person and #{ckSum} &lt; max_person
+    </select>
+
+    <select id="findAllStudentDetail" resultMap="StudentDetailMap"
+            parameterType="com.yz.model.salarykpi.StudentDetailQuery">
+        SELECT
+        a.recruit,
+        c.std_name,
+        c.id_card,
+        b.grade,
+        d.unvs_name,
+        e.pfsn_name,
+        e.pfsn_level,
+        f.ta_name,
+        b.scholarship,
+        b.inclusion_status,
+        CASE
+        WHEN q.factor IS NOT NULL
+        AND p.factor IS NOT NULL THEN
+        q.factor * 0.5
+        WHEN q.factor IS NOT NULL THEN
+        q.factor
+        WHEN p.factor IS NOT NULL
+        AND b.inclusion_status IN ('5', '6') THEN
+        0.5 * 0.5
+        WHEN b.inclusion_status IN ('5', '6') THEN
+        0.5
+        WHEN p.factor IS NOT NULL THEN
+        o.factor * 0.5
+        ELSE
+        o.factor
+        END standard_person
+        FROM
+        bd_learn_rules a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_university d ON b.unvs_id = d.unvs_id
+        LEFT JOIN bd_unvs_profession e ON b.pfsn_id = e.pfsn_id
+        LEFT JOIN bd_test_area f ON b.ta_id = f.ta_id
+        LEFT JOIN bd_student_order g ON a.learn_id = g.learn_id
+        LEFT JOIN bd_sub_order h ON g.order_no = h.order_no
+        LEFT JOIN bd_student_serial i ON h.order_no = i.order_no
+        LEFT JOIN bd_unvs_factor o ON o.unvs_id = b.unvs_id
+        LEFT JOIN (
+        -- 潮汕地区老师招其他地区学员
+        SELECT
+        a.learn_id,
+        a.recruit,
+        g.cs2other_factor factor,
+        e.scholarship,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN sys_city h ON f.city_code = h.city_code
+        WHERE
+        e.grade = '2018'
+        AND a.recruit IS NOT NULL
+        AND d.campus_name IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND h.city_name NOT IN (
+        '潮州市',
+        '汕头市',
+        '汕尾市',
+        '揭阳市'
+        )
+        UNION ALL
+        -- 其他地区老师招潮汕学员
+        SELECT
+        a.learn_id,
+        a.recruit,
+        g.other2cs_factor factor,
+        e.scholarship,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN sys_city h ON f.city_code = h.city_code
+        WHERE
+        e.grade = '2018'
+        AND a.recruit IS NOT NULL
+        AND d.campus_name NOT IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND h.city_name IN (
+        '潮州市',
+        '汕头市',
+        '汕尾市',
+        '揭阳市'
+        )
+        ) p ON a.learn_id = p.learn_id
+        AND a.recruit = p.recruit
+        LEFT JOIN bd_learn_unvs_factor q ON b.unvs_id = q.unvs_id
+        AND b.scholarship = q.scholarship
+        AND b.inclusion_status = q.inclusion_status
+        WHERE
+        b.grade = '2018'
+        AND h.item_code = 'Y1'
+        AND h.sub_order_status = '2'
+        AND i.pay_time &lt;= '2018-01-11 23:59:59'
+        AND a.learn_id NOT IN (
+        SELECT
+        b.learn_id
+        FROM
+        us.`us_base_info` a
+        LEFT JOIN bd_learn_info b ON a.std_id = b.std_id
+        WHERE
+        IFNULL(a.emp_id, '') &lt;> ''
+        AND b.grade = '2018'
+        )
+        AND a.recruit=#{recruit,jdbcType=VARCHAR}
+        <if test="scholarship != null and ''!= scholarship">
+            AND b.scholarship in
+            <foreach collection="scholarshipItems" index="index" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="inclusionStatus != null and ''!= inclusionStatus">
+            AND b.inclusion_status in
+            <foreach collection="inclusionStatusItems" index="index" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY
+        a.learn_id
+    </select>
+
+    <select id="gkStudentDetail" resultMap="StudentDetailMap">
+        -- 国开学员详情
+        SELECT
+        a.learn_id,
+        a.recruit,
+        c.std_name,
+        c.id_card,
+        b.grade,
+        d.unvs_name,
+        e.pfsn_name,
+        e.pfsn_level,
+        f.ta_name,
+        b.scholarship,
+        b.inclusion_status,
+        1 standard_person
+        FROM
+        bd_learn_rules a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_university d ON b.unvs_id = d.unvs_id
+        LEFT JOIN bd_unvs_profession e ON b.pfsn_id = e.pfsn_id
+        LEFT JOIN bd_test_area f ON b.ta_id = f.ta_id
+        WHERE
+        b.grade IN ('201703', '201709')
+        AND std_stage = 7
+        AND a.learn_id NOT IN (
+        SELECT
+        b.learn_id
+        FROM
+        us.`us_base_info` a
+        LEFT JOIN bd_learn_info b ON a.std_id = b.std_id
+        WHERE
+        IFNULL(a.emp_id, '') &lt;> ''
+        AND b.grade IN ('201703', '201709')
+        )
+        AND recruit = #{recruit,jdbcType=VARCHAR}
+    </select>
+
+    <select id="qtqeCkStudentDetail" resultMap="StudentDetailMap">
+        -- 普通全额标准参考人数学员详情
+        SELECT
+        a.recruit,
+        c.std_name,
+        c.id_card,
+        b.grade,
+        d.unvs_name,
+        e.pfsn_name,
+        e.pfsn_level,
+        f.ta_name,
+        b.scholarship,
+        b.inclusion_status,
+        CASE
+        WHEN q.factor IS NOT NULL
+        AND p.factor IS NOT NULL THEN
+        q.factor * 0.5
+        WHEN q.factor IS NOT NULL THEN
+        q.factor
+        WHEN p.factor IS NOT NULL
+        AND b.inclusion_status IN ('5', '6') THEN
+        0.5 * 0.5
+        WHEN b.inclusion_status IN ('5', '6') THEN
+        0.5
+        WHEN p.factor IS NOT NULL THEN
+        o.factor * 0.5
+        ELSE
+        o.factor
+        END standard_person
+        FROM
+        bd_learn_rules a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_university d ON b.unvs_id = d.unvs_id
+        LEFT JOIN bd_unvs_profession e ON b.pfsn_id = e.pfsn_id
+        LEFT JOIN bd_test_area f ON b.ta_id = f.ta_id
+        LEFT JOIN bd_unvs_factor o ON o.unvs_id = b.unvs_id
+        LEFT JOIN (
+        -- 潮汕地区老师招其他地区学员
+        SELECT
+        a.learn_id,
+        a.recruit,
+        g.cs2other_factor factor,
+        e.scholarship,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN sys_city h ON f.city_code = h.city_code
+        WHERE
+        e.grade = '2018'
+        AND a.recruit IS NOT NULL
+        AND d.campus_name IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND h.city_name NOT IN (
+		'潮州市',
+		'汕头市',
+		'汕尾市',
+		'揭阳市'
+	    )
+        UNION ALL
+        -- 其他地区老师招潮汕学员
+        SELECT
+        a.learn_id,
+        a.recruit,
+        g.other2cs_factor factor,
+        e.scholarship,
+        e.inclusion_status
+        FROM
+        bd_learn_rules a
+        LEFT JOIN oa_employee b ON a.recruit = b.emp_id
+        LEFT JOIN oa_employee_job c ON b.emp_id = c.emp_id
+        LEFT JOIN oa_campus d ON c.campus_id = d.campus_id
+        LEFT JOIN bd_learn_info e ON a.learn_id = e.learn_id
+        LEFT JOIN bd_test_area f ON f.ta_id = e.ta_id
+        LEFT JOIN bd_unvs_factor g ON e.unvs_id = g.unvs_id
+        LEFT JOIN sys_city h ON f.city_code = h.city_code
+        WHERE
+        e.grade = '2018'
+        AND a.recruit IS NOT NULL
+        AND d.campus_name NOT IN (
+        '汕尾校区',
+        '潮州校区',
+        '揭阳校区',
+        '汕头校区'
+        )
+        AND h.city_name IN (
+			'潮州市',
+			'汕头市',
+			'汕尾市',
+			'揭阳市'
+		)
+        ) p ON a.learn_id = p.learn_id
+        AND a.recruit = p.recruit
+        LEFT JOIN bd_learn_unvs_factor q ON b.unvs_id = q.unvs_id
+        AND b.scholarship = q.scholarship
+        AND b.inclusion_status = q.inclusion_status
+        LEFT JOIN (
+        SELECT
+        a.learn_id
+        FROM
+        bd_student_e_score a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_unvs_factor c ON b.unvs_id = c.unvs_id
+        WHERE
+        b.grade = '2018'
+        AND b.scholarship = '1'
+        GROUP BY
+        a.learn_id
+        HAVING
+        sum(score) > 0
+        ) r ON a.learn_id = r.learn_id
+        WHERE
+        b.grade = '2018'
+        AND b.scholarship = '1'
+        AND a.learn_id NOT IN (
+        SELECT
+        b.learn_id
+        FROM
+        us.`us_base_info` a
+        LEFT JOIN bd_learn_info b ON a.std_id = b.std_id
+        WHERE
+        IFNULL(a.emp_id, '') &lt;> ''
+        AND b.grade = '2018'
+        )
+        AND r.learn_id IS NOT NULL
+        AND a.recruit = #{recruit,jdbcType=VARCHAR}
+        GROUP BY
+        a.learn_id
+    </select>
+</mapper>

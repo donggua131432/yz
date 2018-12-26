@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.refund.UsInfoMapper" >
+  
+  <select id="selectUserOpenId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  bind_id 
+	from
+	  us.`us_base_info` 
+	where user_id = #{userId}  
+  </select>
+  
+  <select id="selectUsBookAddress" parameterType="java.lang.String" resultType="java.util.HashMap">
+  	select 
+	  sa_name saName,
+	  province_code provinceCode,
+	  city_code cityCode,
+	  district_code districtCode,
+	  address,
+	  mobile 
+	from
+	  us.`us_address` 
+	where user_id = #{userId} 
+	  and sa_type = '1' 
+  </select>
+  
+</mapper>

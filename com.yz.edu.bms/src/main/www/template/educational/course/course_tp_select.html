@@ -1,0 +1,161 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>课程管理</title>
+</head>
+<body>
+  <div class="page-container">
+    <div class="form-horizontal yz-form-box">
+      <div class="form" style="padding: 0 10px;">
+        <div class="cl">
+          <div class="f-l halfPage">
+            <p>待选列表</p>
+            <div class="text-l search" style="position: relative">
+              <div class="cl">
+                <div class="cl">
+                  <div class="f-l" style="width: 44%">
+                    <span>年级:</span>
+	                <select class="select" size="1" id="grade" name="grade">
+	                  <option value="" selected>--请选择年级--</option>
+	                </select>
+                  </div>
+                  <div class="f-l" style="width: 44%">
+                    <span>院校：</span>
+                    <select class="select" size="1" id="unvsId" name="unvsId" >
+                      <option value="" selected>--请选择院校--</option>
+                    </select>
+                  </div>
+                  <div class="f-r mr-5" style="position: absolute; right: 0;">
+                    <a class="btn btn-primary radius" style="width: 38px !important;" href="javascript:;" onclick="_search()">
+                      <i class="Hui-iconfont">&#xe665;</i>
+                    </a>
+                    <a class="btn btn-normal-outline radius"  onclick="_reset()" href="javascript:;">
+                      <i class="Hui-iconfont Hui-iconfont-huanyipi"></i>
+                    </a>
+                  </div>
+                </div>
+                
+                <div class="cl">
+                  <div class="f-l" style="width: 44%">
+                    <span>专业层次：</span>
+                    <select class="select" size="1" name="pfsnLevel" id="pfsnLevel">
+                    </select>
+                  </div>
+                  <div class="f-l" style="width: 44%">
+                    <span>专业:</span>
+			        <select class="select" size="1" id="pfsnId" name="pfsnId">
+					</select>
+                  </div>
+                </div>
+                
+                
+                 <div class="cl">
+                  <div class="f-l" style="width: 44%">
+                    <span>学期:</span>
+	                <select class="select" size="1" id="semester" name="semester">
+	                  <option value="" selected>--请选择学期--</option>
+	                </select>
+                  </div>
+                </div>
+                <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+                  <p>
+                    <i class="iconfont icon-xiala"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            
+            <div class="mt-10 bg-fff" style="padding: 0 10px;">
+              <span class="l mt-5 mb-15">
+                <a href="javascript:;" onclick="addMore()" class="btn btn-normal-outline radius ml-5">
+                  <i class="Hui-iconfont">&#xe600;</i>
+                  批量添加
+                </a>
+              </span>
+              <table class="table table-border table-bordered table-hover table-bg table-sort" id="unSelectedTable">
+                <thead>
+                  <tr class="text-c">
+                    <th index="0" width="25"><input type="checkbox" name="all" value=""></th>
+                    <th index="1" width="100">教学计划</th>
+                    <th index="2" width="40">类型</th>
+                    <th index="3" width="150">专业</th>
+                    <th index="4" width="30">操作</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+          <div class="f-r halfPage ">
+            <p>已选列表</p>
+            <div class="mt-10 bg-fff" style="padding: 0 10px;">
+              <span class="l mt-5 mb-15">
+                <a href="javascript:;" onclick="delMore()" class="btn btn-normal-outline radius ml-5">
+                  <i class="Hui-iconfont">&#xe600;</i>
+                  批量删除
+                </a>
+              </span>
+              <table class="table table-border table-bordered table-hover table-bg table-sort" id="selectedTable">
+                <thead>
+                  <tr class="text-c">
+                    <th index="0" width="25"><input id="sAll" type="checkbox" name="sAll" value=""></th>
+                    <th index="1" width="100">教学计划</th>
+                    <th index="2" width="40">类型</th>
+                    <th index="3" width="150">专业</th>
+                    <th index="4" width="30">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-r mt-10 mb-10">
+      <input id="bt_submit" type="button" class="submit btn btn-primary radius" value="保存" />
+      <input type="button" class="previous btn btn-normal-outline radius mr-10" value="取消" id="bt_cancel" />
+    </div>
+    <br>
+    <br>
+    <br>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:inline="javascript">
+  var selectedList = [[${selectedList}]];
+  </script>
+  <script type="text/javascript" th:src="@{/js/webjs/educational/course/course_tp_select.js}"></script>
+</body>
+</html>

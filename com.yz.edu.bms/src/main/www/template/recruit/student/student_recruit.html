@@ -1,0 +1,183 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+  <article class="page-container">
+    <form method="post" class="form form-horizontal yz-form-box" id="form-recruit-info">
+      <input type="hidden" name="learnId" th:value="${enroll.learnId}" />
+      <input type="hidden" name="recruitType" id="recruitType" th:value="${enroll.recruitType}" />
+      <!--------基本信息------->
+      <div class="form">
+        <div class="cl">
+          <div class="fullPage">
+            <p>报读资料</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">报考层次：</label>
+              <div class="formControls col-xs-8 col-sm-9" id="pfsnLevelBox">
+                <span id="pfsnLevel"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">入学年级：</label>
+              <div class="formControls col-xs-8 col-sm-9" id="gradeBox">
+                <span id="grade"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">第一志愿：</label>
+              <div class="formControls col-xs-8 col-sm-9" id="firstBox">
+                <span id="wish"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">第二志愿：</label>
+              <div class="formControls col-xs-8 col-sm-9" id="secondBox">
+                <span id="sec_wish"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">入学形式：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="enrollType" name="enrollType" style="width: 100%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span th:if="${enroll.recruitType}=='1'" class="c-red">*</span>加分类型：</label>
+              <div class="formControls col-xs-8 col-sm-9 skin-minimal" id="bpTypeBox"></div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span th:if="${enroll.recruitType}=='1'" class="c-red">*</span>加分数：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入加分数" id="points" name="points" />
+              </div>
+            </div>
+          </div>
+          <div class="fullPage mt-10">
+            <p>费用及优惠</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">优惠类型：</label>
+              <div class="formControls col-xs-8 col-sm-9" id="scholarshipBox">
+                <span id="scholarship"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">收费标准：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <div class="bg-fff">
+                  <table id="feeTable" class="table table-border table-bordered table-hover table-bg table-sort">
+                    <thead>
+                      <tr class="text-l">
+                        <th width="200">收费项目</th>
+                        <th width="200">收费金额(元)</th>
+                        <th width="200">优惠金额(元)</th>
+                        <th width="200">应缴金额(元)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot>
+                      <tr class="text-l">
+                        <td>总计</td>
+                        <td></td>
+                        <td></td>
+                        <td id="fee_total">9600</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"></span>收费标准说明：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="offerRemark"> </span>
+              </div>
+            </div>
+          </div>
+          <div class="fullPage mt-10">
+            <p>报读资料</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">学员阶段：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="stdStage"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">学籍编号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="stdNo"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">高校学号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="schollRoll"></span>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">招生老师：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="recruitName"></span>
+                <input class="btn btn-secondary radius ml-10" type="button" value="&nbsp;分配&nbsp;" onclick="showDistrictBox('ZSLS');" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">班主任：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="tutorName"></span>
+                <input class="btn btn-secondary radius ml-10" type="button" value="&nbsp;分配&nbsp;" onclick="showDistrictBox('FDY');" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">报读信息创建时间：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="createTime"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-r mt-10">
+        <input id="bt_submit" type="submit" class="submit btn btn-primary radius" value="保存" />
+        <input type="button" class="previous btn btn-normal-outline radius mr-10" value="取消" id="bt_cancel" onclick="layer_close();" />
+      </div>
+      <input type="hidden" name="recruitEmpId" id="recruitEmpId" />
+      <input type="hidden" name="recruitDpId" id="recruitDpId" />
+      <input type="hidden" name="recruitCampusId" id="recruitCampusId" />
+      <input type="hidden" name="recruitCampusManager" id="recruitCampusManager" />
+      <input type="hidden" name="tutorEmpId" id="tutorEmpId" />
+      <input type="hidden" name="tutorDpId" id="tutorDpId" />
+      <input type="hidden" name="tutorCampusId" id="tutorCampusId" />
+      <input type="hidden" name="tutorCampusManager" id="tutorCampusManager" />
+    </form>
+    <!-- 基础信息JS -->
+  <script type="text/javascript" th:inline="javascript">
+  	  var enroll=[[${enroll}]];
+  	  var updateUrl=[[${updateUrl}]];
+  	  var recruitEmpInfo=[[${recruitEmpInfo}]];
+  	  var feeInfo_global= [[${feeInfo}]];
+  </script>
+  <script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_recruit.js}"></script>
+  </article>
+</body>
+</html>

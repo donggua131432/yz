@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="Bookmark" href="/favicon.ico">
+	<link rel="Shortcut Icon" href="/favicon.ico" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="lib/html5shiv.js"></script>
+	<script type="text/javascript" src="lib/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+	<!--[if IE 6]>
+	<title>现场确认学员修改</title>
+	<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+	<![endif]-->
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:inline="javascript">
+        $(function() {
+            $("#recruitTypeSpan").text(_findDict("recruitType", [[${resultMap['recruit_type']}]]));
+			$("#spanVolunteer").text([[${resultMap['unvs_name']}]]+"["+_findDict("pfsnLevel", [[${resultMap['pfsn_level']}]])+
+				"]"+[[${resultMap['pfsn_name']}]]+([[${resultMap['pfsn_code']}]]));
+			$("#spanStdStage").text(_findDict("stdStage", [[${resultMap['std_stage']}]]));
+
+			var proxyPay=[[${resultMap['proxy_pay']}]], networkPay=[[${resultMap['network_pay']}]], isArrange=[[${resultMap['is_arrange']}]],
+                isPrintNotice=[[${resultMap['is_print_notice']}]], isPrintProve=[[${resultMap['is_print_prove']}]], isExamNotice=[[${resultMap['is_exam_notice']}]],
+                isExamSign=[[${resultMap['is_exam_sign']}]], testProveUrl=[[${resultMap['test_prove_url']}]], testProveStatus=[[${resultMap['test_prove_status']}]];
+
+			$("#spanProxyPay").text((proxyPay=='1') ? "已代缴":"未代缴");
+            $("#spanNetworkPay").text((networkPay=='1') ? "已缴费":"未缴费");
+            $("#spanIsArrange").text((isArrange=='1') ? "已预约":"未预约");
+            $("#spanIsPrintNotice").text((isPrintNotice=='1') ? "已通知":"未通知");
+            $("#spanIsExamNotice").text((isExamNotice=='1') ? "已通知":"未通知");
+            $("#spanIsExamSign").text((isExamSign=='1') ? "已签到":"未签到");
+
+            if(testProveStatus == '1'){
+                $("#testProveUrlDiv").append("<a href='http://yzimstest.oss-cn-shenzhen.aliyuncs.com"+testProveUrl+"'>查看准考证</a>");
+			}else{
+                $("#testProveUrlDiv").append("<span>无准考证</span>");
+			}
+
+            $("#formSceneConfirm").validate({
+                rules : {
+                    followRecord : {
+                        required : true,
+                        maxlength : 50
+                    }
+                },
+                onkeyup : false,
+                focusCleanup : true,
+                success : "valid",
+                submitHandler : function(form) {
+                    $(form).ajaxSubmit({
+                        type : "post", //提交方式
+                        dataType : "json", //数据类型
+                        url : [[@{/sceneConfirm/updateSceneConfirmStd.do}]], //请求url
+                        success : function(data) { //提交成功的回调函数
+                            if ('00' == data.code) {
+                                layer.msg('信息保存成功', {
+                                    icon : 1,
+                                    time : 1000
+                                },function () {
+									window.parent.myDataTable.fnDraw(false);
+                                    layer_close();
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+	</script>
+
+</head>
+<body>
+	<article class="page-container">
+		<form id="formSceneConfirm" class="form form-horizontal">
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">学员信息：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<dt><span>招生类型：</span><span id="recruitTypeSpan"></span></dt>
+					<dt><span>学员姓名：</span><span th:text="*{resultMap['std_name']}"></span></dt>
+					<dt><span>身份证号：</span><span th:text="*{resultMap['id_card']}"></span></dt>
+					<dt><span>年级：</span><span th:text="*{resultMap['grade']}"></span></dt>
+					<dt><span>志愿：</span><span id="spanVolunteer"></span></dt>
+					<dt><span>学员状态：</span><span id="spanStdStage"></span></dt>
+					<dt><span>招生老师：</span><span th:text="*{resultMap['recruit_name']}"></span></dt>
+					<dt><span>考试区县：</span><span th:text="*{resultMap['ta_name']}"></span></dt>
+					<dt><span>联系电话：</span><span th:text="*{resultMap['mobile']}"></span></dt>
+					<dt><span>地址：</span><span th:text="*{resultMap['address']}"></span></dt>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">报名号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span th:text="*{resultMap['apply_no']}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">预报名密码：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<!--<span th:text="*{resultMap['apply_pwd']}"></span>-->
+					<span>******</span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否代缴：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanProxyPay"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否网报缴费：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanNetworkPay"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">考试地点：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span th:text="*{resultMap['test_address']}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否预约：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanIsArrange"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">预约内容：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span th:text="*{resultMap['arrange_context']}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否收到打印通知：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanIsPrintNotice"></span>
+				</div>
+			</div>
+			<!--<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否已打印准考证：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanIsPrintProve"></span>
+				</div>
+			</div>-->
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否收到参考通知：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanIsExamNotice"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">是否参考签到：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="spanIsExamSign"></span>
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">准考证：</label>
+				<div class="formControls col-xs-8 col-sm-9" id="testProveUrlDiv">
+
+				</div>
+			</div>
+
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">跟进记录：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="hidden" id="stdId" name="stdId" th:value="*{resultMap['std_id']}"/>
+					<input type="hidden" id="learnId" name="learnId" th:value="*{resultMap['learn_id']}"/>
+					<textarea  class="input-text" placeholder="请输入描述" id="followRecord" name="followRecord" th:value="*{resultMap['follow_record']}"></textarea>
+				</div>
+			</div>
+			<div class="text-c mt-10">
+				<input class="btn btn-success radius inputW9 mr-10	" type="submit" value="提交">
+				<input class="btn btn-normal-outline radius inputW9" type="button" value="取消" onclick="layer_close();">
+			</div>
+		</form>
+	</article>
+</body>
+</html>

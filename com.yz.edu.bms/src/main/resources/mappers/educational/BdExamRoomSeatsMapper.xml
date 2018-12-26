@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdExamRoomSeatsMapper">
+    <resultMap id="ExamRoomSeatsMap" type="java.util.Map">
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+        <result column="ep_name" property="epName" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="place_name" property="placeName" jdbcType="VARCHAR"/>
+        <result column="es_num" property="esNum" jdbcType="VARCHAR"/>
+        <result column="eyp_code" property="eypCode" jdbcType="VARCHAR"/>
+        <result column="sign_status" property="signStatus" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="SeatsInfoMap" type="java.util.Map">
+        <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+        <result column="es_num" property="esNum" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="eyp_code" property="eypCode" jdbcType="VARCHAR"/>
+        <result column="sign" property="sign" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findAllExamRoomSeats" resultMap="ExamRoomSeatsMap"
+            parameterType="com.yz.model.educational.ExamRoomSeatsQuery">
+        SELECT
+        c.std_name,
+        b.std_no,
+        b.grade,
+        b.recruit_type,
+        d.unvs_name,
+        e.pfsn_code,
+        e.pfsn_name,
+        e.pfsn_level,
+        g.exam_year,
+        h.ep_name,
+        DATE_FORMAT(f.start_time, '%Y-%m-%d %p %H:%i') start_time,
+        DATE_FORMAT(f.end_time, '%H:%i') end_time,
+        i.place_name,
+        a.es_num,
+        j.eyp_code,
+        k.sign_status
+        FROM
+        bd_exam_seats a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_university d ON b.unvs_id = d.unvs_id
+        LEFT JOIN bd_unvs_profession e ON b.pfsn_id = e.pfsn_id
+        LEFT JOIN bd_place_year f ON a.py_id = f.py_id
+        LEFT JOIN bd_exam_year g ON g.ey_id = f.ey_id
+        LEFT JOIN bd_exam_place h ON f.place_id = h.ep_id
+        LEFT JOIN bd_place_info i ON a.place_id = i.place_id
+        LEFT JOIN bd_exam_year_profession j ON j.ey_id = g.ey_id
+        AND j.grade = b.grade
+        AND j.unvs_id = b.unvs_id
+        AND j.pfsn_level = e.pfsn_level
+        AND j.pfsn_id = b.pfsn_id
+        LEFT JOIN bd_student_exam_affirm k
+        ON a.learn_id = k.learn_id and a.py_id = k.py_id and g.ey_id = k.ey_id
+        WHERE 1=1
+        <if test="stdName != null and ''!= stdName">
+            AND c.std_name LIKE CONCAT('%',#{stdName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="idCard != null and ''!= idCard">
+            AND c.id_card LIKE CONCAT('%',#{idCard,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="mobile != null and ''!= mobile">
+            AND c.mobile LIKE CONCAT('%',#{mobile,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="unvsId != null and ''!= unvsId">
+            AND b.unvs_id = #{unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnId != null and ''!= pfsnId">
+            AND e.pfsn_id= #{pfsnId,jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnLevel != null and ''!= pfsnLevel">
+            AND e.pfsn_level = #{pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="grade != null and ''!= grade">
+            AND b.grade = #{grade,jdbcType=VARCHAR}
+        </if>
+        <if test="placeId != null and ''!= placeId">
+            AND f.place_id = #{placeId,jdbcType=VARCHAR}
+        </if>
+        <if test="eyId != null and ''!= eyId">
+            AND g.ey_id = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and ''!= startTime">
+            AND DATE_FORMAT(f.start_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and ''!= endTime">
+            AND DATE_FORMAT(f.end_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+        <if test="recruitType != null and ''!= recruitType">
+            AND b.recruit_type = #{recruitType,jdbcType=VARCHAR}
+        </if>
+        order by a.place_Id desc,a.es_Num desc
+    </select>
+
+    <select id="getExamSeatsInfo" resultMap="SeatsInfoMap">
+        SELECT
+        a.learn_id,
+        h.es_num,
+        g.std_name,
+        b.std_no,
+        b.grade,
+        c.unvs_name,
+        CASE d.pfsn_level
+        WHEN 1 THEN
+        '本科'
+        WHEN 5 THEN
+        '专科'
+        END pfsn_level,
+        d.pfsn_name,
+        f.eyp_code,
+        '' sign
+        FROM
+        bd_student_exam_affirm a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_university c ON b.unvs_id = c.unvs_id
+        LEFT JOIN bd_unvs_profession d ON b.pfsn_id = d.pfsn_id
+        LEFT JOIN bd_exam_year_profession f ON f.ey_id = a.ey_id
+        AND f.grade = b.grade
+        AND f.unvs_id = b.unvs_id
+        AND f.pfsn_level = d.pfsn_level
+        AND f.pfsn_id = b.pfsn_id
+        LEFT JOIN bd_student_info g ON b.std_id = g.std_id
+        LEFT JOIN bd_exam_seats h ON b.learn_id = h.learn_id
+        AND a.py_id = h.py_id
+        WHERE 1=1
+        <if test="pyId != null and ''!= pyId">
+            AND a.py_id  = #{pyId,jdbcType=VARCHAR}
+        </if>
+        <if test="placeId != null and ''!= placeId">
+            AND h.place_id = #{placeId,jdbcType=VARCHAR}
+        </if>
+        ORDER BY
+        eyp_code ASC,
+        std_no ASC,
+        es_num ASC
+    </select>
+
+    <select id="getPlaceMaxCount" parameterType="java.lang.String" resultType="java.util.Map">
+        select max_count maxCount,place_id placeId from bd_place_info where py_id = #{pyId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertExamRoomSeatList" >
+        INSERT INTO `bms`.`bd_exam_seats` (`es_id`, `es_num`, `place_id`, `learn_id`, `py_id`, `create_user_id`, `create_time`, `create_user`)
+        values
+        <foreach collection="examSeatsList" item="info" separator=",">
+            (
+            #{info.esId, jdbcType=VARCHAR},
+            #{info.esNum, jdbcType=VARCHAR},
+            #{info.placeId, jdbcType=VARCHAR},
+            #{info.learnId, jdbcType=VARCHAR},
+            #{info.pyId, jdbcType=VARCHAR},
+            #{info.createUserId, jdbcType=VARCHAR},
+            #{info.createTime, jdbcType=TIMESTAMP},
+            #{info.createUser, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    
+    <delete id="deleteExamRoomSeats">
+        DELETE a FROM bd_exam_seats a
+        JOIN bd_place_year b
+        ON a.py_id = b.py_id
+        WHERE 1=1
+        <if test="eyId != null and ''!= eyId">
+            AND b.ey_id  = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="epId != null and ''!= epId">
+            AND b.place_id  = #{epId,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and ''!= startTime">
+            AND b.start_time  = #{startTime,jdbcType=VARCHAR}
+        </if>
+        <if test="endTime != null and ''!= endTime">
+            AND b.end_time  = #{endTime,jdbcType=VARCHAR}
+        </if>
+    </delete>
+
+    <select id="findPlaceInfo" resultType="java.util.Map">
+        SELECT
+        b.place_id dictValue,
+        place_name dictName
+        FROM
+        bd_place_year a
+        JOIN bd_place_info b ON a.py_id = b.py_id
+        <if test="eyId != null and ''!= eyId">
+            AND a.ey_id  = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="epId != null and ''!= epId">
+            AND a.place_id  = #{epId,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and ''!= startTime">
+            AND a.start_time  = #{startTime,jdbcType=VARCHAR}
+        </if>
+        <if test="endTime != null and ''!= endTime">
+            AND a.end_time  = #{endTime,jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

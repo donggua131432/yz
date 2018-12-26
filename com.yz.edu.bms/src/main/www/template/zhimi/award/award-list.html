@@ -1,0 +1,164 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>智米赠送规则</title>
+</head>
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+   智米管理
+    <span class="c-gray en">/</span>
+   赠送规则
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="iconfont icon-shuaxin"></i>
+    </a>
+  </nav>
+  <div class="page-container">
+    <div class="text-l search" style="position: relative">
+      <div class="cl">
+        <div class="cl">
+          <div class="f-l">
+            <span>规则分组：</span>
+            <select class="select" size="1" id="ruleGroup" name="ruleGroup">
+            	<option value="" selected>--规则分组--</option>
+            </select>
+          </div>
+          <div class="f-l">
+            <span>规则代号：</span>
+            <input type="text" id="ruleCode" name="ruleCode" class="input-text radius ml-10" placeholder="输入规则代号" />
+          </div>
+          <div class="f-l">
+            <span>规则描述：</span>
+            <input type="text" id="ruleDesc" name="ruleDesc" class="input-text radius ml-10" placeholder="输入规则描述" />
+          </div>
+          <div class="f-r mr-5">
+            <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" />
+            <i class="iconfont icon-sousuo"></i>
+        	    搜索
+            </a>
+            <a class="btn btn-normal-outline radius" href="javascript:" onclick="_reset();">
+              <i class="iconfont icon-shuaxin"></i>
+            </a>
+          </div>
+        </div>
+        <div class="cl">
+         <div class="f-l">
+            <span>智米数：</span>
+            <input type="text" id="zhimiCount" name="zhimiCount" class="input-text radius ml-10" placeholder="输入智米数" />
+          </div>
+          <div class="f-l">
+            <span>是否启用：</span>
+            <select class="select" size="1" id="isAllow" name="isAllow">
+              <option></option>
+              <option value="0">否</option>
+              <option value="1">是</option>
+            </select>
+          </div>
+          <div class="f-l">
+            <span>启用时间起：</span>
+            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="startTime" name="startTime" class="input-text Wdate"/>
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+            <span>启用时间止：</span>
+            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="endTime" name="endTime" class="input-text Wdate"/>
+          </div>
+          <div class="f-l">
+            <span>是否互斥：</span>
+            <select class="select" size="1" id="isMutex" name="isMutex">
+              <option></option>
+              <option value="0">是</option>
+              <option value="1">否</option>
+            </select>
+          </div>
+          <div class="f-l">
+            <span>是否可以重复赠送：</span>
+            <select class="select" size="1" id="isRepeat" name="isRepeat">
+              <option></option>
+              <option value="0">是</option>
+              <option value="1">否</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+          <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+            <i class="iconfont icon-xiala"></i>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-1">
+      <div class="cl pd-15 bg-1">
+        <span class="l mt-15 mb-15">
+          <a href="javascript:;" onclick="edit('ADD')" class="btn btn-primary radius">
+            <i class="iconfont icon-tianjia"></i>
+          	  新增
+          </a>
+        </span>
+        <div class="mt-35 bg-fff">
+          <table class="table table-border table-bordered table-hover table-bg table-sort">
+            <thead>
+              <tr class="text-c">
+              	<th index="0" width="80">规则分组</th>
+                <th index="1" width="40">规则编码</th>
+                <th index="2" width="80">规则描述</th>
+                <th index="3" width="40">智米数</th>
+                <th index="4" width="40">活跃度</th>
+                <th index="5" width="80">启用时间起</th>
+                <th index="6" width="80">启用时间止</th>
+                <th index="7" width="40">是否互斥</th>
+                <th index="8" width="40">是否可以重复赠送</th>
+                <th index="9" width="20">排序</th>
+                <th index="10" width="100">最后修改人</th>
+                <th index="11" width="80">最后修改时间</th>
+                <th index="12" width="100">创建人</th>
+                <th index="13" width="80">创建时间</th>
+                <th index="14" width="100">是否启用</th>
+                <th index="15" width="100">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/zhimi/award/award-list.js}"></script>
+  
+</body>
+</html>

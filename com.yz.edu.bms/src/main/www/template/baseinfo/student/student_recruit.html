@@ -1,0 +1,312 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+	 <script type="text/javascript" th:inline="javascript">
+      $(function() {
+          $("#pfsnLevel").text(_findDict('pfsnLevel',[[${enroll.pfsnLevel}]]));
+          $("#grade").text(_findDict('grade',[[${enroll.grade}]]));
+
+          var wish = '';
+          wish += [[${enroll.unvsName}]] + '(' + [[${enroll.unvsCode}]] + ') / ';
+          wish += '[' + _findDict('pfsnLevel', [[${enroll.pfsnLevel}]]) + ']' + '-[' + _findDict('grade', [[${enroll.grade}]]) + ']';
+          wish += [[${enroll.pfsnName}]] + '(' + [[${enroll.pfsnCode}]] + ') / ';
+          wish += [[${enroll.taName}]] + '(' + [[${enroll.taCode}]] + ')';
+
+          $("#wish").text(wish);
+          
+          
+          var wish = '';
+          if([[${enroll.unvsName}]]){
+        	 	wish += [[${enroll.unvsName}]]||'' + '(' + [[${enroll.unvsCode}]]||'' + ') / ';
+          }
+          if([[${enroll.pfsnLevel}]]){
+          		wish += '[' + _findDict('pfsnLevel', [[${enroll.pfsnLevel}]]) + ']' +'-';
+          }
+          if([[${enroll.grade}]]){
+          		wish += '[' + _findDict('grade', [[${enroll.grade}]]) + ']';
+          }
+          if([[${enroll.pfsnName}]]){
+        	  	wish += [[${enroll.pfsnName}]] + '(' + [[${enroll.pfsnCode}]] + ')  ';
+          }
+          if([[${enroll.taName}]]){
+          		wish +='/ '+ [[${enroll.taName}]] ||''+ '(' + [[${enroll.taCode}]]+ ')';
+          }
+
+          $("#wish").text(wish);
+          
+          
+
+          var secWishText = '';
+          if([[${enroll.secUnvsName}]]) {
+            secWishText += [[${enroll.secUnvsName}]] + '(' + [[${enroll.secUnvsCode}]] + ') / ';
+            secWishText += '[' + _findDict('pfsnLevel', [[${enroll.pfsnLevel}]]) + ']' + '-[' + _findDict('grade', [[${enroll.grade}]]) + ']';
+            secWishText += [[${enroll.secPfsnName}]] + '(' + [[${enroll.secPfsnCode}]] + ') / ';
+            secWishText += [[${enroll.secTaName}]] + '(' + [[${enroll.secTaCode}]] + ')';
+          }
+
+          if(secWishText) {
+              $("#sec_wish").text(secWishText);
+          } else {
+              $("#sec_wish").text('无');
+          }
+
+          $("#scholarship").text(_findDict('scholarship', [[${enroll.scholarship}]]));
+
+          _init_select("enrollType", dictJson.enrollType, [[${enroll.enrollType}]]);
+
+          _init_radio_box('bpTypeBox', 'bpType', dictJson.bpType, [[${enroll.bpType}]]);
+
+          $("#points").val([[${enroll.points}]]);
+
+          var feeInfo = [[${feeInfo.feeInfo}]];
+          if(feeInfo) {
+              $("#offerRemark").text(feeInfo.offerRemark ? feeInfo.offerRemark : '无');
+          }
+
+          $("#fee_total").text([[${feeInfo.feeTotal}]]);
+          var feeList = [[${feeInfo.feeList}]];
+          if(feeList) {
+            $.each(feeList, function(index, data) {
+
+                var _feeAmount = data.amount;
+                if(_feeAmount) {
+                  var dom = '<tr class="text-l">';
+                  var itemName = getItemName(data.itemName,$("#grade").text());
+                  dom += '<td>' + data.itemCode + ':' + itemName + '</td>';
+                  dom += '<td>' + data.amount + '</td>';
+                  dom += '<td>' + data.discount + '</td>';
+                  dom += '<td>' + data.payable + '</td>';
+                  dom += '</tr>';
+                  $("#feeTable").find("tbody").append(dom);
+                }
+            });
+          } else {
+              $("#feeTable").find("tbody").append('<tr class="odd"><td valign="top" colspan="8" class="dataTables_empty"><div style="text-align:center;font:bold 13px/22px arial,sans-serif;color:red;">没有检索到数据！</div></td></tr>');
+          }
+
+          $("#stdNo").text([[${recruitEmpInfo.stdNo}]] ? [[${recruitEmpInfo.stdNo}]] : '无');
+          $("#schollRoll").text([[${recruitEmpInfo.schollRoll}]] ? [[${recruitEmpInfo.schollRoll}]] : '无');
+          $("#stdStage").text(_findDict('stdStage', [[${recruitEmpInfo.stdStage}]]));
+
+
+          var campusName = '';
+          var dpName = '';
+          var empStatus = '';
+          var recruitText = '';
+          var recruitName = [[${recruitEmpInfo.recruitName}]];
+          if(recruitName) {
+              campusName = [[${recruitEmpInfo.recruitCampusName}]];
+              dpName = [[${recruitEmpInfo.recruitDpName}]];
+              empStatus = [[${recruitEmpInfo.recruitStatus}]];
+
+              if(campusName) {
+                  recruitText += '[' + campusName + '] — '
+              }
+
+              if(dpName) {
+                  recruitText += '[' + dpName + '] — '
+              }
+              recruitText += recruitName + '(' + _findDict('empStatus', empStatus) + ')';
+              $("#recruitName").text(recruitText);
+          } else {
+              $("#recruitName").text('无');
+          }
+
+          var tutorText = '';
+          var tutorName = [[${recruitEmpInfo.tutorName}]];
+          if(tutorName) {
+              campusName = [[${recruitEmpInfo.tutorCampusName}]];
+              dpName = [[${recruitEmpInfo.tutorDpName}]];
+              empStatus = [[${recruitEmpInfo.tutorStatus}]];
+
+              if(campusName) {
+                  tutorText += '[' + campusName + '] — '
+              }
+
+              if(dpName) {
+                  tutorText += '[' + dpName + '] — '
+              }
+
+              tutorText += tutorName + '(' + _findDict('empStatus', empStatus) + ')';
+              $("#tutorName").text(tutorText);
+          } else {
+              $("#tutorName").text('无');
+          }
+
+          if(parseInt([[${recruitEmpInfo.stdStage}]]) >= 6) {
+              $("#tutorName").siblings("input").show();
+          } else {
+              $("#tutorName").siblings("input").hide();
+          }
+      });
+
+
+  </script>
+	<article class="page-container">
+		<form method="post" class="form form-horizontal yz-form-box"
+			id="form-recruit-info">
+			<input type="hidden" name="learnId" th:value="${enroll.learnId}" />
+			<!--------基本信息------->
+			<div class="form">
+				<div class="cl">
+					<div class="fullPage">
+						<p>报读资料</p>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">报考层次：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="pfsnLevel"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">入学年级：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="grade"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">第一志愿：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="wish"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">第二志愿：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="sec_wish"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">入学形式：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<select class="select" id="enrollType" name="enrollType"
+									style="width: 100%" disabled="disabled">
+								</select>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3"><span
+								class="c-red">*</span>加分类型：</label>
+							<div class="formControls col-xs-8 col-sm-9 skin-minimal"
+								id="bpTypeBox" disabled="disabled"></div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3"><span
+								class="c-red">*</span>加分数：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<input type="text" class="input-text" placeholder="请输入加分数"
+									id="points" name="points" disabled="disabled" />
+							</div>
+						</div>
+					</div>
+					<div class="fullPage mt-10">
+						<p>费用及优惠</p>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">优惠类型：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="scholarship"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">收费标准：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<div class="bg-fff">
+									<table id="feeTable"
+										class="table table-border table-bordered table-hover table-bg table-sort">
+										<thead>
+											<tr class="text-l">
+												<th width="200">收费项目</th>
+												<th width="200">收费金额(元)</th>
+												<th width="200">优惠金额(元)</th>
+												<th width="200">应缴金额(元)</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+										<tfoot>
+											<tr class="text-l">
+												<td>总计</td>
+												<td></td>
+												<td></td>
+												<td id="fee_total">9600</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3"></span>收费标准说明：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="offerRemark"> </span>
+							</div>
+						</div>
+					</div>
+					<div class="fullPage mt-10">
+						<p>报读资料</p>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">学员阶段：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="stdStage"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">学籍编号：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="stdNo"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">高校学号：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="schollRoll"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">招生老师：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="recruitName"></span>
+							</div>
+						</div>
+						<div class="row cl">
+							<label class="form-label col-xs-4 col-sm-3">班主任：</label>
+							<div class="formControls col-xs-8 col-sm-9">
+								<span id="tutorName"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="recruitEmpId" id="recruitEmpId" /> <input
+				type="hidden" name="recruitDpId" id="recruitDpId" /> <input
+				type="hidden" name="recruitCampusId" id="recruitCampusId" /> <input
+				type="hidden" name="recruitCampusManager" id="recruitCampusManager" />
+			<input type="hidden" name="tutorEmpId" id="tutorEmpId" /> <input
+				type="hidden" name="tutorDpId" id="tutorDpId" /> <input
+				type="hidden" name="tutorCampusId" id="tutorCampusId" /> <input
+				type="hidden" name="tutorCampusManager" id="tutorCampusManager" />
+		</form>
+	</article>
+</body>
+</html>

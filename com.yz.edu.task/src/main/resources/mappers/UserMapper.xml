@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.UserMapper">
+	<!-- 根据用户Id查询员工信息 -->
+	<select id="getEmpInfo" resultType="java.util.HashMap"
+		parameterType="string">
+		SELECT
+		e.`emp_id` AS empId,
+		d.`dp_id` AS dpId,
+		c.`campus_id` AS campusId,
+		d.`emp_id` AS dpManager,
+		c.`emp_id` AS campusManager
+		FROM
+		`bms`.oa_employee e
+		LEFT JOIN `bms`.oa_employee_job j
+		ON j.`emp_id` = e.`emp_id`
+		LEFT JOIN `bms`.oa_department d
+		ON d.`dp_id` = j.`dp_id`
+		LEFT JOIN `bms`.oa_campus c
+		ON c.`campus_id` = j.`campus_id`
+		WHERE e.`user_id` = #{userId, jdbcType=VARCHAR}
+		AND e.`emp_status` in (1,3)
+	</select>
+
+	<!-- 根据电话号码/身份证号码查询 -->
+	<select id="getRecruit" resultType="java.util.HashMap">
+		SELECT
+		s.std_name AS `name`,
+		s.id_card AS idCard,
+		s.mobile,
+		s.std_id as stdId,
+		p.pfsn_level AS pfsnLevel,
+		l.pfsn_id AS pfsnId,
+		p.pfsn_name AS pfsnName,
+		l.unvs_id AS unvsId,
+		u.unvs_name AS unvsName,
+		l.scholarship,
+		l.grade,
+		r.recruit AS empId,
+		r.recruit_dp_id AS dpId,
+		r.recruit_campus_id AS campusId,
+		date_format(l.create_time, '%Y-%m-%d %H:%i:%s') AS enrollTime,
+		l.sg
+		FROM
+		`bms`.bd_learn_info l
+		INNER JOIN `bms`.bd_student_info s
+		ON s.std_id = l.std_id
+		INNER JOIN `bms`.bd_learn_rules r
+		ON r.learn_id = l.learn_id
+		INNER JOIN `bms`.oa_employee e
+		ON e.emp_id = r.recruit
+		INNER JOIN `bms`.bd_unvs_profession p ON p.pfsn_id = l.pfsn_id
+		INNER JOIN `bms`.bd_university u ON u.unvs_id = l.unvs_id
+		WHERE s.mobile =
+		#{mobile} and (#{idCard}='' or s.id_card = #{idCard})
+		AND e.emp_status in (1,3)
+		ORDER BY l.create_time DESC
+		LIMIT 0, 1
+	</select>
+	
+	<!-- 保存用户跟进记录 -->
+ <insert id="saveUsFollow" parameterType="com.yz.job.model.UsFollow" >
+    replace into us.us_follow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="dpId != null" >
+        dp_id,
+      </if>
+      <if test="dpManager != null" >
+        dp_manager,
+      </if>
+      <if test="campusId != null" >
+        campus_id,
+      </if>
+      <if test="campusManager != null" >
+        campus_manager,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpManager != null" >
+        #{dpManager,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null" >
+        #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusManager != null" >
+        #{campusManager,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+	<insert id="createUsFollowByPId">
+		replace into us.us_follow (
+		user_id,
+		emp_id,
+		dp_id,
+		dp_manager,
+		campus_id,
+		campus_manager)
+		select #{userId},
+		emp_id,
+		dp_id,
+		dp_manager,
+		campus_id,
+		campus_manager from us.us_follow where user_id =#{pId}
+	</insert>
+	
+	<!-- 根据用户，学员Id相互绑定 -->
+	<update id="bindUserStd">
+	    update us.us_base_info set std_id = #{stdId},relation = (relation | 4)  where user_id = #{userId};
+	    update bms.`bd_student_info` set user_id=#{userId} where std_id=#{stdId};
+	</update>
+   
+    <!-- 绑定之后根据stdId写入userId -->
+   	<update id="updateAccountUserIdByStdId">
+	    update goods.ats_account set user_id = #{userId}  where std_id=#{stdId}
+	</update>
+	
+	<!-- 查询招生老师对应的用户信息 -->
+	<select id="getUserInfoByEmpId" resultType="java.util.HashMap">
+		SELECT bind_id bindId,real_name realName FROM us.`us_base_info` WHERE emp_id=#{empId,jdbcType=VARCHAR} limit 1;
+	</select>
+	
+	<!-- 获取用户信息 -->
+	<select id="getUserInfoByUserId" resultType="java.util.HashMap">
+		SELECT bind_id bindId,real_name realName,mobile FROM us.`us_base_info` WHERE user_id=#{userId,jdbcType=VARCHAR} limit 1;
+	</select>
+	<!-- 根据邀约人获取招生老师id -->
+	<select id="getUsFollowByPId" resultType="java.lang.String">
+		select emp_id from us.us_follow where user_id =#{pId} limit 1;
+	</select>
+</mapper>

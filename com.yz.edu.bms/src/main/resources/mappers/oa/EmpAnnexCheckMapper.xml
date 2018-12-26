@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.oa.EmpAnnexCheckMapper">
+	
+	<resultMap id="AnnexMap" type="com.yz.model.oa.OaEmployeeAnnex">
+		<id column="annex_id" jdbcType="VARCHAR" property="annexId" />
+		<result column="emp_annex_type" jdbcType="VARCHAR" property="empAnnexType" />
+		<result column="emp_id" jdbcType="VARCHAR" property="empId" />
+		<result column="annex_name" jdbcType="VARCHAR" property="annexName" />
+		<result column="annex_url" jdbcType="VARCHAR" property="annexUrl" />
+		<result column="annex_status" jdbcType="VARCHAR" property="annexStatus" />
+		<result column="reason" jdbcType="VARCHAR" property="reason" />
+		<result column="is_require" jdbcType="VARCHAR" property="isRequire" />
+		<result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+		<result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+	</resultMap>
+
+	<select id="getAnnexList" resultMap="AnnexMap" parameterType="string">
+		SELECT 
+		  `annex_id`,
+		  `emp_annex_type`,
+		  `emp_id`,
+		  `annex_name`,
+		  `annex_url`,
+		  `annex_status`,
+		  `is_require`,
+		  date_format(update_time,'%Y-%m-%d %H:%i:%s') update_time,
+		  `update_user`,
+		  `reason` 
+		FROM
+		  `oa_employee_annex` a 
+		WHERE a.`emp_id` = #{empId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateAnnexInfo" parameterType="com.yz.model.oa.OaEmployeeAnnex">
+		update oa_employee_annex 
+		<set>
+			<if test="annexUrl != null">
+				annex_url = #{annexUrl, jdbcType=VARCHAR},
+			</if>
+			<if test="annexStatus != null and annexStatus != ''">
+				annex_status = #{annexStatus, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id = #{updateUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null and '' != reason">
+				reason = #{reason, jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime !=null and '' !=updateTime">
+				update_time =#{updateTime,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where annex_id = #{annexId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAnnexInfoForDel" parameterType="com.yz.model.oa.OaEmployeeAnnex">
+		update oa_employee_annex set annex_url='',annex_status='1',update_user='',update_user_id='',reason='',update_time=null
+		where annex_id = #{annexId, jdbcType=VARCHAR}
+	</update>
+
+</mapper>

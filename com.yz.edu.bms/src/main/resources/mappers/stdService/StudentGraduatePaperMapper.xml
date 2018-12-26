@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentGraduatePaperMapper">
+    <resultMap type="com.yz.model.stdService.StudentGraduatePaperInfo" id="StudentGraduatePaperMap">
+        <result column="gp_id" property="gpId" jdbcType="VARCHAR"/>
+        <result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+        <result column="paper_no" property="paperNo" jdbcType="VARCHAR"/>
+        <result column="guide_teacher" property="guideTeacher" jdbcType="VARCHAR"/>
+        <result column="guide_teacher_email" property="guideTeacherEmail" jdbcType="VARCHAR"/>
+        <result column="guide_teacher_phone" property="guideTeacherPhone" jdbcType="VARCHAR"/>
+        <result column="paper_title" property="paperTitle" jdbcType="VARCHAR"/>
+        <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+        <result column="paper_title" property="paperTitle" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+        <result column="is_upload" property="isUpload" jdbcType="VARCHAR"/>
+        <result column="paper_data_status" property="paperDataStatus" jdbcType="VARCHAR"/>
+        <result column="is_view" property="isView" jdbcType="VARCHAR"/>
+        <result column="school_department" property="schoolDepartment" jdbcType="VARCHAR"/>
+        <association column="learn_id" property="attachments" select="selectStudentAttachment" />
+    </resultMap>
+
+
+	<!-- 批量初始化 毕业论文及报告任务数据 -->
+	<insert id="addStuGraduatePaperInfo">
+		INSERT INTO oa_student_graduate_paper_task (gp_id,task_id,learn_Id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.gpId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	<!-- 单个初始化 毕业论文及报告任务数据 -->
+	<insert id="singleAddStuGraduatePaperInfo" parameterType="com.yz.model.stdService.StudentGraduatePaperInfo">
+		INSERT INTO oa_student_graduate_paper_task (gp_id,task_id,learn_Id,create_time) 
+        VALUES (#{gpId, jdbcType=VARCHAR},
+			 #{taskId, jdbcType=VARCHAR},
+			 #{learnId,jdbcType=VARCHAR},
+			 NOW())
+	</insert>
+	<!-- 批量删除 毕业论文及报告任务数据 -->
+	<delete id="delStuGraduatePaperInfo">
+		delete from oa_student_graduate_paper_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<!-- 单个删除 -->
+	<delete id="aloneDelStuGraduatePaperInfo">
+		delete from oa_student_graduate_paper_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+    <select id="findAllPaperList" resultMap="StudentGraduatePaperMap">
+        SELECT
+        a.gp_id,
+        c.std_name,
+        b.grade,
+        g.unvs_name,
+        h.pfsn_level,
+        h.pfsn_name,
+        h.pfsn_code,
+        b.school_roll,
+        d.task_title,
+        f.emp_name,
+        a.is_upload,
+        a.check_status,
+        a.remark,
+        a.paper_title,
+        a.paper_no,
+        c.id_card,
+        a.guide_teacher,
+        a.guide_teacher_email,
+        a.guide_teacher_phone,
+        b.learn_id,
+        b.unvs_id,
+        a.is_upload,
+        a.is_view,
+        a.paper_data_status,
+        a.school_department
+        FROM
+        oa_student_graduate_paper_task a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN oa_task_info d ON a.task_id = d.task_id
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.tutor = f.emp_id
+        LEFT JOIN bd_university g ON b.unvs_id = g.unvs_id
+        LEFT JOIN bd_unvs_profession h ON b.pfsn_id = h.pfsn_id
+        WHERE 1=1
+        <if test="queryInfo.gpId !=null and '' != queryInfo.gpId">
+            and a.`gp_id` = #{queryInfo.gpId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.paperNo !=null and '' != queryInfo.paperNo">
+            and a.`paper_no` like concat('%',#{queryInfo.paperNo,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.paperTitle !=null and '' != queryInfo.paperTitle">
+            and a.`paper_title` like concat('%',#{queryInfo.paperTitle,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+            and c.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+            and b.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+            and c.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+            and f.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.guideTeacher !=null and '' != queryInfo.guideTeacher">
+            and a.guide_teacher like concat('%',#{queryInfo.guideTeacher,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.guideTeacherEmail !=null and '' != queryInfo.guideTeacherEmail">
+            and a.guide_teacher_email like concat('%',#{queryInfo.guideTeacherEmail,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.guideTeacherPhone !=null and '' != queryInfo.guideTeacherPhone">
+            and a.guide_teacher_phone like concat('%',#{queryInfo.guideTeacherPhone,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+            and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.grade !=null and '' != queryInfo.grade">
+            and b.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+            and b.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+            and h.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+            and b.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.checkStatus !=null and '' != queryInfo.checkStatus">
+            and a.`check_status` = #{queryInfo.checkStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.paperDataStatus !=null and '' != queryInfo.paperDataStatus">
+            and a.`paper_data_status` = #{queryInfo.paperDataStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.hasCheck !=null and '' != queryInfo.hasCheck">
+            and a.`learn_id` in (
+              select learn_id from oa_student_graduate_paper_attachment where check_status = 0 and paper_upload_type !=0 group by learn_id
+            )
+        </if>
+        <if test="queryInfo.isRemark !=null and '' != queryInfo.isRemark">
+            <if test="queryInfo.isRemark == 0">
+                and a.remark is null
+            </if>
+            <if test="queryInfo.isRemark == 1">
+                and LENGTH(a.remark)>0
+            </if>
+        </if>
+        <if test="queryInfo.isUpload !=null and '' != queryInfo.isUpload">
+            and a.`is_upload` = #{queryInfo.isUpload,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.isView !=null and '' != queryInfo.isView">
+            and a.`is_view` = #{queryInfo.isView,jdbcType=VARCHAR}
+        </if>
+        <if test="user.userLevel != 1">
+            <choose>
+                <when test="user.userLevel == 6">
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </otherwise>
+            </choose>
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <update id="updateRemark">
+        UPDATE oa_student_graduate_paper_task SET remark= #{remark,jdbcType=VARCHAR}
+        WHERE gp_id =#{gpId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updatePaperStatus">
+        UPDATE oa_student_graduate_paper_task SET paper_data_status= #{paperDataStatus,jdbcType=VARCHAR}
+        WHERE gp_id =#{gpId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_paper;
+        CREATE TEMPORARY TABLE tmp_student_paper (
+        std_name VARCHAR (50),
+        grade VARCHAR (50),
+        id_card VARCHAR (50));
+        INSERT INTO tmp_student_paper (
+        std_name,
+        grade,
+        id_card
+        )
+        VALUES
+        <foreach collection="studentGraduatePaperInfoList" item="info" separator=",">
+            (
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+        d.std_name,
+        d.id_card,
+        a.gp_id
+        FROM
+        oa_student_graduate_paper_task a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        RIGHT JOIN tmp_student_paper d ON d.grade = b.grade
+        AND d.id_card = c.id_card
+        WHERE
+        gp_id IS NULL;
+    </select>
+
+    <insert id="insert">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_paper;
+        CREATE TEMPORARY TABLE tmp_student_paper (
+        grade VARCHAR (50),
+        id_card VARCHAR (50),
+        paper_no VARCHAR (50),
+        guide_teacher VARCHAR(50),
+        guide_teacher_email VARCHAR(50),
+        guide_teacher_phone VARCHAR(50),
+        paper_title VARCHAR(200),
+        school_department VARCHAR(50)
+        );
+        INSERT INTO tmp_student_paper
+        VALUES
+        <foreach collection="studentGraduatePaperInfoList" item="info" separator=",">
+            (
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.paperNo, jdbcType=VARCHAR},
+            #{info.guideTeacher, jdbcType=VARCHAR},
+            #{info.guideTeacherEmail, jdbcType=VARCHAR},
+            #{info.guideTeacherPhone, jdbcType=VARCHAR},
+            #{info.paperTitle, jdbcType=VARCHAR},
+            #{info.schoolDepartment, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        UPDATE oa_student_graduate_paper_task a
+        JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        JOIN bd_student_info c ON b.std_id = c.std_id
+        JOIN tmp_student_paper d ON d.grade = b.grade
+        AND d.id_card = c.id_card
+        SET a.paper_no = d.paper_no,
+        a.guide_teacher = d.guide_teacher,
+        a.guide_teacher_email = d.guide_teacher_email,
+        a.guide_teacher_phone = d.guide_teacher_phone,
+        a.paper_title = IFNULL(d.paper_title,a.paper_title),
+        a.school_department = d.school_department,
+        a.update_time = now(),
+        a.update_user= #{user.realName, jdbcType=VARCHAR},
+        a.update_user_id= #{user.userId, jdbcType=VARCHAR};
+    </insert>
+
+    <!-- 单个初始化 毕业论文及报告任务数据 -->
+    <insert id="insertAttachment" parameterType="com.yz.model.stdService.StudentAttachment">
+        DELETE FROM oa_student_graduate_paper_attachment WHERE  learn_id = #{learnId} and paper_upload_type = #{paperUploadType};
+        INSERT INTO oa_student_graduate_paper_attachment (attachment_id,learn_id,paper_upload_type,attachment_name,attachment_url,create_time)
+        VALUES (#{attachmentId, jdbcType=VARCHAR},
+        #{learnId, jdbcType=VARCHAR},
+        #{paperUploadType,jdbcType=VARCHAR},
+        #{attachmentName,jdbcType=VARCHAR},
+        #{attachmentUrl,jdbcType=VARCHAR},
+        NOW());
+    </insert>
+
+    <select id="selectCheckStudentAttachment" parameterType="java.lang.String" resultType="com.yz.model.stdService.StudentAttachment">
+        SELECT
+        attachment_id attachmentId,
+        attachment_name attachmentName,
+	    attachment_url attachmentUrl,
+	    comment_content commentContent,
+        comment_time commentTime,
+        check_status checkStatus,
+        date_format(create_time, '%Y-%m-%d %H:%i') createTime
+        FROM
+        oa_student_graduate_paper_attachment
+        WHERE learn_id = #{learnId} and check_status = 0 and paper_upload_type !=0
+    </select>
+
+    <select id="selectStudentAttachment" parameterType="java.lang.String" resultType="com.yz.model.stdService.StudentAttachment">
+        SELECT
+        attachment_id attachmentId,
+        attachment_name attachmentName,
+        attachment_url attachmentUrl,
+        comment_content commentContent,
+        date_format(comment_time, '%Y-%m-%d %H:%i') commentTime,
+        check_status checkStatus,
+        paper_upload_type paperUploadType
+        FROM
+        oa_student_graduate_paper_attachment
+        WHERE learn_id = #{learnId}
+    </select>
+
+    <select id="selectUserStudentAttachment" parameterType="java.lang.String" resultType="com.yz.model.stdService.StudentAttachment">
+        SELECT
+        attachment_id attachmentId,
+        attachment_name attachmentName,
+        attachment_url attachmentUrl,
+        comment_content commentContent,
+        date_format(comment_time, '%Y-%m-%d %H:%i') commentTime,
+        check_status checkStatus,
+        date_format(create_time, '%Y-%m-%d %H:%i') createTime
+        FROM
+        oa_student_graduate_paper_attachment
+        WHERE learn_id = #{learnId} and paper_upload_type !=0
+    </select>
+
+    <select id="getAttachmentById" parameterType="java.lang.String" resultType="com.yz.model.stdService.StudentAttachment">
+        SELECT
+        attachment_id attachmentId,
+        learn_id learnId,
+        attachment_name attachmentName,
+        attachment_url attachmentUrl,
+        comment_content commentContent,
+        comment_time commentTime
+        FROM
+        oa_student_graduate_paper_attachment
+        WHERE attachment_id = #{attachmentId}
+    </select>
+    
+    <update id="updateAttachment">
+        update oa_student_graduate_paper_attachment
+        <set >
+            <if test="commentContent != null and commentContent != ''" >
+                comment_content = #{commentContent},
+                comment_time = now(),
+            </if>
+            <if test="checkStatus != null and checkStatus != ''" >
+                check_status = #{checkStatus},
+            </if>
+        </set>
+        where attachment_id = #{attachmentId};
+    </update>
+    
+    <select id="countCheckSuccessAttachment" resultType="java.lang.Integer">
+        SELECT count(*) FROM oa_student_graduate_paper_attachment where learn_id = #{learnId} and check_status = 1 and paper_upload_type !=0
+    </select>
+
+    <update id="updatePaperCheckStatus">
+        update oa_student_graduate_paper_task set check_status =#{checkStatus}
+        where learn_id = #{learnId}
+    </update>
+
+    <select id="getLearnInfo" resultType="java.util.Map">
+      SELECT
+        a.unvs_id,
+        b.pfsn_level
+     FROM
+        bd_learn_info a
+     JOIN bd_unvs_profession b ON a.pfsn_id = b.pfsn_id
+     where a.learn_id = #{learnId}
+    </select>
+    
+    <select id="checkIfExistByLearnId" resultType="java.lang.Integer">
+    	select count(1) from oa_student_graduate_paper_task where learn_id = #{learnId,jdbcType=VARCHAR}
+    </select>
+</mapper>

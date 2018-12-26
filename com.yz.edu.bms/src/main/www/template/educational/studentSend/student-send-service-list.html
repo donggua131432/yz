@@ -1,0 +1,407 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>教材发放</title>
+  <style>
+    .select2-container.select2-container--default.select2-container--open{
+      z-index:99999999;
+    }
+  </style>
+</head>	
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+    学员服务
+    <span class="c-gray en">/</span>
+    教材发放
+    <span class="c-gray en"></span>
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="iconfont icon-shuaxin"></i>
+    </a>
+  </nav>
+  <div id="tab_demo" class="HuiTab">
+    </br>
+    <div class="tabBar clearfix">
+      <span>地址审核</span>
+      <span>发放确认</span>
+    </div>
+    <div class="tabCon">
+      <div class="page-container">
+        <div class="text-l search" style="position: relative">
+          <div class="cl">
+            <div class="cl">
+              <div class="f-l">
+                <span>学员姓名:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入学员姓名" id="stdName">
+              </div>
+
+              <div class="f-l">
+                <span>手机号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入手机号" id="mobile">
+              </div>
+              <div class="f-l">
+                <span>身份证号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入身份证号" id="idCard">
+              </div>
+              <div class="f-r mr-5">
+                <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" />
+                <i class="iconfont icon-sousuo"></i>
+             		   搜索
+                </a>
+                <a class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:;">
+                  <i class="iconfont icon-shuaxin"></i>
+                </a>
+
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>年级:</span>
+                <select class="select" size="1" id="grade">
+                  <option value="" selected>--请选择年级--</option>
+                </select>
+              </div>
+              <div class="f-l">
+                <span>院校:</span>
+                <select class="select" size="1" id="unvsId" name="unvsId"></select>
+              </div>
+              <div class="f-l">
+                 <span>专业层次:</span> 
+                 <select class="select" size="1" id="pfsnLevel" name="pfsnLevel">
+                     <option value="" selected>--请选择专业层次--</option>
+                 </select>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>专业:</span>
+                 <select class="select" size="1" id="pfsnId" name="pfsnId"  disabled="disabled">
+                 </select>
+              </div>
+              <div class="f-l">
+				<span>招生类型:</span>
+				<select class="select" size="1" id="recruitType" name="recruitType">
+					<option value="" selected>--选择招生类型--</option>
+				</select>
+			 </div>
+              <div class="f-l">
+                <span>班主任:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入班主任" id="tutor">
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>审核状态:</span>
+                <select class="select" size="1" id="addressStatus">
+                  <option value="" selected>--请选择审核状态--</option>
+                </select>
+               </div>
+         	   <div class="f-l">
+               <span>任务名称:</span>
+	              <select class="select" size="1" id="taskId" name="taskId">
+	  				 <option value="" selected>--请选择任务--</option>
+	  			  </select>
+               </div>      
+               <div class="f-l">
+                <span>学期:</span>
+                <select class="select" size="1" id="semesterD" style="width:99%">
+                  <option value="" selected>--请选择学期--</option>
+                </select>
+              </div>
+			
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>是否完成:</span>
+                <select class="select" size="1" id="finishStatus" style="width:99%">
+                  <option value="" selected>--请选择完成状态--</option>
+                </select>
+              </div>
+              <div class="f-l">
+				<span>完成时间起:</span>
+				<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'finishTimeEnd\')}'})" id="finishTimeStart" name="finishTimeStart" class="input-text Wdate"/>
+			   </div>
+               <div class="f-l">
+				<span>完成时间止:</span>
+				<input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'finishTimeStart\')}'})" id="finishTimeEnd" name="finishTimeEnd" class="input-text Wdate"/>
+			   </div>
+            
+            </div>
+            <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+              <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                <i class="iconfont icon-xiala"></i>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-1">
+          <div class="cl bg-1">
+            <span class="l mt-15 mb-15">
+              <a href="javascript:;" onclick="importSendServ()" class="btn btn-success radius">
+                <i class="iconfont icon-daoru"></i>
+                导入地址
+              </a>
+              <a href="javascript:;" onclick="passAll()" class="btn btn-primary radius">
+                <i class="iconfont icon-shenhe"></i>
+                批量通过
+              </a>
+              <a href="javascript:;" onclick="rejectedAll()" class="btn btn-danger radius">
+                <i class="iconfont icon-shanchu"></i>
+                批量驳回
+              </a>
+            </span>
+            <div class="mt-35 bg-fff">
+              <table class="table table-border table-bordered table-hover table-bg table-sort">
+                <thead>
+                  <tr class="text-c">
+                    <th width="25"><input type="checkbox" name="all" value=""></th>
+                    <th width="50">学员</th>
+                    <th width="40">年级</th>
+                    <th width="40">学期</th>
+                    <th width="90">学服任务</th>
+                    <th width="40">联系人</th>
+                    <th width="40">手机</th>
+                    <th width="40">省市区</th>
+                    <th width="100">详细地址</th>
+                    <th width="40">地址更新时间</th>
+                    <th width="40">创建时间</th>
+                    <th width="40">审核状态</th>
+                    <th width="40">备注</th>
+                    <th width="60">操作</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tabCon">
+      <div class="page-container">
+        <div class="text-l search" style="position: relative">
+          <div class="cl">
+            <div class="cl">
+              <div class="f-l">
+                <span>学员姓名:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入学员姓名" id="stdNames">
+              </div>
+              <div class="f-l">
+                <span>手机号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入手机号" id="mobiles">
+              </div>
+              <div class="f-l">
+                <span>身份证号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入身份证号" id="idCards">
+              </div>
+              <div class="f-r mr-5">
+                <a class="btn btn-primary radius" href="javascript:;" onclick="_searchs();" />
+                <i class="iconfont icon-sousuo"></i>
+          		      搜索
+                </a>
+                <a class="btn btn-normal-outline radius" onclick="_reset();" href="javascript:;">
+                  <i class="iconfont icon-shuaxin"></i>
+                </a>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>年级:</span>
+                <select class="select" size="1" id="grades" style="width:99%">
+                  <option value="" selected>--请选择年级--</option>
+                </select>
+              </div>
+              <div class="f-l">
+                <span>院校:</span>
+                   <select class="select" size="1" id="unvsIds" name="unvsIds"></select>
+              </div>
+              <div class="f-l">
+                 <span>专业层次:</span> 
+                 <select class="select" size="1" id="pfsnLevels" name="pfsnLevels">
+                     <option value="" selected>--请选择专业层次--</option>
+                 </select>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>专业:</span>
+                  <select class="select" size="1" id="pfsnIds" name="pfsnIds"  disabled="disabled">
+                 </select>
+              </div>
+             <div class="f-l">
+				<span>招生类型:</span>
+				<select class="select" size="1" id="recruitTypes" name="recruitTypes">
+					<option value="" selected>--选择招生类型--</option>
+				</select>
+			 </div>
+              <div class="f-l">
+                <span>班主任:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入班主任" id="tutors">
+              </div>
+            </div>
+            <div class="cl">
+             <div class="f-l">
+                <span>教材是否发放:</span>
+                <select class="select" size="1" id="ifSendBook">
+                  <option value="" selected>--请选择审核状态--</option>
+                </select>
+             </div>
+             <div class="f-l">
+                <span>学期:</span>
+                <select class="select" size="1" id="semester" style="width:99%">
+                  <option value="" selected>--请选择学期--</option>
+                </select>
+              </div>
+              <div class="f-l">
+                <span>收件状态:</span>
+                <select class="select" size="1" id="receiveStatus" style="width:99%">
+                  <option value="" selected>--请选择收件状态--</option>
+                </select>
+              </div>
+            </div>
+            <div class="cl">
+              <div class="f-l">
+                <span>是否完成:</span>
+                <select class="select" size="1" id="finishStatuss" style="width:99%">
+                  <option value="" selected>--请选择完成状态--</option>
+                </select>
+              </div>
+              <div class="f-l">
+                <span>快递单号:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入单号" id="logisticsNo" name="logisticsNo">
+              </div>
+            </div>
+            <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+              <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                <i class="iconfont icon-xiala"></i>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-1">
+          <div class="cl bg-1">
+            <span class="l mt-15 mb-15">
+              <a href="javascript:;" onclick="okAll()" class="btn btn-primary radius">
+                <i class="iconfont icon-queren"></i>
+             		   批量确认
+              </a>
+            </span>
+            <div class="mt-35 bg-fff">
+              <table class="table table-border table-bordered table-hover table-bg table-sort-send">
+                <thead>
+                  <tr class="text-c">
+                    <th width="25"><input type="checkbox" name="all" class="checkAll" value=""></th>
+                    <th width="50">学员编号</th>
+                    <th width="100">学员姓名</th>
+                    <th width="40">快递单号</th>
+                    <th width="90">快递公司</th>
+                    <th width="80">收件信息</th>
+                    <th width="40">教材类型</th>
+                    <th width="40">寄出日期</th>
+                    <th width="100">发件人</th>
+                    <th width="80">是否收件</th>
+                    <th width="40">操作</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="rejectContent" style="display: none">
+  	  <input type="hidden" id="rejectReason" name="rejectReason">
+      <div class="row cl mt-15 form-horizontal">
+        <label class="form-label col-xs-4 col-sm-3 text-r">驳回原因：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <select class="select" size="1" id="rejectSelect" name="rejectSelect">
+            <option value="" selected>--选择驳回原因--</option>
+          </select>
+        </div>
+      </div>
+      <div class="row cl mt-10 form-horizontal otherReasonBox other-reason" style="display: none">
+        <label class="form-label col-xs-4 col-sm-3 text-r">其他原因：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <textarea class="textarea valid" placeholder="说点什么...最多输入100个字符" id="otherReject" name="otherReject" onkeyup="$.Huitextarealength(this,100)" disabled></textarea>
+          <p class="textarea-numberbar">
+            <em class="textarea-length">0</em>/100
+          </p>
+          <!--<input type="text" class="input-text radius" id="otherReject" style="width: 250px;" name="otherReject" disabled>-->
+        </div>
+      </div>
+  </div>
+  
+  <div id="addRemarkContent" style="display: none">
+      <div class="row cl mt-10 form-horizontal otherReasonBox">
+        <label class="form-label col-xs-4 col-sm-3 text-r">填写备注：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <input type="text" class="input-text radius" id="addRemark" style="width: 250px;" name="addRemark">
+        </div>
+      </div>
+  </div>
+  
+  <div id="addressContent" style="display: none">
+  	  <div class="row cl mt-10 form-horizontal otherReasonBox">
+        <label class="form-label col-xs-4 col-sm-3 text-r">收货人：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <input type="text" class="input-text radius" id="takeUserName" style="width: 250px;" name="takeUserName">
+        </div>
+      </div>
+      <div class="row cl mt-10 form-horizontal otherReasonBox">
+        <label class="form-label col-xs-4 col-sm-3 text-r">联系电话：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <input type="text" class="input-text radius" id="takeMobile" style="width: 250px;" name="takeMobile">
+        </div>
+      </div>	
+      <div class="row cl mt-15 form-horizontal">
+        <label class="form-label col-xs-4 col-sm-3 text-r">选择省市区：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+           <select class="select js-data-example-ajax" id="provinceCode" name="provinceCode" style="width: 30%"></select>
+           <select class="select" id="cityCode" name="cityCode" style="width: 30%"></select> 
+           <select class="select" id="districtCode" name="districtCode" style="width: 30%"></select>
+        </div>
+      </div>
+      <div class="row cl mt-10 form-horizontal otherReasonBox">
+        <label class="form-label col-xs-4 col-sm-3 text-r">详细地址：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <input type="text" class="input-text radius" id="detailAddress" style="width: 250px;" name="detailAddress">
+        </div>
+      </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/educational/studentSend/student-send-service-list.js}"></script>
+</body>
+</html>

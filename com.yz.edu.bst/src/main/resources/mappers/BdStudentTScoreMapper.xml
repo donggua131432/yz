@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdStudentTScoreMapper" >
+
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdStudentTScore" >
+    <id column="tscore_id" property="tscoreId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="semester" property="semester" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="score" property="score" jdbcType="VARCHAR" />
+    <result column="totalmark" property="totalmark" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
+    <result column="teacher" property="teacher" jdbcType="VARCHAR" />
+    <result column="is_pass" property="isPass" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ExcelResultMap" type="com.yz.model.educational.BdStudentTScoreYZ" >
+    <result column="std_name" property="sName" jdbcType="VARCHAR" />
+    <result column="id_card" property="IDNO" jdbcType="VARCHAR" />
+    <result column="std_id" property="StudentID" jdbcType="VARCHAR" />
+    <result column="learn_id" property="StudyID" jdbcType="TIMESTAMP" />
+    <result column="grade" property="vYear" jdbcType="VARCHAR" />
+    <result column="semester" property="StudyYear" jdbcType="VARCHAR" />
+    <result column="course_id" property="CCode" jdbcType="VARCHAR" />
+    <result column="course_name" property="CName" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="UName" jdbcType="VARCHAR" />
+    <result column="pfsn_name" property="MName" jdbcType="VARCHAR"/>
+    <result column="pfsn_level" property="StudyLev" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    tscore_id, learn_id, std_id, semester, grade, course_name, course_id, score, totalmark, teacher_id, 
+    teacher, is_pass,update_time,update_user,update_user_id,ext_1,ext_2,ext_3
+  </sql>
+ 
+   <select id="GetPreScoringResaulByPage" resultMap="ExcelResultMap"  >	  
+    SELECT DISTINCT
+         bsi.`std_name`,
+     	 bsi.`id_card`,
+     	 bli.`std_id`,
+     	 bli.`learn_id`,
+     	 sd2.`dict_name` as grade,
+     	 btp.`semester`,
+    	 bc.`course_id`,
+		 bc.`course_name`,
+		 u.`unvs_name`,sd1.`dict_name` as pfsn_level, p.pfsn_name
+    	 FROM bd_course bc 
+		 LEFT JOIN bd_plan_course bpc ON bc.`course_id` = bpc.`course_id` 
+		 LEFT JOIN bd_teach_plan btp ON bpc.`thp_id` = btp.`thp_id` 
+		 LEFT JOIN bd_unvs_profession p  ON p.`pfsn_id` = btp.`pfsn_id` and p.grade=btp.grade
+		 LEFT JOIN bd_university u  ON u.`unvs_id` = p.`unvs_id`
+		 LEFT JOIN bd_learn_info bli  ON p.`pfsn_id` = bli.`pfsn_id` 
+		 LEFT JOIN bd_student_info bsi ON bsi.`std_id` = bli.`std_id` 
+		 LEFT JOIN sys_dict sd1  ON  (sd1.p_id='pfsnLevel' and sd1.dict_value=p.pfsn_level)
+		 LEFT JOIN sys_dict sd2  ON  (sd2.p_id='grade' and sd2.dict_value= btp.grade  )
+		 where bli.std_stage ='7' and sd1.p_id='pfsnLevel'  and sd2.p_id='grade' 
+			<if test="queryWhere != null and queryWhere != ''">
+				and bli.`grade` = #{queryWhere, jdbcType=VARCHAR}
+			</if>
+			
+		ORDER BY bli.`update_time` DESC 
+  </select>
+  
+  <select id="findStudentScoreByUnionKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_student_t_score
+    where learn_id = #{learnId, jdbcType=VARCHAR} and course_id=#{courseId, jdbcType=VARCHAR} and semester=#{semester, jdbcType=VARCHAR} limit 1
+  </select>
+  
+  <select id="selectLearnInfoByLearnId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  bli.learn_id,bli.std_id,bli.school_roll,bli.unvs_id,bli.pfsn_id,bli.grade,bli.std_stage
+		from
+		  bd_learn_info bli 
+		where bli.`learn_id` = #{learnId}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_student_t_score
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdStudentTScore">
+		insert into bd_student_t_score
+		(tscore_id, learn_id, std_id,semester,grade, course_name,
+		course_id, score,totalmark, teacher_id,teacher,is_pass,
+		update_time,update_user, update_user_id
+		)
+		values (seq(),
+		#{learnId,jdbcType=VARCHAR},
+		#{stdId,jdbcType=VARCHAR},
+		#{semester,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR},
+		#{courseName,jdbcType=VARCHAR},
+		#{courseId,jdbcType=VARCHAR}, #{score,jdbcType=VARCHAR},
+		#{totalmark,jdbcType=VARCHAR},
+		#{teacherId,jdbcType=VARCHAR},
+		#{teacher,jdbcType=VARCHAR},
+		#{isPass,jdbcType=CHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdStudentTScore">
+		<selectKey resultType="java.lang.String" keyProperty="tscoreId"
+				order="BEFORE">
+				SELECT seq();
+		</selectKey>
+		insert into bd_student_t_score
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tscoreId != null">
+				tscore_id,
+			</if>
+			<if test="learnId != null">
+				learn_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="semester != null">
+				semester,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="courseName != null">
+				course_name,
+			</if>
+			<if test="courseId != null">
+				course_id,
+			</if>
+			<if test="score != null">
+				score,
+			</if>
+			<if test="totalmark != null">
+				totalmark,
+			</if>
+			<if test="teacherId != null">
+				teacher_id,
+			</if>
+			<if test="teacher != null">
+				teacher,
+			</if>
+			<if test="isPass != null">
+				is_pass,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+			<if test="tscoreId != null">
+				#{tscoreId,jdbcType=VARCHAR},
+			</if>
+			<if test="learnId != null">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				#{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				#{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				#{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				#{score,jdbcType=VARCHAR},
+			</if>
+			<if test="totalmark != null">
+				#{totalmark,jdbcType=VARCHAR},
+			</if>
+			<if test="teacherId != null">
+				#{teacher_id,jdbcType=VARCHAR},
+			</if>
+			<if test="teacher != null">
+				#{teacher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPass != null">
+				#{isPass,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdStudentTScore">
+		update bd_student_t_score
+		<set>
+			<if test="learnId != null">
+				learn_id = #{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				semester = #{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				course_name = #{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				course_id = #{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				score = #{score,jdbcType=VARCHAR},
+			</if>
+			<if test="totalmark != null">
+				totalmark = #{totalmark,jdbcType=VARCHAR},
+			</if>
+			<if test="teacherId != null">
+				teacher_id = #{teacherId,jdbcType=VARCHAR},
+			</if>
+			<if test="teacher != null">
+				teacher = #{teacher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPass != null">
+				is_pass = #{isPass,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdStudentTScore">
+		update
+		bd_student_t_score
+		set learn_id = #{learnId,jdbcType=VARCHAR},
+		std_id = #{stdId,jdbcType=VARCHAR},
+		semester = #{semester,jdbcType=VARCHAR},
+		grade = #{grade,jdbcType=VARCHAR},
+		course_name = #{courseName,jdbcType=VARCHAR},
+		course_id = #{courseId,jdbcType=VARCHAR},
+		score = #{score,jdbcType=VARCHAR},
+		totalmark = #{totalmark,jdbcType=VARCHAR},
+		teacher_id = #{teacherId,jdbcType=VARCHAR},
+		teacher = #{teacher,jdbcType=VARCHAR},
+		is_pass = #{isPass,jdbcType=CHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user = #{updateUser,jdbcType=VARCHAR},
+		update_user_id = #{updateUserId,jdbcType=VARCHAR}
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</update>
+	
+	
+	
+</mapper>

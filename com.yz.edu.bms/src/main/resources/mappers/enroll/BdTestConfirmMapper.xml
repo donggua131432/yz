@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.enroll.BdTestConfirmMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.enroll.BdTestConfirm">
+		<id column="tc_id" property="tcId" jdbcType="VARCHAR" />
+		<result column="examinee_no" property="examineeNo" jdbcType="VARCHAR" />
+		<result column="apply_no" property="applyNo" jdbcType="VARCHAR" />
+		<result column="apply_pwd" property="applyPwd" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="ticket_no" property="ticketNo" jdbcType="VARCHAR" />
+		<result column="test_address" property="testAddress" jdbcType="VARCHAR" />
+		<result column="ta_id" property="taId" jdbcType="VARCHAR" />
+		<result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP" />
+		<result column="apply_sign_status" property="applySignStatus"
+			jdbcType="VARCHAR" />
+		<result column="apply_status" property="applyStatus" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMap" type="com.yz.model.enroll.BdTestConfirmMap">
+	    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="tc_id" property="tcId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		tc_id, examinee_no, apply_no, apply_pwd, std_id, ticket_no,
+		test_address,
+		ta_id,
+		confirm_time, apply_sign_status, apply_status,
+		update_time, update_user,
+		update_user_id, create_user_id,
+		create_time,
+		create_user, ext_1,
+		ext_2, ext_3
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_test_confirm
+		where tc_id = #{tcId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAll" resultMap="ResultMap"
+		parameterType="com.yz.model.enroll.BdTestConfirmMap">
+		SELECT
+		bli.`learn_id`,
+		bli.`std_stage`,
+		bsi.`std_name`,
+		bse.`grade`,
+		bse.`pfsn_level`,
+		bup.`pfsn_name` pfsn_name,
+		bu.`unvs_name`,
+		bu.`recruit_type`,
+		oe.`emp_name`,
+		oc.`campus_name`
+		FROM
+		bd_learn_info bli
+		LEFT JOIN bd_test_confirm btc
+		ON bli.`learn_id` = btc.`learn_id` AND btc.`is_ok` = 0
+		LEFT JOIN bd_student_info bsi
+		ON bli.`std_id` = bsi.`std_id`
+		LEFT JOIN bd_student_enroll bse
+		ON bli.`learn_id` = bse.`learn_id`
+		LEFT JOIN bd_register_record brr
+		ON bli.`learn_id` = brr.`learn_id`
+		LEFT JOIN bd_university bu
+		ON bu.`unvs_id` = bse.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON bup.`pfsn_id` = bse.`pfsn_id`
+		LEFT JOIN bd_student_other bso
+		ON bsi.`std_id` = bso.`std_id`
+		LEFT JOIN bd_learn_rules blr
+		ON blr.`learn_id` = bli.`learn_id`
+		LEFT JOIN oa_employee oe
+		ON oe.`emp_id` = blr.`recruit`
+		LEFT JOIN oa_employee_job oej
+		ON oej.`emp_id` = blr.`recruit`
+		LEFT JOIN oa_campus oc
+		ON oc.`campus_id` =
+		(SELECT
+		campus_id
+		FROM
+		oa_department
+		WHERE dp_id = oej.dp_id)
+		WHERE 1 = 1
+		<if test="stdName != null and '' != stdName">
+			AND bsi.`std_name` = #{stdName,jdbcType=VARCHAR}
+		</if>
+		<if test="idCard != null and '' != idCard">
+			AND bsi.`id_card` = #{idCard,jdbcType=VARCHAR}
+		</if>
+		<if test="telephone != null and '' != telephone">
+			AND bso.`telephone` = #{telephone,jdbcType=VARCHAR}
+		</if>
+		<if test="stdStage != null and '' != stdStage">
+			AND bli.`std_stage` = #{stdStage,jdbcType=VARCHAR}
+		</if>
+		<if test="scholarship != null and '' != scholarship">
+			AND bse.`scholarship` = #{scholarship,jdbcType=VARCHAR}
+		</if>
+		<if test="ext1 !=null and '' != ext1">
+			${ext1}
+		</if>
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_test_confirm
+		where tc_id = #{tcId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.enroll.BdTestConfirm">
+		insert into bd_test_confirm
+		(tc_id, examinee_no, apply_no,
+		apply_pwd, std_id, ticket_no,
+		test_address, ta_id, confirm_time,
+		apply_sign_status, apply_status,
+		update_time, update_user, update_user_id,
+		create_user_id,
+		create_time,
+		create_user,
+		ext_1, ext_2, ext_3)
+		values
+		(#{tcId,jdbcType=VARCHAR},
+		#{examineeNo,jdbcType=VARCHAR},
+		#{applyNo,jdbcType=VARCHAR},
+		#{applyPwd,jdbcType=VARCHAR},
+		#{stdId,jdbcType=VARCHAR},
+		#{ticketNo,jdbcType=VARCHAR},
+		#{testAddress,jdbcType=VARCHAR},
+		#{taId,jdbcType=VARCHAR},
+		#{confirmTime,jdbcType=TIMESTAMP},
+		#{applySignStatus,jdbcType=VARCHAR}, #{applyStatus,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR},
+		#{createUserId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{ext1,jdbcType=VARCHAR},
+		#{ext2,jdbcType=VARCHAR},
+		#{ext3,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.enroll.BdTestConfirm">
+		insert into bd_test_confirm
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tcId != null">
+				tc_id,
+			</if>
+			<if test="examineeNo != null">
+				examinee_no,
+			</if>
+			<if test="applyNo != null">
+				apply_no,
+			</if>
+			<if test="applyPwd != null">
+				apply_pwd,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="ticketNo != null">
+				ticket_no,
+			</if>
+			<if test="testAddress != null">
+				test_address,
+			</if>
+			<if test="taId != null">
+				ta_id,
+			</if>
+			<if test="confirmTime != null">
+				confirm_time,
+			</if>
+			<if test="applySignStatus != null">
+				apply_sign_status,
+			</if>
+			<if test="applyStatus != null">
+				apply_status,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="ext1 != null">
+				ext_1,
+			</if>
+			<if test="ext2 != null">
+				ext_2,
+			</if>
+			<if test="ext3 != null">
+				ext_3,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="tcId != null">
+				#{tcId,jdbcType=VARCHAR},
+			</if>
+			<if test="examineeNo != null">
+				#{examineeNo,jdbcType=VARCHAR},
+			</if>
+			<if test="applyNo != null">
+				#{applyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="applyPwd != null">
+				#{applyPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="ticketNo != null">
+				#{ticketNo,jdbcType=VARCHAR},
+			</if>
+			<if test="testAddress != null">
+				#{testAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null">
+				#{taId,jdbcType=VARCHAR},
+			</if>
+			<if test="confirmTime != null">
+				#{confirmTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="applySignStatus != null">
+				#{applySignStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="applyStatus != null">
+				#{applyStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				#{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				#{ext3,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="okConfirm" parameterType="java.lang.String">
+	    UPDATE bd_learn_info SET std_stage = '4' WHERE learn_id = #{learnId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.enroll.BdTestConfirm">
+		update bd_test_confirm
+		<set>
+			<if test="examineeNo != null">
+				examinee_no = #{examineeNo,jdbcType=VARCHAR},
+			</if>
+			<if test="applyNo != null">
+				apply_no = #{applyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="applyPwd != null">
+				apply_pwd = #{applyPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="ticketNo != null">
+				ticket_no = #{ticketNo,jdbcType=VARCHAR},
+			</if>
+			<if test="testAddress != null">
+				test_address = #{testAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null">
+				ta_id = #{taId,jdbcType=VARCHAR},
+			</if>
+			<if test="confirmTime != null">
+				confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="applySignStatus != null">
+				apply_sign_status = #{applySignStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="applyStatus != null">
+				apply_status = #{applyStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where tc_id = #{tcId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.enroll.BdTestConfirm">
+		update
+		bd_test_confirm
+		set examinee_no = #{examineeNo,jdbcType=VARCHAR},
+		apply_no = #{applyNo,jdbcType=VARCHAR},
+		apply_pwd =
+		#{applyPwd,jdbcType=VARCHAR},
+		std_id = #{stdId,jdbcType=VARCHAR},
+		ticket_no = #{ticketNo,jdbcType=VARCHAR},
+		test_address =
+		#{testAddress,jdbcType=VARCHAR},
+		ta_id = #{taId,jdbcType=VARCHAR},
+		confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+		apply_sign_status =
+		#{applySignStatus,jdbcType=VARCHAR},
+		apply_status =
+		#{applyStatus,jdbcType=VARCHAR},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR},
+		create_user_id =
+		#{createUserId,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		create_user =
+		#{createUser,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2
+		= #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR}
+		where tc_id
+		= #{tcId,jdbcType=VARCHAR}
+	</update>
+</mapper>

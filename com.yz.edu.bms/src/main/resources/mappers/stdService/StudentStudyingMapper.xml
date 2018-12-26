@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentStudyingMapper">
+
+	<resultMap id="StudyingListMap" type="com.yz.model.stdService.StudentStudyingListInfo">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="std_no" jdbcType="VARCHAR" property="stdNo" />
+		<result column="school_roll" jdbcType="VARCHAR" property="schoolRoll" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="unvs_id" jdbcType="VARCHAR" property="unvsId" />
+		<result column="pfsn_id" jdbcType="VARCHAR" property="pfsnId" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="tutor_name" jdbcType="VARCHAR" property="tutorName" />
+		<result column="tutor_emp_id" jdbcType="VARCHAR" property="tutorEmpId" />
+		<result column="recruit_name" jdbcType="VARCHAR" property="recruitName" />
+		<result column="fee_amount" jdbcType="VARCHAR" property="feeAmount" />
+		<result column="std_type" jdbcType="VARCHAR" property="stdType"/>
+
+	</resultMap>
+	
+	<select id="selectGradeByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select grade from bd_learn_info where learn_id = #{learnId}
+	</select>
+	
+	<update id="updateStudyIngNo" parameterType="java.lang.String">
+		UPDATE 
+		  bd_learn_info l
+		<set>
+			<if test="stdNo != null and stdNo != ''">
+				l.`std_no` = #{stdNo, jdbcType=VARCHAR},
+			</if>
+			<if test="schoolRoll != null and schoolRoll != ''">
+				l.`school_roll` = #{schoolRoll, jdbcType=VARCHAR},
+			</if>
+		</set> 
+		WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="getStudyingInfoByLearnId" parameterType="java.lang.String" resultMap="StudyingListMap">
+		select l.learn_id, l.std_id, l.std_no, l.school_roll,l.std_stage, l.recruit_type, l.grade,
+		    l.`unvs_id`,l.pfsn_id,l.scholarship,l.sg,l.inclusion_status,l.std_type,
+			s.std_name, s.sex, s.address, s.mobile, s.id_card, 
+			u.unvs_name, p.pfsn_name, p.pfsn_code, p.pfsn_level
+			FROM bd_learn_info l
+			LEFT JOIN bd_university u  ON u.`unvs_id` = l.`unvs_id`
+			LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.pfsn_id
+			LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+			where l.learn_id = #{learnId}
+	</select>
+	<select id="getStudyingCount" parameterType="com.yz.model.condition.stdService.StudentStudyingQuery" resultType="int">
+		select count(0) from (
+				SELECT l.`learn_id`
+			FROM bd_learn_info l
+				LEFT JOIN bd_university u ON u.`unvs_id` = l.`unvs_id`
+				LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.pfsn_id
+				LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+				LEFT JOIN bd_student_other o ON o.`std_id` = l.`std_id`
+				LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+				LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+				LEFT JOIN oa_employee oae ON oae.emp_id = r.recruit
+				LEFT JOIN oa_employee_job j ON j.`emp_id` = oae.`emp_id`
+				<if test="queryInfo.yearArrears !=null and '' != queryInfo.yearArrears">
+			LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+			LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+			LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+			</if>
+			WHERE 1=1
+			
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and s.std_name LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and s.id_card LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and s.mobile LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+				and l.unvs_id = #{queryInfo.unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnLevel !=null and '' !=queryInfo.pfsnLevel">
+				and p.pfsn_level = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and l.pfsn_id = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and l.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.stdNo !=null and '' !=queryInfo.stdNo">
+				and l.std_no = #{queryInfo.stdNo,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.schoolRoll !=null and '' !=queryInfo.schoolRoll">
+				and l.school_roll = #{queryInfo.schoolRoll,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+				and l.recruit_type = #{queryInfo.recruitType, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.sg !=null and '' != queryInfo.sg">
+				and l.`sg` = #{queryInfo.sg,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.inclusionStatus !=null and '' != queryInfo.inclusionStatus">
+				and l.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.scholarship !=null and '' !=queryInfo.scholarship">
+				and l.scholarship = #{queryInfo.scholarship,jdbcType=VARCHAR}
+			</if>	
+			<if test="queryInfo.empName !=null and '' !=queryInfo.empName">
+				and e.emp_name LIKE CONCAT('%',#{queryInfo.empName,jdbcType=VARCHAR},'%')
+			</if>
+			
+			<if test="queryInfo.campusId != null and queryInfo.campusId != ''">
+				and j.`campus_id` = #{queryInfo.campusId,jdbcType= VARCHAR}
+			</if>
+			<if test="queryInfo.dpId != null and queryInfo.dpId != ''">
+				and j.`dp_id` = #{queryInfo.dpId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitName !=null and '' !=queryInfo.recruitName">
+				and oae.emp_name LIKE CONCAT('%',#{queryInfo.recruitName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.stdType !=null and '' !=queryInfo.stdType">
+				and l.std_type = #{queryInfo.stdType,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.sex !=null and '' != queryInfo.sex">
+				and s.sex = #{queryInfo.sex,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.address !=null and '' !=queryInfo.address">
+				and s.address LIKE CONCAT('%', #{queryInfo.address, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.workPlace !=null and '' !=queryInfo.workPlace">
+				and o.work_place LIKE CONCAT('%', #{queryInfo.workPlace, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdStage !=null and '' != queryInfo.stdStage">
+				and l.std_stage = #{queryInfo.stdStage,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.empStatus !=null and '' != queryInfo.empStatus">
+				and e.emp_status = #{queryInfo.empStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.homeCampusId !=null and '' != queryInfo.homeCampusId">
+				and l.home_campus_id = #{queryInfo.homeCampusId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.taId !=null and '' != queryInfo.taId">
+				and l.ta_id = #{queryInfo.taId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.isTutor !=null and queryInfo.isTutor == '0'.toString()">
+				and (r.tutor is null or r.tutor= '')
+			</if>
+			<if test="queryInfo.isTutor !=null and queryInfo.isTutor == '1'.toString()">
+				and r.tutor !=''
+			</if>
+			<if test="queryInfo.isRemark !=null and queryInfo.isRemark == '0'.toString()">
+				and NOT EXISTS (select blrl.learn_id from bd_learn_remark_log blrl where blrl.learn_id=l.learn_id limit 1)	
+			</if>
+			<if test="queryInfo.isRemark !=null and queryInfo.isRemark == '1'.toString()">
+				and  EXISTS (select blrl.learn_id from bd_learn_remark_log blrl where blrl.learn_id=l.learn_id limit 1)	
+			</if>
+			
+			<if test="queryInfo.startBirthday !=null and '' != queryInfo.startBirthday">
+				and s.birthday  <![CDATA[>=#{queryInfo.startBirthday,jdbcType=VARCHAR}]]>
+			</if>
+			<if test="queryInfo.endBirthday !=null and '' != queryInfo.endBirthday">
+				and s.birthday  <![CDATA[<=#{queryInfo.endBirthday,jdbcType=VARCHAR}]]>
+			</if>
+			
+			<choose>
+				<when test="user.userLevel == 1">
+					and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+				</when>
+				<when test="user.userLevel == 2">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_campus_id in (
+					<foreach collection="user.myCampusList" item="info" separator=",">
+						#{info.campusId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<when test="user.userLevel == 3">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_dp_id in (
+					<foreach collection="user.myDpList" item="info" separator=",">
+						#{info.dpId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<when test="user.userLevel == 4">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor in (
+					<foreach collection="user.myEmplyeeList" item="info" separator=",">
+						#{info.empId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+				<when test="user.userLevel == 5">
+					and l.`std_stage` in ('12','5','6','7') and r.tutor = #{user.empId, jdbcType=VARCHAR}
+				</when>
+				
+				<!-- 成教学籍组长能看到全部成教在读学员数据 -->
+				<when test="user.userLevel == 6">
+					and l.`std_stage`= '7' and l.recruit_type='1'
+				</when>
+				<!-- 国开学籍组长能看到全部国开数据（含待录取、已录取、注册学员、在读学员） -->
+				<when test="user.userLevel == 7">
+					and l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'
+				</when>
+				<!-- BMZR部门主管能看到全部数据（成教学籍组长+国开学籍组长） -->
+				<when test="user.userLevel == 8">
+					and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+				</when>
+				<!-- 国开学籍、辅导员 -->
+				<when test="user.userLevel == 9">
+					and l.`std_stage`in ('12','5','6','7')  and (l.recruit_type ='2' or r.tutor = #{user.empId, jdbcType=VARCHAR})
+				</when>
+				<otherwise>
+					and l.`std_stage`= '7' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+			
+			<if test="queryInfo.yearArrears != null and queryInfo.yearArrears !=''">
+			
+				and bsor.sub_order_status in ('1','2')
+				<if test="queryInfo.yearArrears > 0">
+					and if(bfi.item_year='',0,bfi.item_year)  = #{queryInfo.itemYear,jdbcType=VARCHAR}
+				</if>
+				<if test="queryInfo.ifSemester !=null and '' != queryInfo.ifSemester and queryInfo.ifSemester =='Y'.toString()">
+					and (select count(1) from bd_sub_order bbbb where bbbb.`order_no` = bso.`order_no` and 
+  					bbbb.`item_code`='Y4')>0
+				</if>
+				<if test="queryInfo.ifSemester !=null and '' != queryInfo.ifSemester and queryInfo.ifSemester =='N'.toString()">
+					and (select count(1) from bd_sub_order bbbb where bbbb.`order_no` = bso.`order_no` and 
+  					bbbb.`item_code`='Y4') &lt;=0
+				</if>
+				group by l.learn_id, l.std_id
+				<choose>
+					<when test="queryInfo.yearArrears == '1'.toString() || 
+					queryInfo.yearArrears == '3'.toString() || 
+					queryInfo.yearArrears == '5'.toString() ||
+					queryInfo.yearArrears == '7'.toString() ||
+					queryInfo.yearArrears == '-1'.toString()">
+						having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))>0
+					</when>
+					<when test="queryInfo.yearArrears == '-3'.toString()"></when>
+					<otherwise>
+						having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))=0
+					</otherwise>
+				</choose>
+			</if>
+		) temp_t
+	</select>
+	<select id="getStudyingListJoinAccNew" parameterType="com.yz.model.condition.stdService.StudentStudyingQuery" resultMap="StudyingListMap">
+	
+		SELECT l.learn_id, l.std_id, l.std_no, l.school_roll,l.std_stage, l.recruit_type, l.grade,
+		    l.`unvs_id`,l.pfsn_id,l.scholarship,l.sg,l.inclusion_status,l.std_type,
+			s.std_name, s.sex, s.address, s.mobile, s.id_card, r.tutor,
+			u.unvs_name, p.pfsn_name, p.pfsn_code, p.pfsn_level,
+			e.emp_name AS tutor_name, e.emp_id AS tutor_emp_id, oae.emp_name as recruit_name, r.tutor_campus_id, r.tutor_dp_id
+			FROM bd_learn_info l
+			LEFT JOIN bd_university u  ON u.`unvs_id` = l.`unvs_id`
+			LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.pfsn_id
+			LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+			LEFT JOIN bd_student_other o ON o.`std_id` = l.`std_id`
+			LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+			LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+			LEFT JOIN oa_employee oae ON oae.emp_id = r.recruit
+			LEFT JOIN oa_employee_job j  ON j.`emp_id` = oae.`emp_id`
+			<if test="queryInfo.yearArrears !=null and '' != queryInfo.yearArrears">
+			LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+			LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+			LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+			</if>
+			WHERE 1=1
+			
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and s.std_name LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and s.id_card LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and s.mobile LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+				and l.unvs_id = #{queryInfo.unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnLevel !=null and '' !=queryInfo.pfsnLevel">
+				and p.pfsn_level = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and l.pfsn_id = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and l.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.stdNo !=null and '' !=queryInfo.stdNo">
+				and l.std_no = #{queryInfo.stdNo,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.schoolRoll !=null and '' !=queryInfo.schoolRoll">
+				and l.school_roll = #{queryInfo.schoolRoll,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+				and l.recruit_type = #{queryInfo.recruitType, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.sg !=null and '' != queryInfo.sg">
+				and l.`sg` = #{queryInfo.sg,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.inclusionStatus !=null and '' != queryInfo.inclusionStatus">
+				and l.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.scholarship !=null and '' !=queryInfo.scholarship">
+				and l.scholarship = #{queryInfo.scholarship,jdbcType=VARCHAR}
+			</if>	
+			<if test="queryInfo.empName !=null and '' !=queryInfo.empName">
+				and e.emp_name LIKE CONCAT('%',#{queryInfo.empName,jdbcType=VARCHAR},'%')
+			</if>
+			
+			<if test="queryInfo.campusId != null and queryInfo.campusId != ''">
+				and j.`campus_id` = #{queryInfo.campusId,jdbcType= VARCHAR}
+			</if>
+			<if test="queryInfo.dpId != null and queryInfo.dpId != ''">
+				and j.`dp_id` = #{queryInfo.dpId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitName !=null and '' !=queryInfo.recruitName">
+				and oae.emp_name LIKE CONCAT('%',#{queryInfo.recruitName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.stdType !=null and '' !=queryInfo.stdType">
+				and l.std_type = #{queryInfo.stdType,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.sex !=null and '' != queryInfo.sex">
+				and s.sex = #{queryInfo.sex,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.address !=null and '' !=queryInfo.address">
+				and s.address LIKE CONCAT('%', #{queryInfo.address, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.workPlace !=null and '' !=queryInfo.workPlace">
+				and o.work_place LIKE CONCAT('%', #{queryInfo.workPlace, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdStage !=null and '' != queryInfo.stdStage">
+				and l.std_stage = #{queryInfo.stdStage,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.empStatus !=null and '' != queryInfo.empStatus">
+				and e.emp_status = #{queryInfo.empStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.homeCampusId !=null and '' != queryInfo.homeCampusId">
+				and l.home_campus_id = #{queryInfo.homeCampusId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.taId !=null and '' != queryInfo.taId">
+				and l.ta_id = #{queryInfo.taId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.isTutor !=null and queryInfo.isTutor == '0'.toString()">
+				and (r.tutor is null or r.tutor= '')
+			</if>
+			<if test="queryInfo.isTutor !=null and queryInfo.isTutor == '1'.toString()">
+				and r.tutor !=''
+			</if>
+			<if test="queryInfo.isRemark !=null and queryInfo.isRemark == '0'.toString()">
+				and NOT EXISTS (select blrl.learn_id from bd_learn_remark_log blrl where blrl.learn_id=l.learn_id limit 1)	
+			</if>
+			<if test="queryInfo.isRemark !=null and queryInfo.isRemark == '1'.toString()">
+				and  EXISTS (select blrl.learn_id from bd_learn_remark_log blrl where blrl.learn_id=l.learn_id limit 1)	
+			</if>
+			
+			<if test="queryInfo.startBirthday !=null and '' != queryInfo.startBirthday">
+				and s.birthday  <![CDATA[>=#{queryInfo.startBirthday,jdbcType=VARCHAR}]]>
+			</if>
+			<if test="queryInfo.endBirthday !=null and '' != queryInfo.endBirthday">
+				and s.birthday  <![CDATA[<=#{queryInfo.endBirthday,jdbcType=VARCHAR}]]>
+			</if>
+			
+			<choose>
+				<when test="user.userLevel == 1">
+					and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+				</when>
+				<when test="user.userLevel == 2">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_campus_id in (
+					<foreach collection="user.myCampusList" item="info" separator=",">
+						#{info.campusId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<when test="user.userLevel == 3">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_dp_id in (
+					<foreach collection="user.myDpList" item="info" separator=",">
+						#{info.dpId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<when test="user.userLevel == 4">
+					and l.`std_stage`= '7' and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor in (
+					<foreach collection="user.myEmplyeeList" item="info" separator=",">
+						#{info.empId, jdbcType=VARCHAR}
+					</foreach>
+					))
+				</when>
+				<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+				<when test="user.userLevel == 5">
+					and l.`std_stage` in ('12','5','6','7') and r.tutor = #{user.empId, jdbcType=VARCHAR}
+				</when>
+				
+				<!-- 成教学籍组长能看到全部成教在读学员数据 -->
+				<when test="user.userLevel == 6">
+					and l.`std_stage`= '7' and l.recruit_type='1'
+				</when>
+				<!-- 国开学籍组长能看到全部国开数据（含待录取、已录取、注册学员、在读学员） -->
+				<when test="user.userLevel == 7">
+					and l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'
+				</when>
+				<!-- BMZR部门主管能看到全部数据（成教学籍组长+国开学籍组长） -->
+				<when test="user.userLevel == 8">
+					and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+				</when>
+				<!-- 国开学籍、辅导员 -->
+				<when test="user.userLevel == 9">
+					and l.`std_stage`in ('12','5','6','7')  and (l.recruit_type ='2' or r.tutor = #{user.empId, jdbcType=VARCHAR})
+				</when>
+				<otherwise>
+					and l.`std_stage`= '7' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+			
+			<if test="queryInfo.yearArrears != null and queryInfo.yearArrears !=''">
+			
+				and bsor.sub_order_status in ('1','2')
+				<if test="queryInfo.yearArrears > 0">
+					and if(bfi.item_year='',0,bfi.item_year)  = #{queryInfo.itemYear,jdbcType=VARCHAR}
+				</if>
+				<if test="queryInfo.ifSemester !=null and '' != queryInfo.ifSemester and queryInfo.ifSemester =='Y'.toString()">
+					and (select count(1) from bd_sub_order bbbb where bbbb.`order_no` = bso.`order_no` and 
+  					bbbb.`item_code`='Y4')>0
+				</if>
+				<if test="queryInfo.ifSemester !=null and '' != queryInfo.ifSemester and queryInfo.ifSemester =='N'.toString()">
+					and (select count(1) from bd_sub_order bbbb where bbbb.`order_no` = bso.`order_no` and 
+  					bbbb.`item_code`='Y4') &lt;=0
+				</if>
+				group by l.learn_id, l.std_id
+				<choose>
+					<when test="queryInfo.yearArrears == '1'.toString() || 
+					queryInfo.yearArrears == '3'.toString() || 
+					queryInfo.yearArrears == '5'.toString() ||
+					queryInfo.yearArrears == '7'.toString() ||
+					queryInfo.yearArrears == '-1'.toString()">
+						having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))>0
+					</when>
+					<when test="queryInfo.yearArrears == '-3'.toString()"></when>
+					<otherwise>
+						having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))=0
+					</otherwise>
+				</choose>
+			</if>
+			<!-- 	
+			<if test="queryInfo.isArrears != null and queryInfo.isArrears !=''">
+				and bsor.sub_order_status in ('1','2')
+				and if(bfi.item_year='',0,bfi.item_year)  &lt;= subYear(l.grade)
+				group by l.learn_id, l.std_id
+			</if>
+			
+			<if test="queryInfo.isArrears != null and queryInfo.isArrears == '0'.toString()">
+				having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))=0
+			</if>
+			<if test="queryInfo.isArrears != null and queryInfo.isArrears == '1'.toString()">
+				having sum(if(bsor.sub_order_status=1,bsor.fee_amount,0))>0
+			</if>
+			 -->
+	</select>
+	
+	<select id="getStudyingFeeAmountByLearnId" parameterType="java.lang.String"   resultType="java.lang.String">
+		select sum(if(bsor.sub_order_status=1,bsor.fee_amount,0)) as fee_amount FROM bd_learn_info l
+			LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+			LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+			LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+			WHERE  l.`learn_id`=#{learnId} and l.`std_stage` = '7' 
+			and bsor.sub_order_status in ('1','2')
+			and if(bfi.item_year='',0,bfi.item_year)  &lt;= subYear(l.grade)
+			
+	
+	</select>
+	<select id="getStudyingListJoinAcc" parameterType="com.yz.model.condition.stdService.StudentStudyingQuery" resultMap="StudyingListMap">
+		select * from (select t.learn_id, t.std_id, t.std_no,t.school_roll,t.std_type, t.std_stage, t.recruit_type, t.grade,
+			t.std_name, t.unvs_name, t.pfsn_name, t.pfsn_code, t.pfsn_level,
+			t.tutor_name, t.tutor_emp_id,t.sub_order_status,
+		    sum(if(t.sub_order_status=1,t.fee_amount,0)) as fee_amount, t.item_year, t.is_year
+		from (SELECT l.learn_id, l.std_id, l.std_no, l.school_roll,l.std_stage, l.recruit_type, l.grade,l.`unvs_id`,l.pfsn_id,l.scholarship,l.sg,l.inclusion_status,l.std_type,
+			s.std_name, s.sex, s.address, s.mobile, s.id_card, r.tutor,
+			u.unvs_name, p.pfsn_name, p.pfsn_code, p.pfsn_level,
+			e.emp_name AS tutor_name, e.emp_id AS tutor_emp_id, oae.emp_name as recruit_name,
+			bsor.sub_order_status, bsor.fee_amount,  if(bfi.item_year='',0,bfi.item_year) as item_year, bfi.item_code,
+		    subYear(l.grade) as is_year, r.tutor_campus_id, r.tutor_dp_id
+			FROM bd_learn_info l
+			LEFT JOIN bd_university u  ON u.`unvs_id` = l.`unvs_id`
+			LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.pfsn_id
+			LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+			LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+			LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+			LEFT JOIN oa_employee oae ON oae.emp_id = r.recruit
+			LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+			LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+			LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+			WHERE l.`std_stage` = '7' and bsor.sub_order_status in ('1','2')
+		) t
+		<where>
+			t.item_year &lt;= t.is_year
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and t.std_name LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and t.id_card LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and t.mobile LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+				and t.unvs_id = #{queryInfo.unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and t.pfsn_id = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and t.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+				and t.recruit_type = #{queryInfo.recruitType, jdbcType=VARCHAR}
+			</if>
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (t.tutor = #{user.empId, jdbcType=VARCHAR} or t.tutor_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (t.tutor = #{user.empId, jdbcType=VARCHAR} or t.tutor_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (t.tutor = #{user.empId, jdbcType=VARCHAR} or t.tutor in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and t.tutor = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+			<if test="queryInfo.sex !=null and '' != queryInfo.sex">
+				and t.sex = #{queryInfo.sex,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.address !=null and '' !=queryInfo.address">
+				and t.address LIKE CONCAT('%', #{queryInfo.address, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.pfsnLevel !=null and '' !=queryInfo.pfsnLevel">
+				and t.pfsn_level = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.stdNo !=null and '' !=queryInfo.stdNo">
+				and t.std_no = #{queryInfo.stdNo,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.scholarship !=null and '' !=queryInfo.scholarship">
+				and t.scholarship = #{queryInfo.scholarship,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.empName !=null and '' !=queryInfo.empName">
+				and t.tutor_name LIKE CONCAT('%',#{queryInfo.empName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.recruitName !=null and '' !=queryInfo.recruitName">
+				and t.recruit_name LIKE CONCAT('%',#{queryInfo.recruitName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.stdType !=null and '' !=queryInfo.stdType">
+				and t.std_type = #{queryInfo.stdType,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.sg !=null and '' != queryInfo.sg">
+				and t.`sg` = #{queryInfo.sg,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.inclusionStatus !=null and '' != queryInfo.inclusionStatus">
+				and t.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+		group by t.learn_id,t.std_id) a
+		<where>
+			<if test="queryInfo.isArrears != null and queryInfo.isArrears == '0'.toString()">
+				and a.fee_amount = 0
+			</if>
+			<if test="queryInfo.isArrears != null and queryInfo.isArrears == '1'.toString()">
+				and a.fee_amount > 0
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getStudyingList" parameterType="com.yz.model.condition.stdService.StudentStudyingQuery" resultMap="StudyingListMap">
+		SELECT
+		  l.`learn_id`,
+		  l.`std_id`,
+		  s.`std_name`,
+		  l.`std_no`,
+		  l.`std_stage`,
+		  u.`unvs_name`,
+		  p.`pfsn_name`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  l.`recruit_type`,
+		  l.`grade`,
+		  e.`emp_name` AS tutor_name,
+		  e.`emp_id` AS tutor_emp_id
+		FROM
+		  bd_learn_info l
+		  LEFT JOIN bd_university u
+		    ON u.`unvs_id` = l.`unvs_id`
+		  LEFT JOIN bd_unvs_profession p
+		    ON p.`pfsn_id` = l.pfsn_id
+		  LEFT JOIN bd_student_info s
+		    ON s.`std_id` = l.`std_id`
+		  LEFT JOIN bd_learn_rules r
+		    ON r.`learn_id` = l.`learn_id`
+		  LEFT JOIN oa_employee e
+		    ON e.`emp_id` = r.`tutor`
+		<where>
+			l.`std_stage` = '7'
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and s.`id_card` LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and s.`mobile` LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.unvsName != null and queryInfo.unvsName != ''">
+				and u.`unvs_name` LIKE CONCAT('%', #{queryInfo.unvsName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.pfsnName != null and queryInfo.pfsnName != ''">
+				and p.`pfsn_name` LIKE CONCAT('%', #{queryInfo.pfsnName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and l.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+				and l.recruit_type = #{queryInfo.recruitType, jdbcType=VARCHAR}
+			</if>
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (r.tutor = #{user.empId, jdbcType=VARCHAR} or r.tutor in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and r.tutor = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+			<if test="queryInfo.sex !=null and '' != queryInfo.sex">
+				and s.`sex` = #{queryInfo.sex,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.address !=null and '' !=queryInfo.address">
+				and s.`address` LIKE CONCAT('%', #{queryInfo.address, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.pfsnLevel !=null and '' !=queryInfo.pfsnLevel">
+				and p.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.stdNo !=null and '' !=queryInfo.stdNo">
+				and l.`std_no` = #{queryInfo.stdNo,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.scholarship !=null and '' !=queryInfo.scholarship">
+				and l.`scholarship` = #{queryInfo.scholarship,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.empName !=null and '' !=queryInfo.empName">
+				and e.`emp_name` LIKE CONCAT('%',#{queryInfo.empName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="PaymentInfoMap" type="com.yz.model.stdService.StudyingPaymentInfo">
+		<result column="item_code" jdbcType="VARCHAR" property="itemCode" />
+		<result column="item_name" jdbcType="VARCHAR" property="itemName" />
+		<result column="fee_amount" jdbcType="VARCHAR" property="feeAmount" />
+		<result column="offer_amount" jdbcType="VARCHAR" property="offerAmount" />
+		<result column="payable" jdbcType="VARCHAR" property="payable" />
+		<result column="sub_order_status" jdbcType="VARCHAR" property="subOrderStatus" />
+	</resultMap>
+	
+	<select id="getPaymentInfos" parameterType="string" resultMap="PaymentInfoMap">
+		select 
+		  t.`item_code`,
+		  t.`item_name`,
+		  s.`fee_amount`,
+		  s.`offer_amount`,
+		  s.`payable`,
+		  s.`sub_order_status`
+		from
+		  bd_sub_order s 
+		  left join bd_fee_item t 
+		    on t.`item_code` = s.`item_code` 
+		where s.`order_no` = 
+		  (select 
+		    o.order_no 
+		  from
+		    bd_student_order o 
+		  where o.`learn_id` = #{learnId, jdbcType=VARCHAR}) 
+		  and s.`sub_order_status` not in ('3', '4')
+		order by t.`order_num`
+	</select> 
+
+	<resultMap id="ConcatsMap" type="com.yz.model.stdService.StudyingContactsShow">
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="emergency_contact" jdbcType="VARCHAR" property="emergencyContact" />
+		<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="qq" jdbcType="VARCHAR" property="qq" />
+		<result column="wechat" jdbcType="VARCHAR" property="wechat" />
+		<result column="work_place" jdbcType="VARCHAR" property="workPlace" />
+		<result column="head_portrait" jdbcType="VARCHAR" property="headPortrait" />
+		<result column="id_type" jdbcType="VARCHAR" property="idType" />
+		<result column="id_card" jdbcType="VARCHAR" property="idCard" />
+		<result column="rpr_province_code" jdbcType="VARCHAR" property="rprProvinceCode" />
+		<result column="rpr_city_code" jdbcType="VARCHAR" property="rprCityCode" />
+		<result column="rpr_district_code" jdbcType="VARCHAR" property="rprDistrictCode" />
+		<result column="rpr_address" jdbcType="VARCHAR" property="rprAddress" />
+		<result column="sa_province_code" jdbcType="VARCHAR" property="saProvinceCode" />
+		<result column="sa_city_code" jdbcType="VARCHAR" property="saCityCode" />
+		<result column="sa_district_code" jdbcType="VARCHAR" property="saDistrictCode" />
+		<result column="sa_address" jdbcType="VARCHAR" property="saAddress" />
+	</resultMap>
+
+	<select id="getStudyingContacts" parameterType="string" resultMap="ConcatsMap">
+		SELECT 
+		  s.`std_id`,
+		  #{learnId, jdbcType=VARCHAR} as `learn_id`,
+		  s.`std_name`,
+		  s.`mobile`,
+		  s.`emergency_contact`,
+		  o.`telephone`,
+		  o.`email`,
+		  o.`qq`,
+		  o.`wechat`,
+		  o.`work_place`,
+		  o.`head_portrait`,
+		  s.`id_type`,
+		  s.`id_card`,
+		  s.`rpr_province_code`,
+		  s.`rpr_city_code`,
+		  s.`rpr_district_code`,
+		  s.`address` AS `rpr_address`,
+		  a.`province_code` AS `sa_province_code`,
+		  a.`city_code` AS `sa_city_code`,
+		  a.`district_code` AS `sa_district_code`,
+		  a.`address` AS `sa_address` 
+		FROM
+		  bd_student_info s 
+		  LEFT JOIN bd_student_other o 
+		    ON o.`std_id` = s.`std_id` 
+		  LEFT JOIN bd_shopping_address a 
+		    ON a.`std_id` = s.`std_id` 
+		    AND a.`is_default` = '1' 
+		WHERE s.`std_id` = 
+		  (SELECT 
+		    l.`std_id` 
+		  FROM
+		    bd_learn_info l 
+		  WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}) 
+	</select>
+	
+	<update id="updateContacts" parameterType="com.yz.model.stdService.StudyingContacts">
+		UPDATE 
+		  bd_student_info s 
+		  LEFT JOIN bd_student_other o 
+		    ON o.`std_id` = s.`std_id`
+		<set>
+			<if test="mobile != null and mobile != ''">
+				s.`mobile` = #{mobile, jdbcType=VARCHAR},
+			</if>
+			<if test="emergencyContact != null and emergencyContact != ''">
+				s.`emergency_contact` = #{emergencyContact, jdbcType=VARCHAR},
+			</if>
+			o.`head_portrait` = #{headPortrait, jdbcType=VARCHAR},
+		    o.`telephone` = #{telephone, jdbcType=VARCHAR},
+		    o.`qq` = #{qq, jdbcType=VARCHAR},
+		    o.`wechat` = #{wechat, jdbcType=VARCHAR},
+		    o.`email` = #{email, jdbcType=VARCHAR},
+		    o.`work_place` = #{workPlace, jdbcType=VARCHAR},
+		</set> 
+		  
+		WHERE s.`std_id` = #{stdId, jdbcType=VARCHAR}
+	</update>
+
+	<select id="getStuFeeAmountByLearnIdAndYear" resultType="java.lang.String">
+		select sum(if(bsor.sub_order_status=1,bsor.fee_amount,0)) as fee_amount FROM bd_learn_info l
+			LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+			LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+			LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+			WHERE  l.`learn_id`=#{learnId,jdbcType=VARCHAR} and l.`std_stage` = '7' 
+			and bsor.sub_order_status in ('1','2')
+			<if test="itemYear !=null and '' != itemYear">
+				and if(bfi.item_year='',0,bfi.item_year)  = #{itemYear,jdbcType=VARCHAR}	
+			</if>
+	</select>
+</mapper>

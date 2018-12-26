@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentExamAffirmMapper">
+
+	<resultMap type="com.yz.model.stdService.StudentExamAffirmInfo" id="ExamAffirmInfoMap">
+		<result column="affirm_id" property="affirmId" jdbcType="VARCHAR"/>
+		<result column="test_year" property="testYear" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="py_id" property="pyId" jdbcType="VARCHAR"/>
+		<result column="er_id" property="erId" jdbcType="VARCHAR"/>
+		<result column="ey_id" property="eyId" jdbcType="VARCHAR"/>
+		<result column="sign_status" property="signStatus" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="tutorName" jdbcType="VARCHAR"/>
+		<result column="reset_status" property="resetStatus" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="ep_name" property="epName" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="unconfirmed_reason" property="unconfirmedReason" jdbcType="VARCHAR"/>
+		<result column="affirm_time" property="affirmTime" jdbcType="VARCHAR"/>
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<insert id="addStuExamAffirm">
+		INSERT INTO bd_student_exam_affirm (affirm_id,task_id,ey_id,learn_Id,add_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.affirmId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.eyId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<delete id="delStuExamAffirm">
+		delete from bd_student_exam_affirm
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+
+	<select id="queryStudentAffirmList" resultMap="ExamAffirmInfoMap">
+		SELECT 
+		  bsea.`affirm_id`,
+		  bey.`exam_year` AS test_year,
+		  bsi.`std_name`,
+		  bli.`school_roll`,
+		  bsi.`id_card`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  bsea.`py_id`,
+		  bsea.`ey_id`,
+		  bsea.`er_id`,
+		  ber.reason as unconfirmed_reason,
+		  bsea.`sign_status`,
+		  oe.`emp_name`,
+		  bsea.`reset_status`,
+		  bep.`ep_name`,
+  		  date_format(bpy.`start_time`, '%Y-%m-%d %H:%i') start_time,
+  		  date_format(bpy.`end_time`, '%Y-%m-%d %H:%i') end_time
+		FROM
+		  `bd_student_exam_affirm` bsea 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`learn_id` = bsea.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = blr.`tutor`
+		  LEFT JOIN bd_place_year bpy 
+    		ON bpy.py_id=bsea.py_id
+ 		  LEFT JOIN bd_exam_place bep
+   			ON bep.`ep_id` = bpy.place_id 
+   		  LEFT JOIN bd_exam_year bey
+    		ON bey.ey_id=bsea.ey_id
+    	  LEFT JOIN bd_exam_reason ber
+    	   ON ber.er_id = bsea.er_id
+    	 <where>
+    	 	<if test="queryInfo.stdName !=null and '' !=queryInfo.stdName">
+    	 		and bsi.std_name like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+    	 	</if>
+    	 	<if test="queryInfo.idCard !=null and '' !=queryInfo.idCard">
+    	 		and bsi.id_card = #{queryInfo.idCard,jdbcType=VARCHAR}
+    	 	</if>
+    	 	 <if test="queryInfo.mobile !=null and '' !=queryInfo.mobile">
+    	 		and bsi.mobile = #{queryInfo.mobile,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.pfsnId !=null and '' !=queryInfo.pfsnId">
+    	 		and bup.pfsn_id = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.unvsId !=null and '' !=queryInfo.unvsId">
+    	 		and bu.unvs_id = #{queryInfo.unvsId,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.pfsnLevel !=null and '' !=queryInfo.pfsnLevel">
+    	 		and bup.pfsn_level = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.tutorName !=null and '' !=queryInfo.tutorName">
+    	 		and oe.emp_name like concat('%',#{queryInfo.tutorName,jdbcType=VARCHAR},'%')
+    	 	</if>
+    	 	<if test="queryInfo.placeId !=null and '' !=queryInfo.placeId">
+    	 		and	bep.`ep_id` = #{queryInfo.placeId,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.grade !=null and '' !=queryInfo.grade">
+    	 		and bli.grade =#{queryInfo.grade,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.testYear !=null and '' !=queryInfo.testYear">
+    	 		and bey.ey_id = #{queryInfo.testYear,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.stdStage !=null and '' !=queryInfo.stdStage">
+    	 		and bli.std_stage = #{queryInfo.stdStage,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.isAffirm !=null and '' !=queryInfo.isAffirm">
+    	 		<if test="queryInfo.isAffirm ==0">
+    	 			and bsea.py_id is null
+    	 		</if>
+    	 		<if test="queryInfo.isAffirm ==1">
+    	 			and bsea.py_id is not null
+    	 		</if>    	 		
+    	 	</if>
+    	 	<if test="queryInfo.isRemark !=null and '' !=queryInfo.isRemark">
+    	 	    <if test="queryInfo.isRemark ==0">
+    	 			and bsea.er_id is null
+    	 		</if>
+    	 		<if test="queryInfo.isRemark ==1">
+    	 			and bsea.er_id is not null
+    	 		</if>  
+    	 	</if>
+    	 	<if test="queryInfo.reason !=null and '' !=queryInfo.reason">
+    	 		and bsea.er_id=#{queryInfo.reason,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.isSign !=null and '' !=queryInfo.isSign">
+    	 		and bsea.sign_status=#{queryInfo.isSign,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.affirmTimeStart !=null and '' !=queryInfo.affirmTimeStart">
+    	 		 <![CDATA[ and DATE_FORMAT(bsea.`affirm_time`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{queryInfo.affirmTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+    	 	</if>
+    	 	<if test="queryInfo.affirmTimeEnd !=null and '' !=queryInfo.affirmTimeEnd">
+    	 		 <![CDATA[ and DATE_FORMAT(bsea.`affirm_time`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{queryInfo.affirmTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+    	 	</if>
+    	 	<if test="queryInfo.signTimeStart !=null and '' !=queryInfo.signTimeStart">
+    	 		 <![CDATA[ and DATE_FORMAT(bsea.`sign_time`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{queryInfo.signTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+    	 	</if>
+    	 	<if test="queryInfo.signTimeEnd !=null and '' !=queryInfo.signTimeEnd">
+    	 		 <![CDATA[ and DATE_FORMAT(bsea.`sign_time`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{queryInfo.signTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+    	 	</if>
+    	 	<if test="queryInfo.provinceCode !=null and '' !=queryInfo.provinceCode">
+    	 		and bep.province_code = #{queryInfo.provinceCode,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.cityCode !=null and '' !=queryInfo.cityCode">
+    	 		and bep.city_code= #{queryInfo.cityCode,jdbcType=VARCHAR}
+    	 	</if>
+    	 	<if test="queryInfo.districtCode !=null and '' !=queryInfo.districtCode">
+    	 		and bep.district_code = #{queryInfo.districtCode,jdbcType=VARCHAR}
+    	 	</if>
+			<choose>
+				<when test="user.userLevel == 1">
+					 <if test="queryInfo.recruitType !=null and '' !=queryInfo.recruitType">
+	    	 			and bli.recruit_type = #{queryInfo.recruitType,jdbcType=VARCHAR}
+	    	 		 </if>
+				</when>
+				<when test="user.userLevel == 2">
+					and bli.recruit_type = '2'
+				</when>
+				<when test="user.userLevel == 3">
+					and bli.recruit_type = '1'
+				</when>
+				<otherwise>
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+    	 </where>    
+	</select>
+	
+	<select id="getExamAffirmInfoById" resultMap="ExamAffirmInfoMap">
+		SELECT 
+		  bsea.`affirm_id`,
+		  bsea.`task_id`,
+		  bsea.`learn_id`,
+		  bey.`exam_year` AS test_year,
+		  bsi.`std_name`,
+		  bsi.`id_card`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  bsea.`py_id`,
+		  bsea.`ey_id`,
+		  bsea.`er_id`,
+		  bsea.`sign_status`,
+		  oe.`emp_name`,
+		  bsea.`reset_status`,
+		  bep.`ep_name`,
+		  date_format(bsea.`affirm_time`,'%Y-%m-%d %H:%i:%s')  affirm_time,
+	      date_format(bpy.`start_time`, '%Y-%m-%d %H:%i') start_time,
+  		  date_format(bpy.`end_time`, '%Y-%m-%d %H:%i') end_time
+		FROM
+		  `bd_student_exam_affirm` bsea 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bli.`learn_id` = bsea.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = blr.`tutor`
+		  LEFT JOIN bd_place_year bpy 
+    		ON bpy.py_id=bsea.py_id
+  		  LEFT JOIN bd_exam_place bep
+    		ON bep.`ep_id` = bpy.place_id
+    	  LEFT JOIN bd_exam_year bey
+    		ON bey.ey_id=bsea.ey_id  
+		 WHERE bsea.affirm_id=#{affirmId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getExamYear" resultType="java.util.HashMap">
+		SELECT 
+		   ey_id as eyId,
+		   exam_year as examYear 
+		FROM bd_exam_year 
+		  WHERE 1=1
+		  <if test="null !=status and ''!= status">
+		  	 and `status`=#{status,jdbcType=VARCHAR}
+		  </if>
+	</select>
+	
+	<select id="getExamReason" resultType="java.util.HashMap">
+		 SELECT 
+		   er_id as erId,
+		   reason
+		 FROM bd_exam_reason 
+		   WHERE 1=1
+		   <if test="eyId !=null and '' != eyId">
+		   	  and ey_id=#{eyId,jdbcType=VARCHAR}	
+		   </if>
+	</select>
+	
+	<update id="changeUnconfirmeReason">
+		UPDATE bd_student_exam_affirm
+		 set 
+		 er_id=#{info.erId,jdbcType=VARCHAR},
+		 unconfirmed_time = NOW(),
+		 unconfirmed_user_id=#{user.userId,jdbcType=VARCHAR}
+		WHERE affirm_id=#{info.affirmId,jdbcType=VARCHAR}	
+	</update>
+	
+	<insert id="singleAddStuExamAffirm" parameterType="com.yz.model.stdService.StudentExamAffirmInfo">
+		INSERT INTO bd_student_exam_affirm (affirm_id,task_id,ey_id,learn_Id,add_time) 
+        VALUES(#{affirmId, jdbcType=VARCHAR},
+               #{taskId,jdbcType=VARCHAR},
+               #{eyId,jdbcType=VARCHAR},
+               #{learnId,jdbcType=VARCHAR},
+               now())
+	</insert>
+	
+	<update id="resetResult">
+		UPDATE 
+		  bd_student_exam_affirm 
+		SET
+		  py_id = NULL,
+		  affirm_time = NULL,
+		  reset_status = '1',
+		  reset_time = NOW(),
+		  reset_user_id =#{user.userId,jdbcType=VARCHAR} 
+		WHERE affirm_id =#{affirmId,jdbcType=VARCHAR} ;
+		
+		UPDATE 
+		  oa_student_task 
+		SET
+		  task_status = '0' 
+		WHERE task_id = #{taskId,jdbcType=VARCHAR}
+		  AND learn_Id = #{learnId,jdbcType=VARCHAR} ;
+	</update>
+	
+	<delete id="aloneDelStuExamAffirm">
+		delete from bd_student_exam_affirm
+		where task_id=#{taskId,jdbcType=VARCHAR} 
+		  and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

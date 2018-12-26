@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.admin.BmsUserMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.admin.BmsUser" >
+    <id column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="salt" property="salt" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="is_block" property="isBlock"/>
+    <result column="is_staff" property="isStaff"/>
+    <result column="emp_id" property="empId"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_user_id" property="updateUserId"/>
+    <result column="update_user" property="updateUser"/>
+  </resultMap>
+   
+  <resultMap id="BaseUserResultMap" type="com.yz.model.admin.BaseUser" >
+  	 <id column="user_id" property="userId" jdbcType="VARCHAR" />
+  	 <result column="user_name" property="username" jdbcType="VARCHAR" />
+  	 <result column="user_pwd" property="password" jdbcType="VARCHAR" />
+  	 <result column="real_name" property="realName" jdbcType="VARCHAR" />
+  	 <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+  	 <result column="dp_id" property="departmentId" jdbcType="VARCHAR" />
+  	 <result column="dp_name" property="departmentName" jdbcType="VARCHAR" />
+  	 <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+  	 <result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+  	 <result column="is_block" property="isBlock" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="PageResulMap" type="com.yz.model.admin.BmsUserResponse" extends="BaseResultMap">
+  	<association property="roles" column="user_id" select="selectRoleListByUserId" />
+  </resultMap>
+  <resultMap id="ResponseResulMap" type="com.yz.model.admin.BmsUserResponse" extends="BaseResultMap">
+    <result column ="campus_id" property="campusId"/>
+    <result column ="dp_id" property="dpId"/>
+  	<association property="roleArray" column="user_id" select="selectRoleArrayByUserId" />
+  </resultMap>
+  <resultMap type="com.yz.model.admin.BmsFuncResponse" id="FirstMenuResultMap" extends="com.yz.dao.admin.BmsFuncMapper.BaseResultMap">
+  	<association property="funcs" column="{funcId=func_id,userId=user_id}" select="selectSecondMenuList" />
+  </resultMap>
+  <resultMap type="com.yz.model.admin.BmsFuncResponse" id="SecondMenuResultMap" extends="com.yz.dao.admin.BmsFuncMapper.BaseResultMap">
+  	
+  </resultMap>
+  <resultMap type="java.lang.String" id="RoleIdResultMap">
+  	 <id column="role_id" property="roleId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    user_id, user_name, real_name, user_pwd, salt, description,is_block, is_staff, emp_id, create_time,update_user_id,update_user
+  </sql>
+  <sql id="Func_List">
+  	 yf.func_id,
+	  yf.`func_name`,
+	  yf.`func_type`,
+	  yf.`func_url`,
+	  yf.`func_code`,
+	  yf.`p_id`,
+	  yf.`icon`,
+	  yur.user_id
+	FROM
+	  bms_user_role yur 
+	  LEFT JOIN `bms_role` yr 
+	    ON yr.role_id = yur.`role_id` 
+	  LEFT JOIN bms_role_func yrf 
+	    ON yrf.role_id = yr.role_id 
+	  LEFT JOIN bms_func yf 
+	    ON yf.func_id = yrf.func_id 
+  </sql>
+  
+  
+  <select id="selectUserById" parameterType="java.lang.String" resultMap="ResponseResulMap">
+    SELECT  user_id, user_name, real_name, user_pwd, salt,
+    description,is_block, is_staff, bu.emp_id, 
+    create_time,update_user_id,update_user,oea.`campus_id`,oea.`dp_id` FROM bms_user bu
+    LEFT JOIN oa_employee_job oea ON bu.emp_id=oea.`emp_id`
+    WHERE user_id=#{userId}
+  </select>
+  <select id="selectUserNameIsExist" resultType="java.lang.Integer">
+  	select count(1) from bms_user bu where user_name = #{userName}
+  	<if test="oldUserName != null and oldUserName != ''">
+  		and user_name != #{oldUserName}
+  	</if>
+  </select>
+  
+  <insert id="updateUserRoles">
+  	delete from bms_user_role where user_id = #{userId};
+  	insert into bms_user_role(user_id,role_id) values
+  	<foreach collection="roleIds" item="roleId" index="index" separator="," >  
+        (#{userId},#{roleId})
+    </foreach>
+  </insert>
+  
+  <select id="selectUserListByPage" resultMap="PageResulMap" parameterType="com.yz.model.admin.BmsUser">
+	SELECT * FROM (
+	  SELECT bu.*,(SELECT GROUP_CONCAT(role_id) FROM bms_user_role WHERE user_id=bu.`user_id`) roleId FROM bms_user bu
+	) temp_table
+	where
+  		1 = 1
+  		 <if test="userName != null and userName != ''">  
+             and temp_table.user_name LIKE CONCAT('%', CONCAT(#{userName}, '%'))
+         </if>  
+         <if test="realName != null and realName != ''">  
+             and temp_table.real_name LIKE CONCAT('%', CONCAT(#{realName}, '%'))
+         </if>
+         <if test="isBlock != null and isBlock != ''">  
+             and temp_table.is_block = #{isBlock}
+         </if> 
+         <if test="isStaff !=null and '' !=isStaff">
+         	and temp_table.is_staff = #{isStaff}
+         </if>
+         <if test="roleId !=null and '' != roleId">
+         	and find_in_set(${roleId},temp_table.roleId) 
+         </if>
+         order by temp_table.create_time desc
+  </select>
+  <select id="selectRoleListByUserId" parameterType="java.lang.String" resultType="com.yz.model.admin.BmsRole">
+  	SELECT 
+	  yr.`role_id` AS roleId,
+	  yr.`role_name` AS roleName 
+	FROM
+	  bms_role yr 
+	WHERE yr.`role_id` IN 
+	  (SELECT 
+	    yur.`role_id` 
+	  FROM
+	    bms_user_role yur 
+	  WHERE yur.`user_id` = #{userId})
+  </select>
+  <select id="selectRoleArrayByUserId" parameterType="java.lang.String" resultMap="RoleIdResultMap">
+  	SELECT 
+	  yr.`role_id`
+	FROM
+	  bms_role yr 
+	WHERE yr.`role_id` IN 
+	  (SELECT 
+	    yur.`role_id` 
+	  FROM
+	    bms_user_role yur 
+	  WHERE yur.`user_id` = #{userId})
+  </select>
+  <select id="selectFuncListByUserId" parameterType="java.lang.String" resultMap="com.yz.dao.admin.BmsFuncMapper.BaseResultMap">
+  	SELECT 
+		f.func_id, 
+		f.`func_name`, 
+		f.`func_type`, 
+		f.`func_url`, 
+		f.`func_code`, 
+		f.`p_id`, 
+		f.`icon`, 
+		ur.user_id 
+		FROM bms_func f
+		INNER JOIN bms_role_func rf ON f.`func_id` = rf.`func_id`
+		INNER JOIN bms_user_role ur ON ur.`role_id` = rf.`role_id`
+	WHERE 
+		ur.user_id = #{userId} 
+  </select>
+  <select id="selectMenuListByUserId" parameterType="java.lang.String" resultMap="FirstMenuResultMap">
+  	SELECT 
+	  <include refid="Func_List" />
+	WHERE 
+		yur.user_id = #{userId}
+	 	AND  yf.`func_type` = 1
+	 	GROUP BY yf.`func_id` 
+		ORDER BY yf.`order_num` 
+  </select>
+  <select id="selectSecondMenuList" parameterType="java.util.Map" resultMap="SecondMenuResultMap">
+  	SELECT
+	  <include refid="Func_List" />
+	WHERE 
+		yur.user_id = #{userId}
+	 	AND yf.`func_type` = 2
+	 	AND yf.p_id = #{funcId}
+	 GROUP BY yf.`func_id` 
+	 ORDER BY yf.`order_num` 
+  </select>
+  <select id="selectUserByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List" />
+    from bms_user
+    where user_name = #{username} and is_block = 0
+  </select>
+  <select id="selectBaseUserByUsername" parameterType="java.lang.String" resultMap="BaseUserResultMap">
+  	 SELECT 
+	  bu.`user_id`,
+	  bu.`user_name`,
+	  bu.`user_pwd`,
+	  bu.`real_name`,
+	  od.dp_id,
+	  od.`dp_name`,
+	  oe.`emp_id`,
+	  c.`campus_name`,
+	  c.`campus_id`,
+	  bu.`is_block`
+	FROM
+	  bms_user bu 
+	  LEFT JOIN oa_employee oe 
+	    ON oe.`emp_id` = bu.`emp_id` 
+	  LEFT JOIN oa_employee_job oej 
+	    ON oej.emp_id = oe.`emp_id` 
+	  LEFT JOIN oa_department od 
+	    ON od.`dp_id` = oej.dp_id 
+	  LEFT JOIN oa_campus c 
+	    ON c.`campus_id` = oej.`campus_id` 
+	WHERE bu.`user_name` = #{userName, jdbcType=VARCHAR} 
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    	<include refid="Base_Column_List" />
+    from bms_user
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bms_user
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertUserRoles" parameterType="java.util.HashMap">
+  	insert into bms_user_role(user_id,role_id)
+    values
+	<foreach collection="roleIds" item="roleId" index="index" separator="," >  
+        (#{userId},#{roleId})  
+    </foreach>
+  </insert>
+  <insert id="insert" parameterType="com.yz.model.admin.BmsUser" >
+    insert into bms_user (user_id, user_name, user_pwd, 
+      real_name, salt, description, is_staff, emp_id ,
+      update_user_id, update_user
+      )
+    values (#{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userPwd,jdbcType=VARCHAR}, 
+      #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+      #{isStaff}, #{empId},
+      #{updateUserId,jdbcType=VARCHAR},
+      #{updateUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.admin.BmsUser" >
+    insert into bms_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userPwd != null" >
+        user_pwd,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="salt != null" >
+        salt,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="isBlock != null" >
+        is_block,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPwd != null" >
+        #{userPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null" >
+        #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isBlock != null" >
+        #{isBlock},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.admin.BmsUser" >
+    update bms_user
+    <set >
+      <if test="userName != null and userName != ''" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPwd != null and userPwd != ''" >
+        user_pwd = #{userPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null and realName != ''" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="salt != null and salt != ''" >
+        salt = #{salt,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null and description != ''" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+       <if test="isBlock != null and isBlock != ''" >
+        is_block = #{isBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="isStaff != null and isStaff != ''" >
+        is_staff = #{isStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null and empId != ''" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and createTime != ''" >
+        create_time = #{createTime},
+      </if>
+      <if test="updateUserId != null and updateUserId != ''" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.admin.BmsUser" >
+    update bms_user
+    set real_name = #{realName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      is_staff = #{isStaff,jdbcType=VARCHAR},
+       emp_id = #{empId,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+  <select id="isSuperAdmin" parameterType="com.yz.model.admin.BaseUser" resultType="int">
+  	select 
+	  count(1) 
+	from
+	  bms_user_role 
+	where user_id = #{userId, jdbcType=VARCHAR} 
+	  and role_id in ('1','1754661637534708488','1754661637536116757','25211487152809736')
+  </select>
+  
+  
+  <select id="selectBaseUserByUserId" parameterType="java.lang.String" resultMap="BaseUserResultMap">
+  	 SELECT 
+	  bu.`user_id`,
+	  bu.`user_name`,
+	  bu.`user_pwd`,
+	  bu.`real_name`,
+	  od.dp_id,
+	  od.`dp_name`,
+	  oe.`emp_id`,
+	  c.`campus_name`,
+	  c.`campus_id`,
+	  bu.`is_block`
+	FROM
+	  bms_user bu 
+	  LEFT JOIN oa_employee oe 
+	    ON oe.`emp_id` = bu.`emp_id` 
+	  LEFT JOIN oa_employee_job oej 
+	    ON oej.emp_id = oe.`emp_id` 
+	  LEFT JOIN oa_department od 
+	    ON od.`dp_id` = oej.dp_id 
+	  LEFT JOIN oa_campus c 
+	    ON c.`campus_id` = oej.`campus_id` 
+	WHERE bu.`user_id` = #{userId, jdbcType=VARCHAR} 
+  </select>
+  
+  
+  <select id="getRoleCodeList" parameterType="string" resultType="string">
+  	  SELECT br.`role_code` FROM bms.`bms_user_role` bur LEFT JOIN
+      bms.`bms_role` br ON br.`role_id` = bur.`role_id` WHERE user_id=#{userId,jdbcType=VARCHAR};
+  </select>
+</mapper>

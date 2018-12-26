@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.AtsAccountSerialMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.AtsAccountSerial" >
+    <result column="acc_serial_no" property="accSerialNo" jdbcType="VARCHAR" />
+    <result column="acc_id" property="accId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="acc_type" property="accType" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="CHAR" />
+    <result column="acc_serial_status" property="accSerialStatus" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="before_amount" property="beforeAmount" jdbcType="VARCHAR" />
+    <result column="after_amount" property="afterAmount" jdbcType="VARCHAR" />
+    <result column="exc_desc" property="excDesc" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+	<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <insert id="initSerial" parameterType="com.yz.model.AtsAccountSerial" >
+  	<selectKey keyProperty="accSerialNo" order="BEFORE" resultType="string">
+  		select seq()
+  	</selectKey>
+    insert into goods.ats_account_serial
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        acc_serial_no,
+      <if test="accId != null" >
+        acc_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="mappingId != null" >
+        mapping_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="accType != null" >
+        acc_type,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="accSerialStatus != null" >
+        acc_serial_status,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="beforeAmount != null" >
+        before_amount,
+      </if>
+      <if test="afterAmount != null" >
+        after_amount,
+      </if>
+      <if test="accSerialType != null" >
+        acc_serial_type,
+      </if>
+      <if test="excDesc != null" >
+        exc_desc,
+      </if>
+      <if test="isVisiable != null" >
+        is_visiable,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{accSerialNo,jdbcType=VARCHAR},
+      <if test="accId != null" >
+        #{accId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="mappingId != null" >
+        #{mappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=CHAR},
+      </if>
+      <if test="accSerialStatus != null" >
+        #{accSerialStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="beforeAmount != null" >
+        #{beforeAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="afterAmount != null" >
+        #{afterAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="accSerialType != null" >
+        #{accSerialType,jdbcType=VARCHAR},
+      </if>
+      <if test="excDesc != null" >
+        #{excDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="isVisiable != null" >
+        #{isVisiable,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateSerial" parameterType="com.yz.model.AtsAccountSerial">
+  	update goods.ats_account_serial
+  	<set>
+  	  <if test="accId != null" >
+        acc_id = #{accId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="mappingId != null" >
+        mapping_id = #{mappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        acc_type = #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        action = #{action,jdbcType=CHAR},
+      </if>
+      <if test="accSerialStatus != null" >
+        acc_serial_status = #{accSerialStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="beforeAmount != null" >
+        before_amount = #{beforeAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="afterAmount != null" >
+        after_amount = #{afterAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="excDesc != null" >
+        exc_desc = #{excDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+  	</set>
+  	where acc_serial_no = #{accSerialNo, jdbcType=VARCHAR}
+  </update>
+  
+  <resultMap id="SerialsMap" type="java.util.HashMap" >
+    <result column="acc_serial_no" property="accSerialNo" jdbcType="VARCHAR" />
+    <result column="acc_id" property="accId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="acc_type" property="accType" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="CHAR" />
+    <result column="acc_serial_status" property="accSerialStatus" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="before_amount" property="beforeAmount" jdbcType="VARCHAR" />
+    <result column="after_amount" property="afterAmount" jdbcType="VARCHAR" />
+    <result column="exc_desc" property="excDesc" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+	<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+	<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getAccountSerials" parameterType="string" resultMap="SerialsMap">
+  	select 
+	  acc_serial_no,
+	  acc_id,
+	  std_id,
+	  emp_id,
+	  mapping_id,
+	  user_id,
+	  acc_type,
+	  `action`,
+	  acc_serial_status,
+	  amount,
+	  before_amount,
+	  after_amount,
+	  exc_desc,
+	  reason,
+	  date_format(update_time, '%Y-%m-%d %H:%i:%s') as update_time,
+	  update_user,
+	  update_user_id 
+	from
+	  goods.ats_account_serial 
+	where user_id = #{userId, jdbcType=VARCHAR}
+	<if test="action != null and action != ''">
+		and `action` = #{action, jdbcType=VARCHAR}
+	</if>
+	<if test="accType != null and accType != ''">
+		and `acc_type` = #{accType, jdbcType=VARCHAR}
+	</if>
+	order by update_time desc
+  </select>
+  
+  <update id="copy">
+  	update goods.ats_account_serial 
+  	set acc_id = #{destAccId, jdbcType=VARCHAR},
+  	    user_id = #{userId, jdbcType=VARCHAR},
+  	    std_id = #{stdId, jdbcType=VARCHAR}
+  	where acc_id = #{srcAccId, jdbcType=VARCHAR}
+  </update>
+</mapper>

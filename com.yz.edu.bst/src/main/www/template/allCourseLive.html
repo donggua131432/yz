@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+    <title>远智学堂-课程资源</title>
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+
+<body>
+<div class="wrraper">
+    <div class="banner">
+        <div class="tit">远智学堂</div>
+    </div>
+    <div class="breadcrumb">
+        <div class="inner">
+            <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+            <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+            <a class="fc6" href="javascript:void(0);" title="上课演示">上课演示</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <ul id="sidebar">
+                <li class="active"><a th:href="@{/allCourseLive.do}">直播课程</a></li>
+            </ul>
+        </div>
+        <div class="main">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>年级</th>
+                    <th>层次</th>
+                    <th>专业</th>
+                    <th>课程</th>
+                    <th width="220">上课时间</th>
+                    <th width="160"></th>
+                </tr>
+                </thead>
+                <tbody id="list">
+                <tr><td colspan="4" style="text-align: center;padding: 20px "><img th:src="@{/images/loading.gif}"  alt=""/></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="footer" th:include="common::footer">
+    </div>
+</div>
+
+
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<script th:inline="javascript" type="text/javascript">
+    $(function() {
+        getUnvsAllCourseLive();
+    });
+
+    var getUnvsAllCourseLive = function () {
+        var url=[[@{/getUnvsAllCourseLive.do}]];
+        $.ajax({
+            type: "post",
+            url: url,
+            dataType: "json",
+            success: function (data) {
+                if (data.code === '00') {
+                    renderList(data.body);
+                }
+            }
+        })
+    };
+
+    function renderList(data) {
+        var now = new Date(data.now.replace(/-/g, '/')).getTime();
+        var html = $.map(data.live, function (item) {
+            var btnLive = '';
+            var startTime = new Date(item.start_time.replace(/-/g, '/')).getTime();
+            var endTime = new Date(item.end_time.replace(/-/g, '/')).getTime();
+            if (now >= startTime && now <= endTime) {
+                var url = [[@{/live.do?courseId=}]]+item.course_id+'&channelId='+(item.channel_id||'')+'&courseName='+encodeURIComponent(item.course_name)+'&userId='+data.userId;
+                btnLive = '<a class="fc069" href="' + url + '">点此进入课程直播</a>';
+            }
+            return '<tr>\n' +
+                '        <td>' + item.grade + '</td>\n' +
+                '        <td>' + item.pfsn_level + '</td>\n' +
+                '        <td>' + item.pfsn_name + '</td>\n' +
+                '        <td>' + item.course_name + '</td>\n' +
+                '        <td>' + item.start_time + '-' + item.end_time.split(' ')[1] + '</td>\n' +
+                '        <td>' + btnLive + '</td>\n' +
+                '    </tr>';
+        });
+
+        $('#list').html(html);
+    }
+</script>
+</body>
+</html>

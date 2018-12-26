@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaCampusMapper" >
+	<resultMap id="OaCampusInfoMap" type="com.yz.model.oa.OaCampusInfo">
+	    <id column="campus_id"  property="campusId" jdbcType="VARCHAR" />
+	    <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	    <result column="finance_no" property="financeNo" jdbcType="VARCHAR" />
+	    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	    <result column="telephone" property="telephone" jdbcType="VARCHAR" />
+	    <result column="address" property="address" jdbcType="VARCHAR"  />
+	    <result column="is_foreign" property="isForeign" jdbcType="VARCHAR" />
+	    <result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+	    <result column="province_code" property="provinceId" jdbcType="VARCHAR"/>
+	    <result column="city_code" property="cityId" jdbcType="VARCHAR"/>
+	    <result column="district_code" property="areaId" jdbcType="VARCHAR"/>
+	    <result column="is_stop" property="isStop" jdbcType="VARCHAR"/>
+	    <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+	</resultMap>
+
+  <select id="getFinanceCode" parameterType="string" resultType="string">
+  	SELECT 
+	  c.`finance_no` 
+	FROM
+	  oa_campus c 
+	  INNER JOIN oa_department d 
+	    ON d.`campus_id` = c.`campus_id` 
+	  INNER JOIN oa_employee_job e 
+	    ON e.`dp_id` = d.`dp_id` 
+	WHERE e.`emp_id` = #{empId, jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 人事管理-校区管理 -->
+  <!-- 所有校区 -->
+  <select id="selectAllOaCampus" resultMap="OaCampusInfoMap" parameterType="com.yz.model.oa.OaCampusInfo">
+	  SELECT campus_id,campus_name,finance_no,(SELECT emp_name FROM oa_employee WHERE emp_id=oc.`emp_id`) emp_name,
+	  telephone,address,is_foreign,is_stop,province_code, city_code, district_code FROM oa_campus oc
+	  where '1' = '1'
+	      <if test="campusName != null and '' != campusName">  
+             and campus_name LIKE CONCAT('%', CONCAT(#{campusName}, '%'))
+         </if>  
+         <if test="financeNo != null and '' != financeNo">  
+             and finance_no = #{financeNo,jdbcType=VARCHAR}
+         </if>
+         <if test="address != null and '' != address">
+             and address LIKE CONCAT('%', CONCAT(#{address}, '%'))
+         </if>
+  </select>
+    <!-- 通过校区名称查询校区个数 -->
+    <select id="selectCountByCampusName" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	select 
+  		count(1)
+  		from oa_campus oc 
+  	where 
+  		oc.campus_name = #{campusName} 
+  </select>
+  
+  <!-- 新增校区 -->
+    <insert id="insertCampus" parameterType="com.yz.model.oa.OaCampusInfo">
+    insert into oa_campus (campus_id, campus_name, finance_no, emp_id, is_foreign, telephone, address,province_code, city_code, district_code, create_user_id, create_user,create_time)
+    values(#{campusId},#{campusName},#{financeNo},#{empId},#{isForeign},#{telephone},#{address},#{provinceId},#{cityId},#{areaId},#{createUserId}, #{createUser},now())
+  </insert>
+  <!-- 修改校区信息 -->
+  <update id="updateCampus" parameterType="com.yz.model.oa.OaCampusInfo">
+    update oa_campus set campus_name=#{campusName},finance_no=#{financeNo},emp_id=#{empId},is_foreign=#{isForeign},
+    telephone=#{telephone},address=#{address},province_code=#{provinceId}, city_code=#{cityId}, district_code=#{areaId},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where campus_id=#{campusId}
+  </update>
+  <!-- 获取某个校区详细  -->
+  <select id="getOaCampusInfo" resultMap="OaCampusInfoMap" parameterType="java.lang.String">
+     SELECT * FROM oa_campus WHERE campus_id=#{campusId}
+  </select>
+  <!-- 启用或者停用 -->
+  <update id="campusBlock" parameterType="com.yz.model.oa.OaCampusInfo">
+    update oa_campus set is_stop=#{isStop},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where campus_id=#{campusId}
+  </update> 
+  <!-- 下拉列表 -->
+  <select id="findAllKeyValue" resultMap="OaCampusInfoMap" parameterType="java.lang.String">
+  	SELECT campus_id,campus_name FROM oa_campus WHERE is_stop='0'
+  	 <if test="eName != null and '' != eName">
+        and campus_name like CONCAT('%',#{eName},'%')
+    </if>
+  </select>
+  <!--所有校区 -->
+  <select id="findAllList" resultMap="OaCampusInfoMap">
+  	SELECT campus_id,campus_name FROM oa_campus WHERE is_stop='0'
+  </select>
+  
+  <!-- 通过校区财务代码查询校区个数 -->
+    <select id="selectCountByFinanceNo" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	select 
+  		count(1)
+  		from oa_campus oc 
+  	where 
+  		oc.finance_no = #{financeNo} 
+  </select>
+  
+  <resultMap type="com.yz.model.oa.OaPrincipalModifyInfo" id="PrincipalModifyInfo">
+	<result column="modify_id" property="modifyId" jdbcType="VARCHAR"/>
+	<result column="old_emp_id" property="oldEmpId" jdbcType="VARCHAR"/>
+	<result column="begin_time" property="beginTime" jdbcType="VARCHAR"/>
+	<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	<result column="new_emp_id" property="newEmpId" jdbcType="VARCHAR"/>
+	<result column="principal_type" property="principalType" jdbcType="VARCHAR"/>
+	<result column="business_id" property="businessId" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="getPrincipalModifyInfo" resultMap="PrincipalModifyInfo">
+  		SELECT * FROM `oa_principal_modify` WHERE principal_type =#{principalType,jdbcType=VARCHAR} AND business_id=#{businessId,jdbcType=VARCHAR}
+		ORDER BY create_time DESC LIMIT 0,1
+  </select>
+  
+  <update id="updateLastModifyEndTime">
+  		update `oa_principal_modify` set end_time = NOW() where modify_id=#{modifyId,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="insertOaPrincipalModify" parameterType="com.yz.model.oa.OaPrincipalModifyInfo">
+		insert into `oa_principal_modify`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`modify_id`,
+			<if test="principalType != null">
+				`principal_type`,
+			</if>
+			<if test="businessId != null">
+				`business_id`,
+			</if>
+			<if test="oldEmpId != null">
+				`old_emp_id`,
+			</if>
+			<if test="newEmpId != null">
+				`new_emp_id`,
+			</if>
+			<if test="beginTime !=null">
+				`begin_time`,
+			</if>
+			<if test="createUser != null">
+				`create_user`,
+			</if>
+			<if test="createUserId != null">
+				`create_user_id`,
+			</if>
+			`end_time`,
+			`create_time`
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{modifyId, jdbcType=VARCHAR},
+			<if test="principalType != null">
+				#{principalType, jdbcType=VARCHAR},
+			</if>
+			<if test="businessId !=null">
+				#{businessId, jdbcType=VARCHAR},
+			</if>
+			<if test="oldEmpId != null">
+				#{oldEmpId, jdbcType=VARCHAR},
+			</if>
+			<if test="newEmpId != null">
+				#{newEmpId, jdbcType=VARCHAR},
+			</if>
+			<if test="beginTime !=null">
+				#{beginTime, jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser, jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId, jdbcType=VARCHAR},
+			</if>
+			NOW(),
+			NOW()
+		</trim>
+  </insert>
+  
+  <select id="getPrincipalModifyEndTime" resultType="java.lang.String">
+  		SELECT end_time FROM oa_principal_modify WHERE modify_id=#{modifyId,jdbcType=VARCHAR} ORDER BY create_time DESC LIMIT 0,1
+  </select>
+</mapper>

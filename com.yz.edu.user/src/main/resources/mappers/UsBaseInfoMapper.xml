@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsBaseInfoMapper" >
+  <resultMap id="BaseInfoMap" type="com.yz.model.UsBaseInfo" >
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="head_img" property="headImg" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="profession" property="profession" jdbcType="VARCHAR" />
+    <result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="VARCHAR" />
+    <result column="yz_code" property="yzCode" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="my_sign" property="mySign" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="district" property="district" jdbcType="VARCHAR" />
+    <result column="mobile_location" property="mobileLocation" jdbcType="VARCHAR" />
+    <result column="mobile_zip" property="mobileZip" jdbcType="VARCHAR" />
+    <result column="p_id" property="pId" jdbcType="VARCHAR" />
+    <result column="reg_time" property="regTime" jdbcType="VARCHAR" />
+    <result column="user_status" property="userStatus" jdbcType="VARCHAR" />
+    <result column="unblocked_time" property="unblockedTime" jdbcType="VARCHAR" />
+    <result column="p_type" property="pType" jdbcType="VARCHAR" />
+    <result column="p_is_mb" property="pIsMb" jdbcType="VARCHAR" />
+    <result column="wechat_open_id" property="wechatOpenId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="relation" property="relation" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="base_select">
+  	`user_id`,
+	  `head_img`,
+	  `nickname`,
+	  `real_name`,
+	  `sex`,
+	  date_format(`birthday`, '%Y-%m-%d %H:%i:%s') as birthday,
+	  `education`,
+	  `profession`,
+	  date_format(`graduate_time`, '%Y-%m-%d %H:%i:%s') as graduate_time,
+	  `user_type`,
+	  `yz_code`,
+	  `mobile`,
+	  `my_sign`,
+	  `province`,
+	  `city`,
+	  `district`,
+	  `mobile_location`,
+	  `mobile_zip`,
+	  `p_id`,
+	  date_format(`reg_time`, '%Y-%m-%d %H:%i:%s') as reg_time,
+	  `user_status`,
+	  date_format(`unblocked_time`, '%Y-%m-%d %H:%i:%s') as unblocked_time,
+	  std_id ,
+	  emp_id ,
+	  relation
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseInfoMap" parameterType="java.lang.String" >
+    select 
+	  u.`user_id`,
+	  u.`head_img`,
+	  u.`nickname`,
+	  u.`real_name`,
+	  u.`sex`,
+	  date_format(u.`birthday`, '%Y-%m-%d %H:%i:%s') as birthday,
+	  u.`education`,
+	  u.`profession`,
+	  date_format(u.`graduate_time`, '%Y-%m-%d %H:%i:%s') as graduate_time,
+	  u.`user_type`,
+	  u.`yz_code`,
+	  u.`mobile`,
+	  u.`my_sign`,
+	  u.`province`,
+	  u.`city`,
+	  u.`district`,
+	  u.`mobile_location`,
+	  u.`mobile_zip`,
+	  u.`p_id`,
+	  date_format(u.`reg_time`, '%Y-%m-%d %H:%i:%s') as reg_time,
+	  u.`user_status`,
+	  date_format(u.`unblocked_time`, '%Y-%m-%d %H:%i:%s') as unblocked_time,
+	  u.p_type as p_type,
+	  u.p_is_mb as p_is_mb,
+	  u.`bind_id` AS wechat_open_id,
+	  u.std_id ,
+	  u.emp_id ,
+	  u.relation
+	from
+	  us_base_info u  
+    where u.user_id = #{userId,jdbcType=VARCHAR} limit 1
+  </select>
+  
+  <select id="countByMobile" resultType="int" parameterType="string">
+  	select count(1) from us_base_info where mobile = #{mobile, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByMobile" parameterType="string" resultMap="BaseInfoMap">
+  	SELECT 
+	  u.`user_id`,
+	  u.`head_img`,
+	  u.`nickname`,
+	  u.`real_name`,
+	  u.`sex`,
+	  DATE_FORMAT(u.`birthday`,'%Y-%m-%d %H:%i:%s') AS birthday,
+	  u.`education`,
+	  u.`profession`,
+	  DATE_FORMAT(u.`graduate_time`,'%Y-%m-%d %H:%i:%s') AS graduate_time,
+	  u.`user_type`,
+	  u.`yz_code`,
+	  u.`mobile`,
+	  u.`my_sign`,
+	  u.`province`,
+	  u.`city`,
+	  u.`district`,
+	  u.`mobile_location`,
+	  u.`mobile_zip`,
+	  u.`p_id`,
+	  DATE_FORMAT(u.`reg_time`,'%Y-%m-%d %H:%i:%s') AS reg_time,
+	  u.`user_status`,
+	  DATE_FORMAT(u.`unblocked_time`,'%Y-%m-%d %H:%i:%s') AS unblocked_time,
+	  u.p_type AS p_type,
+	  u.p_is_mb AS p_is_mb,
+	  u.`bind_id` AS wechat_open_id,
+	  u.std_id ,
+	  u.emp_id ,
+	  u.relation
+	FROM
+	  us_base_info u  
+	where u.`mobile` = #{mobile, jdbcType=VARCHAR}
+	limit 0,1
+  </select>
+  
+  <select id="selectByBind" resultMap="BaseInfoMap" >
+    select 
+	  <include refid="base_select" />
+	from
+	  us_base_info u 
+	where u.`bind_id` = #{bindId, jdbcType=VARCHAR} limit 1
+	<!--   (select 
+	    b.user_id 
+	  from
+	    us_bind b 
+	  where b.bind_id = #{bindId, jdbcType=VARCHAR} 
+	    and b.bind_type = #{bindType, jdbcType=VARCHAR} 
+	  limit 0, 1)  -->
+  </select>
+  
+  <select id="selectByYzCode" parameterType="string" resultMap="BaseInfoMap">
+  	select 
+	  <include refid="base_select" />
+	from
+	  us_base_info u 
+	where u.`yz_code` = #{yzCode, jdbcType=VARCHAR} limit 1
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsBaseInfo">
+    insert into us_base_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        user_id,
+      <if test="headImg != null" >
+        head_img,
+      </if>
+      <if test="nickname != null" >
+        nickname,
+      </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="birthday != null and birthday != ''" >
+        birthday,
+      </if>
+      <if test="education != null" >
+        education,
+      </if>
+      <if test="profession != null" >
+        profession,
+      </if>
+      <if test="graduateTime != null and graduateTime != ''" >
+        graduate_time,
+      </if>
+      <if test="userType != null" >
+        user_type,
+      </if> 
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="mySign != null" >
+        my_sign,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="district != null" >
+        district,
+      </if>
+      <if test="mobileLocation != null" >
+        mobile_location,
+      </if>
+      <if test="mobileZip != null" >
+        mobile_zip,
+      </if>
+      <if test="pId != null" >
+        p_id,
+      </if>
+      <if test="userStatus != null" >
+        user_status,
+      </if>
+      <if test="isMb != null" >
+        is_mb,
+      </if>
+      <if test="sg != null" >
+        sg,
+      </if>
+      <if test="scholarship != null" >
+        scholarship,
+      </if>
+      <if test="wechatOpenId !=null">
+      	bind_id,
+      </if>
+      <if test="channelId !=null">
+      	channel_id,
+      </if>
+        yz_code,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{userId,jdbcType=VARCHAR},
+      <if test="headImg != null" >
+        #{headImg,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null and birthday != ''" >
+      	str_to_date(#{birthday,jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="profession != null" >
+        #{profession,jdbcType=VARCHAR},
+      </if>
+      <if test="graduateTime != null and graduateTime != ''" >
+        str_to_date(#{graduateTime,jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=VARCHAR},
+      </if> 
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="mySign != null" >
+        #{mySign,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null" >
+        #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileLocation != null" >
+        #{mobileLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileZip != null" >
+        #{mobileZip,jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null" >
+        #{pId,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        #{userStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="isMb != null" >
+        #{isMb,jdbcType=VARCHAR},
+      </if>
+      <if test="sg != null" >
+        #{sg,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatOpenId !=null">
+      	#{wechatOpenId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelId !=null">
+      	#{channelId,jdbcType=VARCHAR},
+      </if>
+        #{yzCode,jdbcType=VARCHAR},
+    </trim>
+  </insert>
+  
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.UsBaseInfo" >
+    update us_base_info
+    <set >
+      <if test="headImg != null" >
+        head_img = #{headImg,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null and birthday != ''" >
+        birthday = str_to_date(#{birthday,jdbcType=TIMESTAMP}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      <if test="education != null" >
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="profession != null" >
+        profession = #{profession,jdbcType=VARCHAR},
+      </if>
+      <if test="graduateTime != null" >
+        graduate_time = str_to_date(#{graduateTime,jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      <if test="userType != null" >
+        user_type = #{userType,jdbcType=VARCHAR},
+      </if>
+      <if test="yzCode != null" >
+        yz_code = #{yzCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="mySign != null" >
+        my_sign = #{mySign,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null" >
+        district = #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileLocation != null" >
+        mobile_location = #{mobileLocation,jdbcType=VARCHAR},
+      </if>
+      <if test="mobileZip != null" >
+        mobile_zip = #{mobileZip,jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null" >
+        p_id = #{pId,jdbcType=VARCHAR},
+      </if>
+      <if test="userStatus != null" >
+        user_status = #{userStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        scholarship = #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="regTime != null" >
+        reg_time = STR_TO_DATE(#{regTime,jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      
+      <!-- std empid 更新  -->
+      <if test="stdId != null" >
+         std_id = #{stdId,jdbcType=VARCHAR},relation = (relation | 4),
+      </if>
+       <if test="empId != null" >
+         emp_id = #{empId,jdbcType=VARCHAR},relation = (relation | 2),
+      </if>
+      
+      <if test="pType !=null">
+      	 p_type = #{pType,jdbcType=VARCHAR},
+      </if>
+      <if test="pIsMb !=null">
+      	 p_is_mb = #{pIsMb,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+   
+  
+  <select id="countByBind" resultType="int">
+  	select count(1) from us_base_info b where b.`bind_id` = #{bindId, jdbcType=VARCHAR}
+  	<!--  and b.`bind_type` = #{bindType, jdbcType=VARCHAR} -->
+  </select>
+  
+  
+  <resultMap id="OtherMap" type="java.util.HashMap" >
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="p_id" property="pId" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="profession" property="profession" jdbcType="VARCHAR" />
+    <result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getOtherInfo" parameterType="string" resultMap="OtherMap">
+  	select 
+      `real_name`,
+	  `sex`,
+	  `mobile`,
+	   p_id,
+	  date_format(`birthday`, '%Y-%m-%d %H:%i:%s') as birthday,
+	  `education`,
+	  `profession`,
+	  date_format(`graduate_time`, '%Y-%m-%d %H:%i:%s') as graduate_time
+    from us_base_info
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="FansMap" type="java.util.HashMap" >
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="reg_time" property="regTime" jdbcType="VARCHAR" />
+    <result column="user_type" property="userType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getOpenIdByEmpId" parameterType="java.lang.String" resultType="java.lang.String">
+<!--   	select 
+	  b.`bind_id` 
+	from
+	  us_bind b 
+	where b.`bind_type` = '2' 
+	  and b.`user_id` = 
+	  (select 
+	    r.`user_id` 
+	  from
+	    us_relation r 
+	  where r.`i_user_type` = '2' 
+	    and r.`mapping_id` = #{mappingId}) -->
+	select 
+	  b.`bind_id` 
+	from
+	  us_base_info b 
+	where b.`emp_id` = #{mappingId} limit 1
+  </select>
+  
+  <select id="getMyFans" parameterType="string" resultMap="FansMap">
+  	SELECT 
+	  b.`mobile`,
+	  b.`nickname`,
+	  date_format(b.`reg_time`, '%Y-%m-%d %H:%i:%s') as reg_time,
+	  b.`user_type`
+	FROM
+	  us_base_info b 
+	WHERE b.`p_id` = #{userId, jdbcType=VARCHAR}
+  </select>
+ 
+  
+  <select id="getOpenIdByUserId" resultType="String" parameterType="string">
+  	SELECT bind_id FROM us_base_info WHERE user_id=#{userId,jdbcType=VARCHAR} 
+  	<!-- AND bind_type='2' -->
+  </select>
+  
+  <select id="getOpenIdsByUserIds" resultType="String" parameterType="string">
+  	SELECT bind_id FROM us_base_info WHERE user_id in 
+  	(
+  	<foreach collection="userIds" item="userId" separator=",">
+  		#{userId,jdbcType=VARCHAR} 
+  	</foreach>
+  	)
+  	<!-- AND bind_type='2' -->
+  </select>
+  
+  
+  <select id="countByOpenId" parameterType="string" resultType="int">
+  	SELECT 
+	  COUNT(1) 
+	FROM
+	  us.`us_base_info` u 
+	WHERE u.`bind_id` = #{openId, jdbcType=VARCHAR}
+  </select>
+
+
+
+	<select id="selectNewRegList" resultType="java.util.HashMap">
+		select real_name as
+		realName,mobile,head_img as headImg,reg_time as regTime
+		from
+		us_base_info order by reg_time desc limit 0,10
+	</select>
+
+	<select id="getCountByStdIdOrMobile" resultType="java.lang.Integer">
+		select count(1) from us_base_info where std_id=#{stdId,jdbcType=VARCHAR} or
+		mobile=#{mobile,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

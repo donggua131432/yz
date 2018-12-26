@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.invite.UsStudentRemarkMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.invite.UsStudentRemark">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="std_id" jdbcType="VARCHAR" property="stdId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, std_id, remark
+  </sql>
+  <select id="selectUsStudentRemark" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from us.us_student_remark
+    where user_id = #{userId,jdbcType=VARCHAR} or std_id = #{stdId,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertUsStudentRemark" parameterType="com.yz.model.invite.UsStudentRemark">
+    insert into us.us_student_remark
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="userId != null and userId!=''">
+        user_id,
+      </if>
+      <if test="stdId != null and stdId!=''">
+        std_id,
+      </if>
+      <if test="remark != null and remark!=''">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id,jdbcType=VARCHAR},
+      <if test="userId != null and userId!=''">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null and stdId!=''">
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null and remark!=''">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateUsStudentRemark" parameterType="java.util.Map">
+    update us.us_student_remark
+    <set>
+      <if test="userId != null and userId!=''">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null and stdId!=''">
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null and remark!=''">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR} or std_id = #{stdId,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteUsStudentRemarkById">
+    delete from us.us_student_remark where user_id = #{userId,jdbcType=VARCHAR} or std_id = #{stdId,jdbcType=VARCHAR}
+  </delete>
+
+
+</mapper>

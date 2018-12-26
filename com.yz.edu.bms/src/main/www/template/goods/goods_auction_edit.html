@@ -1,0 +1,218 @@
+﻿<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/custom.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+  <article class="page-container">
+    <form method="post" class="form form-horizontal yz-form-box" id="form-auction-info" th:object="${goodsInfo}" enctype="multipart/form-data">
+      <input type="hidden" th:value="${exType}" name="exType" id="exType" />
+      <input type="hidden" th:value="*{goodsId}" name="goodsId" id="goodsId" />
+      <input type="hidden" th:value="*{salesId}" name="salesId" id="salesId" />
+      <input type="hidden" th:value="*{planId}" name="planId" id="planId" />
+      <input type="hidden" id="_web_token" name="_web_token" th:value="${_web_token}" />
+      <!--------基本信息------->
+      <div class="form">
+        <div class="cl">
+          <div class="f-l halfPage">
+            <p>商品信息</p>
+	            <div class="row cl">
+	            	<label class="form-label col-xs-4 col-sm-3">请选择商品(非必须)：</label>
+	            	<div class="formControls col-xs-8 col-sm-9">
+					    <select class="select" size="1" id="goodsSelect" style="width: 298px;">
+					       <option value="" selected>--商品信息--</option>
+					    </select>
+	            	</div>
+	            </div>
+                <div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>商品名称：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" value="" placeholder="输入商品名称" id="goodsName" name="goodsName" th:value="*{goodsName}">
+					</div>
+			    </div>
+			    <div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>竞拍活动名称：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" value="" placeholder="默认为商品名称" id="salesName" name="salesName" th:value="*{salesName}">
+					</div>
+			    </div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>商品库存：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="库存" id="goodsCount" name="goodsCount" th:value="*{goodsCount}">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>成本价：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="成本价" id="costPrice" name="costPrice" th:value="*{costPrice}">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>显示市场价：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="市场价" id="originalPrice" name="originalPrice" th:value="*{originalPrice}">
+					</div>
+				</div>							
+		        <div class="row cl">
+		              <label class="form-label col-xs-4 col-sm-3">商品封面：</label>
+		              <div class="formControls col-xs-8 col-sm-9">
+		                <span id="member-photo"></span>
+		                <span class="btn-upload mb-30">
+		                  <button class="btn btn-primary radius" onclick="">选取图片</button>
+		                  <input type="file" multiple name="coverUrl" id="selectPhoto" class="input-file" />
+		                  <input type="hidden" name="annexUrlPortrait" id="annexUrlPortrait" value="" />
+		                  <input type="hidden" name="isPhotoChange" id="isPhotoChange" value="" />
+		                </span>
+		                <input type="button" name="next" onclick="deletPhoto()" class="btn btn-normal-outline radius mb-30" value="删除" />
+		              </div>
+		        </div>	
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>简介：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" value="" placeholder="简介" id="goodsDesc" name="goodsDesc" th:value="*{goodsDesc}">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>详细介绍：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<script id="goodsContent" name="goodsContent" type="text/plain" style="width:100%;height:300px;"></script>
+					</div>
+				</div>
+     
+          </div>
+          <div class="f-r halfPage ">
+            <p>竞拍信息</p>
+       		  <div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>设定竞拍期数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="设定抽奖期数" id="totalCount" name="totalCount" th:value="*{totalCount}" onblur="validateGoodsCount()">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>已完成期数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span id="curCount"></span>
+						<a onclick="showAuctionResult()" class="c-blue">查看记录</a>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>起拍智米：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="起拍智米" id="upsetPrice" name="upsetPrice" th:value="*{upsetPrice}">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>最小加价区间：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="最小加价区间" id="raisePrice" name="raisePrice" th:value="*{raisePrice}">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>竞拍开始时间：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						 <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:{%m+20}:%s'})" id="startTime" name="startTime" th:value="*{startTime}" class="input-text Wdate"/>
+					</div>
+				</div>	
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>竞拍持续周期：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<select class="select" size="1" id="intervalSelect" >
+					       <option value="" selected>--竞拍周期--</option>
+					    </select>
+					    <input type="hidden" name="interval" id="interval" value />
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>结束后是否可见：</label>
+					<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+						<div class="radio-box">
+							<input type="radio" id="showAfterOver" name="showAfterOver" value="1" th:field="*{showAfterOver}">
+							<label >是</label>
+						</div>
+						<div class="radio-box">
+							<input type="radio" id="showAfterOver" name="showAfterOver" value="0" th:field="*{showAfterOver}">
+							<label >否</label>
+						</div>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
+					<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+						<div class="radio-box">
+							<input type="radio" id="salesStatus" name="salesStatus" value="2" th:field="*{salesStatus}">
+							<label >在线</label>
+						</div>
+						<div class="radio-box">
+							<input type="radio" id="salesStatus" name="salesStatus" value="1" th:field="*{salesStatus}">
+							<label >离线</label>
+						</div>
+					</div>
+				</div>	
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>竞拍说明：</label>
+					<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+						<script id="salesRules" name="salesRules" type="text/plain" style="width:100%;height:300px;"></script>
+					</div>
+				</div>	
+          </div>
+        </div>
+      </div>
+      <div class="text-r mt-10">
+        <input id="bt_submit" type="submit" class="submit btn btn-primary radius" value="保存" />
+        <input type="button" class="previous btn btn-normal-outline radius mr-10" value="取消" id="bt_cancel" onclick="layer_close();"/>
+      </div>
+    </form>
+  </article>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.config.js}"></script>
+  <script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.all.min.js}"> </script>
+  <script type="text/javascript" th:inline="javascript">
+  var varGoodsInfo=[[${goodsInfo}]];
+  var exType=[[${exType}]];
+  </script>
+<script type="text/javascript" th:src="@{/js/webjs/goods/goods_auction_edit.js}"></script>
+  <!-- 基础信息JS -->
+</body>
+</html>

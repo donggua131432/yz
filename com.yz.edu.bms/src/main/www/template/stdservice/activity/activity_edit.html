@@ -1,0 +1,218 @@
+﻿<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript" th:src="@{/js/html5shiv.js}"></script>
+<script type="text/javascript" th:src="@{/js/respond.min.js}"></script>
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title th:text="UPDATE == ${exType} ? 修改角色 : 添加系统角色"></title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+</head>
+<body>
+<article class="page-container">
+	<form action="" method="post" class="form form-horizontal" th:object="${taskInfo}" id="form-task-add">
+		<input type="hidden" th:value="*{taskId}" name="taskId" id="taskId" />
+		<input type="hidden" th:value="${exType}" name="exType" id="exType" />
+		<input type="hidden" th:value="*{eyId}" name="eyIds" id="eyIds" />
+		<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+		
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>任务名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="taskTitle" name="taskTitle" th:value="*{taskTitle}">
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>开始时间：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+			   <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="startTimeInput" name="startTimeInput" class="input-text Wdate"/>
+               <input type="hidden" class="input-text" placeholder="请输入开始时间" id="startTime" name="startTime" />
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>结束时间：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+			   <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="endTimeInput" name="endTimeInput" class="input-text Wdate"/>
+               <input type="hidden" class="input-text" placeholder="请输入结束时间" id="endTime" name="endTime" />
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">任务描述：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<textarea name="taskContent" id="taskContent" cols="" rows="" class="textarea" placeholder="请输入备注...最少输入10个字符" onKeyUp="$.Huitextarealength(this,300)"></textarea>
+                <p class="textarea-numberbar">
+                  <em class="textarea-length">0</em>/300
+                </p>
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">任务类型：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="4" th:field="*{taskType}">
+					<label >考&nbsp;&nbsp;&nbsp;&nbsp;场&nbsp;&nbsp;&nbsp;&nbsp;确&nbsp;&nbsp;&nbsp;&nbsp;认</label>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			        <select class="select" size="1" id="eyId" name="eyId">
+						<option value="" selected>--考试年度--</option>
+			 		</select>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="5" th:field="*{taskType}">
+					<label >国&nbsp;&nbsp;&nbsp;开&nbsp;&nbsp;&nbsp;考&nbsp;&nbsp;试&nbsp;&nbsp;&nbsp;通&nbsp;&nbsp;&nbsp;知</label>&nbsp;
+			        <select class="select" size="1" id="gkEyId" name="gkEyId">
+						<option value="" selected>--考试年度--</option>
+			 		</select>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="13" th:field="*{taskType}">
+					<label >国开考场城市确认任务&nbsp;</label>
+					<select class="select" size="1" id="examEyIdGK" name="examEyIdGK">
+						<option value="" selected>--考试年度--</option>
+			 		</select>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="14" th:field="*{taskType}">
+					<label >国家开放大学本科统考&nbsp;</label>
+					<select class="select" size="1" id="gkUnifiedId" name="gkUnifiedId">
+						<option value="" selected>--统考设置--</option>
+			 		</select>
+				</div>
+				<br/>
+			    <div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="2" th:field="*{taskType}">
+					<label >跳&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;转&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型</label>&nbsp;&nbsp;&nbsp;
+					<span>URL:</span>&nbsp;&nbsp;<input type="text" style="width:180px" class="input-text" value="" placeholder="" id="taskUrl" name="taskUrl" th:value="*{taskUrl}">
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="6" th:field="*{taskType}">
+					<label >毕业资料提交</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="7" th:field="*{taskType}">
+					<label >学信网信息核对</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="8" th:field="*{taskType}">
+					<label >学位英语报名通知</label>
+				</div>
+				<br/>
+					<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="9" th:field="*{taskType}">
+					<label >毕业论文及报告通知</label>
+				</div>
+				<br/>
+			    <div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="10" th:field="*{taskType}">
+					<label >开课通知</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="11" th:field="*{taskType}">
+					<label >新生学籍资料收集</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="12" th:field="*{taskType}">
+					<label >青书上课通知</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="1" th:field="*{taskType}">
+					<label >通知型</label>
+				</div>
+				<br/>
+				<div class="radio-box">
+					<input type="radio" id="taskType" name="taskType" value="3" th:field="*{taskType}">
+					<label >地址确认</label>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">是否启用：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="radio-box">
+					<input type="radio" id="isAllow" name="isAllow" value="1" th:field="*{isAllow}">
+					<label >是</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="isAllow" name="isAllow" value="0" th:field="*{isAllow}">
+					<label >否</label>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
+		    <label class="form-label col-xs-4 col-sm-3">是否需毕业核查：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="radio-box">
+					<input type="radio" id="isNeedCheck" name="isNeedCheck" value="1" th:field="*{isNeedCheck}">
+					<label >是</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="isNeedCheck" name="isNeedCheck" value="0" th:field="*{isNeedCheck}">
+					<label >否</label>
+				</div>
+			</div>
+		</div>
+		
+		<span id="staffSelect"></span>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<button type="submit" class="btn btn-success radius inputW9" id="admin-role-save" name="admin-role-save">确定</button>
+			</div>
+		</div>
+	</form>
+</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:inline="javascript">
+	var taskInfo=/*[[${taskInfo}]]*/;
+</script>
+<script type="text/javascript" th:src="@{/js/webjs/stdservice/activity/activity_edit.js}"></script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

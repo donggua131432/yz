@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.statistics.StdStudyFeeStatMapper">
+
+    <select id="selectStdStudyFeeStat" parameterType="com.yz.model.condition.stdService.StudentStudyingQuery" resultType="java.util.HashMap">
+        select
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.grade')">
+            tab.grade,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.unvs_id')">
+            tab.unvs_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.pfsn_id')">
+            tab.pfsn_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.pfsn_level')">
+            (select dict_name from sys_dict where p_id = 'pfsnLevel' and dict_value = tab.pfsn_level) as pfsn_level,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.tutor_name')">
+            tab.tutor_name,
+        </if>
+        sum(countAll) as countAll, sum(countFinish) as countFinish, truncate((sum(countFinish)/sum(countAll)*100),2) as finishRate
+        from (
+            select t.learn_id, t.std_id, t.std_no, t.std_stage, t.recruit_type, t.grade, t.scholarship,t.unvs_id,t.pfsn_id,
+                t.std_name, t.tutor, t.unvs_name, t.pfsn_name, t.pfsn_code, t.pfsn_level, t.tutor_name, t.sub_order_status,
+                sum(if(t.sub_order_status=1,t.fee_amount,0)) as fee_amount, 1 as countAll, if(sum(if(t.sub_order_status=1,t.fee_amount,0))=0,1,0) as countFinish
+            from (
+                SELECT l.learn_id, l.std_id, l.std_no, l.std_stage, l.recruit_type, l.grade,l.scholarship,l.std_type,
+                    s.std_name, s.sex, s.address, s.mobile, s.id_card, r.tutor, l.unvs_id, u.unvs_name, l.pfsn_id,
+                    p.pfsn_name, p.pfsn_code, p.pfsn_level, e.emp_name AS tutor_name, e.emp_id AS tutor_emp_id,
+                    oae.emp_name as recruit_name, bsor.sub_order_status, bsor.fee_amount,  if(bfi.item_year='',0,bfi.item_year) as item_year, bfi.item_code,
+                    subYear(l.grade) as is_year,l.sg,l.inclusion_status,t.ta_name
+                FROM bd_learn_info l
+                LEFT JOIN bd_university u  ON u.`unvs_id` = l.`unvs_id`
+                LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.pfsn_id
+                LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+                LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+                LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+                LEFT JOIN oa_employee oae ON oae.emp_id = r.recruit
+                LEFT JOIN bd_student_order bso on bso.learn_id=l.learn_id
+                LEFT JOIN bd_sub_order bsor on bsor.order_no=bso.order_no
+                LEFT JOIN bd_fee_item bfi on bfi.item_code=bsor.item_code
+                LEFT JOIN bd_test_area t ON t.ta_id = l.ta_id
+                WHERE l.`std_stage` = '7' and bsor.sub_order_status in ('1','2')
+            ) t
+            <where>
+                t.item_year &lt;= t.is_year
+                <if test="stdName != null and stdName != ''">
+                    and t.std_name LIKE CONCAT('%', #{stdName, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="idCard != null and idCard != ''">
+                    and t.id_card LIKE CONCAT('%', #{idCard, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="mobile != null and mobile != ''">
+                    and tab.mobile LIKE CONCAT('%', #{mobile, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="unvsName != null and unvsName != ''">
+                    and t.unvs_name LIKE CONCAT('%', #{unvsName, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="pfsnName != null and pfsnName != ''">
+                    and t.pfsn_name LIKE CONCAT('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="grade != null and grade != ''">
+                    and t.grade = #{grade, jdbcType=VARCHAR}
+                </if>
+                <if test="recruitType != null and recruitType != ''">
+                    and t.recruit_type = #{recruitType, jdbcType=VARCHAR}
+                </if>
+                <if test="sex !=null and '' != sex">
+                    and t.sex = #{sex,jdbcType=VARCHAR}
+                </if>
+                <if test="address !=null and '' != address">
+                    and t.address LIKE CONCAT('%', #{address, jdbcType=VARCHAR}, '%')
+                </if>
+                <if test="pfsnLevel != null and '' != pfsnLevel">
+                    and t.pfsn_level = #{pfsnLevel,jdbcType=VARCHAR}
+                </if>
+                <if test="stdNo != null and '' != stdNo">
+                    and t.std_no = #{stdNo,jdbcType=VARCHAR}
+                </if>
+                <if test="scholarship !=null and '' !=scholarship">
+                    and t.scholarship = #{scholarship,jdbcType=VARCHAR}
+                </if>
+                <if test="empName !=null and '' !=empName">
+                    and t.tutor_name LIKE CONCAT('%',#{empName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="recruitName !=null and '' !=recruitName">
+                    and t.recruit_name LIKE CONCAT('%',#{recruitName,jdbcType=VARCHAR},'%')
+                </if>
+                <if test="stdType !=null and '' !=stdType">
+                    and t.std_type = #{stdType,jdbcType=VARCHAR}
+                </if>
+                <if test="inclusionStatus !=null and '' !=inclusionStatus">
+                    and t.inclusion_status = #{inclusionStatus,jdbcType=VARCHAR}
+                </if>
+                <if test="sg !=null and '' !=sg">
+                    and t.sg = #{sg,jdbcType=VARCHAR}
+                </if>
+                <if test="taName !=null and '' !=taName">
+                    and t.ta_name = #{taName,jdbcType=VARCHAR}
+                </if>
+            </where>
+        group by t.std_id,t.learn_id
+        ) tab
+        <where>
+            <if test="isArrears != null and isArrears == '0'.toString()">
+                and tab.fee_amount = 0
+            </if>
+            <if test="isArrears != null and isArrears == '1'.toString()">
+                and tab.fee_amount > 0
+            </if>
+        </where>
+        group by
+        <trim suffixOverrides=",">
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.grade')">
+                tab.grade,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.unvs_id')">
+                tab.unvs_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.pfsn_id')">
+                tab.pfsn_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.pfsn_level')">
+                tab.pfsn_level,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'tab.tutor_name')">
+                tab.tutor_name,
+            </if>
+        </trim>
+    </select>
+
+
+</mapper>

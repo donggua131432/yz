@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BaseInfoMapper" >
+	<select id="selectUnvs"  resultType="java.util.HashMap" parameterType="com.yz.model.communi.Body">
+		SELECT 
+		  u.unvs_id AS unvsId,
+		  u.unvs_name AS unvsName 
+		FROM
+		  `bms`.bd_university u 
+		<where>
+		    u.is_stop = '0'
+			<if test="unvsName != null and unvsName != ''">
+				and u.`unvs_name` LIKE CONCAT('%', #{unvsName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="recruitType != null and recruitType != ''">
+				and u.`recruit_type` = #{recruitType, jdbcType=VARCHAR}
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+			  and u.`unvs_id` IN 
+			  (SELECT 
+			    ut.unvs_id 
+			  FROM
+			    `bms`.bd_university_test ut 
+			    LEFT JOIN bms.bd_test_area t 
+			      ON t.`ta_id` = ut.`ta_id` 
+			  WHERE t.`city_code` = #{cityCode, jdbcType=VARCHAR})
+			</if>
+			<if test="pfsnLevel != null and pfsnLevel != ''">
+				and u.`unvs_id` IN 
+				  (SELECT 
+				    p.unvs_id 
+				  FROM
+				    `bms`.bd_unvs_profession p 
+				  WHERE p.`pfsn_level` = #{pfsnLevel, jdbcType=VARCHAR})
+			</if>
+		</where>
+		order by u.unvs_name 
+	</select>
+	
+	<select id="selectProfession"  resultType="java.util.HashMap" parameterType="com.yz.model.communi.Body">
+		select 
+		  p.pfsn_id as pfsnId, 
+		  p.pfsn_name as pfsnName
+		from bms.bd_unvs_profession p
+		<where>
+		    p.is_allow = '1'
+			<if test="unvsId != null and unvsId != ''">
+				and p.unvs_id = #{unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnName != null and pfsnName != ''">
+				and p.pfsn_name LIKE CONCAT('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="pfsnLevel != null and pfsnLevel != ''">
+				and p.pfsn_level = #{pfsnLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="grade != null and grade != ''">
+				and p.grade = #{grade, jdbcType=VARCHAR}
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				and p.pfsn_id IN 
+				  (SELECT 
+				    pt.pfsn_id 
+				  FROM
+				    bms.bd_proferssion_ta pt 
+				    LEFT JOIN bms.bd_test_area t 
+				      ON t.`ta_id` = pt.`ta_id` 
+				  WHERE t.`city_code` = #{cityCode, jdbcType=VARCHAR})
+			</if>
+		</where>
+		order by p.pfsn_name
+	</select>
+	
+	<select id="selectTestArea"  resultType="java.util.HashMap" parameterType="com.yz.model.communi.Body">
+		select 
+		  a.`ta_id` as taId,
+		  a.`ta_name` as taName
+		from
+		  bms.bd_test_area a 
+		  <if test="pfsnId != null and pfsnId != ''">
+		  left join bms.bd_proferssion_ta pt 
+		    on pt.`ta_id` = a.`ta_id` 
+		  </if>
+		  <if test="unvsId != null and unvsId != ''">
+		  left join bms.bd_university_test ut 
+		    on ut.`ta_id` = a.`ta_id` 
+		  </if>
+		<where>
+		    a.is_allow = '1'
+			<if test="unvsId != null and unvsId != ''">
+				and ut.unvs_id = #{unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId != null and pfsnId != ''">
+				and pt.pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="taName != null and taName != ''">
+				and a.ta_name LIKE CONCAT('%', #{taName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="cityCode != null and cityCode != ''">
+				and a.`city_code` = #{cityCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+		group by a.`ta_id`
+		order by a.`ta_name`
+	</select>
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.RecruiterMapper" >
+	<resultMap id="RecruiterInfoMap" type="com.yz.model.oa.RecruiterInfo">	
+	    <id column="emp_id"  property="empId" jdbcType="VARCHAR" />
+	    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	    <result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+	    <result column="recruit_code" property="recruitCode" jdbcType="VARCHAR" />
+	    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	    <result column="group_id" property="groupId" jdbcType="VARCHAR"  />
+	    <result column="emp_type" property="empType" jdbcType="VARCHAR" />
+	    <result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+	    <result column="personnel_is_affirm" property="personnelIsAffirm" jdbcType="VARCHAR" />
+	    <result column="is_formal_emp" property="isFormalEmp" jdbcType="VARCHAR" />
+	    <result column="title_name" property="titleName" jdbcType="VARCHAR" />
+	    <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	    <result column="head_shot" property="headShot" jdbcType="VARCHAR" />
+	    <result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+	    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+	</resultMap> 
+   <!-- 所有招生老师-->
+   <select id="selectAllRecruiterInfo" resultMap="RecruiterInfoMap" parameterType="com.yz.model.oa.RecruiterInfo">
+	SELECT 
+	  oe.`emp_id`,
+	  oe.`emp_name`,
+	  (SELECT 
+	    oc.campus_name 
+	  FROM
+	    oa_campus oc 
+	  WHERE oc.campus_id = oej.`campus_id`) campus_name,
+	  (SELECT 
+	    od.`dp_name` 
+	  FROM
+	    oa_department od 
+	  WHERE od.dp_id = oej.`dp_id`) dp_name,
+	  (SELECT 
+	    og.`group_name` 
+	  FROM
+	    oa_group og 
+	  WHERE og.group_id = oej.`group_id`) group_name,
+	  oe.`mobile`,
+	  oe.`emp_type`,
+	  oe.`emp_status`,
+	  oej.`recruit_code`,
+	  (SELECT 
+	    annex_url 
+	  FROM
+	    oa_employee_annex oea 
+	  WHERE oea.`emp_id` = oe.`emp_id` 
+	    AND oea.`emp_annex_type` = '4') AS head_shot,
+	  oej.`is_check` AS personnel_is_affirm,
+	  date_format(oej.`turn_right_time`,'%Y-%m-%d') AS is_formal_emp 
+	FROM
+	  oa_employee oe 
+	  LEFT JOIN oa_employee_job oej 
+	    ON oe.`emp_id` = oej.`emp_id`
+     where oe.emp_type !='3'
+	   <if test="campusId !=null and '' !=campusId">
+	      and oej.campus_id=#{campusId}
+	   </if>
+	   <if test="dpId !=null and '' != dpId">
+	      and oej.dp_id=#{dpId}
+	   </if>
+	   <if test="groupId !=null and '' != groupId">
+	     and oej.group_id=#{groupId}
+	   </if>
+	   <if test="empName !=null and '' != empName">
+	     and oe.emp_name like CONCAT('%', CONCAT(#{empName}, '%'))
+	   </if>
+	   <if test="empType !=null and '' !=empType">
+	     and oe.emp_type = #{empType}
+	   </if>
+	   <if test="empStatus !=null and '' != empStatus">
+	   	 and oe.emp_status =#{empStatus,jdbcType=VARCHAR}
+	   </if>
+	   <if test="sexType !=null and '' != sexType">
+		and oe.`sex`=#{sexType,jdbcType=VARCHAR}
+	   </if>
+	   <if test="mobile !=null and '' !=mobile">
+	   	 and oe.`mobile` = #{mobile,jdbcType=VARCHAR}
+	   </if>
+	   <if test="idCard !=null and '' !=idCard">
+	   	 and oe.`id_card` = #{idCard,jdbcType=VARCHAR}
+	   </if>
+	   <if test="recruitCode !=null and '' !=recruitCode">
+	   	 and oej.`recruit_code` = #{recruitCode,jdbcType=VARCHAR}
+	   </if>
+	   <if test="yzId !=null and '' !=yzId">
+	   	 and oej.`yz_id` like CONCAT('%', CONCAT(#{yzId,jdbcType=VARCHAR}, '%'))
+	   </if>
+	   order by oe.create_time desc
+  </select>
+   
+</mapper>

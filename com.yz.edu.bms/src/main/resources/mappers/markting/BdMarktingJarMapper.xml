@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.markting.BdMarktingJarMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.markting.BdMarktingJar" >
+    <id column="jar_name" property="jarName" jdbcType="VARCHAR" />
+    <result column="jar_url" property="jarUrl" jdbcType="VARCHAR" />
+    <result column="jar_desc" property="jarDesc" jdbcType="LONGVARCHAR" />
+    <result column="charge_class" property="chargeClass" jdbcType="VARCHAR" />
+    <result column="stage_class" property="stageClass" jdbcType="VARCHAR" />
+    <result column="register_class" property="registerClass" jdbcType="VARCHAR" />
+    <result column="i_charge_class" property="iChargeClass" jdbcType="VARCHAR" />
+    <result column="is_confirm" property="isConfirm" jdbcType="CHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="upload_user" property="uploadUser" jdbcType="VARCHAR" />
+    <result column="upload_user_id" property="uploadUserId" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="upload_time" property="uploadTime" jdbcType="VARCHAR" />
+    <result column="confirm_user" property="confirmUser" jdbcType="VARCHAR" />
+    <result column="confirm_user_contacts" property="confirmUserContacts" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ListMap" type="java.util.HashMap" >
+    <id column="jar_name" property="jarName" jdbcType="VARCHAR" />
+    <result column="jar_url" property="jarUrl" jdbcType="VARCHAR" />
+    <result column="jar_desc" property="jarDesc" jdbcType="LONGVARCHAR" />
+    <result column="charge_class" property="chargeClass" jdbcType="VARCHAR" />
+    <result column="stage_class" property="stageClass" jdbcType="VARCHAR" />
+    <result column="register_class" property="registerClass" jdbcType="VARCHAR" />
+    <result column="i_charge_class" property="iChargeClass" jdbcType="VARCHAR" />
+    <result column="is_confirm" property="isConfirm" jdbcType="CHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="upload_user" property="uploadUser" jdbcType="VARCHAR" />
+    <result column="upload_user_id" property="uploadUserId" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="upload_time" property="uploadTime" jdbcType="VARCHAR" />
+    <result column="confirm_user" property="confirmUser" jdbcType="VARCHAR" />
+    <result column="confirm_user_contacts" property="confirmUserContacts" jdbcType="VARCHAR" />
+    <result column="flow_id" property="flowId" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+      jar_name,
+	  jar_url,
+	  charge_class,
+	  stage_class,
+	  register_class,
+	  i_charge_class,
+	  is_confirm,
+	  is_allow,
+	  upload_user,
+	  upload_user_id,
+	  update_user,
+	  update_user_id,
+	  date_format(
+	    update_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) as update_time,
+	  date_format(
+	    upload_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) as upload_time,
+	  jar_desc,
+	  confirm_user,
+	  confirm_user_contacts,
+	  flow_id
+  </sql>
+  
+  <select id="getList" resultMap="ListMap" >
+  	select 
+    <include refid="Base_Column_List" />
+    from bd_markting_jar
+    order by upload_time desc
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_markting_jar
+    where jar_name = #{jarName,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_markting_jar
+    where jar_name = #{jarName,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.yz.model.markting.BdMarktingJar" >
+    insert into bd_markting_jar
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="jarName != null" >
+        jar_name,
+      </if>
+      <if test="jarUrl != null" >
+        jar_url,
+      </if>
+      <if test="chargeClass != null" >
+        charge_class,
+      </if>
+      <if test="stageClass != null" >
+        stage_class,
+      </if>
+      <if test="registerClass != null" >
+        register_class,
+      </if>
+      <if test="iChargeClass != null" >
+        i_charge_class,
+      </if>
+      <if test="isConfirm != null" >
+        is_confirm,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="uploadUser != null" >
+        upload_user,
+      </if>
+      <if test="uploadUserId != null" >
+        upload_user_id,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="confirmUser != null" >
+        confirm_user,
+      </if>
+      <if test="confirmUserContacts != null" >
+        confirm_user_contacts,
+      </if>
+      <if test="jarDesc != null" >
+        jar_desc,
+      </if>
+      flow_id
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="jarName != null" >
+        #{jarName,jdbcType=VARCHAR},
+      </if>
+      <if test="jarUrl != null" >
+        #{jarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="chargeClass != null" >
+        #{chargeClass,jdbcType=VARCHAR},
+      </if>
+      <if test="stageClass != null" >
+        #{stageClass,jdbcType=VARCHAR},
+      </if>
+      <if test="registerClass != null" >
+        #{registerClass,jdbcType=VARCHAR},
+      </if>
+      <if test="iChargeClass != null" >
+        #{iChargeClass,jdbcType=VARCHAR},
+      </if>
+      <if test="isConfirm != null" >
+        #{isConfirm,jdbcType=CHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="uploadUser != null" >
+        #{uploadUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUserId != null" >
+        #{uploadUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserContacts != null" >
+        #{confirmUserContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="jarDesc != null" >
+        #{jarDesc,jdbcType=LONGVARCHAR},
+      </if>
+      #{flowId}
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.markting.BdMarktingJar" >
+    update bd_markting_jar
+    <set >
+      <if test="jarUrl != null" >
+        jar_url = #{jarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="chargeClass != null" >
+        charge_class = #{chargeClass,jdbcType=VARCHAR},
+      </if>
+      <if test="stageClass != null" >
+        stage_class = #{stageClass,jdbcType=VARCHAR},
+      </if>
+      <if test="registerClass != null" >
+        register_class = #{registerClass,jdbcType=VARCHAR},
+      </if>
+      <if test="iChargeClass != null" >
+        i_charge_class = #{iChargeClass,jdbcType=VARCHAR},
+      </if>
+      <if test="isConfirm != null" >
+        is_confirm = #{isConfirm,jdbcType=CHAR},
+      </if>
+      <if test="isAllow != null" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="uploadUser != null" >
+        upload_user = #{uploadUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUserId != null" >
+        upload_user_id = #{uploadUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUser != null" >
+        confirm_user = #{confirmUser,jdbcType=VARCHAR},
+      </if>
+      <if test="confirmUserContacts != null" >
+        confirm_user_contacts = #{confirmUserContacts,jdbcType=VARCHAR},
+      </if>
+      <if test="jarDesc != null" >
+        jar_desc = #{jarDesc,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where jar_name = #{jarName,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="clearStatus">
+  	update bd_markting_jar set is_allow = '0'
+  </update>
+  
+  <select id="countBy" resultType="int" parameterType="string">
+  	select count(1) from bd_markting_jar where jar_name = #{jarName, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAllowJar" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from bd_markting_jar
+    where is_allow = '1'
+    limit 0,1
+  </select>
+  
+</mapper>

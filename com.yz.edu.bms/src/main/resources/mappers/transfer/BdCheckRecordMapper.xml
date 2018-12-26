@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.transfer.BdCheckRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.transfer.BdCheckRecord" >
+    <id column="cr_id" property="crId" jdbcType="VARCHAR" />
+    <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+    <result column="check_type" property="checkType" jdbcType="VARCHAR" />
+    <result column="cr_status" property="crStatus" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cr_id, mapping_id, emp_id, check_status, reason, check_order, check_type, cr_status, 
+    update_time, update_user, update_user_id, ext_1, ext_2, ext_3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_check_record
+    where cr_id = #{crId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_check_record
+    where cr_id = #{crId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.transfer.BdCheckRecord" >
+    insert into bd_check_record (cr_id, mapping_id, emp_id, 
+      check_status, reason, check_order, 
+      check_type, cr_status, update_time, 
+      update_user, update_user_id, ext_1, 
+      ext_2, ext_3)
+    values (#{crId,jdbcType=VARCHAR}, #{mappingId,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR}, 
+      #{checkStatus,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, #{checkOrder,jdbcType=VARCHAR}, 
+      #{checkType,jdbcType=VARCHAR}, #{crStatus,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, 
+      #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.transfer.BdCheckRecord" >
+    insert into bd_check_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        cr_id,
+      <if test="mappingId != null" >
+        mapping_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="checkStatus != null" >
+        check_status,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="checkOrder != null" >
+        check_order,
+      </if>
+      <if test="checkType != null" >
+        check_type,
+      </if>
+      <if test="crStatus != null" >
+        cr_status,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+      <if test="jtId != null" >
+        jt_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{crId,jdbcType=VARCHAR},
+      <if test="mappingId != null" >
+        #{mappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="checkOrder != null" >
+        #{checkOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="checkType != null" >
+        #{checkType,jdbcType=VARCHAR},
+      </if>
+      <if test="crStatus != null" >
+        #{crStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+      <if test="jtId != null" >
+        #{jtId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateBdCheckRecord" parameterType="com.yz.model.transfer.BdCheckRecord" >
+    update bd_check_record
+    <set >
+      update_time = now(),
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        check_status = #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where  mapping_id = #{mappingId,jdbcType=VARCHAR} and  check_order = #{checkOrder,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.transfer.BdCheckRecord" >
+    update bd_check_record
+    <set >
+      <if test="mappingId != null" >
+        mapping_id = #{mappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkStatus != null" >
+        check_status = #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="checkOrder != null" >
+        check_order = #{checkOrder,jdbcType=VARCHAR},
+      </if>
+      <if test="checkType != null" >
+        check_type = #{checkType,jdbcType=VARCHAR},
+      </if>
+      <if test="crStatus != null" >
+        cr_status = #{crStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cr_id = #{crId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.transfer.BdCheckRecord" >
+    update bd_check_record
+    set mapping_id = #{mappingId,jdbcType=VARCHAR},
+      emp_id = #{empId,jdbcType=VARCHAR},
+      check_status = #{checkStatus,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      check_order = #{checkOrder,jdbcType=VARCHAR},
+      check_type = #{checkType,jdbcType=VARCHAR},
+      cr_status = #{crStatus,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where cr_id = #{crId,jdbcType=VARCHAR}
+  </update>
+</mapper>

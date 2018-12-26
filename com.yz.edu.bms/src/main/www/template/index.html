@@ -1,0 +1,117 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <!-- IE兼容 -->
+    <!-- <script type="text/javascript" th:src="@{/js/html5shiv.js}"></script>
+    <script type="text/javascript" th:src="@{/js/respond.min.js}"></script> -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>远智教育</title>
+</head>
+<body>
+<header class="navbar-wrapper">
+    <div class="navbar navbar-fixed-top">
+        <div class="container-fluid cl">
+            <input type="hidden" id="userId" th:value="${user.userId}"/>
+            <a class="logo navbar-logo f-l mr-10 hidden-xs" href="javascript:void(0)" onclick="toIndex()"><img alt=""
+                                                                            th:src="@{/images/logo-yuanzhi2.png}"></a>
+            <span class="logo navbar-slogan f-l mr-10 hidden-xs">v1.0</span>
+            <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="">&#xe667;</a>
+            <nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+                <ul class="cl">
+                    <li class="dropDown dropDown_hover"><a href="" class="dropDown_A" th:text="${user.realName}">
+                        <i class="Hui-iconfont">&#xe6d5;</i>
+                    </a>
+                        <ul class="dropDown-menu menu radius box-shadow">
+                            <li><a href="javascript:;" onClick="myselfinfo()">个人信息</a></li>
+                            <li><a href="javascript:;" onclick="changePwd()">修改密码</a></li>
+                            <li><a th:href="@{/logout.do}">退出</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<aside class="Hui-aside">
+    <div class="menu_dropdown bk_2">
+        <dl id="menu-admin" th:each="func : ${funcs}">
+            <dt>
+                <i class="Hui-iconfont icon" th:classappend="${func.icon}"></i>
+                <span th:text="${func.funcName}"></span>
+                <i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i>
+            </dt>
+            <dd>
+                <ul>
+                    <li th:each="fnc : ${func.funcs}"><a th:data-href="@{${fnc.funcUrl}}"
+                                                         th:data-title="${fnc.funcName}" href="javascript:void(0)"
+                                                         th:text="${fnc.funcName}"></a></li>
+                    <!-- <li><a th:data-href="@{/auth/adminPermission.do}" data-title="权限管理" href="javascript:void(0)">权限管理</a></li>
+                            <li><a th:data-href="@{/user/userIndex.do}" data-title="用户管理" href="javascript:void(0)">用户管理</a></li> -->
+                </ul>
+            </dd>
+        </dl>
+    </div>
+</aside>
+<div class="dislpayArrow hidden-xs">
+    <a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>
+</div>
+<section class="Hui-article-box">
+    <div id="Hui-tabNav" class="Hui-tabNav hidden-xs">
+        <div class="Hui-tabNav-wp">
+            <ul id="min_title_list" class="acrossTab cl">
+                <li class="active"><span title="我的桌面" th:data-href="@{/welcome.do}">我的桌面</span> <em></em></li>
+            </ul>
+        </div>
+        <div class="Hui-tabNav-more btn-group">
+            <a id="js-tabNav-prev" class="btn radius btn-default size-S" href="javascript:;">
+                <i class="Hui-iconfont">&#xe6d4;</i>
+            </a>
+            <a id="js-tabNav-next" class="btn radius btn-default size-S" href="javascript:;">
+                <i class="Hui-iconfont">&#xe6d7;</i>
+            </a>
+        </div>
+    </div>
+    <div id="iframe_box" class="Hui-article">
+        <div class="show_iframe">
+            <div style="display: none" class="loading"></div>
+            <iframe scrolling="yes" frameborder="0" th:src="@{/welcome.do}"></iframe>
+        </div>
+    </div>
+</section>
+<div class="contextMenu" id="Huiadminmenu">
+    <ul>
+        <li id="closethis">关闭当前</li>
+        <li id="closeall">关闭全部</li>
+    </ul>
+</div>
+<div class="footer">
+    <p>Copyright&nbsp;2017&nbsp;远智教育</p>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/jquery.contextmenu/jquery.contextmenu.r2.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/index/index.js}">
+</script>
+</body>
+</html>

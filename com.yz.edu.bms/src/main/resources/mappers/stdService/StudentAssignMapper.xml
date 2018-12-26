@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentAssignMapper">
+
+	<resultMap id="AssignListMap"
+		type="com.yz.model.stdService.StudentAssignListInfo">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="std_no" jdbcType="VARCHAR" property="stdNo" />
+		<result column="school_roll" jdbcType="VARCHAR" property="schoolRoll" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+	</resultMap>
+
+	<select id="findAssignList"
+		parameterType="com.yz.model.condition.stdService.StudentAssignQuery"
+		resultMap="AssignListMap">
+		SELECT 
+		  l.`learn_id`,
+		  l.`std_no`,
+		  s.`std_name`,
+		  l.`std_stage`,
+		  l.`school_roll`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  p.`pfsn_name`,
+		  u.`unvs_name`,
+		  l.`recruit_type`,
+		  l.`grade` ,
+		  blr.`tutor`
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.pfsn_id 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_student_admit bsa
+		    ON bsa.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_unvs_profession bp
+		    ON bp.`pfsn_id` = bsa.`pfsn_id`
+		  LEFT JOIN bd_test_area bta 
+		    ON bta.`ta_id` = l.`ta_id`   
+		  LEFT JOIN  bd_learn_rules  blr
+		  	ON blr.`learn_id` = l.`learn_id`
+		  LEFT JOIN  oa_employee  oe
+		  	ON blr.`tutor` = oe.`emp_id`	
+		<where>
+			1=1 
+			<if test="stdStage != null and stdStage != ''">
+				and l.`std_stage` = #{stdStage,jdbcType=VARCHAR}
+			</if>
+			<if test="stdName != null and stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{stdName,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and s.`id_card` LIKE CONCAT('%', #{idCard,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and s.`mobile` LIKE CONCAT('%', #{mobile,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="unvsId != null and unvsId != ''">
+				and u.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId != null and pfsnId != ''">
+				and p.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' != pfsnLevel">
+				and p.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+  			<if test="enrollUnvsId !=null and '' !=enrollUnvsId">
+  				and bsa.`unvs_id`= #{enrollUnvsId,jdbcType=VARCHAR}
+  			</if>
+  			<if test="enrollPfsnName !=null and '' != enrollPfsnName">
+  				and bp.`pfsn_name` like concat('%',#{enrollPfsnName,jdbcType=VARCHAR},'%')
+  			</if>
+  			<if test="grade !=null and '' != grade">
+  				and l.`grade` = #{grade,jdbcType=VARCHAR}
+  			</if>
+  			<if test="recruitType !=null and '' !=recruitType">
+  				and l.`recruit_type` = #{recruitType,jdbcType=VARCHAR}
+  			</if>
+  			<if test="sg !=null and '' != sg">
+  				and l.`sg` = #{sg,jdbcType=VARCHAR}
+  			</if>
+  			<if test="scholarship !=null and '' != scholarship">
+  				and l.`scholarship` = #{scholarship,jdbcType=VARCHAR}
+  			</if>
+  			<if test="inclusionStatus !=null and '' !=inclusionStatus">
+  				and l.`scholarship_status`= #{inclusionStatus,jdbcType=VARCHAR} 
+  			</if>
+  			<if test="stdType!=null and '' != stdType">
+  				and l.`std_type` = #{stdType,jdbcType=VARCHAR}
+  			</if>
+  			<if test="taName !=null and '' != taName">
+  				and bta.`ta_name` like concat('%',#{taName,jdbcType=VARCHAR},'%')
+  			</if>
+  			<if test="tutorName !=null and '' != tutorName">
+  				and oe.`emp_name` like concat('%',#{tutorName,jdbcType=VARCHAR},'%')
+  			</if>
+  			<if test="isAssign !=null and '' != isAssign">
+  				<if test="isAssign == '1'.toString()">
+					and blr.`tutor` is not null
+				</if>
+				<if test="isAssign == '0'.toString()">
+					and blr.`tutor` is null
+				</if>
+  			</if>
+		</where>
+		order by l.create_time desc
+	</select>
+
+	<resultMap id="AssignMap" type="com.yz.model.stdService.StudentAssignInfo">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="std_no" jdbcType="VARCHAR" property="stdNo" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="recruit_code" jdbcType="VARCHAR" property="recruitCode" />
+		<result column="recruit_name" jdbcType="VARCHAR" property="recruitName" />
+		<result column="campus_id" jdbcType="VARCHAR" property="campusId" />
+		<result column="campus_name" jdbcType="VARCHAR" property="campusName" />
+	</resultMap>
+
+	<select id="getStudentInfo" parameterType="string" resultMap="AssignMap">
+		SELECT 
+		  l.`learn_id`,
+		  l.`std_id`,
+		  s.`std_name`,
+		  l.`std_stage`,
+		  l.`std_no`,
+		  l.`recruit_type`,
+		  u.`unvs_name`,
+		  p.`pfsn_level`,
+		  p.`pfsn_name`,
+		  p.`pfsn_code`,
+		  l.`grade`,
+		  ej.`recruit_code`,
+		  e.`emp_name` AS recruit_name,
+		  c.`campus_id`,
+		  c.`campus_name` 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  LEFT JOIN oa_employee e 
+		    ON e.`emp_id` = r.`recruit` 
+		  LEFT JOIN oa_employee_job ej
+		  ON ej.`emp_id` = r.`recruit`
+		  LEFT JOIN oa_campus c 
+		    ON c.`campus_id` = r.`recruit_campus_id` 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</select>
+
+	<update id="updateStudentsStage" parameterType="com.yz.model.stdService.StudentAssignInfo">
+		<foreach collection="learnIds" item="lId" separator=";">
+			UPDATE
+			bd_learn_info l
+			SET l.std_stage = #{stdStage, jdbcType=VARCHAR}
+			WHERE l.learn_id = #{lId, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+	<update id="addAssignInfos" parameterType="com.yz.model.stdService.StudentAssignInfo">
+		<foreach collection="learnIds" item="lId" separator=";">
+			UPDATE 
+			  `bd_learn_rules` 
+			SET
+			  `tutor` = #{empId, jdbcType=VARCHAR},
+			  `tutor_dp_id` = #{dpId, jdbcType=VARCHAR},
+			  `tutor_campus_id` = #{campusId, jdbcType=VARCHAR},
+			  `tutor_campus_manager` = #{campusManager, jdbcType=VARCHAR}
+			WHERE `learn_id` = #{lId}
+		</foreach>
+	</update>
+
+	<update id="updateStudentStage" parameterType="com.yz.model.stdService.StudentAssignInfo">
+		UPDATE bd_learn_info l
+		SET l.std_stage = '7'
+		WHERE l.learn_id = #{learnId, jdbcType=VARCHAR}
+	</update>
+
+	<update id="addAssignInfo" parameterType="com.yz.model.stdService.StudentAssignInfo">
+		UPDATE 
+		  bd_learn_rules r 
+		  INNER JOIN oa_employee e 
+		    ON e.emp_id = #{empId, jdbcType=VARCHAR} 
+		  INNER JOIN oa_employee_job j 
+		    ON j.emp_id = e.emp_id 
+		SET r.`tutor` = e.emp_id,
+		  r.`tutor_dp_id` = j.dp_id 
+		WHERE r.`learn_id` = #{learnId, jdbcType=VARCHAR}  
+	</update>
+	
+	<resultMap id="StudentMap"
+		type="java.util.HashMap">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="std_no" jdbcType="VARCHAR" property="stdNo" />
+		<result column="school_roll" jdbcType="VARCHAR" property="schoolRoll" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="campus_name" jdbcType="VARCHAR" property="campusName" />
+		<result column="recruit_name" jdbcType="VARCHAR" property="recruitName" />
+		<result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+	</resultMap>
+	<!-- 查询结果批量分配 -->
+	<select id="getStudentListByquery"
+		parameterType="com.yz.model.condition.stdService.StudentAssignQuery"
+		resultMap="StudentMap">
+		SELECT 
+		  l.`learn_id`,
+		  s.`std_name`,
+		  l.`std_stage`,
+		  l.`std_no`,
+		  l.`school_roll`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  p.`pfsn_name`,
+		  u.`unvs_name`,
+		  l.`recruit_type`,
+		  l.`grade`,
+		  c.`campus_name`,
+		  e.`emp_name` AS recruit_name,
+		  s.`id_card` 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.pfsn_id 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_student_admit bsa
+		    ON bsa.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_unvs_profession bp
+		    ON bp.`pfsn_id` = bsa.`pfsn_id`
+		  LEFT JOIN bd_test_area bta 
+		    ON bta.`ta_id` = l.`ta_id`   
+		  LEFT JOIN  bd_learn_rules  blr
+		  	ON blr.`learn_id` = l.`learn_id`
+		  LEFT JOIN oa_campus c 
+		    ON c.`campus_id` = blr.`recruit_campus_id` 
+		  LEFT JOIN  oa_employee  oe
+		  	ON blr.`tutor` = oe.`emp_id`	
+		  LEFT JOIN oa_employee e 
+		    ON blr.`recruit` = e.`emp_id`
+		<where>
+			1=1 
+			<if test="stdStage != null and stdStage != ''">
+				and l.`std_stage` = #{stdStage,jdbcType=VARCHAR}
+			</if>
+			<if test="stdName != null and stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{stdName,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and s.`id_card` LIKE CONCAT('%', #{idCard,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and s.`mobile` LIKE CONCAT('%', #{mobile,
+				jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="unvsId != null and unvsId != ''">
+				and u.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId != null and pfsnId != ''">
+				and p.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' != pfsnLevel">
+				and p.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+  			<if test="enrollUnvsId !=null and '' !=enrollUnvsId">
+  				and bsa.`unvs_id`= #{enrollUnvsId,jdbcType=VARCHAR}
+  			</if>
+  			<if test="enrollPfsnName !=null and '' != enrollPfsnName">
+  				and bp.`pfsn_name` like concat('%',#{enrollPfsnName,jdbcType=VARCHAR},'%')
+  			</if>
+  			<if test="grade !=null and '' != grade">
+  				and l.`grade` = #{grade,jdbcType=VARCHAR}
+  			</if>
+  			<if test="recruitType !=null and '' !=recruitType">
+  				and l.`recruit_type` = #{recruitType,jdbcType=VARCHAR}
+  			</if>
+  			<if test="sg !=null and '' != sg">
+  				and l.`sg` = #{sg,jdbcType=VARCHAR}
+  			</if>
+  			<if test="scholarship !=null and '' != scholarship">
+  				and l.`scholarship` = #{scholarship,jdbcType=VARCHAR}
+  			</if>
+  			<if test="inclusionStatus !=null and '' !=inclusionStatus">
+  				and l.`scholarship_status`= #{inclusionStatus,jdbcType=VARCHAR} 
+  			</if>
+  			<if test="stdType!=null and '' != stdType">
+  				and l.`std_type` = #{stdType,jdbcType=VARCHAR}
+  			</if>
+  			<if test="taName !=null and '' != taName">
+  				and bta.`ta_name` like concat('%',#{taName,jdbcType=VARCHAR},'%')
+  			</if>
+  			<if test="tutorName !=null and '' != tutorName">
+  				and oe.`emp_name` like concat('%',#{tutorName,jdbcType=VARCHAR},'%')
+  			</if>
+		</where>
+	</select>
+	
+	<select id="getStudentList" resultMap="StudentMap">
+		SELECT 
+		  l.`learn_id`,
+		  s.`std_name`,
+		  l.`std_stage`,
+		  l.`std_no`,
+		  l.`school_roll`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  p.`pfsn_name`,
+		  u.`unvs_name`,
+		  l.`recruit_type`,
+		  l.`grade`,
+		  c.`campus_name`,
+		  e.`emp_name` AS recruit_name,
+		  s.`id_card` 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  LEFT JOIN oa_campus c 
+		    ON c.`campus_id` = r.`recruit_campus_id` 
+		  LEFT JOIN oa_employee e 
+		    ON e.`emp_id` = r.`recruit` 
+		WHERE l.`learn_id` IN (
+		<foreach collection="learnIds" item="lId" separator=",">
+			#{lId, jdbcType=VARCHAR}
+		</foreach>
+		)
+	</select>
+
+</mapper>

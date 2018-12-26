@@ -1,0 +1,153 @@
+﻿<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico" >
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript" th:src="@{/js/html5shiv.js}"></script>
+<script type="text/javascript" th:src="@{/js/respond.min.js}"></script>
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/webuploader/css/webuploader.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title th:text="UPDATE == ${exType} ? 修改角色 : 添加系统角色"></title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+</head>
+<body>
+<article class="page-container">
+	<form action="" method="post" class="form form-horizontal" th:object="${goodsInfo}" id="form-goods-add">
+		<input type="hidden" th:value="${exType}" name="exType" id="exType" />
+		<input type="hidden" th:value="*{goodsId}" id="goodsId" name="goodsId" />
+		<input type="hidden" id="goodsType" name="goodsType" value="4"/>
+		<input type="hidden" name="coverUrls" id="coverUrls"/>
+		<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>教材商品名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="输入教材商品名称" id="goodsName" name="goodsName" th:value="*{goodsName}">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>商品库存：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="库存" id="goodsCount" name="goodsCount" th:value="*{goodsCount}">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>成本价：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="成本价" id="costPrice" name="costPrice" th:value="*{costPrice}">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>显示市场价：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="number" class="input-text radius size-M" style="width:80px" value="" placeholder="市场价" id="originalPrice" name="originalPrice" th:value="*{originalPrice}">
+			</div>
+		</div>	
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否可用：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<div class="radio-box">
+					<input type="radio" id="isAllow" name="isAllow" value="1" th:field="*{isAllow}">
+					<label >是</label>
+				</div>
+				<div class="radio-box">
+					<input type="radio" id="isAllow" name="isAllow" value="0" th:field="*{isAllow}">
+					<label >否</label>
+				</div>
+			</div>
+		</div>							
+        <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">商品封面：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="member-photo"></span>
+                <span class="btn-upload mb-30">
+                  <button class="btn btn-primary radius" onclick="" style="vertical-align: top;margin-top: 20px;">选取图片</button>
+                  <input type="file" multiple name="annexUrl" id="selectPhoto" class="input-file" />
+                  <input type="hidden" name="annexUrlPortrait" id="annexUrlPortrait" value="" />
+                  <input type="hidden" name="isPhotoChange" id="isPhotoChange" value="" />
+                </span>
+                <input type="button" name="next" onclick="deletPhoto()" style="vertical-align: top;margin-top: 20px;" class="btn btn-normal-outline radius mb-30" value="删除" />
+              </div>
+        </div>
+        <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">轮图图片(1-4张)：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                 <div id="fileList" class="fileList"></div>
+                 <div id="filePicker" class="btn-upload"><button class="btn btn-primary radius" onclick="">选取图片</button></div>
+              </div>
+        </div>	
+        <div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">用途：</label>
+			<div class="formControls col-xs-8 col-sm-9" id="goodsUse">
+			</div>
+	    </div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>简介：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="简介" id="goodsDesc" name="goodsDesc" th:value="*{goodsDesc}">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>详细介绍：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<script id="goodsContent" name="goodsContent" type="text/plain" style="width:100%;height:300px;"></script>
+			</div>
+		</div>		        	
+
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<button type="submit" class="btn btn-success radius" id="admin-role-save" name="admin-role-save"><i class="icon-ok"></i> 确定</button>
+				<input type="button" class="previous btn btn-normal-outline radius mr-10" value="关闭" onclick="layer_close();" id="bt_cancel" />
+			</div>
+		</div>
+	</form>
+</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script> 
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+<script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.config.js}"></script>
+<script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.all.min.js}"> </script>
+<script type="text/javascript" th:src="@{/js/webuploader/0.1.5/webuploader.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+var varGoodsInfo= [[${goodsInfo}]];
+var exType=[[${exType}]];
+</script>
+<script type="text/javascript" th:src="@{/js/webjs/goods/textbook_goods_edit.js}"></script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsCourseMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.course.BdCourseResource">
+		<result column="resource_id" property="resourceId" jdbcType="VARCHAR" />
+		<result column="resource_name" property="resourceName" jdbcType="VARCHAR" />
+		<result column="resource_url" property="resourceUrl" jdbcType="VARCHAR" />
+		<result column="resource_type" property="resourceType" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="CourseBaseResultMap" type="com.yz.model.course.BdCourse">
+		<id column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"	jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"	jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="CourseDetailResult" type="java.util.HashMap">
+		<result column="startTime" property="startTime" jdbcType="VARCHAR" />
+		<result column="endTime" property="endTime" jdbcType="VARCHAR" />
+		<result column="courseName" property="courseName" jdbcType="VARCHAR" />
+		<result column="cpType" property="cpType" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+	</resultMap>
+	
+   <select id="selectResourceByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    resource_id,resource_name,resource_url,resource_type,course_id
+    from bd_course_resource
+    where resource_id = #{resourceId,jdbcType=VARCHAR}
+  </select>
+  
+	<select id="selectUserIdByCourseId" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		  re.`user_id` 
+		from
+		  bd_learn_info bli 
+		  left join bd_student_info re 
+		    on re.`std_id` = bli.`std_id` 
+		where bli.`pfsn_id` in 
+		  (select 
+		    u.`pfsn_id` 
+		  from
+		     bd_course r 
+		    left join bd_plan_course p 
+		      on p.`course_id` = r.`course_id` 
+		    left join bd_teach_plan t 
+		      on p.`thp_id` = t.`thp_id` 
+		    left join bd_unvs_profession u 
+		      on u.`pfsn_id` = t.`pfsn_id` 
+		   where r.`course_id` = #{courseId}
+		  group by u.`pfsn_id`) 
+		  and bli.`std_stage` = #{stdStage}
+		  and re.`user_id` is not null 
+		group by re.`user_id` 
+	</select>
+	
+	<select id="selectCourse" resultType="java.util.HashMap" parameterType="java.lang.String">
+		select 
+		  r.`course_name` courseName,
+		  o.`address`,
+		  c.`cp_date` cpDate,
+		  DATE_FORMAT(c.`start_time`,'%H:%i') startTime,
+		  DATE_FORMAT(c.`end_time`,'%H:%i') endTime,
+  		  r.`course_id` courseId,
+  		  c.`cp_type` cpType
+		from
+		  `bd_class_plan` c 
+		  left join bd_course r 
+		    on r.`course_id` = c.`course_id` 
+		  left join oa_campus o 
+		    on o.`campus_id` = c.`place_id` 
+		where to_days(c.`cp_date`) = to_days(now()) 
+		  and DATE_FORMAT(c.`start_time`, '%H:%i') &gt;= DATE_FORMAT(#{startTimePre}, '%H:%i') 
+		  and DATE_FORMAT(c.`end_time`, '%H:%i') &lt; DATE_FORMAT(#{endTimePre}, '%H:%i')
+		  and r.`course_type` = #{courseType}
+		group by c.`cp_id` 
+	</select>
+	
+	<select id="selectQingshuInfiByLearnId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  l.`qingshu_id` qingshuId,
+		  l.`qingshu_pwd` qingshuPwd 
+		from
+		  bd_learn_info l 
+		where l.`learn_id` = #{learnId}
+	</select>
+	
+	<select id="selectGradeByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select grade from bd_learn_info where learn_id = #{learnId}
+	</select>
+	
+	<select id="selectDetails" resultMap="CourseDetailResult">
+		SELECT 
+		  DATE_FORMAT(bc.`start_time`, '%H:%i') startTime,
+		  DATE_FORMAT(bc.`end_time`, '%H:%i') endTime,
+		  bco.`course_name` courseName ,
+		  bc.`cp_type` cpType,
+		  o.`address`
+		FROM
+		  bd_class_plan bc 
+		  left join bd_course bco 
+		    on bco.`course_id` = bc.`course_id` 
+		  left join oa_campus o 
+		    on o.`campus_id` = bc.`place_id`
+		WHERE  bc.`cp_type`!='3' and bc.`cp_type`!='4' and bc.`cp_id` in 
+		    <foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		      #{cpId}
+		    </foreach>
+		  and bc.`cp_date` = #{date} 
+		order by DATE_FORMAT(bc.`start_time`, '%Y-%m-%d %H:%i:%s')  
+	</select>
+	
+	<select id="selectCourseDates" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bc.`cp_date` 
+		FROM
+		  bd_class_plan bc 
+		WHERE bc.`cp_type`!='3' and bc.`cp_type`!='4' and  bc.`cp_id` IN 
+		   <foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		     #{cpId}
+		   </foreach>
+		GROUP BY bc.`cp_date` 
+		order by bc.`cp_date` 
+	</select>
+	
+	
+	<select id="selectCourseAddress" resultType="java.lang.String">
+		SELECT 
+		  oc.`address` 
+		FROM
+		  bd_class_plan bc 
+		  LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = bc.`place_id` 
+		WHERE bc.`cp_id` IN 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		GROUP BY oc.`campus_id` 
+	</select>
+	
+	<select id="selectCpTypes" resultType="java.lang.String">
+		SELECT 
+		  bc.`cp_type` 
+		FROM
+		  bd_class_plan bc 
+		  left join bd_course bco 
+		    on bco.`course_id` = bc.`course_id` 
+		WHERE bc.`cp_id` in 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		group by bc.`cp_type` 
+	</select>
+	
+	<select id="selectCourseNames" resultType="java.util.HashMap">
+		SELECT 
+		  bco.`course_name` courseName,
+		  bc.`cp_type` cpType,
+		  oc.`address`
+		FROM
+		  bd_class_plan bc 
+		  LEFT JOIN bd_course bco 
+		    ON bco.`course_id` = bc.`course_id`
+		  LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = bc.`place_id`  
+		WHERE bc.`cp_type` in ('3','4') bc.`cp_id` IN 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		GROUP BY bco.`course_name`,
+		  oc.`address`,
+		  bc.`cp_type` 
+	</select>
+	
+	<select id="selectPfsnInfoByLearnId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  bup.`pfsn_code` pfsnCode,
+		  bup.`pfsn_name` pfsnName,
+		  bup.`pfsn_level` pfsnLevel,
+		  bu.unvs_name unvsName,
+		  bli.grade grade
+		from
+		  bd_learn_info bli 
+		  left join bd_unvs_profession bup 
+		    on bup.`pfsn_id` = bli.`pfsn_id`
+		  left join bd_university bu
+		    on bu.unvs_id = bli.unvs_id
+		where bli.`learn_id` = #{learnId}
+	</select>
+	
+	<select id="selectCourseDate" resultType="java.util.HashMap">
+		SELECT 
+		  MIN(bc.`cp_date`) startDate,
+		  MAX(bc.`cp_date`) endDate
+		FROM
+		  bd_class_plan bc 
+		WHERE bc.`cp_id` IN 
+		<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+	    	#{cpId}
+	    </foreach>
+	</select>
+	
+	<select id="selectTermCpId" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  l.`cp_id` 
+		FROM
+		  bd_class_plan l 
+		WHERE l.`course_id` IN 
+		  (SELECT 
+		    c.`course_id` 
+		  FROM
+		    bd_course c 
+		    LEFT JOIN bd_plan_course p 
+		      ON p.`course_id` = c.`course_id` 
+		    LEFT JOIN bd_teach_plan t 
+		      ON t.`thp_id` = p.`thp_id` 
+		    LEFT JOIN bd_unvs_profession f 
+		      ON f.`pfsn_id` = t.`pfsn_id` 
+		    LEFT JOIN bd_learn_info bli 
+		      ON bli.`pfsn_id` = f.`pfsn_id` 
+		  WHERE t.`semester` = #{term}
+		    AND bli.`learn_id` = #{learnId}
+		  GROUP BY c.`course_id`) 
+		GROUP BY l.`cp_id` 
+		ORDER BY l.`start_time` 
+	</select>
+	
+	<select id="selectCourseResourceReading" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+		  bcr.`resource_id`,
+		  bcr.`resource_name`,
+		  bcr.`resource_type`,
+		  bcr.`course_id` 
+		FROM
+		  bd_course_resource bcr 
+		  LEFT JOIN bd_course bc 
+		    ON bcr.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_plan_course bpc 
+		    ON bc.`course_id` = bpc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    ON bpc.`thp_id` = btp.`thp_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON btp.`pfsn_id` = bup.`pfsn_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		WHERE bli.`std_stage` = '7' 
+		  AND bcr.is_allow='1'
+		  AND bli.`learn_id` = #{learnId}
+		ORDER BY bcr.`update_time` 
+	</select>
+	
+	<select id="selectCourseResourceUnEnroll" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+		  bcr.`resource_id`,
+		  bcr.`resource_name`,
+		  bcr.`resource_type`,
+		  bcr.`course_id` 
+				FROM
+		    bd_learn_info bli 
+		    LEFT JOIN bd_unvs_profession bup 
+		      ON bup.`pfsn_id` = bli.`pfsn_id` 
+		    LEFT JOIN bd_test_group g 
+		      ON bup.`group_id` = g.`group_id` 
+		    LEFT JOIN bd_tg t 
+		      ON t.`group_id` = g.`group_id` 
+		    LEFT JOIN bd_test_subject b 
+		      ON b.`subject_id` = t.`subject_id` 
+		    LEFT JOIN bd_course c 
+		      ON (
+		        c.`test_subject` = b.`subject_id` and c.year=bup.year 
+		      ) 
+		  LEFT JOIN bd_course_resource bcr 
+			ON bcr.`course_id` = c.`course_id` 
+			WHERE bcr.`resource_id` is not null AND (bli.`std_stage` = '2' OR bli.`std_stage` = '3') 
+			AND bcr.is_allow='1'
+			AND c.course_type='FD'
+		  	AND bli.`learn_id` = #{learnId}
+		  
+		ORDER BY bcr.`update_time`
+	</select>
+	
+	<select id="selectStdStage" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bli.`std_stage` 
+		FROM
+		  bd_student_info bsi 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bsi.`std_id` = bli.`std_id` 
+		WHERE (
+		    bli.`std_stage` = '2' 
+		    OR bli.`std_stage` = '3' 
+		    OR bli.`std_stage` = '7'
+		  ) 
+		  AND bli.`learn_id` = #{learnId} 
+	</select>
+	<sql id="Base_Column_List">
+		course_id, course_name, grade, year, course_type, is_allow, test_subject,
+		update_time, update_user, update_user_id, create_user_id, create_time,
+		create_user,
+		ext_2, ext_3
+	</sql>
+	
+	
+	<select id="selectByPrimaryKey" resultMap="CourseBaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_course
+		where course_id = #{courseId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getUnvsAllCourseLive" resultType="java.util.Map">
+		SELECT
+			l.`cp_id`,
+			l.course_id,
+			bc.course_name,
+			lc.channel_id,
+			l.start_time,
+			l.end_time,
+			oe.emp_name,
+			cou.*
+		FROM
+			bms.bd_class_plan l
+		LEFT JOIN bms.bd_live_channel lc ON l.course_id = lc.course_id
+		LEFT JOIN bms.bd_course bc ON l.course_id = bc.course_id
+		LEFT JOIN bms.oa_employee oe ON oe.emp_id = l.emp_id
+		JOIN (
+			SELECT
+				c.`course_id`,
+				f.pfsn_name,
+				f.grade,
+				case f.pfsn_level when '1' then '本科' when '5' then '专科' else '' end pfsn_level
+			FROM
+				bms.bd_course c
+			LEFT JOIN bms.bd_plan_course p ON p.`course_id` = c.`course_id`
+			LEFT JOIN bms.bd_teach_plan t ON t.`thp_id` = p.`thp_id`
+			LEFT JOIN bms.bd_unvs_profession f ON f.`pfsn_id` = t.`pfsn_id`
+			WHERE
+				f.unvs_id = #{unvsId,jdbcType=VARCHAR}
+			GROUP BY
+				c.`course_id`,f.pfsn_id
+		) cou ON l.course_id = cou.course_id
+		WHERE
+			l.cp_type IN ('6', '7')
+		AND lc.channel_id IS NOT NULL
+		ORDER BY
+			`start_time`
+	</select>
+
+	<select id="selectStdAllLive" resultType="java.lang.Integer"
+			parameterType="java.lang.String">
+		SELECT COUNT(id) FROM bd_student_all_live
+		WHERE std_id = #{stdId}
+	</select>
+</mapper>

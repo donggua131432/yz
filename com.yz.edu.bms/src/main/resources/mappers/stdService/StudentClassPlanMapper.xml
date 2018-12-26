@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.stdService.StudentClassPlanMapper">
+	<resultMap id="ClassPlanMap" type="java.util.Map">
+		<id column="cp_id" property="cpId" jdbcType="VARCHAR" />
+		<result column="cp_date" property="cpDate" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="place_id" property="placeId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="cp_type" property="cpType" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="UnvsPfsnMap" type="java.util.Map">
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="StudentClassPLanMap" type="java.util.Map">
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="tutor_name" property="tutorName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+
+	<select id="findClassPlan" resultMap="ClassPlanMap" >
+		SELECT 
+		  bco.`course_id` courseId,
+		  bco.`course_name` courseName,
+		  oc.`address`,
+		  oc.`campus_name` campusName
+		FROM
+		  bd_class_plan bc 
+		  LEFT JOIN bd_course bco 
+		    ON bco.`course_id` = bc.`course_id`
+		  LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = bc.`place_id`  
+		WHERE bco.`course_type` = 'XK' 
+		and EXISTS(select course_id from bd_plan_course pc 
+		  LEFT JOIN bd_teach_plan btp 
+		  	ON btp.`thp_id` = pc.`thp_id`  
+		  LEFT JOIN bd_learn_info l 
+		  	ON btp.`pfsn_id` = l.`pfsn_id` AND btp.`grade`=l.`grade`
+		  LEFT JOIN bd_learn_rules r 
+		  	ON r.`learn_id` = l.`learn_id`
+			where pc.course_id=bco.course_id and l.`learn_id` is not null
+			<choose>
+			<when test="user.userLevel == 1">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</when>
+			<!-- 成教组辅导员看到自己所带班级的在读学员数据 -->
+			<when test="user.userLevel == 2">
+				and l.`std_stage`= '7' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+			<when test="user.userLevel == 3">
+				and  l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<when test="user.userLevel == 4">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</otherwise>
+			</choose>
+			
+			)
+			
+		<if test="queryinfo.startTime != null and ''!= queryinfo.startTime">
+			and bc.`start_time` <![CDATA[>=#{queryinfo.startTime,jdbcType=VARCHAR}]]>
+		</if>
+		<if test="queryinfo.endTime != null and ''!= queryinfo.endTime">
+			and bc.`end_time`  <![CDATA[<=CONCAT(#{queryinfo.endTime,jdbcType=VARCHAR},' 23:59:59')]]>
+		</if>
+		  GROUP BY bco.`course_id`,bco.`course_name`,
+		  oc.`address`,
+		  oc.`campus_name`
+		  order by bc.`create_time` desc 
+	</select>
+	
+	<select id="stdtCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM bd_learn_info l
+			LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+			LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+		 	where l.pfsn_id+l.grade IN
+			(SELECT btp.pfsn_id+btp.grade from bd_plan_course pc 
+				LEFT JOIN bd_teach_plan btp on btp.`thp_id` = pc.`thp_id` 
+					where pc.course_id=#{courseId,jdbcType=VARCHAR}  
+				group by btp.pfsn_id
+			)
+			<choose>
+			<when test="user.userLevel == 1">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</when>
+			<!-- 成教组辅导员看到自己所带班级的在读学员数据 -->
+			<when test="user.userLevel == 2">
+				and l.`std_stage`= '7' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+			<when test="user.userLevel == 3">
+				and  l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<when test="user.userLevel == 4">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findUnvsPfsn" resultMap="UnvsPfsnMap">
+		SELECT
+		bc.`course_id`,
+		bc.`course_name`,
+		btp.`grade`,
+		btp.`pfsn_id`,
+		p.`pfsn_name`,
+		p.`pfsn_code`,
+		p.`pfsn_level`,
+		u.`unvs_name`,
+		u.`unvs_id`,
+		u.`recruit_type` 
+	FROM
+		bd_teach_plan btp
+		LEFT JOIN bd_unvs_profession p ON p.pfsn_id = btp.pfsn_id
+		LEFT JOIN bd_university u ON p.unvs_id = u.unvs_id
+		LEFT JOIN bd_plan_course bpc ON bpc.thp_id = btp.thp_id
+		LEFT JOIN bd_course bc ON bc.course_id = bpc.course_id 
+	WHERE
+		bc.`course_id` = #{courseId,jdbcType=VARCHAR}
+	GROUP BY
+		bc.`course_id`,
+		btp.`pfsn_id`,
+		u.`unvs_id`
+	</select>
+	
+	<select id="stdtWithPfsnCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM bd_learn_info l
+			LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+			LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor`
+		 	where l.pfsn_id =#{pfsnId,jdbcType=VARCHAR}  and l.grade= #{grade,jdbcType=VARCHAR}
+			<choose>
+			<when test="user.userLevel == 1">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</when>
+			<!-- 成教组辅导员看到自己所带班级的在读学员数据 -->
+			<when test="user.userLevel == 2">
+				and l.`std_stage`= '7' and l.recruit_type='1'  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+			<when test="user.userLevel == 3">
+				and  l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<when test="user.userLevel == 4">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</otherwise>
+		</choose>
+
+	</select>
+	
+	<select id="findStudentClassPlan" resultMap="StudentClassPLanMap" >
+		SELECT
+			bsi.`std_name`,
+			bsi.`id_card`,
+			e.`emp_name` tutor_name,
+			l.`learn_id`,
+			l.`grade`,
+			l.`unvs_id`,
+			u.`unvs_name`,
+			p.`pfsn_name`,
+			p.`pfsn_code`,
+			p.`pfsn_level`,
+			p.`pfsn_id` 
+		FROM
+			bd_learn_info l
+			LEFT JOIN bd_student_info bsi ON bsi.std_id = l.std_id
+			LEFT JOIN bd_unvs_profession p ON p.pfsn_id = l.pfsn_id
+			LEFT JOIN bd_university u ON u.unvs_id = l.unvs_id
+			LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+			LEFT JOIN oa_employee e ON e.`emp_id` = r.`tutor` 
+		WHERE
+			l.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}  
+			AND l.`unvs_id` =#{unvsId,jdbcType=VARCHAR}  
+			AND l.`grade` = #{grade,jdbcType=VARCHAR}  
+			<choose>
+			<when test="user.userLevel == 1">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</when>
+			<!-- 成教组辅导员看到自己所带班级的在读学员数据 -->
+			<when test="user.userLevel == 2">
+				and l.`std_stage`= '7' and l.recruit_type='1'  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<!-- 国开班主任只能看到自己所带班级的待录取、已录取、注册学员、在读学员数据 -->
+			<when test="user.userLevel == 3">
+				and  l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2' and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<when test="user.userLevel == 4">
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))  and r.tutor = #{user.empId, jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				and ((l.`std_stage`= '7' and l.recruit_type='1') or ( l.`std_stage`in ('12','5','6','7')  and l.recruit_type='2'))
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

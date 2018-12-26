@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.WechatReplyMapper">
+	  <resultMap type="com.yz.model.WechatArticle" id="ArticleResult">
+	  	<result column="title" property="title" jdbcType="VARCHAR" />
+	    <result column="description" property="description" jdbcType="VARCHAR" />
+	    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+	    <result column="url" property="url" jdbcType="VARCHAR" />
+	  </resultMap>
+	  
+	  <select id="selectMsgNews" parameterType="java.lang.String" resultMap="ArticleResult">
+	  	SELECT 
+		  a.`title`,
+		  a.`description`,
+		  a.`pic_url`,
+		  a.`url`
+		FROM
+		  bms.`gw_wechat_reply` r 
+		  LEFT JOIN `gw_wechat_article` a 
+		    ON a.`reply_id` = r.`reply_id` 
+		WHERE r.`keyword` = #{msg,jdbcType=VARCHAR}
+			and r.`status` = '1'
+	  </select>
+
+	  <select id="selectMsgType" parameterType="java.lang.String" resultType="java.lang.String">
+	  	SELECT 
+		  msg_type 
+		FROM
+		  bms.`gw_wechat_reply` 
+		WHERE keyword = #{msgType,jdbcType=VARCHAR}
+		  and `status` = '1'
+	  </select>
+	  
+	  <select id="selectContent" parameterType="java.lang.String" resultType="java.lang.String">
+	  	SELECT 
+		  content 
+		FROM
+		  bms.`gw_wechat_reply` 
+		WHERE keyword = #{msgType,jdbcType=VARCHAR}
+			and `status` = '1'
+	  </select>
+</mapper>

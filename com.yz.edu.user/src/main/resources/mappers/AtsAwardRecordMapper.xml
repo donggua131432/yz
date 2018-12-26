@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.AtsAwardRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.AtsAwardRecord" >
+    <id column="award_id" property="awardId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="award_desc" property="awardDesc" jdbcType="VARCHAR" />
+    <result column="zhimi_count" property="zhimiCount" jdbcType="VARCHAR" />
+    <result column="exp_count" property="expCount" jdbcType="VARCHAR" />
+    <result column="mapping_id" property="mappingId" jdbcType="VARCHAR" />
+    <result column="trigger_user_id" property="triggerUserId" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+   
+  </resultMap>
+ 
+  <insert id="insertSelective" parameterType="com.yz.model.AtsAwardRecord" >
+    insert into goods.ats_award_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        award_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="ruleCode != null" >
+        rule_code,
+      </if>
+      <if test="awardDesc != null" >
+        award_desc,
+      </if>
+      <if test="zhimiCount != null" >
+        zhimi_count,
+      </if>
+      <if test="expCount != null" >
+        exp_count,
+      </if>
+      <if test="mappingId != null" >
+        mapping_id,
+      </if>
+      <if test="triggerUserId != null" >
+        trigger_user_id,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       seq(),
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCode != null" >
+        #{ruleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="awardDesc != null" >
+        #{awardDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimiCount != null" >
+        #{zhimiCount,jdbcType=VARCHAR},
+      </if>
+      <if test="expCount != null" >
+        #{expCount,jdbcType=VARCHAR},
+      </if>
+      <if test="mappingId != null" >
+        #{mappingId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerUserId != null" >
+        #{triggerUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="countBy" parameterType="com.yz.model.AtsAwardRecord" resultType="int">
+  	SELECT 
+	  COUNT(1) 
+	FROM
+	  goods.ats_award_record r 
+	<where>
+		<if test="userId != null and userId != ''">
+			r.`user_id` = #{userId, jdbcType=VARCHAR} 
+		</if>
+		<if test="stdId != null and stdId != ''">
+			and r.`std_id` = #{stdId, jdbcType=VARCHAR} 
+		</if>
+			and r.`rule_code` = #{ruleCode, jdbcType=VARCHAR}
+			and r.trigger_user_id = #{triggerUserId, jdbcType=VARCHAR}
+	</where>
+  </select>
+  
+  <select id="newCountBy" parameterType="com.yz.model.AtsAwardRecord" resultType="int">
+  	SELECT 
+	  COUNT(1) 
+	FROM
+	  goods.ats_award_record r 
+	where r.`rule_code` = #{ruleCode, jdbcType=VARCHAR}
+	and r.`mapping_id` = #{mappingId, jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

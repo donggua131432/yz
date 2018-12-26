@@ -1,0 +1,209 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>绩效归属变更</title>
+</head>
+<body>
+  <div class="page-container">
+  <div class="line-dot pb-10" style="max-width:100%;">
+ 
+  	    <div class="row cl">
+          <div class="col-xs-4">
+            <span>招生老师：</span>
+            <span id="teacherName"></span>
+          </div>
+          <div class="col-xs-4">
+            <span>原部门以及职位：</span>
+            <span id="oldJobInfo"></span>
+          </div>
+          <div class="col-xs-4">
+            <span>新部门以及职位：</span>
+            <span id="newJobInfo"></span>
+          </div>
+        </div>
+  </div>
+    <input type="hidden" id="oldEmpId" name="oldEmpId" th:value="${empId}" />
+    <input type="hidden" id="oldDpId" name="oldDpId" th:value="${modifyInfo.oldDpId}">
+    <input type="hidden" id="modifyId" name="modifyId" th:value="${modifyInfo.modifyId}">
+    <div class="text-l search" style="position: relative">
+      
+      <div class="cl">
+        <div class="cl">
+          <div class="f-l">
+            <span>学员姓名：</span>
+            <input type="text" name="stdName" id="stdName" placeholder="输入学员姓名" class="input-text radius" />
+          </div>
+          <div class="f-l">
+            <span>手机号：</span>
+            <input type="text" name="stdPhone" id="stdPhone" placeholder="输入手机号" class="input-text radius" />
+          </div>
+          <div class="f-l">
+            <span>证件号码：</span>
+            <input type="text" name="stdIdCard" id="stdIdCard" placeholder="输入证件号码" class="input-text radius ">
+          </div>
+          <div class="f-r mr-5" style="position: absolute; right: 0;">
+            <a class="btn btn-primary radius" style="width: 75px" href="javascript:;" onclick="_search()">
+              <i class="iconfont icon-sousuo"></i>
+            			  搜索
+            </a>
+            <a class="btn btn-normal-outline radius" href="javascript:" onclick="_reset();">
+              <i class="iconfont icon-shuaxin"></i>
+            </a>
+          </div>
+        </div>
+        <div class="cl">
+         <div class="f-l">
+            <span>招生类型：</span>
+            <select class="select" size="1" name="recruitType" id="recruitType">
+            </select>
+          </div>
+          <div class="f-l">
+            <span>院校：</span>
+            <input type="text" id="stdUnvsName" name="stdUnvsName" placeholder="输入院校" class="input-text radius">
+          </div>
+          <div class="f-l">
+            <span>专业：</span>
+            <input type="text" id="stdPfsnName" name="stdPfsnName" placeholder="输入专业" class="input-text radius">
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+            <span>学员阶段：</span>
+            <select class="select" size="1" id="stdStage" name="stdStage">
+            </select>
+          </div>
+          <div class="f-l">
+            <span>优惠类型：</span>
+            <select class="select" size="1" name="scholarship" id="scholarship">
+            </select>
+          </div>
+          <div class="f-l">
+            <span>年级：</span>
+            <select class="select" size="1" name="stdGrade" id="stdGrade">
+            </select>
+          </div>
+        </div>
+        <div class="cl">
+          <div class="f-l">
+            <span>分配状态：</span>
+            <select class="select" size="1" name="operStatus" id="operStatus">
+            </select>
+          </div>
+          <div class="f-l">
+            <span>招生开始时间：</span>
+            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="beginTime" name="beginTime" class="input-text Wdate"/>
+          </div>
+          <div class="f-l">
+            <span>招生结束时间：</span>
+            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="endTime" name="beginTime" class="input-text Wdate"/>
+          </div>
+        </div>
+        <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+          <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+            <i class="iconfont icon-xiala"></i>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-1">
+      <div class="cl pd-15 bg-1">
+        <div class="mt-15 mb-15">
+          <div class="pb-10">
+          	<span>个人绩效：</span>
+          	<div class="radio-box">
+				<input type="radio" name="personType" value="1" checked="checked">
+				<label >合并</label>
+			</div>
+			<div class="radio-box" th:if="${modifyInfo.empStatus} =='2'">
+				<input type="radio" name="personType" value="2" >
+				<label >不合并</label>
+			</div>
+          </div>
+          <div th:if="${modifyInfo.empStatus} =='1'">
+           	<span>团队绩效：</span>
+            <a href="javascript:;" onclick="partChange(1)" class="btn btn-primary radius"><i class="iconfont icon-daoru"></i>归属到原部门</a>
+			<a href="javascript:;" onclick="partChange(2)" class="btn btn-primary  radius"><i class="iconfont icon-daoru"></i>归属到新部门 </a>
+			<a href="javascript:;" onclick="allChange(3)" class="btn btn-primary  radius"><i class="iconfont icon-daoru"></i>全部归属到原部门</a>
+			<a href="javascript:;" onclick="allChange(4)" class="btn btn-primary radius"><i class="iconfont icon-daoru"></i>全部归属到新部门 </a>
+          </div>
+          <div th:if="${modifyInfo.empStatus} =='2'">
+          	<span>团队绩效：</span>
+            <a href="javascript:;" onclick="allChange(3)" class="btn btn-primary radius"><i class="iconfont icon-daoru"></i>确认分配</a>
+          </div> 
+          <div th:if="${modifyInfo.empStatus} =='3'">
+          	<span>团队绩效：</span>
+            <a href="javascript:;" onclick="allChange(3)" class="btn btn-primary radius"><i class="iconfont icon-daoru"></i>确认分配</a>
+          </div>
+        </div>
+        <div class="mt-20 bg-fff">
+          <table class="table table-border table-bordered table-hover table-bg table-sort" id="perfChangeTable">
+            <thead>
+              <tr class="text-c">
+                <th width="25"><input type="checkbox" name="all" class="checkAll" value=""></th>
+                <th index="0" width="60">学员姓名</th>
+                <th index="1" width="40">年级</th>
+                <th index="4" width="70">优惠情况</th>
+                <th index="2" width="160">院校与专业</th>
+                <th index="3" width="40">学员阶段</th>
+                <th index="5" width="100">原部门</th>
+                <th index="6" width="60">分配状态</th>
+                <th index="7" width="100">归属部门</th>
+                <th index="8" width="70">操作时间</th>
+                <th index="8" width="50">操作人</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script th:online="javascript" type="text/javascript">
+			var empName='[[${modifyInfo.empName}]]';
+			var oldCampusName='[[${modifyInfo.oldCampusName}]]';
+			var oldDpName='[[${modifyInfo.oldDpName}]]';
+			var oldTitle='[[${modifyInfo.oldTitle}]]';
+			var newCampusName='[[${modifyInfo.newCampusName}]]';
+			var newDpName='[[${modifyInfo.newDpName}]]';
+			var newTitle='[[${modifyInfo.newTitle}]]';
+	</script>
+    <script type="text/javascript" th:src="@{/js/webjs/oa/recruiter/recruiter_perf_change.js}"></script>
+	
+</body>
+</html>

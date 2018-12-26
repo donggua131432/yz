@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.educational.BdExamPlaceMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdExamPlace">
+    <id column="ep_id" jdbcType="VARCHAR" property="epId" />
+    <result column="ep_code" jdbcType="VARCHAR" property="epCode" />
+    <result column="ep_name" jdbcType="VARCHAR" property="epName" />
+    <result column="test_time" jdbcType="VARCHAR" property="testTime" />
+    <result column="course_id" jdbcType="VARCHAR" property="courseId" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="province_code" jdbcType="VARCHAR" property="provinceCode" />
+    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+    <result column="district_code" jdbcType="VARCHAR" property="districtCode" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="campus_id" jdbcType="VARCHAR" property="campusId" />
+    <result column="is_lease" jdbcType="CHAR" property="isLease" />
+    <result column="start_time2" jdbcType="TIMESTAMP" property="startTime2" />
+    <result column="end_time2" jdbcType="TIMESTAMP" property="endTime2" />
+    <result column="lease_fee" jdbcType="VARCHAR" property="leaseFee" />
+    <result column="emp_id" jdbcType="VARCHAR" property="empId" />
+    <result column="emp_name" jdbcType="VARCHAR" property="empName" />
+    <result column="manager_name" jdbcType="VARCHAR" property="managerName" />
+    <result column="manager_mobile" jdbcType="VARCHAR" property="managerMobile" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.educational.BdExamPlace" id="PageResult" extends="BaseResultMap">
+  <!-- 	<association property="places" column="ep_id" select="selectPlaces"/>
+  	<association property="times" column="ep_id" select="selectTimes"/> -->
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List">
+    ep_id, ep_name, test_time, course_id, remark, province_code, city_code, district_code, 
+    campus_id, is_lease, start_time2, end_time2, lease_fee, emp_id, emp_name, manager_name, 
+    manager_mobile, update_time, update_user, update_user_id, create_user_id, create_time, 
+    create_user, ext_1, ext_2, ext_3
+  </sql>
+  
+  <select id="getEmNameList" resultType="java.lang.String" parameterType="com.yz.model.condition.common.SelectQueryInfo">
+  	SELECT 
+	  ep_name 
+	FROM
+	  bd_exam_place
+	<where>
+	<if test="sName != null and sName !=''">
+		 ep_name LIKE CONCAT('%', #{sName}, '%') 
+	</if>
+	</where>
+  </select>
+  
+  <select id="selectPlaceYearCountByEpId" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT COUNT(1) FROM `bd_place_year` WHERE place_id = #{epId}
+  </select>
+  
+  <select id="selectTimes" parameterType="java.lang.String" resultMap="com.yz.dao.educational.BdPlaceTimeMapper.BaseResultMap">
+  	SELECT 
+	  substring_index(pt.`start_time`, " ", 1) date,
+	  DATE_FORMAT(pt.`start_time`, '%H:%i') start_time,
+	  DATE_FORMAT(pt.`end_time`, '%H:%i') end_time 
+	FROM
+	  bd_place_time pt 
+	WHERE pt.`place_id` = 
+	  (SELECT 
+	    p.`place_id` 
+	  FROM
+	    bd_place_info p 
+	    where p.ep_id = #{epId}
+	  LIMIT 0, 1)
+  </select>
+  
+  <select id="selectPlaces" parameterType="java.lang.String" resultMap="com.yz.dao.educational.BdPlaceInfoMapper.BaseResultMap">
+  	SELECT 
+	  p.`place_id`,
+	  p.`place_name`,
+	  p.`max_count`,
+	  p.`min_count` 
+	FROM
+	  bd_place_info p 
+	WHERE p.`ep_id` = #{epId}
+  </select>
+  
+  <update id="updateStatus" parameterType="java.lang.String">
+  	update bd_exam_place set status = #{status}
+  	where ep_id = #{epId}
+  </update>
+  
+  <update id="updateStatusBatch" parameterType="java.lang.String">
+  	update bd_exam_place set status = #{status}
+  	where ep_id in
+  	  (
+	  <foreach collection="epIds" item="epId" index="index" separator="," >
+	    	#{epId}
+	  </foreach>
+	  )
+  </update>
+  
+  <select id="selectExamRoomById" parameterType="java.lang.String" resultMap="PageResult">
+  	SELECT 
+	  ep.`ep_id`,
+	  ep.`ep_code`,
+	  ep.`ep_name`,
+	  ep.`province_code`,
+	  ep.`city_code`,
+	  ep.`district_code`,
+	  ep.`address`,
+	  ep.`status`,
+	  ep.`remark` 
+	FROM
+	  bd_exam_place ep 
+	  where ep.ep_id = #{epId}
+  </select>
+  
+  <select id="selectExamRoomByCode" parameterType="java.lang.String" resultMap="PageResult">
+  	SELECT 
+	  ep.`ep_id`,
+	  ep.`ep_code`,
+	  ep.`ep_name`,
+	  ep.`province_code`,
+	  ep.`city_code`,
+	  ep.`district_code`,
+	  ep.`address`,
+	  ep.`status`,
+	  ep.`remark` 
+	FROM
+	  bd_exam_place ep 
+	  where ep.ep_code = #{epCode}
+  </select>
+  
+  <insert id="insertExamRoom" useGeneratedKeys="true" keyProperty="epId">
+  	insert into bd_exam_place
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        ep_id,
+      <if test="epCode != null">
+        ep_code,
+      </if>
+      <if test="epName != null">
+        ep_name,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="provinceCode != null">
+        province_code,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="cityCode != null">
+        city_code,
+      </if>
+      <if test="districtCode != null">
+        district_code,
+      </if>
+      <if test="updateUser != null">
+        update_user,
+      </if>
+      <if test="updateUserId != null">
+        update_user_id,
+      </if>
+      <if test="createUserId != null">
+        create_user_id,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{epId},
+      <if test="epCode != null">
+        #{epCode,jdbcType=VARCHAR},
+      </if>
+      <if test="epName != null">
+        #{epName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceCode != null">
+        #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null">
+        #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null">
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null">
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null">
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="selectExamRoomByPage" resultMap="PageResult">
+  	SELECT 
+	  ep.`ep_id`,
+	  ep.`ep_code`,
+	  ep.`ep_name`,
+	  CONCAT(
+	  sp.`province_name`,
+	  sc.`city_name`,
+	  sd.`district_name`) AS province,
+	  ep.`address`,
+	  ep.`status`,
+	  ep.`remark`,
+	  ep.`province_code`,
+	  ep.`city_code`,
+	  ep.`district_code`
+	FROM
+	  bd_exam_place ep 
+	  LEFT JOIN sys_province sp 
+	    ON sp.`province_code` = ep.`province_code` 
+	  LEFT JOIN sys_city sc 
+	    ON sc.`city_code` = ep.`city_code` 
+	  LEFT JOIN sys_district sd 
+	    ON sd.`district_code` = ep.`district_code`
+	 <where>
+	 	<if test="epName != null and epName != ''">
+	 		and ep.ep_name LIKE CONCAT('%', #{epName}, '%')
+	 	</if>
+	 	<if test="status != null and status != ''">
+	 		and ep.status = #{status}
+	 	</if>
+	 	<if test="epCode != null and epCode != ''">
+	 		and ep.ep_code = #{epCode}
+	 	</if>
+	 	<if test="provinceCode != null and provinceCode != ''">
+	 		and ep.province_code = #{provinceCode}
+	 	</if>
+	 	<if test="cityCode != null and cityCode != ''">
+	 		and ep.city_code = #{cityCode}
+	 	</if>
+	 	<if test="districtCode != null and districtCode != ''">
+	 		and ep.district_code = #{districtCode}
+	 	</if>
+	 	<if test="address != null and address != ''">
+	 		and ep.address LIKE CONCAT('%', #{address}, '%')
+	 	</if>
+	 </where>
+	 order by ep.create_time desc
+  </select>
+  
+  
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bd_exam_place
+    where ep_id = #{epId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from bd_exam_place
+    where ep_id = #{epId,jdbcType=VARCHAR}
+  </delete>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdExamPlace">
+    update bd_exam_place
+    <set>
+      <if test="epCode != null">
+        ep_code = #{epCode,jdbcType=VARCHAR},
+      </if>
+      <if test="epName != null">
+        ep_name = #{epName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceCode != null">
+        province_code = #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null">
+        city_code = #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null">
+        district_code = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null">
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ep_id = #{epId,jdbcType=VARCHAR};
+  </update>
+  
+  <insert id="insertPlaceInfoAndTimes">
+	    insert into bd_place_info (place_id, place_name, max_count, 
+	      min_count, ep_id, update_user, update_user_id, 
+	      create_user_id,create_user)
+	    values
+        (#{placeId}, #{place.placeName,jdbcType=VARCHAR}, #{place.maxCount,jdbcType=VARCHAR}, 
+	      #{place.minCount,jdbcType=VARCHAR}, #{place.epId,jdbcType=VARCHAR},
+	      #{place.updateUser,jdbcType=VARCHAR}, #{place.updateUserId,jdbcType=VARCHAR}, #{place.createUserId,jdbcType=VARCHAR}, 
+	      #{place.createUser,jdbcType=VARCHAR});
+	    insert into bd_place_time (time_id, start_time, end_time, 
+		      place_id)
+		    values 
+	    <foreach collection="times" item="t" index="index" separator="," >
+	    	(#{t.timeId,jdbcType=VARCHAR}, #{t.startTime,jdbcType=VARCHAR}, #{t.endTime,jdbcType=VARCHAR}, 
+		      #{placeId,jdbcType=VARCHAR})
+	    </foreach>
+  </insert>
+  
+  <delete id="deltePlaceInfoAndTimes" parameterType="java.lang.String">
+  	 delete p,t from bd_place_info p,bd_place_time t where t.place_id = p.place_id and p.ep_id = #{epId};
+  </delete>
+  
+  <delete id="deleteExamRoom">
+  	DELETE 
+	FROM
+	  bd_exam_place
+	WHERE ep_id in (
+	  <foreach collection="epIds" item="epId" index="index" separator="," >
+	    	#{epId}
+	  </foreach>
+	  )
+	   
+  </delete>
+  
+</mapper>

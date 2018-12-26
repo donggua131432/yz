@@ -1,0 +1,159 @@
+﻿<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" th:src="@{/js/html5shiv.js}"></script>
+    <script type="text/javascript" th:src="@{/js/respond.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/webuploader/css/webuploader.css}"/>
+
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <!--/meta 作为公共模版分离出去-->
+
+    <title>查看订单详情</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+</head>
+<body>
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal max-w" th:object="${orderInfo}" id="form-order-add">
+        <input type="hidden" th:value="${exType}" name="exType" id="exType"/>
+        <input type="hidden" id="logisticsId" th:value="*{logisticsId}"/>
+        <input type="hidden" id="orderNos" name="orderNos" th:value="*{orderNo}"/>
+        <input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token"/>
+ <div id="pdfExportDiv">       
+        <div class="bg-blue mt-15 ml-15 mr-15">
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2 f-14">订单号：</label>
+                <div class="formControls col-xs-8 col-sm-4">
+                    <span id="orderNo"></span>
+                </div>
+                <label class="form-label col-xs-4 col-sm-2 f-14">订单状态：</label>
+                <div class="formControls col-xs-8 col-sm-4">
+                    <span id="orderStatus" class="c-red"></span>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2 c-gray">创建人：</label>
+                <div class="formControls col-xs-8 col-sm-4">
+                    <span id="userName" class="c-gray"></span>
+                </div>
+                <label class="form-label col-xs-4 col-sm-2 c-gray">创建时间：</label>
+                <div class="formControls col-xs-8 col-sm-4">
+                    <span id="orderTime" class="c-gray"></span>
+                </div>
+            </div>
+            
+            <br>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2 f-14">收货人信息</label>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2 c-gray">收货人：</label>
+            <div class="formControls col-xs-8 col-sm-10">
+                <span id="takeUserName"></span>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2 c-gray">收货地址：</label>
+            <div class="formControls col-xs-8 col-sm-10">
+                <span id="address"></span>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2 c-gray">联系电话：</label>
+            <div class="formControls col-xs-8 col-sm-10">
+                <span id="takeMobile"></span>
+            </div>
+        </div>
+        <div class="line-dot"></div>
+        
+        <br>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2 f-14">商品信息</label>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-1"> </label>
+            <div class="col-sm-11">
+                <table class="table table-border table-bordered table-hover table-bg">
+                    <thead>
+                    <tr>
+                        <th width="100">商品名称</th>
+                        <th width="100">单价</th>
+                        <th width="100">数量</th>
+                        <th width="100">总价</th>
+                        <th width="100">运费</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td id="goodsName"></td>
+                        <td id="jdPrice"></td>
+                        <td id="goodsCount"></td>
+                        <td id="orderPrice"></td>
+                        <td id="freight"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+ </div>       
+        <div class="text-c mt-10"  id="btn">
+            
+            <a href="javascript:;" onclick="pdf_export()" class="btn btn-warning radius" id="downloadPDF">
+            <i class="iconfont icon-daochu"></i>
+            	导出PDF
+            </a>
+            <input style="width: 90px;" type="button" class="previous btn btn-normal-outline radius mr-10"
+                   value="取消" id="bt_cancel" onclick="layer_close();"/>
+        </div>
+    </form>
+</article>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+<script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.config.js}"></script>
+<script type="text/javascript" th:src="@{/js/ueditor/1.4.3/ueditor.all.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/webuploader/0.1.5/webuploader.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var varOrderInfo=[[${orderInfo}]];
+</script>
+<script type="text/javascript" th:src="@{/js/webjs/order/jd_order_detail.js}"></script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+  <article class="page-container">
+    <form method="post" class="form form-horizontal yz-form-box" id="form-student-info" enctype="multipart/form-data">
+      <input type="hidden" name="empId" id="empId" th:value="${baseInfo.empId}" />
+      <input type="hidden" th:value="${exType}" name="exType" id="exType" />
+      <input type="hidden" id="_web_token" name="_web_token" th:value="${_web_token}" />
+      <!--------基本信息------->
+      <div class="form">
+        <div class="cl">
+          <div class="f-l halfPage">
+            <p>基础资料</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>姓名：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" id="empName" name="empName" placeholder="请输入姓名" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>证件类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="idType" name="idType">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>证件号：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+               <input type="text" class="input-text" id="idCard" name="idCard" placeholder="请输入证件号"  />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>性别：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="sexSelect" name="sexSelect">
+                </select>
+                 <input type="hidden" name="sex" id="sex" value />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>生日：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+               <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="birthdayInput" name="birthdayInput" class="input-text Wdate"/>
+               <input type="hidden" class="input-text" placeholder="请输入生日" id="birthday" name="birthday" />
+              </div>
+            </div>
+             <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="empType" name="empType">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入手机号" id="mobile" name="mobile" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">最高学历：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+               <select class="select" id="education" name="education">
+               </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">民族：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+               <select class="select" id="nation" name="nation">
+               </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>政治面貌：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="politicalStatus" name="politicalStatus">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>户口类型：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="rprType" name="rprType">
+                </select>
+              </div>
+            </div>
+		
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>户口所在地：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select js-data-example-ajax" id="rprProvinceCode" name="rprProvinceCode" style="width: 30%">
+                </select> <select class="select" id="rprCityCode" name="rprCityCode" style="width: 30%">
+                </select> <select class="select" id="rprDistrictCode" name="rprDistrictCode" style="width: 30%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl city-3">
+              <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>现居住地址：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="provinceCode" name="provinceCode" style="width: 30%">
+                </select> <select class="select" id="cityCode" name="cityCode" style="width: 30%">
+                </select> <select class="select" id="districtCode" name="districtCode" style="width: 30%">
+                </select>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3"></label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入详细地址" id="address" name="address" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">婚姻状况：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <select class="select" id="maritalStatus" name="maritalStatus">
+                </select>
+              </div>
+            </div>
+     
+          </div>
+          <div class="f-r halfPage ">
+            <p>其他资料(选填)</p>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">照片：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <span id="member-photo"></span>
+                <span class="btn-upload mb-30">
+                  <button class="btn btn-primary radius" onclick="">选取图片</button>
+                  <input type="file" multiple name="headPic" id="selectPhoto" class="input-file" />
+                  <input type="hidden" name="headPortrait" id="headPortrait" value="" />
+                  <input type="hidden" name="isPhotoChange" id="isPhotoChange" value="" />
+                </span>
+                <input type="button" name="next" onclick="deletPhoto()" class="btn btn-normal-outline radius mb-30" value="删除" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">座机：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入座机" id="telephone" name="telephone" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">紧急联系人：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="紧急联系人" id="emergencyContact" name="emergencyContact" />
+              </div>
+            </div>
+              <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">紧急联系人手机：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="紧急联系人" id="emergencyMobile" name="emergencyMobile" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">Email：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入Email" id="email" name="email" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">QQ：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入QQ" id="qq" name="qq" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">微信：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入微信" id="wechat" name="wechat" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">英语水平：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入英语水平" id="englishLevel" name="englishLevel" />
+              </div>
+            </div>
+              <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">计算机水平：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入计算机水平" id="computerLevel" name="computerLevel" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">毕业院校：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入毕业院校" id="finishSchool" name="finishSchool" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">毕业时间：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="finishTime" name="finishTime" class="input-text Wdate"/>
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">毕业专业：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入毕业专业" id="finishMajor" name="finishMajor" />
+              </div>
+            </div>
+              <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">毕业证编码：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="(未取得专科毕业证的专科考生请输“待定”)" id="finishCode" name="finishCode" />
+              </div>
+            </div>
+            <div class="row cl">
+              <label class="form-label col-xs-4 col-sm-3">备注：</label>
+              <div class="formControls col-xs-8 col-sm-9">
+                <textarea name="remark" id="remark" cols="" rows="" class="textarea" placeholder="请输入备注...最少输入10个字符" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+                <p class="textarea-numberbar">
+                  <em class="textarea-length">0</em>/100
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-r mt-10">
+        <input id="bt_submit" type="submit" class="submit btn btn-primary radius" value="保存" />
+        <input type="button" class="previous btn btn-normal-outline radius mr-10" value="取消" id="bt_cancel" onclick="layer_close();"/>
+      </div>
+    </form>
+  </article>
+  <!-- 基础信息JS -->
+  <script type="text/javascript" th:inline="javascript">
+          var varBaseInfo=[[${baseInfo}]];
+		  var varExType=[[${exType}]];
+		  var varOther=[[${other}]];
+  </script>
+<script type="text/javascript" th:src="@{/js/webjs/oa/recruiter/recruiter_baseInfo.js}"></script>
+</body>
+</html>

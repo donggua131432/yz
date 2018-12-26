@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.enroll.BdEnrollOnlineMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.enroll.BdEnrollOnline" >
+    <id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="czbj" property="czbj" jdbcType="VARCHAR" />
+    <result column="hidden_yzdm" property="hiddenYzdm" jdbcType="VARCHAR" />
+    <result column="xm" property="xm" jdbcType="VARCHAR" />
+    <result column="xbdm" property="xbdm" jdbcType="VARCHAR" />
+    <result column="pwd" property="pwd" jdbcType="CHAR" />
+    <result column="mzdm" property="mzdm" jdbcType="VARCHAR" />
+    <result column="csrq" property="csrq" jdbcType="CHAR" />
+    <result column="zzmmdm" property="zzmmdm" jdbcType="VARCHAR" />
+    <result column="wyyzdm" property="wyyzdm" jdbcType="CHAR" />
+    <result column="kslbdm" property="kslbdm" jdbcType="VARCHAR" />
+    <result column="jhlbdm" property="jhlbdm" jdbcType="VARCHAR" />
+    <result column="kmzdm" property="kmzdm" jdbcType="VARCHAR" />
+    <result column="xqdm" property="xqdm" jdbcType="VARCHAR" />
+    <result column="hkdm" property="hkdm" jdbcType="VARCHAR" />
+    <result column="kqxl" property="kqxl" jdbcType="VARCHAR" />
+    <result column="zydm" property="zydm" jdbcType="VARCHAR" />
+    <result column="zjlxdm" property="zjlxdm" jdbcType="VARCHAR" />
+    <result column="zjdm" property="zjdm" jdbcType="VARCHAR" />
+    <result column="byxx" property="byxx" jdbcType="VARCHAR" />
+    <result column="byrq" property="byrq" jdbcType="CHAR" />
+    <result column="byzy" property="byzy" jdbcType="VARCHAR" />
+    <result column="byzshm" property="byzshm" jdbcType="VARCHAR" />
+    <result column="yzbm" property="yzbm" jdbcType="VARCHAR" />
+    <result column="lxdh" property="lxdh" jdbcType="VARCHAR" />
+    <result column="txdz" property="txdz" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="unvs_code" property="unvsCode" jdbcType="VARCHAR" />
+    <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+    <result column="teach_method" property="teachMethod" jdbcType="VARCHAR" />
+    <result column="ybmhm" property="ybmhm" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="is_completed" property="isCompleted" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    learn_id, czbj, hidden_yzdm, xm, xbdm, pwd, mzdm, csrq, zzmmdm, wyyzdm, kslbdm, jhlbdm, 
+    kmzdm, xqdm, hkdm, kqxl, zydm, zjlxdm, zjdm, byxx, byrq, byzy, byzshm, yzbm, lxdh, 
+    txdz, status, unvs_code, pfsn_code, teach_method, ybmhm, reason, is_completed
+  </sql>
+  
+  <select id="selectEnrollList" parameterType="map" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from bd_enroll_online
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_enroll_online
+    where learn_id = #{learnId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectList" resultType="java.util.HashMap">
+  	SELECT 
+	  l.`learn_id` AS learnId,
+	  s.`std_name` AS xm,
+	  s.`sex` AS xbdm,
+	  s.`nation` AS mzdm,
+	  s.`birthday` AS csrq,
+	  IFNULL(s.`political_status`, '13') AS zzmmdm,
+	  p.`pfsn_level` AS kslbdm,
+	  p.`pfsn_cata` AS jhlbdm,
+	  p.`group_id` AS kmzdm,
+	  t.`ta_code` AS xqdm,
+	  s.`rpr_district_code` AS hkdm,
+	  h.`edcs_type` AS kqxl,
+	  IFNULL(s.`job_type`, '00') AS zydm,
+	  s.`id_type` AS zjlxdm,
+	  s.`id_card` AS zjdm,
+	  h.`unvs_name` AS byxx,
+	  DATE_FORMAT(h.`graduate_time`, '%Y-%m') AS byrq,
+	  h.`profession` AS byzy,
+	  h.`diploma` AS byzshm,
+	  s.`zip_code` AS yzbm,
+	  s.`mobile` AS lxdh,
+	  s.`now_province_code` AS provinceCode,
+	  s.`now_city_code` AS cityCode,
+	  s.`now_district_code` AS districtCode,
+	  s.`address`,
+	  u.`unvs_code` AS unvsCode,
+	  p.`pfsn_code` AS pfsnCode,
+	  p.`teach_method` AS teachMethod
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_info s 
+	    ON s.`std_id` = l.`std_id` 
+	  LEFT JOIN bd_university u 
+	    ON u.`unvs_id` = l.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession p 
+	    ON p.pfsn_id = l.`pfsn_id` 
+	  LEFT JOIN bd_test_area t 
+	    ON t.`ta_id` = l.`ta_id` 
+	  LEFT JOIN bd_student_history h 
+	    ON h.`learn_id` = l.`learn_id` 
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.enroll.BdEnrollOnline" >
+    insert into bd_enroll_online
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="learnId != null" >
+        learn_id,
+      </if>
+      <if test="czbj != null" >
+        czbj,
+      </if>
+      <if test="hiddenYzdm != null" >
+        hidden_yzdm,
+      </if>
+      <if test="xm != null" >
+        xm,
+      </if>
+      <if test="xbdm != null" >
+        xbdm,
+      </if>
+      <if test="pwd != null" >
+        pwd,
+      </if>
+      <if test="mzdm != null" >
+        mzdm,
+      </if>
+      <if test="csrq != null" >
+        csrq,
+      </if>
+      <if test="zzmmdm != null" >
+        zzmmdm,
+      </if>
+      <if test="wyyzdm != null" >
+        wyyzdm,
+      </if>
+      <if test="kslbdm != null" >
+        kslbdm,
+      </if>
+      <if test="jhlbdm != null" >
+        jhlbdm,
+      </if>
+      <if test="kmzdm != null" >
+        kmzdm,
+      </if>
+      <if test="xqdm != null" >
+        xqdm,
+      </if>
+      <if test="hkdm != null" >
+        hkdm,
+      </if>
+      <if test="kqxl != null" >
+        kqxl,
+      </if>
+      <if test="zydm != null" >
+        zydm,
+      </if>
+      <if test="zjlxdm != null" >
+        zjlxdm,
+      </if>
+      <if test="zjdm != null" >
+        zjdm,
+      </if>
+      <if test="byxx != null" >
+        byxx,
+      </if>
+      <if test="byrq != null" >
+        byrq,
+      </if>
+      <if test="byzy != null" >
+        byzy,
+      </if>
+      <if test="byzshm != null" >
+        byzshm,
+      </if>
+      <if test="yzbm != null" >
+        yzbm,
+      </if>
+      <if test="lxdh != null" >
+        lxdh,
+      </if>
+      <if test="txdz != null" >
+        txdz,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="unvsCode != null" >
+        unvs_code,
+      </if>
+      <if test="pfsnCode != null" >
+        pfsn_code,
+      </if>
+      <if test="teachMethod != null" >
+        teach_method,
+      </if>
+      <if test="ybmhm != null" >
+        ybmhm,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="isCompleted != null" >
+        is_completed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="learnId != null" >
+        #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="czbj != null" >
+        #{czbj,jdbcType=VARCHAR},
+      </if>
+      <if test="hiddenYzdm != null" >
+        #{hiddenYzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="xm != null" >
+        #{xm,jdbcType=VARCHAR},
+      </if>
+      <if test="xbdm != null" >
+        #{xbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        #{pwd,jdbcType=CHAR},
+      </if>
+      <if test="mzdm != null" >
+        #{mzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="csrq != null" >
+        #{csrq,jdbcType=CHAR},
+      </if>
+      <if test="zzmmdm != null" >
+        #{zzmmdm,jdbcType=VARCHAR},
+      </if>
+      <if test="wyyzdm != null" >
+        #{wyyzdm,jdbcType=CHAR},
+      </if>
+      <if test="kslbdm != null" >
+        #{kslbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="jhlbdm != null" >
+        #{jhlbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kmzdm != null" >
+        #{kmzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="xqdm != null" >
+        #{xqdm,jdbcType=VARCHAR},
+      </if>
+      <if test="hkdm != null" >
+        #{hkdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kqxl != null" >
+        #{kqxl,jdbcType=VARCHAR},
+      </if>
+      <if test="zydm != null" >
+        #{zydm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjlxdm != null" >
+        #{zjlxdm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjdm != null" >
+        #{zjdm,jdbcType=VARCHAR},
+      </if>
+      <if test="byxx != null" >
+        #{byxx,jdbcType=VARCHAR},
+      </if>
+      <if test="byrq != null" >
+        #{byrq,jdbcType=CHAR},
+      </if>
+      <if test="byzy != null" >
+        #{byzy,jdbcType=VARCHAR},
+      </if>
+      <if test="byzshm != null" >
+        #{byzshm,jdbcType=VARCHAR},
+      </if>
+      <if test="yzbm != null" >
+        #{yzbm,jdbcType=VARCHAR},
+      </if>
+      <if test="lxdh != null" >
+        #{lxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="txdz != null" >
+        #{txdz,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="unvsCode != null" >
+        #{unvsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCode != null" >
+        #{pfsnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="teachMethod != null" >
+        #{teachMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="ybmhm != null" >
+        #{ybmhm,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="isCompleted != null" >
+        #{isCompleted,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.enroll.BdEnrollOnline" >
+    update bd_enroll_online
+    <set >
+      <if test="czbj != null" >
+        czbj = #{czbj,jdbcType=VARCHAR},
+      </if>
+      <if test="hiddenYzdm != null" >
+        hidden_yzdm = #{hiddenYzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="xm != null" >
+        xm = #{xm,jdbcType=VARCHAR},
+      </if>
+      <if test="xbdm != null" >
+        xbdm = #{xbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null" >
+        pwd = #{pwd,jdbcType=CHAR},
+      </if>
+      <if test="mzdm != null" >
+        mzdm = #{mzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="csrq != null" >
+        csrq = #{csrq,jdbcType=CHAR},
+      </if>
+      <if test="zzmmdm != null" >
+        zzmmdm = #{zzmmdm,jdbcType=VARCHAR},
+      </if>
+      <if test="wyyzdm != null" >
+        wyyzdm = #{wyyzdm,jdbcType=CHAR},
+      </if>
+      <if test="kslbdm != null" >
+        kslbdm = #{kslbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="jhlbdm != null" >
+        jhlbdm = #{jhlbdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kmzdm != null" >
+        kmzdm = #{kmzdm,jdbcType=VARCHAR},
+      </if>
+      <if test="xqdm != null" >
+        xqdm = #{xqdm,jdbcType=VARCHAR},
+      </if>
+      <if test="hkdm != null" >
+        hkdm = #{hkdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kqxl != null" >
+        kqxl = #{kqxl,jdbcType=VARCHAR},
+      </if>
+      <if test="zydm != null" >
+        zydm = #{zydm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjlxdm != null" >
+        zjlxdm = #{zjlxdm,jdbcType=VARCHAR},
+      </if>
+      <if test="zjdm != null" >
+        zjdm = #{zjdm,jdbcType=VARCHAR},
+      </if>
+      <if test="byxx != null" >
+        byxx = #{byxx,jdbcType=VARCHAR},
+      </if>
+      <if test="byrq != null" >
+        byrq = #{byrq,jdbcType=CHAR},
+      </if>
+      <if test="byzy != null" >
+        byzy = #{byzy,jdbcType=VARCHAR},
+      </if>
+      <if test="byzshm != null" >
+        byzshm = #{byzshm,jdbcType=VARCHAR},
+      </if>
+      <if test="yzbm != null" >
+        yzbm = #{yzbm,jdbcType=VARCHAR},
+      </if>
+      <if test="lxdh != null" >
+        lxdh = #{lxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="txdz != null" >
+        txdz = #{txdz,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="unvsCode != null" >
+        unvs_code = #{unvsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnCode != null" >
+        pfsn_code = #{pfsnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="teachMethod != null" >
+        teach_method = #{teachMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="ybmhm != null" >
+        ybmhm = #{ybmhm,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="isCompleted != null" >
+        is_completed = #{isCompleted,jdbcType=CHAR},
+      </if>
+    </set>
+    where learn_id = #{learnId,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="insertBatch">
+  	insert into bd_enroll_online (learn_id,
+      xm, xbdm, pwd, mzdm, 
+      csrq, zzmmdm, wyyzdm, kslbdm, 
+      jhlbdm, kmzdm, xqdm, 
+      hkdm, kqxl, zydm, zjlxdm, 
+      zjdm, byxx, byrq, byzy, 
+      byzshm, yzbm, lxdh, 
+      txdz, unvs_code, 
+      pfsn_code, teach_method, ybmhm, 
+      reason, is_completed)
+    values 
+    <foreach collection="params" item="info" separator=",">
+     (
+      #{info.learnId,jdbcType=VARCHAR}, 
+      #{info.xm,jdbcType=VARCHAR}, 
+      #{info.xbdm,jdbcType=VARCHAR}, 
+      #{info.pwd,jdbcType=CHAR}, 
+      #{info.mzdm,jdbcType=VARCHAR}, 
+      #{info.csrq,jdbcType=CHAR}, 
+      #{info.zzmmdm,jdbcType=VARCHAR}, 
+      #{info.wyyzdm,jdbcType=CHAR}, 
+      #{info.kslbdm,jdbcType=VARCHAR}, 
+      #{info.jhlbdm,jdbcType=VARCHAR}, 
+      #{info.kmzdm,jdbcType=VARCHAR}, 
+      #{info.xqdm,jdbcType=VARCHAR}, 
+      #{info.hkdm,jdbcType=VARCHAR}, 
+      #{info.kqxl,jdbcType=VARCHAR}, 
+      #{info.zydm,jdbcType=VARCHAR}, 
+      #{info.zjlxdm,jdbcType=VARCHAR}, 
+      #{info.zjdm,jdbcType=VARCHAR}, 
+      #{info.byxx,jdbcType=VARCHAR}, 
+      #{info.byrq,jdbcType=CHAR}, 
+      #{info.byzy,jdbcType=VARCHAR}, 
+      #{info.byzshm,jdbcType=VARCHAR}, 
+      #{info.yzbm,jdbcType=VARCHAR}, 
+      #{info.lxdh,jdbcType=VARCHAR}, 
+      #{info.txdz,jdbcType=VARCHAR}, 
+      #{info.unvsCode,jdbcType=VARCHAR}, 
+      #{info.pfsnCode,jdbcType=VARCHAR}, 
+      #{info.teachMethod,jdbcType=VARCHAR}, 
+      #{info.ybmhm,jdbcType=VARCHAR}, 
+      #{info.reason,jdbcType=VARCHAR}, 
+      #{info.isCompleted,jdbcType=CHAR}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsFullScholarshipMapper">
+
+	<select id="selectEnrolmentCount" resultType="java.util.Map">
+		select count(1) as learnCount
+		from bms.bd_learn_info bli
+		left join bms.bd_student_info bsi on bsi.std_id=bli.std_id
+		left join bms.bd_student_order bso on bso.learn_id=bli.learn_id
+		left join bms.bd_sub_order bsubo on bsubo.order_no=bso.order_no
+		left join bms.bd_university bu on bu.unvs_id=bli.unvs_id
+		where bli.scholarship=#{scholarship} and bsubo.item_code='Y0' and bsubo.sub_order_status='2'
+	</select>
+
+	<select id="selectNewEnrolmentList" resultType="java.util.Map">
+		select bli.std_id as stdId, bli.learn_id as learnId, bli.create_time as createTime, bsi.std_name as stdName, bsi.mobile, bu.unvs_name as unvsName
+		from bms.bd_learn_info bli
+		left join bms.bd_student_info bsi on bsi.std_id=bli.std_id
+		left join bms.bd_student_order bso on bso.learn_id=bli.learn_id
+		left join bms.bd_sub_order bsubo on bsubo.order_no=bso.order_no
+		left join bms.bd_university bu on bu.unvs_id=bli.unvs_id
+		where bli.scholarship=#{scholarship} and bsubo.item_code='Y0' and bsubo.sub_order_status='2' order by bli.create_time desc limit 0,10
+	</select>
+</mapper>

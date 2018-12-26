@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.course.GsCourseClassMapper" >
+	<resultMap type="com.yz.model.course.GsCourseClassInfo" id="GsCourseClassMap">
+	  <id column="class_id" property="classId" jdbcType="VARCHAR"/>
+	  <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+	  <result column="class_name" property="className" jdbcType="VARCHAR"/>
+	  <result column="class_place" property="classPlace" jdbcType="VARCHAR"/>
+	  <result column="teacher" property="teacher" jdbcType="VARCHAR"/>
+	  <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	  <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+	  <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	  <result column="mins" property="mins" jdbcType="VARCHAR"/>
+	  <result column="is_allow" property="isAllow" jdbcType="VARCHAR"/>
+	  
+	  <result column="sales_id" property="sales_id" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getGsCourseClassInfo" resultMap="GsCourseClassMap">
+		SELECT 
+		  gcp.`class_id`,
+		  ggs.`sales_name` as course_name,
+		  gcp.`class_name`,
+		  gcp.`class_place`,
+		  gcp.`teacher`,
+		  gcp.`mobile`,
+		  date_format(
+		    gcp.`start_time`,
+		    '%Y-%m-%d %H:%i:%S'
+		  ) start_time,
+		  date_format(
+		    gcp.`end_time`,
+		    '%Y-%m-%d %H:%i:%S'
+		  ) end_time,
+		  gcp.`mins`,
+		  gcp.`is_allow` 
+		FROM goods.`gs_class_plan` gcp 
+		   LEFT JOIN goods.`gs_goods_sales` ggs 
+		    ON gcp.`sales_id` = ggs.`sales_id` 
+		where '1'='1'
+	</select>
+	<resultMap type="java.util.HashMap" id="SalesCourseMap">
+		<result column="sales_id" property="salesId" jdbcType="VARCHAR"/>
+		<result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="findAllKeyValue" resultMap="SalesCourseMap" parameterType="String">
+		select 
+		  ggs.`sales_id`,
+		  ggs.`sales_name` 
+		from
+		  goods.`gs_goods_sales` ggs 
+		  left join goods.`gs_goods` gg 
+		    on ggs.`goods_id` = gg.`goods_id` 
+		where gg.`goods_type` = '2' 
+		<if test="sName !=null and '' != sName">
+			and ggs.`sales_name` LIKE CONCAT('%',#{sName, jdbcType=VARCHAR},'%')
+		</if>
+	</select>
+	
+	<select id="getGsCourseClassDetailInfo" resultMap="GsCourseClassMap">
+		SELECT 
+		  gcp.`class_id`,
+		  ggs.`sales_name` as course_name,
+		  gcp.`class_name`,
+		  gcp.`class_place`,
+		  gcp.`teacher`,
+		  gcp.`mobile`,
+		  date_format(
+		    gcp.`start_time`,
+		    '%Y-%m-%d %H:%i:%S'
+		  ) start_time,
+		  date_format(
+		    gcp.`end_time`,
+		    '%Y-%m-%d %H:%i:%S'
+		  ) end_time,
+		  gcp.`mins`,
+		  gcp.`is_allow`,
+		  gcp.`sales_id` 
+		FROM goods.`gs_class_plan` gcp 
+		   LEFT JOIN goods.`gs_goods_sales` ggs 
+		    ON gcp.`sales_id` = ggs.`sales_id` 
+		where gcp.`class_id` = #{classId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertClass" parameterType="com.yz.model.course.GsCourseClassInfo">
+		insert into goods.`gs_class_plan` (
+		  `class_id`,
+		  `class_name`,
+		  `class_place`,
+		  `teacher`,
+		  `mobile`,
+		  `start_time`,
+		  `end_time`,
+		  `mins`,
+		  `sales_id`,
+		  `is_allow`,
+		  `create_time`,
+		  `create_user_id`,
+		  `create_user`
+		) 
+		values
+		  (#{classId,jdbcType=VARCHAR},
+		   #{className,jdbcType=VARCHAR},
+		   #{classPlace,jdbcType=VARCHAR},
+		   #{teacher,jdbcType=VARCHAR},
+		   #{mobile,jdbcType=VARCHAR},
+		   #{startTime,jdbcType=VARCHAR},
+		   #{endTime,jdbcType=VARCHAR},
+		   #{mins,jdbcType=VARCHAR},
+		   #{salesId,jdbcType=VARCHAR},
+		   #{isAllow,jdbcType=VARCHAR},
+		   now(),
+		   #{createUserId,jdbcType=VARCHAR},
+		   #{createUser,jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="updateClass" parameterType="com.yz.model.course.GsCourseClassInfo">
+		update goods.`gs_class_plan`
+		<set>
+			<if test="className !=null and '' != className">
+				class_name=#{className,jdbcType=VARCHAR},
+			</if>
+			<if test="classPlace !=null and '' != classPlace">
+				class_place=#{classPlace,jdbcType=VARCHAR},
+			</if>
+			<if test="teacher !=null and '' != teacher">
+				teacher =#{teacher,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile !=null and '' != mobile">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				start_time = #{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				end_time = #{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="mins !=null and '' != mins">
+				mins= #{mins,jdbcType=VARCHAR},
+			</if>
+			<if test="salesId !=null and '' != salesId">
+				sales_id=#{salesId,jdbcType=VARCHAR},
+			</if>
+			<if test="isAllow !=null and '' != isAllow">
+				is_allow = #{isAllow,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId !=null and '' !=updateUserId">
+				update_user_id =#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' !=updateUser">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			update_time= now()
+		</set>
+		where class_id=#{classId,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报读证明</title>
+</head>
+<style>
+    .prove{
+        margin: 0 auto;
+        width: 580px;
+    }
+    h4{
+        font-size: 30px;
+        font-weight: 500;
+        text-align: center;
+        font-family:'Microsoft YaHei';
+        margin-bottom:30px;
+        letter-spacing: 5px;
+    }
+    p{
+        font-size: 20px;
+        text-indent: 30px;
+        line-height: 1.8;
+        word-break: break-all;
+        font-family:'Microsoft YaHei';
+        letter-spacing: 5px;
+    }
+    .bottom{
+        margin-top: 100px;
+        margin-left: 150px;
+    }
+    .bottom p{
+        text-align: center;
+        line-height: 1;
+    }
+    span{
+        letter-spacing: normal;
+    }
+    .time{
+        margin-top: 40px;
+        text-indent: 110px;
+    }
+    .idCard{
+        /*word-wrap: break-word;*/
+        /*white-space:nowrap;*/
+    }
+</style>
+<body>
+<span th:text="${#httpServletRequest.getParameter('learnId')}" class="learnId" style="visibility: hidden"></span>
+<div class="prove">
+    <h4>报读证明</h4>
+    <p class="info">兹有学生，女，身份证号码，于xxx年参加成人高考，被仲恺农业工程学院继续教育学院录取，于xxxx年x月就读专科层次xxx专业</p>
+    <p style="margin-top: 50px;">特此证明。</p>
+    <div class="bottom">
+        <p>惠州市远智文化教育培训学校招生办</p>
+        <p class="time">xxxxx</p>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/LodopFuncs.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_certificate_print.js}"></script>
+</html>

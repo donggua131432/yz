@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.wechat.GwWechatMapper" >
+   <resultMap type="com.yz.model.wechat.GwWechatPublic" id="PublicResult">
+   	<result column="pub_id" property="pubId" jdbcType="VARCHAR"/>
+   	<result column="pub_name" property="pubName" jdbcType="VARCHAR"/>
+   	<result column="pub_type" property="pubType" jdbcType="VARCHAR"/>
+   	<result column="app_id" property="appId" jdbcType="VARCHAR"/>
+   	<result column="app_secret" property="appSecret" jdbcType="VARCHAR"/>
+   	<result column="welcome" property="welcome" jdbcType="VARCHAR"/>
+   	<result column="access_token" property="accessToken" jdbcType="VARCHAR"/>
+   	<result column="is_allow" property="isAllow" jdbcType="VARCHAR"/>
+   	<result column="top_url" property="topUrl" jdbcType="VARCHAR"/>
+   </resultMap>
+   
+   <select id="queryWechatPublic" resultMap="PublicResult" parameterType="com.yz.model.condition.common.SelectQueryInfo">
+   	select 
+	  p.`pub_id`,
+	  p.`pub_name`,
+	  p.`pub_type`,
+	  p.`app_id`,
+	  p.`app_secret`,
+	  p.`welcome`,
+	  p.`access_token`,
+	  p.`top_url`,
+	  p.`is_allow`
+	from
+	  common.`gw_wechat_public` p
+	<where>
+   		<if test="sName != null and sName !=''">
+	   		p.pub_name LIKE CONCAT('%', #{sName}, '%')
+	   	</if>
+   		and p.`is_allow` = '1'
+   	</where> 
+   </select>
+   
+   <select id="selectWechatPubById" resultMap="PublicResult" parameterType="java.lang.String">
+   	select 
+	  p.`pub_id`,
+	  p.`pub_name`,
+	  p.`pub_type`,
+	  p.`app_id`,
+	  p.`app_secret`,
+	  p.`welcome`,
+	  p.`access_token`,
+	  p.`top_url`,
+	  p.`is_allow`
+	from
+	  common.`gw_wechat_public` p 
+	  where p.`pub_id` = #{pubId}
+   </select>
+   
+   <update id="updateWechatPublic" parameterType="com.yz.model.wechat.GwWechatPublic" >
+    update common.`gw_wechat_public`
+    <set >
+      <if test="pubName != null and pubName != ''" >
+        pub_name = #{pubName,jdbcType=VARCHAR},
+      </if>
+      <if test="pubType != null and pubType != ''" >
+        pub_type = #{pubType,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null and appId != ''" >
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null and appSecret != ''" >
+        app_secret = #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="welcome != null and welcome != ''" >
+        welcome = #{welcome,jdbcType=VARCHAR},
+      </if>
+      <if test="accessToken != null and accessToken != ''" >
+        access_token = #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="topUrl != null and topUrl != ''" >
+        top_url = #{topUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null and isAllow != ''" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null and updateUserId != ''" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where pub_id = #{pubId,jdbcType=VARCHAR}
+   </update>
+   
+   <insert id="insertWechatPublic" parameterType="com.yz.model.wechat.GwWechatPublic">
+   	insert into common.`gw_wechat_public` (
+	  `pub_id`,
+	  `pub_name`,
+	  `pub_type`,
+	  `app_id`,
+	  `app_secret`,
+	  `welcome`,
+	  `access_token`,
+	  `top_url`,
+	  `update_user`,
+	  `update_user_id`
+	) 
+	values
+	  (
+	    #{pubId,jdbcType=VARCHAR},
+	    #{pubName,jdbcType=VARCHAR},
+	    #{pubType,jdbcType=VARCHAR},
+	    #{appId,jdbcType=VARCHAR},
+	    #{appSecret,jdbcType=VARCHAR},
+	    #{welcome,jdbcType=VARCHAR},
+	    #{accessToken,jdbcType=VARCHAR},
+	    #{topUrl,jdbcType=VARCHAR},
+	    #{updateUser,jdbcType=VARCHAR},
+	    #{updateUserId,jdbcType=VARCHAR}
+	  )
+   </insert>
+   
+   <select id="selectPublicByPage" resultMap="PublicResult">
+   	select 
+	  p.`pub_id`,
+	  p.`pub_name`,
+	  p.`pub_type`,
+	  p.`app_id`,
+	  p.`app_secret`,
+	  p.`welcome`,
+	  p.`access_token`,
+	  p.`top_url`,
+	  p.`is_allow`
+	from
+	  common.`gw_wechat_public` p 
+	
+	ORDER BY p.update_time desc
+   </select>
+   
+</mapper>

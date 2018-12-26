@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.statistics.SendBookStatMapper">
+	
+	<resultMap type="com.yz.model.statistics.SendBookStatInfo" id="SendBookStatInfo">
+	   <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+	   <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+	   <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+	   <result column="grade" property="grade" jdbcType="VARCHAR"/>
+	   <result column="semester" property="semester" jdbcType="VARCHAR"/>
+	   <result column="year" property="year" jdbcType="VARCHAR"/>
+	   <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+	   <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+	   <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+	   <result column="alias" property="alias" jdbcType="VARCHAR"/>
+	   <result column="textbook_name" property="textbookName" jdbcType="VARCHAR"/>
+	   <result column="price" property="price" jdbcType="VARCHAR"/>
+	   <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+	   <result column="total_price" property="totalPrice" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getSendBookStatByPage" resultMap="SendBookStatInfo" parameterType="com.yz.model.statistics.SendBookStatQuery">
+		SELECT 
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  CASE
+		    bup.`pfsn_level` 
+		    WHEN '1' 
+		    THEN '1>专科升本科类' 
+		    ELSE '5>高中起点高职高专' 
+		  END AS pfsn_level,
+		  bli.grade,
+		  bss.semester,
+		  bup.year,
+		  bsi.std_name,
+		  bsi.id_card,
+		  bli.`std_stage`,
+		  bt.`textbook_id` as alias,
+		  bt.`textbook_name`,
+		  bt.`price`,
+		  COUNT(1) order_num,
+		  CONVERT(SUM(bt.`price`), DECIMAL (10, 2)) total_price 
+		FROM
+		  bd_student_send bss 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bss.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.std_id = bli.std_id 
+		  LEFT JOIN bd_learn_rules blr
+		    ON bli.learn_id = blr.learn_id 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.emp_id= blr.recruit  
+		  LEFT JOIN bd_textbook_send bts 
+		    ON bts.`send_id` = bss.`send_id` 
+		  LEFT JOIN bd_textbook bt 
+		    ON bt.`textbook_id` = bts.`textbook_id` 
+	     <where>
+	         bt.`alias` IS NOT NULL 
+            <if test="stdName != null and stdName != ''">
+                and bsi.std_name like concat('%',#{stdName},'%')
+            </if>
+            <if test="mobile != null and mobile != ''">
+                and bsi.mobile = #{mobile, jdbcType=VARCHAR}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                and bsi.id_card = #{idCard, jdbcType=VARCHAR}
+            </if>
+            <if test="unvsId != null and unvsId != ''">
+                and bu.unvs_id = #{unvsId, jdbcType=VARCHAR}
+            </if>
+            <if test="pfsnLevel != null and pfsnLevel != ''">
+                and bup.pfsn_level = #{pfsnLevel, jdbcType=VARCHAR}
+            </if>
+            <if test="pfsnId != null and pfsnId != ''">
+                and bup.pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+            </if>
+            <if test="grade != null and grade != ''">
+                and bli.grade = #{grade, jdbcType=VARCHAR}
+            </if>
+            <if test="semester != null and semester != ''">
+                and bss.semester = #{semester, jdbcType=VARCHAR}
+            </if>
+            <if test="stdStageQ != null and stdStageQ != ''">
+                and bli.std_stage = #{stdStageQ,jdbcType=VARCHAR}
+            </if>
+            <if test="zempName != null and zempName != ''">
+                and oe.emp_name like concat('%',#{zempName},'%')
+            </if>
+            <if test="empStatus != null and empStatus != ''">
+                and oe.emp_status = #{empStatus, jdbcType=VARCHAR}
+            </if>
+            <if test="campusId != null and campusId != ''">
+                and blr.`recruit_campus_id` = #{campusId, jdbcType=VARCHAR}
+            </if>
+            <if test="dpId != null and dpId != ''">
+                and blr.`recruit_dp_id` = #{dpId, jdbcType=VARCHAR}
+            </if>
+            <if test="stdStageArray != null and stdStageArray.length!=0">
+                and bli.std_stage in
+                <foreach collection="stdStageArray" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+		GROUP BY
+        <trim suffixOverrides=",">
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bu.unvs_id')">
+                bu.unvs_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bli.pfsn_id')">
+                bli.pfsn_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bup.pfsn_level')">
+                bup.pfsn_level,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bli.grade')">
+                bli.grade,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bss.semester')">
+                bss.semester,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bup.year')">
+                bup.year,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bsi.std_id')">
+                bsi.std_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(statGroup,'bli.std_stage')">
+                bli.std_stage,
+            </if>
+             bt.`textbook_name`
+         </trim>
+	</select>
+</mapper>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdStudentEScoreMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.educational.BdStudentEScore">
+		<id column="escore_id" property="escoreId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="score" property="score" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="BaseResult" type="com.yz.model.educational.BdStudentScoreMap">
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="exam_no" property="ticketNo" jdbcType="VARCHAR" />
+		<result column="points" property="points" jdbcType="VARCHAR" />
+		<result column="count_number" property="countNumber" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<collection property="studentScores"
+			ofType="com.yz.model.educational.BdStudentEScore">
+			<result column="escore_id" property="escoreId" jdbcType="VARCHAR" />
+			<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+			<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+			<result column="course_id" property="courseId" jdbcType="VARCHAR" />
+			<result column="score" property="score" jdbcType="VARCHAR" />
+			<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+			<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+			<result column="update_user_id" property="updateUserId"
+				jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<sql id="Base_Column_List">
+		escore_id, std_id, course_name, course_id, score,
+		update_time,
+		update_user,
+		update_user_id
+	</sql>
+	
+	<select id="selectStdIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select bli.std_id from bd_learn_info bli where bli.learn_id = #{learnId}
+	</select>
+	
+	<insert id="insertStudentScore">
+		insert into bd_student_e_score (
+		  escore_id,
+		  learn_id,
+		  std_id,
+		  course_id,
+		  course_name,
+		  score,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  <foreach collection="scores" item="score" index="index" separator="," >  
+		        (#{score.escoreId},#{learnId},#{stdId},#{score.courseId},#{score.courseName},#{score.score},#{updateUser},#{updateUserId})
+		    </foreach>
+	</insert>
+	
+<!-- 	<select id="selectStudentExamCourse" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		  bup.test_subject 
+		from
+		  bd_student_enroll bse 
+		  left join bd_unvs_profession bup 
+		    on bse.`pfsn_id` = bup.`pfsn_id` 
+		where bse.`learn_id` = #{learnId} 
+	</select> -->
+	
+	<resultMap type="java.util.HashMap" id="StudentExamCourse">
+		<result column="subject_id" property="subjectId" jdbcType="VARCHAR"/>
+		<result column="subject_name" property="subjectName" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="selectStudentExamCourse" resultMap="StudentExamCourse">
+	SELECT 
+		  bts.`subject_id`,bts.`subject_name`
+		FROM
+		  bd_student_enroll bse 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bse.`pfsn_id` = bup.`pfsn_id` 
+		  LEFT JOIN bd_tg bt ON bup.`group_id` = bt.`group_id`
+		  LEFT JOIN bd_test_subject bts ON bt.`subject_id`=bts.`subject_id`
+		WHERE bse.`learn_id` =#{learnId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_student_e_score
+		where escore_id = #{escoreId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findStudentScore" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_student_e_score
+		where learn_id = #{learnId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAll" resultMap="BaseResult"
+		parameterType="com.yz.model.educational.BdStudentScoreMap">
+		SELECT 
+		  bli.`learn_id`,
+		  bli.`std_stage`,
+		  bli.`recruit_type`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  oe.`emp_name`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  btc.`exam_no`,
+		  bsi.`id_card` 
+		FROM
+		  bd_learn_info bli 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bli.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bse.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bse.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bse.`pfsn_id` 
+		  LEFT JOIN bd_test_confirm btc 
+		    ON btc.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON blr.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN oa_employee oe 
+		    ON oe.`emp_id` = blr.`recruit` 
+		WHERE bli.std_stage = '4' and bli.recruit_type ='1'
+		<if test="stdName != null and '' != stdName">
+			and bsi.`std_name` LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+		</if>
+		<if test="telephone != null and '' != telephone">
+			and bsi.`mobile` = #{telephone}
+		</if>
+		<if test="idCard != null and '' != idCard">
+			and bsi.`id_card` = #{idCard}
+		</if>
+		<if test="grade != null and '' != grade">
+			and bli.`grade` = #{grade}
+		</if>
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_student_e_score
+		where escore_id = #{escoreId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdStudentEScore">
+		insert into bd_student_e_score
+		(escore_id, std_id, course_name,
+		course_id, score, 
+		update_time,
+		update_user, update_user_id
+		)
+		values (#{escoreId,jdbcType=VARCHAR},
+		#{stdId,jdbcType=VARCHAR},
+		#{courseName,jdbcType=VARCHAR},
+		#{courseId,jdbcType=VARCHAR}, #{score,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdStudentEScore">
+		insert into bd_student_e_score
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="escoreId != null">
+				escore_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="courseName != null">
+				course_name,
+			</if>
+			<if test="courseId != null">
+				course_id,
+			</if>
+			<if test="score != null">
+				score,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="escoreId != null">
+				#{escoreId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				#{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				#{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				#{score,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdStudentEScore">
+		update bd_student_e_score
+		<set>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				course_name = #{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				course_id = #{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				score = #{score,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where escore_id = #{escoreId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdStudentEScore">
+		update
+		bd_student_e_score
+		set std_id = #{stdId,jdbcType=VARCHAR},
+		course_name =
+		#{courseName,jdbcType=VARCHAR},
+		course_id =
+		#{courseId,jdbcType=VARCHAR},
+		score = #{score,jdbcType=VARCHAR},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR}
+		where escore_id =
+		#{escoreId,jdbcType=VARCHAR}
+	</update>
+	<select id="getScholarshipSelectedStatus" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+			CASE
+		WHEN b.scholarship = 13 THEN
+			'奖学金未入围'
+		WHEN sum(a.score) BETWEEN 150
+		AND 269 THEN
+			'入围150~270'
+		WHEN sum(a.score) >= 270 THEN
+			'入围270+'
+		ELSE
+			'奖学金未入围'
+		END scholarship_selected_status
+		FROM
+			bd_student_e_score a
+		LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+		WHERE
+			b.scholarship IN (
+				SELECT
+					dict_value
+				FROM
+					sys_dict
+				WHERE
+					p_id = 'scholarship'
+				AND dict_name LIKE '%奖学金%'
+			)
+		AND a.learn_id = #{learnId,jdbcType=VARCHAR}
+		GROUP BY
+			a.learn_id;
+	</select>
+</mapper>

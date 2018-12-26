@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.SysProvinceCityDistrictMapper" >
+  
+  <resultMap id="BaseProvinceResultMap" type="com.yz.model.system.SysProvince" >
+    <id column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectProvinceByPrimaryKey" resultMap="BaseProvinceResultMap" parameterType="java.lang.String" >
+    select 
+    province_code, province_name
+    from `bms`.sys_province
+    where province_code = #{provinceCode,jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="BaseCityResultMap" type="com.yz.model.system.SysCity" >
+    <id column="city_code" property="cityCode" jdbcType="VARCHAR" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectCityByPrimaryKey" resultMap="BaseCityResultMap" parameterType="java.lang.String" >
+    select 
+    city_code, city_name, province_code
+    from `bms`.sys_city
+    where city_code = #{cityCode,jdbcType=VARCHAR}
+  </select>
+  
+  <resultMap id="BaseDistrictResultMap" type="com.yz.model.system.SysDistrict" >
+    <id column="district_code" property="districtCode" jdbcType="VARCHAR" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectDistrictByPrimaryKey" resultMap="BaseDistrictResultMap" parameterType="java.lang.String" >
+    select 
+      district_code, district_name, city_code, province_code,zip_code
+    from `bms`.sys_district
+    where district_code = #{districtCode,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+</mapper>

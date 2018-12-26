@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdUniversityMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdUniversity" >
+    <id column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+    <result column="unvs_code" property="unvsCode" jdbcType="VARCHAR" />
+    <result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+    <result column="unvs_address" property="unvsAddress" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="is_stop" property="isStop" jdbcType="CHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+    <result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+   <resultMap id="BaseResult" type="java.util.Map" >
+    <result column="unvs_id" property="id" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="text" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="getAllSetDaysResult"   type="java.util.HashMap">  
+    <result property="unvs_id" column="unvsId" />  
+    <result property="unvs_name" column="unvsName" />  
+</resultMap>  
+  
+  <sql id="Base_Column_List" >
+    unvs_id, unvs_name, unvs_code, recruit_type, unvs_address, remark, is_stop, province_code, 
+    city_code, district_code, sort,  update_time, update_user, update_user_id, create_user_id, 
+    create_time, create_user, ext_1, ext_2, ext_3
+  </sql>
+  
+   <sql id="Key_Value_List" >
+    unvs_id, unvs_name, recruit_type
+  </sql>
+  
+  <select id="searchUniversity" resultMap="BaseResult" parameterType="java.lang.String" >
+    select 
+    unvs_id,unvs_name
+    from bd_university
+    where 1 = 1 
+    <if test="unvsName != null and '' != unvsName" >
+       and unvs_name like  CONCAT('%',#{unvsName},'%')
+    </if>
+    order by create_time asc
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_university
+    where unvs_id = #{unvsId,jdbcType=VARCHAR} 
+  </select>
+  
+   <select id="getBdUniversityByName" resultType="string" parameterType="java.lang.String" >
+    select 
+    unvs_id
+    from bd_university
+    where unvs_name = #{unvsId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findAllKeyValue" resultMap="getAllSetDaysResult" parameterType="java.lang.String" >
+    select 
+    <include refid="Key_Value_List" />
+    from bd_university
+    where 1=1
+     <if test="sName != null and '' != sName">
+        and unvs_name like CONCAT('%',#{sName},'%')
+    </if>
+    order by create_time asc
+  </select>
+   <select id="selectAll" resultMap="BaseResultMap" parameterType="com.yz.model.baseinfo.BdUniversity" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_university
+    where 1 = 1
+      <if test="unvsName != null and '' != unvsName" >
+       and  unvs_name = #{unvsName,jdbcType=VARCHAR}
+      </if>
+      <if test="unvsCode != null and '' != unvsCode" >
+       and unvs_code = #{unvsCode,jdbcType=VARCHAR}
+      </if>
+      <if test="recruitType != null and '' != recruitType" >
+       and recruit_type = #{recruitType,jdbcType=VARCHAR}
+      </if>
+      <if test="isStop != null and '' != isStop" >
+       and is_stop = #{isStop,jdbcType=CHAR}
+      </if>
+    order by sort
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_university 
+    where unvs_id = #{unvsId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteAllBdUniversity">
+		delete from bd_university
+		where unvs_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+  <insert id="insert" parameterType="com.yz.model.baseinfo.BdUniversity" >
+    insert into bd_university (unvs_id, unvs_name, unvs_code, 
+      recruit_type, unvs_address, remark, 
+      is_stop, province_code, city_code, 
+      district_code, sort,  update_time, 
+      update_user, update_user_id, create_user_id, 
+      create_time, create_user, ext_1, 
+      ext_2, ext_3)
+    values (#{unvsId}, #{unvsName,jdbcType=VARCHAR}, #{unvsCode,jdbcType=VARCHAR}, 
+      #{recruitType,jdbcType=VARCHAR}, #{unvsAddress,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{isStop,jdbcType=CHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, 
+      #{districtCode,jdbcType=VARCHAR}, #{sort,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, 
+      #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective"  parameterType="com.yz.model.baseinfo.BdUniversity" >
+    insert into bd_university
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        unvs_id,
+      <if test="unvsName != null" >
+        unvs_name,
+      </if>
+      <if test="unvsCode != null" >
+        unvs_code,
+      </if>
+      <if test="recruitType != null" >
+        recruit_type,
+      </if>
+      <if test="unvsAddress != null" >
+        unvs_address,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="isStop != null" >
+        is_stop,
+      </if>
+      <if test="provinceCode != null" >
+        province_code,
+      </if>
+      <if test="cityCode != null" >
+        city_code,
+      </if>
+      <if test="districtCode != null" >
+        district_code,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{unvsId,jdbcType=VARCHAR},
+      <if test="unvsName != null" >
+        #{unvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsCode != null" >
+        #{unvsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recruitType != null" >
+        #{recruitType,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsAddress != null" >
+        #{unvsAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isStop != null" >
+        #{isStop,jdbcType=CHAR},
+      </if>
+      <if test="provinceCode != null" >
+        #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null" >
+        #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.baseinfo.BdUniversity" >
+    update bd_university
+    <set >
+      <if test="unvsName != null" >
+        unvs_name = #{unvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsCode != null" >
+        unvs_code = #{unvsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recruitType != null" >
+        recruit_type = #{recruitType,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsAddress != null" >
+        unvs_address = #{unvsAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isStop != null" >
+        is_stop = #{isStop,jdbcType=CHAR},
+      </if>
+      <if test="provinceCode != null" >
+        province_code = #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null" >
+        city_code = #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        district_code = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where unvs_id = #{unvsId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.baseinfo.BdUniversity" >
+    update bd_university
+    set unvs_name = #{unvsName,jdbcType=VARCHAR},
+      unvs_code = #{unvsCode,jdbcType=VARCHAR},
+      recruit_type = #{recruitType,jdbcType=VARCHAR},
+      unvs_address = #{unvsAddress,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      is_stop = #{isStop,jdbcType=CHAR},
+      province_code = #{provinceCode,jdbcType=VARCHAR},
+      city_code = #{cityCode,jdbcType=VARCHAR},
+      district_code = #{districtCode,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where unvs_id = #{unvsId,jdbcType=VARCHAR}
+  </update>
+</mapper>

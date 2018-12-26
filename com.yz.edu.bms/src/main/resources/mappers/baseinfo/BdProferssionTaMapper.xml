@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdProferssionTaMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdProferssionTaKey" >
+    <id column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+    <id column="ta_id" property="taId" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getTestArea" parameterType="string"  resultType="java.util.HashMap">
+		select 
+		  t.`ta_id` as taId,
+		  t.`ta_name` as taName 
+		from
+		  bd_test_area t 
+		where t.`ta_id` in 
+		  (select 
+		    ta.`ta_id` 
+		  from
+		    bd_proferssion_ta ta 
+		  where ta.pfsn_id = #{pfsnId, jdbcType=VARCHAR})
+	</select>
+	
+  <delete id="deleteByPrimaryKey" parameterType="com.yz.model.baseinfo.BdProferssionTaKey" >
+    delete from bd_proferssion_ta
+    where pfsn_id = #{pfsnId,jdbcType=VARCHAR}
+      and ta_id = #{taId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBdProfessionTa">
+    delete from  bd_proferssion_ta  where pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.baseinfo.BdProferssionTaKey" >
+    insert into bd_proferssion_ta (pfsn_id, ta_id)
+    values (#{pfsnId,jdbcType=VARCHAR}, #{taId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdProferssionTaKey" >
+    insert into bd_proferssion_ta
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pfsnId != null" >
+        pfsn_id,
+      </if>
+      <if test="taId != null" >
+        ta_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pfsnId != null" >
+        #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="taId != null" >
+        #{taId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertBatch">
+  	insert into bd_proferssion_ta(pfsn_id,ta_id) values
+  	<foreach collection="taIds" item="taId" separator=",">
+  		(#{pfsnId, jdbcType=VARCHAR}, #{taId, jdbcType=VARCHAR})
+  	</foreach>
+  </insert>
+</mapper>

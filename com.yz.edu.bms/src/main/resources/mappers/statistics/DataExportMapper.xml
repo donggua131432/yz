@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.statistics.DataExportMapper">
+    <resultMap type="com.yz.model.statistics.StudentDataXBExcel" id="StudentDataXBMap">
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+        <result column="enroll_type" property="enrollType" jdbcType="VARCHAR"/>
+        <result column="bp_type" property="bpType" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="first_unvs_name" property="firstUnvsName" jdbcType="VARCHAR"/>
+        <result column="first_pfsn_name" property="firstPfsnName" jdbcType="VARCHAR"/>
+        <result column="sec_unvs_name" property="secUnvsName" jdbcType="VARCHAR"/>
+        <result column="sec_pfsn_name" property="secPfsnName" jdbcType="VARCHAR"/>
+        <result column="admit_unvs_name" property="admitUnvsName" jdbcType="VARCHAR"/>
+        <result column="admit_pfsn_name" property="admitPfsnName" jdbcType="VARCHAR"/>
+        <result column="learn_unvs_name" property="learnUnvsName" jdbcType="VARCHAR"/>
+        <result column="learn_pfsn_name" property="learnPfsnName" jdbcType="VARCHAR"/>
+        <result column="campus_name" property="campusName" jdbcType="VARCHAR"/>
+        <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+        <result column="dp_name" property="dpName" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="VARCHAR"/>
+        <result column="prov_city_dist" property="provCityDist" jdbcType="VARCHAR"/>
+        <result column="nation" property="nation" jdbcType="VARCHAR"/>
+        <result column="rpr_type" property="rprType" jdbcType="VARCHAR"/>
+        <result column="id_type" property="idType" jdbcType="VARCHAR"/>
+        <result column="work_place" property="workPlace" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+        <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+        <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+        <result column="wp_address" property="wpAddress" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="is_change" property="isChange" jdbcType="VARCHAR"/>
+        <result column="sg" property="sg" jdbcType="VARCHAR"/>
+        <result column="inclusion_status" property="inclusionStatus" jdbcType="VARCHAR"/>
+        <result column="tutor" property="tutor" jdbcType="VARCHAR"/>
+        <result column="send_address" property="sendAddress" jdbcType="VARCHAR"/>
+        <result column="ta_name" property="taName" jdbcType="VARCHAR"/>
+        <result column="exam_no" property="examNo" jdbcType="VARCHAR"/>
+        <result column="sum_score" property="sumScore" jdbcType="VARCHAR"/>
+        <result column="points" property="points" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap type="com.yz.model.statistics.StudentDataGKExcel" id="StudentDataGKMap">
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="political_status" property="politicalStatus" jdbcType="VARCHAR"/>
+        <result column="id_type" property="idType" jdbcType="VARCHAR"/>
+        <result column="campus_name" property="campusName" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+        <result column="dp_name" property="dpName" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="VARCHAR"/>
+        <result column="nation" property="nation" jdbcType="VARCHAR"/>
+        <result column="marital_status" property="maritalStatus" jdbcType="VARCHAR"/>
+        <result column="job_status" property="jobStatus" jdbcType="VARCHAR"/>
+        <result column="prov_city_dist" property="provCityDist" jdbcType="VARCHAR"/>
+        <result column="rpr_type" property="rprType" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="telephone" property="telephone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="contact_address" property="contactAddress" jdbcType="VARCHAR"/>
+        <result column="zip_code" property="zipCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="ta_name" property="taName" jdbcType="VARCHAR"/>
+        <result column="is_open_unvs" property="isOpenUnvs" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="graduate_time" property="graduateTime" jdbcType="VARCHAR"/>
+        <result column="edcs_type" property="edcsType" jdbcType="VARCHAR"/>
+        <result column="diploma" property="diploma" jdbcType="VARCHAR"/>
+        <result column="his_address" property="hisAddress" jdbcType="VARCHAR"/>
+        <result column="adminssion_time" property="adminssionTime" jdbcType="VARCHAR"/>
+        <result column="profession" property="profession" jdbcType="VARCHAR"/>
+        <result column="edcs_system" property="edcsSystem" jdbcType="VARCHAR"/>
+        <result column="annex_status" property="annexStatus" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="exportStudentDataXB" parameterType="com.yz.model.statistics.DataExportQuery" resultMap="StudentDataXBMap">
+      SELECT
+            b.std_name,
+            b.id_card,
+            a.school_roll,
+            c.enroll_type,
+            c.bp_type,
+            c.pfsn_level,
+            first_unvs.unvs_name first_unvs_name,
+            first_pro.pfsn_name first_pfsn_name,
+            sec_unvs.unvs_name sec_unvs_name,
+            sec_pro.pfsn_name sec_pfsn_name,
+            admit_unvs.unvs_name admit_unvs_name,
+            admit_pro.pfsn_name admit_pfsn_name,
+            learn_unvs.unvs_name learn_unvs_name,
+            learn_pro.pfsn_name learn_pfsn_name,
+            h.campus_name,
+            a.std_stage,
+            f.emp_name,
+            i.dp_name,
+            b.sex,
+            b.birthday,
+            CONCAT(
+                prov.province_name,
+                city.city_name,
+                dist.district_name
+            ) prov_city_dist,
+            b.nation,
+            b.rpr_type,
+            b.id_type,
+            j.work_place,
+            b.mobile,
+            wp_prov.province_name,
+            wp_city.city_name,
+            wp_dist.district_name,
+            b.wp_address,
+            c.grade,
+            a.create_time,
+            CASE
+        WHEN k.learn_id IS NULL THEN
+            '否'
+        ELSE
+            '是'
+        END is_change,
+         a.sg,
+         a.inclusion_status,
+         tutor.emp_name tutor,
+         CONCAT(
+            send_prov.province_name,
+            send_city.city_name,
+            send_dist.district_name,
+            b.address
+        ) send_address,
+         m.ta_name,
+         n.exam_no,
+         score.sum_score,
+         c.points
+        FROM
+            bd_learn_info a
+        LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+        LEFT JOIN bd_student_enroll c ON a.learn_id = c.learn_id
+        LEFT JOIN bd_university first_unvs ON c.unvs_id = first_unvs.unvs_id
+        LEFT JOIN bd_unvs_profession first_pro ON c.pfsn_id = first_pro.pfsn_id
+        LEFT JOIN bd_university sec_unvs ON c.sec_unvs_id = sec_unvs.unvs_id
+        LEFT JOIN bd_unvs_profession sec_pro ON c.sec_pfsn_id = sec_pro.pfsn_id
+        LEFT JOIN bd_student_admit d ON a.learn_id = d.learn_id
+        LEFT JOIN bd_university admit_unvs ON d.unvs_id = admit_unvs.unvs_id
+        LEFT JOIN bd_unvs_profession admit_pro ON d.pfsn_id = admit_pro.pfsn_id
+        LEFT JOIN bd_university learn_unvs ON a.unvs_id = learn_unvs.unvs_id
+        LEFT JOIN bd_unvs_profession learn_pro ON a.pfsn_id = learn_pro.pfsn_id
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.recruit = f.emp_id
+        LEFT JOIN oa_employee_job g ON f.emp_id = g.emp_id
+        LEFT JOIN oa_campus h ON h.campus_id = g.campus_id
+        LEFT JOIN oa_department i ON g.dp_id = i.dp_id
+        LEFT JOIN sys_province prov ON b.rpr_province_code = prov.province_code
+        LEFT JOIN sys_city city ON b.rpr_city_code = city.city_code
+        LEFT JOIN sys_district dist ON b.rpr_district_code = dist.district_code
+        LEFT JOIN bd_student_other j ON b.std_id = j.std_id
+        LEFT JOIN sys_province wp_prov ON b.wp_province_code = wp_prov.province_code
+        LEFT JOIN sys_city wp_city ON b.wp_city_code = wp_city.city_code
+        LEFT JOIN sys_district wp_dist ON b.wp_district_code = wp_dist.district_code
+        LEFT JOIN bd_student_change k ON a.learn_id = k.learn_id
+        LEFT JOIN oa_employee tutor ON e.tutor = tutor.emp_id
+        LEFT JOIN sys_province send_prov ON b.now_province_code = send_prov.province_code
+        LEFT JOIN sys_city send_city ON b.now_city_code = send_city.city_code
+        LEFT JOIN sys_district send_dist ON b.now_district_code = send_dist.district_code
+        LEFT JOIN bd_test_area m ON a.ta_id = m.ta_id
+        LEFT JOIN bd_test_prove_info n ON a.learn_id = n.learn_id
+        <if test="payStartTime != null and payStartTime != ''">
+            left join (SELECT bbb.learn_id,MAX(ttt.pay_time)pay_time
+            FROM
+            bd_serial_suborder bss
+            LEFT JOIN bd_sub_order bso
+            ON bso.sub_order_no = bss.sub_order_no
+            LEFT JOIN bd_fee_item bfi
+            ON bfi.`item_code` = bso.`item_code`
+            LEFT JOIN bd_student_order bbb
+            ON bbb.`order_no` = bso.`order_no`
+            LEFT JOIN bd_student_serial ttt
+            ON ttt.`serial_no` = bss.`serial_no`
+            WHERE  bso.`item_code`in ('Y0','Y1') AND ttt.`serial_status` IN ('2', '3')  GROUP BY bbb.order_no)y  on y.learn_id=a.learn_id
+        </if>
+        LEFT JOIN (
+            SELECT
+                sum(score) sum_score,
+                learn_id
+            FROM
+                bd_student_e_score
+            GROUP BY
+                learn_id
+        ) score ON a.learn_id = score.learn_id
+        WHERE 1 = 1
+        <if test="stdName != null and stdName != ''">
+            and b.std_name like concat('%',#{stdName},'%')
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and b.mobile = #{mobile, jdbcType=VARCHAR}
+        </if>
+        <if test="idCard != null and idCard != ''">
+            and b.id_card = #{idCard, jdbcType=VARCHAR}
+        </if>
+        <if test="unvsId != null and unvsId != ''">
+            and a.unvs_id = #{unvsId, jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnLevel != null and pfsnLevel != ''">
+            and learn_pro.pfsn_level = #{pfsnLevel, jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnId != null and pfsnId != ''">
+            and a.pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+        </if>
+        <if test="grade != null and grade != ''">
+            and a.grade = #{grade, jdbcType=VARCHAR}
+        </if>
+        <if test="year != null and year != ''">
+            and learn_pro.year = #{year, jdbcType=VARCHAR}
+        </if>
+        <if test="taId != null and taId != ''">
+            and a.ta_id = #{taId, jdbcType=VARCHAR}
+        </if>
+        <if test="sg != null and sg != ''">
+            and a.sg = #{sg, jdbcType=VARCHAR}
+        </if>
+        <if test="scholarship != null and scholarship != ''">
+            and a.scholarship = #{scholarship, jdbcType=VARCHAR}
+        </if>
+        <if test="dpId != null and dpId != ''">
+            and i.dp_id = #{dpId, jdbcType=VARCHAR}
+        </if>
+        <if test="recruit != null and recruit != ''">
+            and f.emp_name = #{recruit, jdbcType=VARCHAR}
+        </if>
+        <if test="campusId != null and campusId != ''">
+            and h.campus_id = #{campusId, jdbcType=VARCHAR}
+        </if>
+        <if test="stdStage != null and stdStage.size!=0">
+            and a.std_stage in
+            <foreach collection="stdStage" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="stdCampus != null and stdCampus.size!=0">
+            and ifnull(a.home_campus_id,'1') in
+            <foreach collection="stdCampus" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="createStartTime != null and createStartTime != ''">
+            and a.create_time &gt;= #{createStartTime, jdbcType=VARCHAR}
+        </if>
+        <if test="createEndTime != null and createEndTime != ''">
+            and a.create_time  &lt;= #{createEndTime, jdbcType=VARCHAR}
+        </if>
+        <if test="payStartTime != null and payStartTime != ''">
+            and y.pay_time &gt;= #{payStartTime, jdbcType=VARCHAR}
+        </if>
+        <if test="payEndTime != null and payEndTime != ''">
+            and y.pay_time  &lt;= #{payEndTime, jdbcType=VARCHAR}
+        </if>
+        GROUP BY
+            a.learn_id
+    </select>
+
+    <select id="exportStudentDataGK" parameterType="com.yz.model.statistics.DataExportQuery" resultMap="StudentDataGKMap">
+        SELECT
+        b.std_name,
+        b.sex,
+        b.political_status,
+        b.id_type,
+        l.campus_name,
+        b.id_card,
+        a.std_stage,
+        f.dp_name,
+        d.emp_name,
+        b.birthday,
+        b.nation,
+        g.marital_status,
+        b.job_status,
+        CONCAT(
+        prov.province_name,
+        city.city_name,
+        dist.district_name
+        ) prov_city_dist,
+        b.rpr_type,
+        b.mobile,
+        g.telephone,
+        g.email,
+        CONCAT(
+        send_prov.province_name,
+        send_city.city_name,
+        send_dist.district_name
+        ) contact_address,
+        b.zip_code,
+        h.pfsn_level,
+        h.pfsn_name,
+        i.ta_name,
+        j.is_open_unvs,
+        j.unvs_name,
+        j.graduate_time,
+        j.edcs_type,
+        j.diploma,
+        CONCAT(
+        his_prov.province_name,
+        his_city.city_name,
+        his_dist.district_name
+        ) his_address,
+        j.adminssion_time,
+        j.profession,
+        j.edcs_system,
+        CASE
+        WHEN m.learn_id IS NULL THEN
+        '未上传'
+        ELSE
+        '已上传'
+        END annex_status
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+        LEFT JOIN bd_learn_rules c ON a.learn_id = c.learn_id
+        LEFT JOIN oa_employee d ON c.recruit = d.emp_id
+        LEFT JOIN oa_employee_job e ON d.emp_id = e.emp_id
+        LEFT JOIN oa_department f ON e.dp_id = f.dp_id
+        LEFT JOIN bd_student_other g ON b.std_id = g.std_id
+        LEFT JOIN sys_province prov ON b.rpr_province_code = prov.province_code
+        LEFT JOIN sys_city city ON b.rpr_city_code = city.city_code
+        LEFT JOIN sys_district dist ON b.rpr_district_code = dist.district_code
+        LEFT JOIN bd_unvs_profession h ON a.pfsn_id = h.pfsn_id
+        LEFT JOIN bd_test_area i ON a.ta_id = i.ta_id
+        LEFT JOIN bd_student_history j ON a.learn_id = j.learn_id
+        LEFT JOIN sys_province send_prov ON b.now_province_code = send_prov.province_code
+        LEFT JOIN sys_city send_city ON b.now_city_code = send_city.city_code
+        LEFT JOIN sys_district send_dist ON b.now_district_code = send_dist.district_code
+        LEFT JOIN sys_province his_prov ON j.province_code = his_prov.province_code
+        LEFT JOIN sys_city his_city ON j.city_code = his_city.city_code
+        LEFT JOIN sys_district his_dist ON j.district_code = his_dist.district_code
+        LEFT JOIN oa_campus l ON e.campus_id = l.campus_id
+        LEFT JOIN (
+        SELECT
+        learn_id
+        FROM
+        bd_learn_annex
+        WHERE
+        annex_type = '18'
+        AND ifnull(annex_url, '') != ''
+        ) m ON a.learn_id = m.learn_id
+        <if test="payStartTime != null and payStartTime != ''">
+            left join (SELECT bbb.learn_id,MAX(ttt.pay_time)pay_time
+            FROM
+            bd_serial_suborder bss
+            LEFT JOIN bd_sub_order bso
+            ON bso.sub_order_no = bss.sub_order_no
+            LEFT JOIN bd_fee_item bfi
+            ON bfi.`item_code` = bso.`item_code`
+            LEFT JOIN bd_student_order bbb
+            ON bbb.`order_no` = bso.`order_no`
+            LEFT JOIN bd_student_serial ttt
+            ON ttt.`serial_no` = bss.`serial_no`
+            WHERE  bso.`item_code`in ('Y0','Y1') AND ttt.`serial_status` IN ('2', '3')  GROUP BY bbb.order_no)y  on y.learn_id=a.learn_id
+        </if>
+        WHERE 1=1 and a.recruit_type='2'
+        <if test="stdName != null and stdName != ''">
+            and b.std_name like concat('%',#{stdName},'%')
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and b.mobile = #{mobile, jdbcType=VARCHAR}
+        </if>
+        <if test="idCard != null and idCard != ''">
+            and b.id_card = #{idCard, jdbcType=VARCHAR}
+        </if>
+        <if test="unvsId != null and unvsId != ''">
+            and a.unvs_id = #{unvsId, jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnLevel != null and pfsnLevel != ''">
+            and h.pfsn_level = #{pfsnLevel, jdbcType=VARCHAR}
+        </if>
+        <if test="pfsnId != null and pfsnId != ''">
+            and a.pfsn_id = #{pfsnId, jdbcType=VARCHAR}
+        </if>
+        <if test="grade != null and grade != ''">
+            and a.grade = #{grade, jdbcType=VARCHAR}
+        </if>
+        <if test="year != null and year != ''">
+            and h.year = #{year, jdbcType=VARCHAR}
+        </if>
+        <if test="taId != null and taId != ''">
+            and a.ta_id = #{taId, jdbcType=VARCHAR}
+        </if>
+        <if test="sg != null and sg != ''">
+            and a.sg = #{sg, jdbcType=VARCHAR}
+        </if>
+        <if test="scholarship != null and scholarship != ''">
+            and a.scholarship = #{scholarship, jdbcType=VARCHAR}
+        </if>
+        <if test="dpId != null and dpId != ''">
+            and f.dp_id = #{dpId, jdbcType=VARCHAR}
+        </if>
+        <if test="recruit != null and recruit != ''">
+            and d.emp_name = #{recruit, jdbcType=VARCHAR}
+        </if>
+        <if test="campusId != null and campusId != ''">
+            and l.campus_id = #{campusId, jdbcType=VARCHAR}
+        </if>
+        <if test="stdStage != null and stdStage.size!=0">
+            and a.std_stage in
+            <foreach collection="stdStage" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="stdCampus != null and stdCampus.size!=0">
+            and ifnull(a.home_campus_id,'1') in
+            <foreach collection="stdCampus" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="createStartTime != null and createStartTime != ''">
+            and a.create_time &gt;= #{createStartTime, jdbcType=VARCHAR}
+        </if>
+        <if test="createEndTime != null and createEndTime != ''">
+            and a.create_time  &lt;= #{createEndTime, jdbcType=VARCHAR}
+        </if>
+        <if test="payStartTime != null and payStartTime != ''">
+            and y.pay_time &gt;= #{payStartTime, jdbcType=VARCHAR}
+        </if>
+        <if test="payEndTime != null and payEndTime != ''">
+            and y.pay_time  &lt;= #{payEndTime, jdbcType=VARCHAR}
+        </if>
+        GROUP BY
+        a.learn_id
+    </select>
+    
+    <select id="getDictName" resultType="java.util.Map">
+        select dict_name,dict_value from sys_dict where p_id = #{pId}
+    </select>
+</mapper>

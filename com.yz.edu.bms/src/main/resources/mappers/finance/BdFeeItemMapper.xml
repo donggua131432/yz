@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdFeeItemMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.feeitem.BdFeeItem" >
+    <id column="item_code" property="itemCode" jdbcType="VARCHAR" />
+    <result column="p_item_code" property="pItemCode" jdbcType="VARCHAR" />
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="item_type" property="itemType" jdbcType="VARCHAR" />
+    <result column="item_year" property="itemYear" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.feeitem.BdFeeItem" id="FeeItemInfoResultMap" extends="BaseResultMap">
+    <association property="recruitTypes" column="item_code" select="selectRecruitTypeByItemCode"/>
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    item_code, p_item_code, item_name, item_type, item_year, status, remark,
+    update_time, update_user, update_user_id, create_user_id, 
+    date_format(bfi.create_time,'%Y-%m-%d %H:%i:%s') as createTime, create_user
+  </sql>
+  
+  <select id="selectFeeItemByRecruitType" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	SELECT 
+	  bfi.`item_code`,
+	  bfi.`item_name` 
+	FROM
+	  `bd_fee_item` bfi 
+	  LEFT JOIN bd_rt_item bri 
+	    ON bri.`item_code` = bfi.`item_code` 
+	WHERE bri.`recruit_type` = #{recruitType}
+	ORDER BY bfi.`order_num` 
+  </select>
+  
+  <delete id="updateItemCodeRecruitType">
+  	delete from bd_rt_item where item_code = #{itemCode};
+  	insert into bd_rt_item(item_code,recruit_type,std_stage) values
+  	 <foreach collection="rts" item="rt" index="index" separator="," >  
+        (#{rt.itemCode},#{rt.recruitType},#{rt.stdStage})
+    </foreach>
+  </delete>
+  
+  <select id="selectRecruitTypeByItemCode" resultType="java.lang.String">
+  	SELECT 
+	  bri.`recruit_type` 
+	FROM
+	  bd_rt_item bri 
+	WHERE bri.`item_code` = #{itemCode} 
+  </select>
+  
+  <select id="selectItemInfoById" parameterType="java.lang.String" resultMap="FeeItemInfoResultMap">
+  	select
+  		<include refid="Base_Column_List" />
+  	from 
+  		`bd_fee_item` bfi 
+	where 
+		bfi.item_code = #{itemCode}
+  </select>
+  
+  <delete id="deleteFeeItems">
+  	DELETE from
+	  `bd_fee_item` 
+	WHERE item_code IN
+	<foreach collection="itemCodes" item="itemCode" open="(" close=")" separator=",">
+    	#{itemCode}
+    </foreach>;
+    DELETE from bd_rt_item where item_code = #{itemCode};
+  </delete>
+  
+  <!-- 分页查询科目信息 -->
+  <select id="selectFeeItemByPage" resultMap="FeeItemInfoResultMap">
+	select 
+	  <include refid="Base_Column_List" />
+	from
+	  `bd_fee_item` bfi 
+	where '1' = '1'
+  
+  		<if test="item.itemCode != null and item.itemCode != ''" >
+      	and bfi.item_code = #{item.itemCode}
+      </if>
+      <if test="item.itemName != null and item.itemName != ''" >
+      	and bfi.item_name LIKE CONCAT('%', CONCAT(#{item.itemName}, '%'))
+      </if>
+      <if test="item.status != null and item.status != ''" >
+      	and bfi.status = #{item.status}
+      </if>
+       order by bfi.order_num
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_fee_item
+    where item_code = #{itemCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    DELETE from bd_fee_item where item_code = #{itemCode};
+    DELETE from bd_rt_item where item_code = #{itemCode};
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.finance.feeitem.BdFeeItem" >
+    insert into bd_fee_item (item_code, p_item_code, item_name, 
+      item_type, status, 
+      remark, update_time, 
+      update_user, update_user_id, create_user_id, 
+      create_time, create_user, ext_1, 
+      ext_2, ext_3)
+    values (#{itemCode,jdbcType=VARCHAR}, #{pItemCode,jdbcType=VARCHAR}, #{itemName,jdbcType=VARCHAR}, 
+      #{itemType,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 
+      #{remark,jdbcType=VARCHAR},  #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, 
+      #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.finance.feeitem.BdFeeItem" >
+  	delete from bd_rt_item where item_code = #{item.itemCode};
+    insert into bd_fee_item
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="item.itemCode != null" >
+        item_code,
+      </if>
+      <if test="item.pItemCode != null" >
+        p_item_code,
+      </if>
+      <if test="item.itemName != null" >
+        item_name,
+      </if>
+      <if test="item.itemType != null" >
+        item_type,
+      </if>
+      <if test="item.itemYear != null" >
+        item_year,
+      </if>
+      <if test="item.status != null" >
+        status,
+      </if>
+      <if test="item.remark != null" >
+        remark,
+      </if>
+      <if test="item.updateUser != null" >
+        update_user,
+      </if>
+      <if test="item.updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="item.createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="item.createUser != null" >
+        create_user,
+      </if>
+      order_num
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="item.itemCode != null" >
+        #{item.itemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="item.pItemCode != null" >
+        #{item.pItemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="item.itemName != null" >
+        #{item.itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="item.itemType != null" >
+        #{item.itemType,jdbcType=VARCHAR},
+      </if>
+      <if test="item.itemYear != null" >
+        #{item.itemYear,jdbcType=VARCHAR},
+      </if>
+      <if test="item.status != null" >
+        #{item.status,jdbcType=CHAR},
+      </if>
+      <if test="item.remark != null" >
+        #{item.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="item.updateUser != null" >
+        #{item.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="item.updateUserId != null" >
+        #{item.updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="item.createUserId != null" >
+        #{item.createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="item.createUser != null" >
+        #{item.createUser,jdbcType=VARCHAR},
+      </if>
+      (SELECT (MAX(i.order_num) + 1) FROM bd_fee_item i)
+    </trim>;
+    insert into `bd_rt_item`(item_code,recruit_type,std_stage) 
+    values
+    <foreach collection="rts" item="rt" index="index" separator="," >  
+        (#{rt.itemCode},#{rt.recruitType},#{rt.stdStage})
+    </foreach>
+    
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.finance.feeitem.BdFeeItem" >
+    update bd_fee_item
+    <set >
+      <if test="pItemCode != null" >
+        p_item_code = #{pItemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null" >
+        item_name = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemType != null" >
+        item_type = #{itemType,jdbcType=VARCHAR},
+      </if>
+      <if test="itemYear != null" >
+        item_year = #{itemYear,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where item_code = #{itemCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.finance.feeitem.BdFeeItem" >
+    update bd_fee_item
+    set p_item_code = #{pItemCode,jdbcType=VARCHAR},
+      item_name = #{itemName,jdbcType=VARCHAR},
+      item_type = #{itemType,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where item_code = #{itemCode,jdbcType=VARCHAR}
+  </update>
+</mapper>

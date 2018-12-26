@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.statistics.BdExamCourseStatMapper">
+	<resultMap type="com.yz.model.statistics.BdExamCourseStatisticsInfo" id="examCourseStatMap">
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="year" property="year" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="semester" property="semester" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR"/>
+		<result column="thp_id" property="thpId" jdbcType="VARCHAR"/>
+		<result column="people_num" property="peopleNum" jdbcType="VARCHAR"/>
+		<association property="courseMap" column="{pfsnId=pfsn_id,semester=semester}" select="selectCourseInfo"/>
+		<association property="testSubjectMap" column="{pfsnId=pfsn_id,semester=semester}" select="selectTestSubjectInfo"/>
+		<association property="peopleNum" column="pfsn_id" select="selectPeopleNum"/>
+	</resultMap>
+	
+	<resultMap type="java.util.Map" id="courseMap">
+		<result column="course_id" jdbcType="VARCHAR" property="courseId"/>
+		<result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+	</resultMap>
+	<resultMap type="java.util.Map" id="testSubjectMap">
+		<result column="thp_id" jdbcType="VARCHAR" property="thpId"/>
+		<result column="test_subject" jdbcType="VARCHAR" property="testSubject"/>
+	</resultMap>
+	
+	<resultMap type="com.yz.model.statistics.PaperPrintStatInfo" id="PaperPrintStatMap">
+		<result column="thp_id" property="thpId" jdbcType="VARCHAR"/>
+		<result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR"/>
+		<result column="year" property="year" jdbcType="VARCHAR"/>
+		<association property="peopleNum" column="thp_id" select="selectExamPeopleNum" />
+	</resultMap>
+	
+	<select id="queryExamCourseStat" resultMap="examCourseStatMap" parameterType="com.yz.model.statistics.ExamCourseStatQuery">
+		SELECT 
+		  btp.`grade`,
+		  bc.`year`,
+		  bu.`unvs_name`,
+		  btp.`semester`,
+		  bup.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_id`,
+		  btp.`thp_id` 
+		FROM 
+		   bd_plan_course bpc 
+		  LEFT JOIN `bd_teach_plan` btp 
+		    ON btp.`thp_id` = bpc.`thp_id`
+		  LEFT JOIN bd_course bc 
+		    ON bc.`course_id` = bpc.`course_id`   
+		  LEFT JOIN `bd_unvs_profession` bup 
+		    ON bup.`pfsn_id` = btp.`pfsn_id`
+		  LEFT JOIN `bd_university` bu 
+		    ON bu.`unvs_id` = bup.`unvs_id`
+		WHERE 1 = 1 AND bup.pfsn_id IS NOT NULL
+		<if test="unvsId !=null and '' != unvsId">
+			and bu.unvs_id = #{unvsId,jdbcType=VARCHAR}
+		</if> 
+		<if test="semester !=null and '' !=semester">
+			and btp.`semester` = #{semester,jdbcType=VARCHAR} 
+		</if>
+		<if test="pfsnName !=null and '' != pfsnName">
+			and bup.`pfsn_name` LIKE CONCAT('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+		</if> 
+		<if test="pfsnLevel !=null and '' != pfsnLevel">
+			and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>  
+		<if test="grade !=null and '' != grade">
+			 and btp.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="year !=null and '' != year">
+			 and bc.`year` = #{year,jdbcType=VARCHAR}
+		</if>
+		group by bup.`pfsn_id`,btp.`semester`
+	</select>
+	<select id="selectCourseInfo" parameterType="java.util.Map" resultMap="courseMap">
+		select 
+		  bc.`course_id`,
+		  bc.`course_name`
+		from
+		  bd_plan_course bpc 
+		  LEFT JOIN bd_teach_plan btp 
+		    ON btp.`thp_id` =  bpc.`thp_id` 
+		  LEFT JOIN bd_course bc 
+		    ON bc.`course_id` = bpc.`course_id`
+		  LEFT JOIN bd_class_plan bcp 
+		    ON bcp.`course_id` = bc.`course_id` 
+		where bcp.`cp_type` !='3'
+		  <if test="pfsnId !=null and '' != pfsnId">
+		  	and btp.pfsn_id = #{pfsnId,jdbcType=VARCHAR} 
+		  </if>
+		  <if test="semester !=null and '' != semester">
+		  	and btp.semester = #{semester,jdbcType=VARCHAR}
+		  </if>
+		group by bc.`course_id`
+	</select>
+    
+    <select id="selectTestSubjectInfo" parameterType="java.util.Map" resultMap="testSubjectMap">
+		select 
+		  btp.`thp_id`,
+		  btp.`test_subject`
+		from
+		  bd_teach_plan btp
+		WHERE btp.`test_subject`!=''
+		  <if test="pfsnId !=null and '' != pfsnId">
+		  	and btp.pfsn_id = #{pfsnId,jdbcType=VARCHAR} 
+		  </if>
+		  <if test="semester !=null and '' != semester">
+		  	and btp.semester = #{semester,jdbcType=VARCHAR}
+		  </if>
+		
+		group by btp.`test_subject`
+	</select>
+    <select id="selectPeopleNum" resultType="int">
+    	select count(1) from bd_learn_info where pfsn_id=#{pfsnId,jdbcType=VARCHAR} and std_stage='7' AND std_no IS NOT NULL AND recruit_type IS NOT NULL 
+    </select>
+    
+    <select id="queryPaperPrintStat" resultMap="PaperPrintStatMap" parameterType="com.yz.model.statistics.PaperPrintStatQuery">
+    	SELECT 
+    	  btp.test_subject,
+		  btp.thp_id,
+		  bc.`year`,
+		  bc.`course_name`
+		FROM  bd_teach_plan btp
+		LEFT JOIN bd_plan_course bpc ON btp.thp_id=bpc.thp_id
+		LEFT JOIN bd_course bc ON bc.course_id=bpc.course_id
+		WHERE bc.course_type = 'XK' and bc.is_allow = '1' 
+			 AND bc.course_name not like CONCAT('%', '统考', '%')
+		     AND  btp.test_subject!=''
+		  <if test="courseName !=null and '' != courseName">
+		 	and course_name LIKE CONCAT('%', #{courseName, jdbcType=VARCHAR}, '%')
+		  </if>
+		  <if test="testSubject !=null and '' != testSubject">
+		 	and btp.test_subject LIKE CONCAT('%', #{testSubject, jdbcType=VARCHAR}, '%')
+		 </if>
+		 <if test="examName !=null and '' !=examName">
+		 	and btp.test_subject LIKE CONCAT('%', #{examName, jdbcType=VARCHAR}, '%')
+		 </if>
+		 <if test="examYear !=null and '' != examYear">
+		  	and bc.`year` = #{examYear,jdbcType=VARCHAR}
+		 </if>
+    </select>
+    <select id="selectExamPeopleNum" resultType="int">
+      SELECT 
+	    COUNT(1) 
+	  FROM
+	    bd_learn_info  bli
+	  LEFT JOIN bd_teach_plan btp
+	  	ON bli.pfsn_id=btp.pfsn_id
+	  WHERE 
+	  	btp.thp_id=#{thp_id,jdbcType=VARCHAR} 
+	  	AND btp.test_subject!=''
+	    AND bli.std_stage ='7'
+	    AND bli.std_no IS NOT NULL AND bli.recruit_type IS NOT NULL 
+    </select>
+</mapper>

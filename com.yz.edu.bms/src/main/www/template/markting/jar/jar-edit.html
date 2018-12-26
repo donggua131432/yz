@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/webuploader/html5uploader.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+</head>
+<body>
+  <article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="jar-form">
+      <input type="hidden" th:value="${type}" name="type" />
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>jar包名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入jar包名称" id="jarName" name="jarName" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>缴费上线赠送流程类名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入缴费流程类名称，如：com.xxx.xxx" id="chargeClass" name="chargeClass" value="com.yz.flow.charge.ChargeFlow"/>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>阶段流程类名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入阶段流程类名称，如：com.xxx.xxx" id="stageClass" name="stageClass" value="com.yz.flow.stage.StageFlow" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>注册流程类名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入注册流程类名称，如：com.xxx.xxx" id="registerClass" name="registerClass" value="com.yz.flow.register.RegisterFlow" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>缴费个人赠送流程类名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入注册流程类名称，如：com.xxx.xxx" id="iChargeClass" name="iChargeClass" value="com.yz.flow.charge.IChargeFlow" />
+        </div>
+      </div>
+      <div class="row cl" id="courseList">
+        <label class="form-label col-xs-4 col-sm-3">jar包上传：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <span class="btn-upload form-group">
+            <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly>
+            <a href="javascript:void(0);" class="btn btn-primary radius"><i class="iconfont">&#xf0020;</i>浏览文件</a>
+            <input type="file" multiple name="jar" class="input-file">
+          </span>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">描述：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <textarea name="jarDesc" id="jarDesc" cols="" rows="" class="textarea" placeholder="请输入规则描述，最多100个字" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+          <p class="textarea-numberbar">
+            <em class="textarea-length">0</em>/100
+          </p>
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+          <input class="btn btn-primary radius" type="submit" id="bt_submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+          <input class="btn btn-normal radius" type="button" id="bt_cancel" value="&nbsp;&nbsp;取消&nbsp;&nbsp;">
+        </div>
+      </div>
+    </form>
+  </article>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/markting/jar/jar-edit.js}"></script>
+  <!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

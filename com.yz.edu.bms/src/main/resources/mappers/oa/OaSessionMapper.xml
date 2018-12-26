@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaSessionMapper">
+
+	<select id="getCampusList" parameterType="String" resultType="com.yz.model.admin.SessionCampusInfo">
+		SELECT
+			c.`campus_id` as campusId,
+			c.`campus_name` as campusName,
+			c.`finance_no` as financeNo
+		FROM
+			oa_campus c
+		WHERE c.`emp_id` = #{empId, jdbcType=VARCHAR}
+		AND c.`is_stop` = '0'
+	</select>
+	
+	<select id="getDepartmentList" parameterType="String" resultType="com.yz.model.admin.SessionDpInfo">
+		select 
+		  d.`dp_id` as dpId,
+		  d.`dp_name` as dpName 
+		from
+		  oa_department d 
+		where d.`emp_id` = #{empId, jdbcType=VARCHAR} 
+		and d.`is_stop` = '0'
+	</select>
+	
+	<select id="getSubDpList" resultType="com.yz.model.admin.SessionDpInfo">
+		select 
+		  d.`dp_id` as dpId,
+		  d.`dp_name` as dpName 
+		from
+		  oa_department d 
+		where d.`is_stop` = '0'
+		and (
+			<foreach collection="dpList" item="dpInfo" separator="or">
+				FIND_IN_SET(#{dpInfo.dpId, jdbcType=VARCHAR}, d.`pids`)
+			</foreach>
+		)
+	</select>
+	
+	<select id="getGroupList" resultType="com.yz.model.admin.SessionGroupInfo" parameterType="string">
+		select 
+		  g.`group_id` as groupId,
+		  g.`group_name` as groupName
+		from
+		  oa_group g 
+		where g.`emp_id` = #{empId, jdbcType=VARCHAR}
+		  and g.`is_stop` = '0' 
+	</select>
+	
+	<select id="getEmployeeList" resultType="com.yz.model.admin.SessionEmpInfo" >
+		select 
+		  e.`emp_id` as empId,
+		  e.`emp_name` as empName
+		from
+		  oa_employee_job t 
+		  left join oa_employee e 
+		    on e.`emp_id` = t.`emp_id` 
+		where t.`group_id` in (
+			<foreach collection="groupList" item="info" separator=",">
+				#{info.groupId, jdbcType=VARCHAR}
+			</foreach>
+		)
+	</select>
+
+	<select id="getJtList" parameterType="string" resultType="string">
+		SELECT 
+		  t.`jt_id` 
+		FROM
+		  oa_employee_title t 
+		WHERE t.`emp_id` = #{empId, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsAddressMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsAddress" >
+    <id column="sa_id" property="saId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="sa_name" property="saName" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+    <result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="is_default" property="isDefault" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sa_id, user_id, sa_name, province_code, city_code, district_code, address, 
+    mobile, is_default, update_time, update_user, update_user_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from us_address
+    where sa_id = #{saId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertAddress" parameterType="com.yz.model.UsAddress" >
+    insert into us_address
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        sa_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="saName != null" >
+        sa_name,
+      </if>
+      <if test="provinceCode != null" >
+        province_code,
+      </if>
+      <if test="cityCode != null" >
+        city_code,
+      </if>
+      <if test="districtCode != null" >
+        district_code,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="isDefault != null" >
+        is_default,
+      </if>
+      <if test="saType != null" >
+        sa_type,
+      </if>
+      <if test="streetCode != null" >
+        street_code,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="provinceName !=null">
+      	province_name,
+      </if>
+      <if test="cityName !=null">
+      	city_name,
+      </if>
+      <if test="districtName !=null">
+      	district_name,
+      </if>
+      <if test="streetName !=null">
+      	street_name,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        seq(),
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="saName != null" >
+        #{saName,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceCode != null" >
+        #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null" >
+        #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null" >
+        #{isDefault,jdbcType=CHAR},
+      </if>
+      <if test="saType != null" >
+        #{saType,jdbcType=CHAR},
+      </if>
+      <if test="streetCode != null" >
+        #{streetCode,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceName !=null">
+      	#{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName !=null">
+      	#{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="districtName !=null">
+      	#{districtName,jdbcType=VARCHAR},
+      </if>
+      <if test="streetName !=null">
+      	#{streetName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateAddress" parameterType="com.yz.model.UsAddress" >
+    update us_address
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="saName != null" >
+        sa_name = #{saName,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceCode != null" >
+        province_code = #{provinceCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null" >
+        city_code = #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="districtCode != null" >
+        district_code = #{districtCode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="isDefault != null" >
+        is_default = #{isDefault,jdbcType=CHAR},
+      </if>
+      <if test="streetCode !=null">
+        street_code = #{streetCode,jdbcType=VARCHAR},
+      </if>
+      <if test="email !=null">
+      	email =#{email,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceName !=null">
+      	province_name=#{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName !=null">
+      	city_name=#{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="districtName !=null">
+      	district_name=#{districtName,jdbcType=VARCHAR},
+      </if>
+      <if test="streetName !=null">
+      	street_name =#{streetName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sa_id = #{saId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="countBy" parameterType="string" resultType="int">
+  	select count(1) from us_address where user_id = #{userId, jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteAddress" parameterType="java.lang.String" >
+    delete from us_address
+    where sa_id = #{saId,jdbcType=VARCHAR}
+  </delete>
+  
+  <resultMap id="AddressMap" type="java.util.HashMap" >
+    <id column="sa_id" property="saId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="sa_name" property="saName" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+    <result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="is_default" property="isDefault" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+     <result column="street_code" property="streetCode" jdbcType="VARCHAR"/>
+    <result column="email" property="email" jdbcType="VARCHAR"/>
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+    <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+    <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+    <result column="street_name" property="streetName" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="getAddressList" parameterType="string" resultMap="AddressMap">
+  	SELECT 
+	   sa_id,
+	  sa_name,
+	  province_code,
+	  province_name,
+	  city_code,
+	  city_name,
+	  district_code,
+	  district_name,
+	  address,
+	  mobile,
+	  street_code,
+	  street_name,
+	  email,
+	  is_default,
+	  DATE_FORMAT(
+	    update_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS update_time 
+	FROM
+	  `us_address` 
+	WHERE user_id = #{userId, jdbcType=VARCHAR} 
+	 and sa_type=#{saType,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="clearDefault" parameterType="string">
+  	update us_address set is_default = '0' where user_id = #{userId, jdbcType=VARCHAR} and sa_type=#{saType,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getAddress" parameterType="string" resultMap="AddressMap">
+  	SELECT 
+	  sa_id,
+	  sa_name,
+	  province_code,
+	  city_code,
+	  district_code,
+	  street_code,
+	  address,
+	  mobile,
+	  street_code,
+	  email,
+	  province_name,
+	  city_name,
+	  district_name,
+	  street_name,
+	  is_default,
+	  DATE_FORMAT(
+	    update_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS update_time 
+	FROM
+	  us_address 
+	WHERE sa_id = #{saId, jdbcType=VARCHAR} 
+  </select>
+  
+</mapper>

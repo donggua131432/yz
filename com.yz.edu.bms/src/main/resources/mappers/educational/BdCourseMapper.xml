@@ -1,0 +1,1133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdCourseMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdCourse">
+		<id column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"	jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"	jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMap" type="com.yz.model.baseinfo.BdCourse">
+		<id column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"	jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"	jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ResultCourseMap" type="com.yz.model.baseinfo.BdCourseMap">
+		<id column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfnsType" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="thp_id" property="thpId" jdbcType="VARCHAR" />
+		<result column="thp_name" property="thpName"	jdbcType="VARCHAR" />
+		<result column="remark" property="remark"	jdbcType="VARCHAR" />
+		<result column="student_number" property="studentNumber"	jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="CourseHashMap" type="java.util.HashMap">
+		<id column="course_id" property="courseId" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="course_type" property="courseType" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"	jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"	jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="PfsnMap" type="com.yz.model.common.PfsnSelectInfo">
+		<id column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="CourseExportMap" type="java.util.HashMap">
+		<id column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="std_password" property="stdPassword" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="check_time" property="checkTime" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getPfsnSelectList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="PfsnMap"  >
+		select 
+		  p.`pfsn_id`,
+		  p.`pfsn_name`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  p.`year`
+		from
+		  bd_unvs_profession p 
+		<where>
+		  <if test="sId != null and sId !=''">
+		  	and p.`unvs_id` = #{sId} 
+		  </if>
+		  <if test="sName != null and sName !=''">
+		  	and (p.`pfsn_name` like CONCAT('%', #{sName}, '%') or p.`pfsn_code` like CONCAT('%', #{sName}, '%'))
+		  </if>
+		  <if test="ext1 != null and ext1 != ''">
+		  	and p.pfsn_level = #{ext1}
+		  </if>
+		  <if test="ext2 != null and ext2 != ''">
+		  	and p.grade = #{ext2}
+		  </if>
+		</where>
+	</select>
+	
+	<sql id="Base_Column_List">
+		course_id, course_name, grade, year, course_type, is_allow, test_subject,
+		update_time, update_user, update_user_id, create_user_id, create_time,
+		create_user,
+		ext_2, ext_3
+	</sql>
+	
+	<select id="selectAmCourse" resultType="java.lang.String">
+		SELECT 
+		  o.`course_name` 
+		FROM
+		  bd_class_plan c 
+		  LEFT JOIN bd_course o 
+		    ON o.`course_id` = c.`course_id` 
+		WHERE c.`cp_id` IN 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		      #{cpId}
+		    </foreach> 
+		  AND c.`cp_date` = #{date} 
+		  AND DATE_FORMAT(c.`start_time`,'%H:%i') &gt;= #{startTime}
+		  AND DATE_FORMAT(c.`end_time`,'%H:%i') &lt;= #{endTime}
+		ORDER BY c.`start_time` 
+		
+	</select>
+	
+	<select id="selectCourseDates" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  bc.`cp_date` 
+		FROM
+		  bd_class_plan bc 
+		WHERE bc.`cp_id` IN 
+		   <foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		     #{cpId}
+		   </foreach>
+		GROUP BY bc.`cp_date` 
+		order by bc.`cp_date` 
+	</select>
+	
+	<select id="selectCourseAddress" resultType="java.lang.String">
+		SELECT 
+		  oc.`address` 
+		FROM
+		  bd_class_plan bc 
+		  LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = bc.`place_id` 
+		WHERE bc.`cp_id` IN 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		GROUP BY oc.`campus_id` 
+	</select>
+	
+	<select id="selectCpTypes" resultType="java.lang.String">
+		SELECT 
+		  bc.`cp_type` 
+		FROM
+		  bd_class_plan bc 
+		  left join bd_course bco 
+		    on bco.`course_id` = bc.`course_id` 
+		WHERE bc.`cp_id` in 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		group by bc.`cp_type` 
+	</select>
+	
+	<select id="selectCourseNames" resultType="java.util.HashMap">
+		SELECT 
+		  bco.`course_name` courseName,
+		  bc.`cp_type` cpType,
+		  oc.`address`,
+		  oc.`campus_name` campusName
+		FROM
+		  bd_class_plan bc 
+		  LEFT JOIN bd_course bco 
+		    ON bco.`course_id` = bc.`course_id`
+		  LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = bc.`place_id`  
+		WHERE bc.`cp_id` IN 
+			<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+		    	#{cpId}
+		    </foreach>
+		GROUP BY bco.`course_name`,
+		  oc.`address`,
+		  oc.`campus_name`,
+		  bc.`cp_type` 
+	</select>
+	
+	<select id="selectPfsnInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  bup.`pfsn_code` pfsnCode,
+		  bup.`pfsn_name` pfsnName,
+		  bup.`pfsn_level` pfsnLevel,
+		  bu.`unvs_name` unvsName,
+		  bup.`grade` grade,
+		  bup.`year` year
+		from
+		  bd_unvs_profession bup 
+		  left join bd_university bu
+		    on bu.unvs_id = bup.unvs_id
+		where bup.`pfsn_id` = #{pfsnId}
+	</select>
+	
+	<select id="selectCourseDate" resultType="java.util.HashMap">
+		SELECT 
+		  MIN(bc.`cp_date`) startDate,
+		  MAX(bc.`cp_date`) endDate
+		FROM
+		  bd_class_plan bc 
+		WHERE bc.`cp_id` IN 
+		<foreach collection="cpIds" item="cpId" open="(" close=")" separator=",">
+	    	#{cpId}
+	    </foreach>
+	</select>
+	
+	<select id="selectFDTermCpId" resultType="java.lang.String">
+		SELECT 
+		  l.`cp_id` 
+		FROM
+		  bd_class_plan l 
+		LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = l.`place_id`  
+		WHERE l.`cp_date`>=date_format(date_sub(NOW(), interval 1 MONTH),'%Y-%m-%d')  and l.`course_id` IN 
+		  (SELECT 
+		    c.`course_id` 
+				FROM
+		    bd_learn_info bli 
+		    LEFT JOIN bd_unvs_profession bup 
+		      ON bup.`pfsn_id` = bli.`pfsn_id` 
+		    LEFT JOIN bd_test_group g 
+		      ON bup.`group_id` = g.`group_id` 
+		    LEFT JOIN bd_tg t 
+		      ON t.`group_id` = g.`group_id` 
+		    LEFT JOIN bd_test_subject b 
+		      ON b.`subject_id` = t.`subject_id` 
+		    LEFT JOIN bd_course c 
+		      ON (
+		        c.`test_subject` = b.`subject_id` 
+		        AND c.`grade` = bli.`grade`
+		      ) 
+		  WHERE bup.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		  	AND c.`course_type` = #{courseType,jdbcType=VARCHAR}
+		    AND bli.`grade` = #{grade,jdbcType=VARCHAR}
+		    <if test="pfsnId != null and pfsnId !=''">
+		    	AND bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		    </if>
+		    <if test="pfsnLevel != null and pfsnLevel !=''">
+		    	AND bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		    </if>
+		    AND c.`course_id` IS NOT NULL 
+		    AND bli.`std_stage` IN ('2', '3') 
+		  GROUP BY c.`course_id`) 
+			
+		<if test="startTime != null and startTime !=''">
+			and l.`cp_date` &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null and endTime !=''">
+			and l.`cp_date` &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		<if test="campusId != null and campusId !=''">
+			and oc.`campus_id` = #{campusId,jdbcType=VARCHAR}
+		</if>
+		
+		GROUP BY l.`cp_id` 
+		ORDER BY l.`start_time`
+	</select>
+	<select id="selectCpIds" resultType="java.lang.String">
+		SELECT 
+		  l.`cp_id` 
+		FROM
+		  bd_class_plan l 
+		LEFT JOIN oa_campus oc 
+		    ON oc.`campus_id` = l.`place_id`  
+		WHERE l.`course_id` IN 
+		  (SELECT 
+		    c.`course_id` 
+		  FROM
+		    bd_course c 
+		    LEFT JOIN bd_plan_course p 
+		      ON p.`course_id` = c.`course_id` 
+		    LEFT JOIN bd_teach_plan t 
+		      ON t.`thp_id` = p.`thp_id` 
+		    LEFT JOIN bd_unvs_profession f 
+		      ON f.`pfsn_id` = t.`pfsn_id` 
+		    LEFT JOIN bd_university u 
+		      ON u.`unvs_id` = f.`unvs_id` 
+		  WHERE t.`semester` = #{semester,jdbcType=VARCHAR}
+		    AND u.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		    AND c.`course_type` = #{courseType,jdbcType=VARCHAR}
+		    AND f.`grade` = #{grade,jdbcType=VARCHAR}
+		    <if test="pfsnId != null and pfsnId !=''">
+		    	AND f.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		    </if>
+		    <if test="pfsnLevel != null and pfsnLevel !=''">
+		    	AND f.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		    </if>
+		  GROUP BY c.`course_id`) 
+		<if test="startTime != null and startTime !=''">
+			and l.`cp_date` &gt;= #{startTime,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime != null and endTime !=''">
+			and l.`cp_date` &lt;= #{endTime,jdbcType=VARCHAR}
+		</if>
+		<if test="campusId != null and campusId !=''">
+			and oc.`campus_id` = #{campusId,jdbcType=VARCHAR}
+		</if>
+		GROUP BY l.`cp_id` 
+		ORDER BY l.`start_time` 
+	</select>
+	
+	<select id="stdtCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			bd_learn_info 
+		where std_stage='7' and  pfsn_id IN
+		(SELECT
+			pfsn_id
+			FROM
+			bd_teach_plan where thp_id IN
+		<foreach collection="thpIds" item="thpId" index="index" open="("
+			close=")" separator=",">
+			#{thpId}
+		</foreach>
+		) 
+	</select>
+	<select id="stdXkCountByThpId" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM bms.bd_learn_info bli
+		LEFT JOIN bms.bd_teach_plan btp
+			ON bli.pfsn_id=btp.pfsn_id
+		WHERE bli.std_stage='7' 
+		and btp.thp_id=#{thpId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="stdFdCount" resultType="java.lang.Integer">
+		SELECT 
+		 COUNT(bli.learn_id) 
+		FROM
+		  bms.bd_learn_info bli 
+		  LEFT JOIN bms.bd_unvs_profession bup 
+		  ON bup.`pfsn_id` = bli.`pfsn_id` 		
+		  WHERE ( bli.std_stage='2' or bli.std_stage='3')  and  EXISTS (
+			SELECT  
+				g.pfsn_level
+				from bms.bd_test_group g
+				left join bms.bd_tg t 
+		    		on t.`group_id` = g.`group_id` 
+		   		left join bms.bd_test_subject b 
+		    		on b.`subject_id` = t.`subject_id` 
+				left join bms.bd_course bc
+				  	on bc.test_subject=b.subject_id
+				WHERE g.group_id=bup.group_id and bc.year=bup.year
+					and bc.course_id=#{courseId,jdbcType=VARCHAR}
+			)
+	</select>
+	
+	<select id="selectStdCountByPfsnId" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select 
+		  count(i.`std_id`) 
+		from
+		  bd_student_info i 
+		  left join bd_learn_info b 
+		    on i.`std_id` = b.`std_id` 
+		where b.`pfsn_id` = #{pfsnId}
+	</select>
+	
+	<select id="findCourseName" resultMap="ResultMap" parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM bd_course
+		WHERE is_allow = '1' and course_type = #{courseType,jdbcType=VARCHAR} 
+		<if test="sName != null and '' != sName">
+				and course_name like CONCAT('%',#{sName},'%') 
+		</if>
+	</select>
+	
+	<select id="getThpIds" resultType="java.lang.String">
+		SELECT
+			pc.thp_id
+		FROM bd_plan_course pc
+		LEFT JOIN bd_teach_plan btp on btp.`thp_id` = pc.`thp_id` 
+		LEFT JOIN bd_unvs_profession bup on bup.`pfsn_id` = btp.`pfsn_id` 
+		WHERE pc.course_id = #{courseId,jdbcType=VARCHAR}  
+		<if test="course.thpName != null and '' != course.thpName">
+			and  btp.`thp_name` like  CONCAT('%',#{course.thpName},'%')
+		</if>
+		<if test="course.grade != null and '' != course.grade">
+			and btp.grade = #{course.grade,jdbcType=CHAR}
+		</if>
+		<if test="course.semester != null and '' != course.semester">
+			and btp.semester = #{course.semester,jdbcType=CHAR}
+		</if>
+		<if test="course.pfsnLevel != null and '' != course.pfsnLevel">
+			and bup.pfsn_level = #{course.pfsnLevel,jdbcType=CHAR}
+		</if>
+		
+	</select>
+	
+	<select id="selectAllCourse" resultMap="CourseHashMap" parameterType="com.yz.model.baseinfo.BdCourse">
+		SELECT 
+		  bc.course_id,
+		  bc.course_name,
+		  bc.`year`,
+		  bc.course_type,
+		  bc.grade,
+		  bc.is_allow,
+		  bc.update_time,
+		  bc.update_user,
+		  bc.update_user_id,
+		  bc.create_user_id,
+		  bc.create_time,
+		  bc.create_user,
+		  bc.ext_2,
+		  bc.ext_3 
+		FROM
+		  bd_course bc 
+		  left join bd_plan_course pc 
+		    on pc.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    on btp.`thp_id` = pc.`thp_id`
+		  LEFT JOIN bd_unvs_profession bup 
+		    on bup.`pfsn_id` = btp.`pfsn_id`  
+		  left join bd_course_textbook ct 
+		    on ct.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_textbook bt 
+		    on bt.`textbook_id` = ct.`textbook_id` 
+		  where 1=1
+			<if test="thpName != null and '' != thpName">
+					 and  btp.`thp_name` like  CONCAT('%',#{thpName},'%')
+			</if>
+			<if test="textbookName != null and '' != textbookName">
+					 and  bt.`textbook_name` like  CONCAT('%',#{textbookName},'%')
+			</if>
+		    <if test="courseName != null and '' != courseName">
+				and bc.course_name like  CONCAT('%',#{courseName},'%')
+			</if>
+			<if test="year != null and '' != year">
+				and bc.year = #{year,jdbcType=VARCHAR}
+			</if>
+			<if test="courseId != null and '' != courseId">
+				and bc.course_id = #{courseId,jdbcType=VARCHAR}
+			</if>
+			<if test="courseType != null and '' != courseType">
+				and bc.course_type = #{courseType,jdbcType=VARCHAR}
+			</if>
+			<if test="isAllow != null and '' != isAllow">
+				and bc.is_allow = #{isAllow,jdbcType=CHAR}
+			</if>
+			<if test="grade != null and '' != grade">
+				and btp.grade = #{grade,jdbcType=CHAR}
+			</if>
+			<if test="semester != null and '' != semester">
+				and btp.semester = #{semester,jdbcType=CHAR}
+			</if>
+			<if test="pfsnLevel != null and '' != pfsnLevel">
+				and bup.pfsn_level = #{pfsnLevel,jdbcType=CHAR}
+			</if>
+			<if test="isResource != null and isResource=='1'.toString()">
+				and EXISTS (select course_id from  bd_course_resource bcr where bcr.course_id=bc.course_id )
+			</if>
+			<if test="isResource != null and isResource=='0'.toString()">
+				and NOT EXISTS (select course_id from  bd_course_resource bcr where bcr.course_id=bc.course_id )
+			</if>
+			GROUP BY(bc.`course_id`)
+			order by bc.update_time desc
+	</select>
+	
+	<select id="getSelectAllCourseCount" parameterType="com.yz.model.baseinfo.BdCourse"  resultType="int">
+	SELECT COUNT(0) FROM (
+		SELECT 
+		  bc.course_id
+		FROM
+		  bd_course bc 
+		  left join bd_plan_course pc 
+		    on pc.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    on btp.`thp_id` = pc.`thp_id`
+		  LEFT JOIN bd_unvs_profession bup 
+		    on bup.`pfsn_id` = btp.`pfsn_id`  
+		  left join bd_course_textbook ct 
+		    on ct.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_textbook bt 
+		    on bt.`textbook_id` = ct.`textbook_id` 
+		  where 1=1
+			<if test="thpName != null and '' != thpName">
+					 and  btp.`thp_name` like  CONCAT('%',#{thpName},'%')
+			</if>
+			<if test="textbookName != null and '' != textbookName">
+					 and  bt.`textbook_name` like  CONCAT('%',#{textbookName},'%')
+			</if>
+		    <if test="courseName != null and '' != courseName">
+				and bc.course_name like  CONCAT('%',#{courseName},'%')
+			</if>
+			<if test="year != null and '' != year">
+				and bc.year = #{year,jdbcType=VARCHAR}
+			</if>
+			<if test="courseId != null and '' != courseId">
+				and bc.course_id = #{courseId,jdbcType=VARCHAR}
+			</if>
+			<if test="courseType != null and '' != courseType">
+				and bc.course_type = #{courseType,jdbcType=VARCHAR}
+			</if>
+			<if test="isAllow != null and '' != isAllow">
+				and bc.is_allow = #{isAllow,jdbcType=CHAR}
+			</if>
+			<if test="grade != null and '' != grade">
+				and btp.grade = #{grade,jdbcType=CHAR}
+			</if>
+			<if test="semester != null and '' != semester">
+				and btp.semester = #{semester,jdbcType=CHAR}
+			</if>
+			<if test="pfsnLevel != null and '' != pfsnLevel">
+				and bup.pfsn_level = #{pfsnLevel,jdbcType=CHAR}
+			</if>
+			<if test="isResource != null and isResource=='1'.toString()">
+				and EXISTS (select course_id from  bd_course_resource bcr where bcr.course_id=bc.course_id )
+			</if>
+			<if test="isResource != null and isResource=='0'.toString()">
+				and NOT EXISTS (select course_id from  bd_course_resource bcr where bcr.course_id=bc.course_id )
+			</if>
+			GROUP BY(bc.`course_id`)
+	) temp_t
+	</select>
+	<select id="selectAll" resultMap="ResultMap" parameterType="com.yz.model.baseinfo.BdCourse">
+		SELECT 
+		  bc.course_id,
+		  bc.course_name,
+		  bc.`year`,
+		  bc.course_type,
+		  bc.is_allow,
+		  bc.update_time,
+		  bc.update_user,
+		  bc.update_user_id,
+		  bc.create_user_id,
+		  bc.create_time,
+		  bc.create_user,
+		  bc.ext_2,
+		  bc.ext_3 
+		FROM
+		  bd_course bc 
+		  left join bd_plan_course pc 
+		    on pc.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    on btp.`thp_id` = pc.`thp_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    on bup.`pfsn_id` = btp.`pfsn_id`  
+		  left join bd_course_textbook ct 
+		    on ct.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_textbook bt 
+		    on bt.`textbook_id` = ct.`textbook_id` 
+		    where 1=1 
+			<if test="thpName != null and '' != thpName">
+					 and  btp.`thp_name` like  CONCAT('%',#{thpName},'%')
+			</if>
+			<if test="textbookName != null and '' != textbookName">
+					 and  bt.`textbook_name` like  CONCAT('%',#{textbookName},'%')
+			</if>
+		    <if test="courseName != null and '' != courseName">
+				and bc.course_name like  CONCAT('%',#{courseName},'%')
+			</if>
+			<if test="year != null and '' != year">
+				and bc.year = #{year,jdbcType=VARCHAR}
+			</if>
+			<if test="courseId != null and '' != courseId">
+				and bc.course_id = #{courseId,jdbcType=VARCHAR}
+			</if>
+			<if test="courseType != null and '' != courseType">
+				and bc.course_type = #{courseType,jdbcType=VARCHAR}
+			</if>
+			<if test="isAllow != null and '' != isAllow">
+				and bc.is_allow = #{isAllow,jdbcType=CHAR}
+			</if>
+			<if test="grade != null and '' != grade">
+				and btp.grade = #{grade,jdbcType=CHAR}
+			</if>
+			<if test="semester != null and '' != semester">
+				and btp.semester = #{semester,jdbcType=CHAR}
+			</if>
+			<if test="pfsnLevel != null and '' != pfsnLevel">
+				and bup.pfsn_level = #{pfsnLevel,jdbcType=CHAR}
+			</if>
+			GROUP BY(bc.`course_id`) 
+			order by bc.update_time desc
+	</select>
+	
+	
+	<select id="selectAllToExport" resultMap="ResultCourseMap" parameterType="com.yz.model.baseinfo.BdCourse">
+		SELECT 
+		  bc.`course_id`,
+		  bc.`course_name`,
+		  bc.`year`,
+		  bc.`course_type`,
+		  bup.`pfsn_level`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  btp.`grade`,
+		  btp.`thp_name`,
+		  btp.`thp_id`,
+		  btp.`remark`,
+		  (SELECT COUNT(*) FROM bms.bd_learn_info bli WHERE bli.std_stage='7' and bli.pfsn_id=btp.pfsn_id ) as student_number
+		FROM
+		  bd_course bc 
+		  left join bd_plan_course pc 
+		    on pc.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    on btp.`thp_id` = pc.`thp_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    on bup.`pfsn_id` = btp.`pfsn_id`
+		  LEFT JOIN bd_university bu
+		    on bup.`unvs_id` = bu.`unvs_id`  
+		  left join bd_course_textbook ct 
+		    on ct.`course_id` = bc.`course_id` 
+		  LEFT JOIN bd_textbook bt 
+		    on bt.`textbook_id` = ct.`textbook_id` 
+		    where 1=1 
+			<if test="thpName != null and '' != thpName">
+					 and  btp.`thp_name` like  CONCAT('%',#{thpName},'%')
+			</if>
+			<if test="textbookName != null and '' != textbookName">
+					 and  bt.`textbook_name` like  CONCAT('%',#{textbookName},'%')
+			</if>
+		    <if test="courseName != null and '' != courseName">
+				and bc.course_name like  CONCAT('%',#{courseName},'%')
+			</if>
+			<if test="year != null and '' != year">
+				and bc.year = #{year,jdbcType=VARCHAR}
+			</if>
+			<if test="courseId != null and '' != courseId">
+				and bc.course_id = #{courseId,jdbcType=VARCHAR}
+			</if>
+			<if test="courseType != null and '' != courseType">
+				and bc.course_type = #{courseType,jdbcType=VARCHAR}
+			</if>
+			<if test="isAllow != null and '' != isAllow">
+				and bc.is_allow = #{isAllow,jdbcType=CHAR}
+			</if>
+			<if test="grade != null and '' != grade">
+				and btp.grade = #{grade,jdbcType=CHAR}
+			</if>
+			<if test="semester != null and '' != semester">
+				and btp.semester = #{semester,jdbcType=CHAR}
+			</if>
+			<if test="pfsnLevel != null and '' != pfsnLevel">
+				and bup.pfsn_level = #{pfsnLevel,jdbcType=CHAR}
+			</if>
+			
+			order by bc.update_time desc
+	</select>
+	<select id="findRepeatTeachPlan"  resultType="java.util.HashMap">
+		select 
+			p.unvs_id as unvsId,
+			btp.grade as grade,
+			p.pfsn_level as pfsnLevel,
+			btp.pfsn_id as pfsnId,
+			btp.semester as semester
+			
+		from bd_teach_plan btp
+		LEFT JOIN bd_unvs_profession p  ON p.`pfsn_id` = btp.`pfsn_id` and p.grade=btp.grade
+		LEFT JOIN bd_university u  ON u.`unvs_id` = p.`unvs_id` 
+		where btp.`thp_id`  IN
+		<foreach collection="thpIds" item="thpId" index="index" open="("
+			close=")" separator=",">
+			#{thpId}
+		</foreach>
+		group by 
+		    p.unvs_id ,
+			btp.grade,
+			p.pfsn_level,
+			btp.pfsn_id ,
+			btp.semester
+		having count(1)>1
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_course
+		where course_id = #{courseId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdCourse">
+		<selectKey keyProperty="courseId" order="BEFORE" resultType="string">
+			select courseSeq(#{year, jdbcType=VARCHAR}, #{courseType, jdbcType=VARCHAR})
+		</selectKey>
+		insert into bd_course
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				course_id,
+			<if test="courseName != null">
+				course_name,
+			</if>
+			<if test="year != null">
+				year,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="testSubject != null">
+				test_subject,
+			</if>
+			<if test="courseType != null">
+				course_type,
+			</if>
+			<if test="isAllow != null">
+				is_allow,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{courseId, jdbcType=VARCHAR},
+			<if test="courseName != null">
+				#{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="year != null">
+				#{year,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null">
+				#{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="courseType != null">
+				#{courseType,jdbcType=VARCHAR},
+			</if>
+			<if test="isAllow != null">
+				#{isAllow,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.baseinfo.BdCourse">
+		update bd_course
+		<set>
+			<if test="courseName != null">
+				course_name = #{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="year != null">
+				year = #{year,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="courseType != null">
+				course_type = #{courseType,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null">
+				test_subject = #{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="isAllow != null">
+				is_allow = #{isAllow,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where course_id = #{courseId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectBy" resultMap="BaseResultMap" parameterType="com.yz.model.educational.CourseExcel">
+		select course_id, course_name, year, course_type, is_allow
+		from bd_course 
+		where course_name = #{courseName, jdbcType=VARCHAR} 
+		and year = #{year, jdbcType=VARCHAR} 
+		and course_type = #{courseType, jdbcType=VARCHAR}
+		limit 0,1
+	</select>
+
+	<select id="findExportCourseXK" resultMap="CourseExportMap" parameterType="com.yz.model.course.CourseExport">
+		SELECT
+		b.id_card,
+		SUBSTRING(b.id_card, 13, 6) std_password,
+		b.std_name,
+		CASE b.sex
+		WHEN 1 THEN
+		'男'
+		WHEN 2 THEN
+		'女'
+		ELSE
+		''
+		END sex,
+		a.grade,
+		CASE c.pfsn_level
+		WHEN 1 THEN
+		'本科'
+		WHEN 5 THEN
+		'专科'
+		ELSE
+		''
+		END pfsn_level,
+		g.unvs_name,
+		h.pfsn_name,
+		'' check_time
+		FROM
+		bd_learn_info a
+		LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+		LEFT JOIN bd_student_enroll c ON a.learn_id = c.learn_id
+		LEFT JOIN bd_university g ON g.unvs_id = a.unvs_id
+		LEFT JOIN bd_unvs_profession h ON h.pfsn_id = a.pfsn_id
+		WHERE
+		a.std_stage = 7
+		<if test="grade != null and ''!= grade">
+			AND a.grade = #{grade,jdbcType=VARCHAR}
+		</if>
+		GROUP BY
+		id_card
+	</select>
+
+	<select id="findExportCourseFD" resultMap="CourseExportMap" parameterType="com.yz.model.course.CourseExport">
+		SELECT
+		b.id_card,
+		SUBSTRING(b.id_card, 13, 6) std_password,
+		b.std_name,
+		CASE b.sex
+		WHEN 1 THEN
+		'男'
+		WHEN 2 THEN
+		'女'
+		ELSE
+		''
+		END sex,
+		CASE f.pfsn_level
+		WHEN 1 THEN
+		'本科'
+		WHEN 5 THEN
+		'专科'
+		ELSE
+		''
+		END pfsn_level,
+		a.grade,
+		DATE_FORMAT(e.check_time, '%Y-%m-%d %H:%i:%S') check_time
+		FROM
+		bd_learn_info a
+		LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+		LEFT JOIN bd_student_order c ON c.learn_id = a.learn_id
+		LEFT JOIN bd_sub_order d ON d.order_no = c.order_no
+		LEFT JOIN bd_student_serial e ON c.order_no = e.order_no
+		LEFT JOIN bd_student_enroll f ON a.learn_id = f.learn_id
+		WHERE
+		d.item_code = 'Y0'
+		AND check_time IS NOT NULL
+		<if test="grade != null and ''!= grade">
+			AND a.grade = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="stdStage != null and ''!= stdStage">
+			AND a.std_stage = #{stdStage,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and ''!= startTime">
+			AND e.check_time &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and ''!= endTime">
+			AND e.check_time &lt;= #{endTime}
+		</if>
+		GROUP BY
+		id_card
+	</select>
+	
+	<select id="getNonExistsTeachPlan" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_teachplan_course;
+        CREATE TEMPORARY TABLE tmp_teachplan_course (
+        course_type VARCHAR (50),
+        thp_name VARCHAR (100),
+        pfsn_level VARCHAR (50),
+        unvs_name varchar(50),
+        pfsn_name varchar(50),
+        grade varchar(50),
+        semester varchar(50));
+        INSERT INTO tmp_teachplan_course (
+            course_type,thp_name,pfsn_level,unvs_name,pfsn_name,grade,semester
+        )
+        VALUES
+        <foreach collection="courseList" item="info" separator=",">
+            ( 
+            #{info.courseType, jdbcType=VARCHAR},
+            #{info.mappingName, jdbcType=VARCHAR},
+            #{info.pfsnLevel, jdbcType=VARCHAR},
+            #{info.unvsName, jdbcType=VARCHAR},
+            #{info.pfsnName, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR}
+            
+            )
+        </foreach>;
+        SELECT
+            a.thp_name,a.pfsn_level,a.unvs_name,a.pfsn_name,a.grade,a.semester
+        FROM tmp_teachplan_course a  WHERE a.course_type='XK' and  NOT  EXISTS(
+        	SELECT btp.thp_id,btp.thp_name from bd_teach_plan  btp
+        	LEFT JOIN bd_unvs_profession p 
+				ON p.`pfsn_id` = btp.`pfsn_id`
+			LEFT JOIN bd_university u  
+				ON u.`unvs_id` = p.`unvs_id`
+        	WHERE btp.thp_name=a.thp_name 
+			and btp.semester=a.semester 
+			and btp.grade=a.grade 
+			and p.pfsn_name=a.pfsn_name 
+			and p.pfsn_level=a.pfsn_level
+			and u.unvs_name=a.unvs_name
+        ) group by a.thp_name,a.pfsn_level,a.unvs_name,a.pfsn_name,a.grade,a.semester
+    </select>
+    <select id="getNonExistsTextBook" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_textbook_course;
+        CREATE TEMPORARY TABLE tmp_textbook_course (
+        course_type VARCHAR (50),
+        textbook_name VARCHAR (100));
+        INSERT INTO tmp_textbook_course (
+            course_type,textbook_name
+        )
+        VALUES
+        <foreach collection="courseList" item="info" separator=",">
+            ( 
+            #{info.courseType, jdbcType=VARCHAR},
+            #{info.mappingName, jdbcType=VARCHAR}
+           
+            )
+        </foreach>;
+        SELECT
+            a.textbook_name
+        FROM tmp_textbook_course a  WHERE  a.course_type='FD' and NOT  EXISTS(
+        	SELECT btb.textbook_id,btb.textbook_name from bd_textbook  btb
+        	WHERE btb.textbook_name=a.textbook_name
+        ) group by a.textbook_name
+    </select>
+    <insert id="insertByExcel">
+    	DROP TEMPORARY  TABLE IF EXISTS tmp_course_teachTextplan;
+        CREATE TEMPORARY  TABLE tmp_course_teachTextplan (
+        sort  varchar(50),
+        course_name varchar(50),
+        course_type VARCHAR (50),
+        year VARCHAR (50),
+        pfsn_level VARCHAR (50),
+        unvs_name varchar(50),
+        pfsn_name varchar(50),
+        grade varchar(50),
+        semester varchar(50),
+        thp_name varchar(50),
+        remark varchar(50)
+        );
+        INSERT INTO tmp_course_teachTextplan
+        VALUES
+        <foreach collection="courseList" index="index" item="info" separator=",">
+            (
+            #{index},
+            #{info.courseName, jdbcType=VARCHAR},
+            #{info.courseType, jdbcType=VARCHAR},
+            #{info.year, jdbcType=VARCHAR},
+            #{info.pfsnLevel, jdbcType=VARCHAR},
+            #{info.unvsName, jdbcType=VARCHAR},
+            #{info.pfsnName, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR},
+            #{info.mappingName, jdbcType=VARCHAR},
+            #{info.remark, jdbcType=VARCHAR}
+            )
+            
+        </foreach>;
+        insert into bd_course (
+        course_id, 
+        course_name, 
+        year,
+		grade, 
+		semester, 
+		course_type,
+		update_time,  
+		create_time, 
+		create_user_id, 
+		create_user)
+		SELECT
+		courseSeq(tct.year, tct.course_type),
+		tct.course_name,
+		tct.year,
+		tct.grade,
+		'' semester,
+		tct.course_type,
+		now(),now(),
+        #{user.realName, jdbcType=VARCHAR},
+        #{user.userId, jdbcType=VARCHAR}
+		FROM  tmp_course_teachTextplan tct 
+		WHERE NOT  EXISTS(
+			SELECT bc.`course_id`, bc.`course_name`, bc.`year`, bc.`course_type`
+			from bd_course bc where 
+			bc.`course_name` = tct.course_name
+			and bc.`year` =  tct.year
+			and bc.`course_type` = tct.course_type
+		)
+		GROUP BY
+		tct.course_name,
+		tct.year,
+		tct.course_type
+		order by tct.sort desc;
+		
+		INSERT INTO bd_plan_course(thp_id,course_id)
+		SELECT btp.thp_id,bc.course_id FROM tmp_course_teachTextplan tct 
+		INNER JOIN bd_course bc 
+			ON bc.course_name=tct.course_name AND bc.`year` =  tct.`year` AND bc.`course_type` = tct.`course_type` 
+		INNER JOIN bd_teach_plan btp
+			 ON btp.thp_name=tct.thp_name  AND btp.grade=tct.grade AND btp.semester=tct.semester
+		LEFT JOIN bd_unvs_profession p  
+			ON p.`pfsn_id` = btp.`pfsn_id` and p.grade=btp.grade and p.`pfsn_name`=tct.`pfsn_name`
+		LEFT JOIN bd_university u  ON u.`unvs_id` = p.`unvs_id` and u.`unvs_name`=tct.`unvs_name`
+		WHERE tct.course_type='XK'  and p.`pfsn_name`=tct.`pfsn_name` and u.`unvs_name`=tct.`unvs_name`
+			AND NOT EXISTS(
+			SELECT bpc.thp_id,bpc.course_id FROM bd_plan_course bpc 
+			LEFT JOIN bd_teach_plan btp2
+			 	ON bpc.thp_id=btp2.thp_id
+			LEFT JOIN bd_unvs_profession p2  
+				ON p2.`pfsn_id` = btp2.`pfsn_id`
+			LEFT JOIN bd_university u2  
+				ON u2.`unvs_id` = p2.`unvs_id`
+			WHERE  bpc.course_id=bc.course_id  
+			and btp2.semester=tct.semester 
+			and btp2.grade=tct.grade 
+			and p2.pfsn_name=tct.pfsn_name 
+			and p2.pfsn_level=tct.pfsn_level
+			and u2.unvs_name=tct.unvs_name
+		)
+		GROUP BY btp.thp_id,bc.course_id;
+		
+		INSERT INTO bd_course_textbook(textbook_id,course_id)
+		SELECT btb.textbook_id,bc.course_id FROM tmp_course_teachTextplan tct 
+		INNER JOIN bd_course bc 
+			ON bc.course_name=tct.course_name AND bc.`year` =  tct.`year` AND bc.`course_type` = tct.`course_type` AND bc.`semester`=tct.`semester`
+		INNER JOIN bd_textbook btb
+			 ON btb.textbook_name=tct.thp_name  
+		WHERE tct.course_type='FD' AND NOT EXISTS(
+			select bct.textbook_id,bct.course_id FROM bd_course_textbook bct 
+			LEFT JOIN bd_textbook btb2
+				 ON btb2.textbook_id=bct.textbook_id  
+			WHERE  bct.course_id=bc.course_id and btb2.textbook_name=tct.thp_name
+		)
+		GROUP BY btb.textbook_id,bc.course_id;
+		
+		
+		
+    </insert>
+    <delete id="deleteCourse">
+		delete from bd_course
+		where course_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+		
+		delete from bd_plan_course
+		where course_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+		
+		
+		delete from bd_course_textbook
+		where course_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+	</delete>
+	
+	<update id="updeteRecourceStatus">
+		UPDATE bd_course_resource SET is_allow=#{status, jdbcType=CHAR} WHERE resource_id=#{resourceId, jdbcType=VARCHAR};
+	</update>
+</mapper>

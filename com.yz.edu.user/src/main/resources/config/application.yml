@@ -1,0 +1,74 @@
+logging:
+  config: classpath:config/logback.xml
+  dir:  /home/www/webapp/logs/user
+jdbc:
+  global:
+    user: ${jdbc_user}
+    password: ${jdbc_password} 
+    poolsize: ${jdbc_poolsize}
+    driverClassName: ${jdbc_driverclassName}
+    minIdle: ${jdbc_minIdle}
+    maxActive: ${jdbc_maxActive}
+    maxWait: ${jdbc_maxWait}
+    minEictableIdleTimeMillis: ${jdbc_minEictableIdleTimeMillis}
+    defaultDatasource: user
+  jdbcConfigInfos:
+    - name: user
+      url: ${jdbc_url}
+      uniqueResourceName: mysql.user.write
+redis.pool:
+  minIdle: 10
+  maxIdle: 300
+  maxWait: 30000
+  testOnReturn: false
+  testOnBorrow: false
+  timeout: 30000
+  maxActive: 300
+  redisInfos:
+    - name:default
+      isdefault:true
+      host:${redis_host}
+      port:${redis_port}
+      authKey:${redis_authKey}
+      connectType:single
+dubbo:
+  registryAddress: ${dubbo.registry.address}
+  application: user
+  port: 28890
+payment:
+  allinpay.route.payment.url: ${allinpay.route.payment.url}
+  allinpay.notify.url: ${allinpay.notify.url}
+  wechat.qrcode.validtime: ${wechat.qrcode.validtime}
+  wechat.invoke.type: ${wechat.invoke.type}
+  wechat.notify.url: ${wechat.notify.url}
+wehchat_pub:
+  auth_token_url: https://api.weixin.qq.com/sns/oauth2/access_token
+  userinfo_url: https://api.weixin.qq.com/sns/userinfo
+  pub_id: yzService0526  
+polyv: 
+  baseUrl : http://api.polyv.net/live/
+  appId : eynogj82jc
+  appSecret : d3b81fd951f14fe783df5085bce76328
+  userId : 52554be7b4
+kafka:
+  bootstrapServers: ${kafka.address}
+  kafkaDerail: ${kafka.kafkaDerail}
+  
+yzsysconfig:
+  smsSwitch: ${sms.is.on}
+  paymentCouponSwitch: ${payment.coupon.switch}
+  zhiMiScale: ${yz.zhimi.scale}
+  tempBucket: ${aliyun.oss.tempBucket}
+  planSetting: ${discount.plan.setting}
+  bucket: ${aliyun.oss.bucket}
+  reptAmount: ${yz.rept.amount}
+  addressMaxSize: ${address.max.size}
+  signNumber: ${sign.base.number}
+  fileBrowserUrl: ${file.browser.url}
+  salesRemindTime: ${goods.sales.remind.time}
+  submitState: ${submit.state}
+  regCode: ${reg.code}
+  invoicePhone: ${invoice.phone}
+  invoiceType: ${invoice.type}
+  recruitYear: ${yz.recruit.year}
+  lotteryCode: ${lottery.code}

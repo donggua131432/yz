@@ -1,0 +1,84 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" /> 
+<title>远智学堂-课程资源</title>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+
+<body>
+<div class="wrraper">
+  <div class="banner">
+    <div class="tit">远智学堂</div>
+  </div>
+  <div class="breadcrumb">
+    <div class="inner">
+      <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+      <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+      <a class="fc6" href="javascript:void(0);" title="我的信息">课程资源</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sidebar" th:include="common::sidebar">
+    </div>
+    <div class="main">
+      <div class="resources-list">
+        <div class="hd">课程资源</div>
+        <div class="bd">
+          <ul>
+            <li th:each="item :${resources}">
+              <a class="f-r btn-download" href="javascript:void(0);"  th:courseResourceId="${item.resourceId}" title="">下载</a>
+            	<span  th:if="${item.resourceName.indexOf('复习题库')>=0}" th:text="${item.resourceName}" style="color:red"></span>
+            	<span  th:if="${item.resourceName.indexOf('复习题库')<0}" th:text="${item.resourceName}"></span>
+            	
+            </li>
+            
+            <p style="padding:24px;color:#666;"  th:if="${#lists.isEmpty(resources)}">暂时没有课程资源</p>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer" th:include="common::footer">
+  </div>
+</div>
+
+
+
+<!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  	
+<script th:inline="javascript" type="text/javascript">
+$(function() {
+    // 文件下载
+	 jQuery.download = function(url, method, resourceId){
+	     jQuery('<form action="'+url+'" method="'+(method||'post')+'">' +  // action请求路径及推送方法
+	                 '<input type="text" name="resourceId" value="'+resourceId+'"/>' + // 
+	             '</form>')
+	     .appendTo('body').submit().remove();
+	 };
+   
+	 $(".btn-download").click(function() {
+		 var courseResourceId = $(this).attr("courseResourceId");
+		 $.download(/*[[@{/course/down.do}]]*/,'post',courseResourceId);
+	 });
+});
+
+
+
+</script>
+
+
+</body>
+</html>

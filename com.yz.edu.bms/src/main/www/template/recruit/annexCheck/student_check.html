@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>添加学员</title>
+</head>
+<body>
+  <div class="pd-15">
+    <div class="bg-fff pd-15 bk-gray radius mt-15">
+      <table class="table table-border table-bordered table-hover table-bg table-sort">
+        <thead>
+          <tr class="text-c">
+            <th width="80">项目</th>
+            <th width="40">状态</th>
+            <th width="80">审核人</th>
+            <th width="100">审核时间</th>
+            <th width="60">操作</th>
+          </tr>
+        </thead>
+        <!--<tbody>
+          <tr class="text-c">
+            <td>考前资料核查</td>
+            <td id="checkStatus"></td>
+            <td id="checkUser"></td>
+            <td id="checkTime"></td>
+            <td id="checkButton"></td>
+          </tr>
+        </tbody>-->
+        <tbody id="checkBody">
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:inline="javascript">
+  	  var checkData_global=[[${checkStatus}]],learnId_global=[[${learnId}]], recruitType=[[${recruitType}]], jtIdList=[[${jtIdList}]];
+  </script>
+  <script type="text/javascript" th:src="@{/js/webjs/recruit/annexCheck/student_check.js}"></script>
+</body>
+</html>

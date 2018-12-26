@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentGraduateDataMapper">
+
+	<resultMap type="com.yz.model.stdService.StudentGraduateDataInfo" id="GraduateDataInfoMap">
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="std_id" property="stdId" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="if_submit" property="ifSubmit" jdbcType="VARCHAR"/>
+		<result column="if_pass" property="ifPass" jdbcType="VARCHAR"/>
+		<result column="no_pass_reason" property="noPassReason" jdbcType="VARCHAR"/>
+		<result column="if_mail" property="ifMail" jdbcType="VARCHAR"/>
+		<result column="user_name" property="userName" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+		<result column="province_code" property="provinceCode" jdbcType="VARCHAR"/>
+		<result column="city_code" property="cityCode" jdbcType="VARCHAR"/>
+		<result column="district_code" property="districtCode" jdbcType="VARCHAR"/>
+		<result column="express_no" property="expressNo" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="tutorName" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="queryStuGraduateDataList" resultMap="GraduateDataInfoMap">
+		select 
+		  osg.`id`,
+		  oti.`task_title`,
+		  bli.`school_roll`,
+		  bli.`std_no`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  osg.`if_submit`,
+		  osg.`if_pass`,
+		  osg.`no_pass_reason`,
+		  osg.`if_mail`,
+		  osg.`user_name`,
+		  osg.`mobile`,
+		  osg.`province_code`,
+		  osg.`city_code`,
+		  osg.`district_code`,
+		  osg.`express_no`,
+		  oe.`emp_name`,
+		  osg.`remark`,
+		  osg.`address` 
+		from
+		  oa_student_graduate_data_task osg 
+		  left join bd_learn_info bli 
+		    on bli.`learn_id` = osg.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		  left join bd_university bu 
+		    on bu.`unvs_id` = bli.`unvs_id` 
+		  left join bd_unvs_profession bup 
+		    on bup.`pfsn_id` = bli.`pfsn_id` 
+		  left join oa_task_info oti 
+		    on oti.`task_id` = osg.`task_id` 
+		  left join oa_student_graduate_data_tel osl 
+		    on osl.`unvs_id` = bli.`unvs_id` 
+		  left join bd_learn_rules blr 
+		    on blr.`learn_id` = bli.`learn_id` 
+		  left join oa_employee oe 
+		    on oe.`emp_id` = blr.`tutor`
+		  where 1=1
+		  	<if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+		  		and bsi.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+		  	</if>
+		  	<if test="queryInfo.mobile !=null and '' != queryInfo.mobile">
+		  		and bsi.`mobile` = #{queryInfo.mobile,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+		  		and bsi.`id_card` = #{queryInfo.idCard,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.stdStage !=null and '' != queryInfo.stdStage">
+		  		and bli.`std_stage` = #{queryInfo.stdStage,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.noPassReason !=null and '' != queryInfo.noPassReason">
+		  		and osg.`no_pass_reason` like concat('%',#{queryInfo.noPassReason,jdbcType=VARCHAR},'%')
+		  	</if>
+		  	<if test="queryInfo.expressNo !=null and '' != queryInfo.expressNo">
+		  		and osg.`express_no` = #{queryInfo.expressNo,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.remark !=null and '' != queryInfo.remark">
+		  		and osg.`remark` like concat('%',#{queryInfo.remark,jdbcType=VARCHAR},'%')
+		  	</if>
+		  	<if test="queryInfo.recruitType !=null and '' != queryInfo.recruitType">
+		  		and bli.`recruit_type` = #{queryInfo.recruitType,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.grade !=null and '' != queryInfo.grade">
+		  		and bli.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+		  		and bli.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+		  		and bup.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+		  		and bup.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.ifSubmit !=null and '' != queryInfo.ifSubmit">
+		  		and osg.`if_submit` = #{queryInfo.ifSubmit,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.tutorName !=null and '' != queryInfo.tutorName">
+		  		and oe.emp_name like concat('%',#{queryInfo.tutorName,jdbcType=VARCHAR},'%')
+		  	</if>
+		  	<if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+		  		and osg.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.ifPass !=null and '' != queryInfo.ifPass">
+		  	    <if test="queryInfo.ifPass == 0">
+		  	    	and (osg.`if_pass` is null or osg.`if_pass`='0')
+		  	    </if>
+		  	    <if test="queryInfo.ifPass == 1">
+		  	        and osg.`if_pass` ='1'
+		  	    </if>
+		  	</if>
+		  	<if test="queryInfo.ifMail !=null and '' !=queryInfo.ifMail">
+		  		<if test="queryInfo.ifMail == 0">
+		  	    	and (osg.`if_mail` is null or osg.`if_mail` ='0')
+		  	    </if>
+		  	    <if test="queryInfo.ifMail == 1">
+		  	        and osg.`if_mail` ='1'
+		  	    </if>
+		  	</if>
+		    <choose>
+				<when test="user.userLevel == 4">
+					and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+				</when>
+			</choose>
+			order by osg.add_time desc
+	</select>
+	
+	<select id="getGraduateDataById" resultMap="GraduateDataInfoMap">
+		select 
+		  osg.`id`,
+		  oti.`task_title`,
+		  bli.`school_roll`,
+		  bli.`std_no`,
+		  bsi.`std_name`,
+		  bsi.`id_card`,
+		  bli.`grade`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_level`,
+		  bli.`std_stage`,
+		  osg.`if_submit`,
+		  osg.`if_pass`,
+		  osg.`no_pass_reason`,
+		  osg.`if_mail`,
+		  osg.`user_name`,
+		  osg.`mobile`,
+		  osg.`province_code`,
+		  osg.`city_code`,
+		  osg.`district_code`,
+		  osg.`express_no`,
+		  oe.`emp_name`,
+		  osg.`remark`,
+		  osg.`address` 
+		from
+		  oa_student_graduate_data_task osg 
+		  left join bd_learn_info bli 
+		    on bli.`learn_id` = osg.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		  left join bd_university bu 
+		    on bu.`unvs_id` = bli.`unvs_id` 
+		  left join bd_unvs_profession bup 
+		    on bup.`pfsn_id` = bli.`pfsn_id` 
+		  left join oa_task_info oti 
+		    on oti.`task_id` = osg.`task_id` 
+		  left join oa_student_graduate_data_tel osl 
+		    on osl.`unvs_id` = bli.`unvs_id` 
+		  left join bd_learn_rules blr 
+		    on blr.`learn_id` = bli.`learn_id` 
+		  left join oa_employee oe 
+		    on oe.`emp_id` = blr.`tutor`
+		  where osg.id=#{id,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<insert id="addStuGraduateData">
+		INSERT INTO oa_student_graduate_data_task (id,task_id,learn_Id,std_id,add_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.id, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 #{item.stdId, jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<insert id="singleAddStuGraduateData" parameterType="com.yz.model.stdService.StudentGraduateDataInfo">
+		INSERT INTO oa_student_graduate_data_task (id,task_id,learn_Id,std_id,add_time) 
+        VALUES(#{id, jdbcType=VARCHAR},
+               #{taskId,jdbcType=VARCHAR},
+               #{learnId,jdbcType=VARCHAR},
+               #{stdId,jdbcType=VARCHAR},
+               now())
+	</insert>
+	
+	
+	<delete id="aloneDelStuGraduateData">
+		delete from oa_student_graduate_data_task
+		where task_id=#{taskId,jdbcType=VARCHAR} 
+		  and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="delStuGraduateData">
+		delete from oa_student_graduate_data_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	
+	<update id="editStuGraduateData">
+	     update oa_student_graduate_data_task
+	       set 	
+	       `if_submit` = #{ifSubmit, jdbcType=VARCHAR},
+	       `if_pass` = #{ifPass, jdbcType=VARCHAR},
+	       `no_pass_reason` = #{noPassReason,jdbcType=VARCHAR},
+	       `if_mail` = #{ifMail,jdbcType=VARCHAR},
+	       `express_no` = #{expressNo,jdbcType=VARCHAR},
+	       `remark` = #{remark,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR} 
+	</update>
+	
+	
+	<update id="updateStuGraduateData">
+	     update oa_student_graduate_data_task
+	       set 	
+	       `if_submit` = #{ifSubmit, jdbcType=VARCHAR},
+	       `if_pass` = #{ifPass, jdbcType=VARCHAR},
+	       `no_pass_reason` = #{noPassReason,jdbcType=VARCHAR},
+	       `if_mail` = #{ifMail,jdbcType=VARCHAR},
+	       `express_no` = #{expressNo,jdbcType=VARCHAR},
+	       `remark` = #{remark,jdbcType=VARCHAR}
+		where learn_id = #{learnId,jdbcType=VARCHAR} 
+	</update>
+	
+	<select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_graduate_data;
+        CREATE TEMPORARY TABLE tmp_student_graduate_data (
+        grade VARCHAR (20),
+        std_name VARCHAR (50),
+        id_card VARCHAR (50),
+        std_no VARCHAR (50));
+        INSERT INTO tmp_student_graduate_data (
+            grade,
+            std_name,
+            id_card,
+            std_no
+        )
+        VALUES
+        <foreach collection="stuGraduateList" item="info" separator=",">
+            (
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.stdNo, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+            a.*
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                tmp_student_graduate_data
+                GROUP BY
+                    grade,
+                    std_name,
+                    id_card,
+                    std_no
+            ) a
+        LEFT JOIN (
+            SELECT
+                a.learn_id,
+                a.grade,
+                a.school_roll,
+                b.id_card,
+                b.std_name
+            FROM
+                bd_learn_info a
+            JOIN bd_student_info b ON a.std_id = b.std_id
+        ) b ON a.grade = b.grade
+        AND a.std_name = b.std_name
+        AND a.id_card = b.id_card
+        WHERE
+            b.learn_id IS NULL;
+    </select>
+</mapper>

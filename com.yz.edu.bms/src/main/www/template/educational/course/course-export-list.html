@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>大学院校管理</title>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+    课程管理
+    <span class="c-gray en">/</span>
+    导出上课平台安排
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="iconfont icon-shuaxin"></i>
+    </a>
+</nav>
+<div class="page-container">
+    <div class="text-l search" style="position: relative">
+        <form action="" id="reset">
+            <div class="cl">
+                <div class="cl">
+                    <div class="f-l">
+                        <span>年级:</span>
+                        <select class="select" size="1" id="grade" name="grade">
+                            <option value="" selected>--请选择年级--</option>
+                        </select>
+                    </div>
+                    <div class="f-l">
+                        <span>课程类型:</span>
+                        <select class="select" size="1" id="courseType">
+                            <option value="" selected>--请选择优惠类型--</option>
+                        </select>
+                    </div>
+                    <div class="f-l">
+                        <span>学员阶段:</span>
+                        <select class="select" size="1" id="stdStage">
+                            <option value="" selected>--请选择学员阶段--</option>
+                        </select>
+                    </div>
+                    <div class="f-r mr-15">
+                        <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" style="width: 90px">
+                            <i class="iconfont icon-sousuo"></i>
+                            搜索
+                        </a>
+                        <a href="javascript:;" onclick="excel_export()" class="btn btn-warning radius">
+                            <i class="iconfont icon-daochu"></i>
+                            导出</a>
+                        <a class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:;">
+                            <i class="iconfont icon-shuaxin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="cl">
+                    <div class="f-l">
+                        <span>审核开始时间： </span>
+                        <input type="text" id="startTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"
+                               name="startTime" class="input-text Wdate"
+                               style="width: 120px;">
+                    </div>
+                    <div class="f-l">
+                        <span>审核结束时间： </span>
+                        <input type="text" id="endTime"
+                               onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm',minDate:'#F{$dp.$D(\'startTime\')}'})"
+                               name="endTime"
+                               class="input-text Wdate" style="width: 120px;">
+                    </div>
+                </div>
+                <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+                    <p style="margin-bottom: 0; cursor: pointer" class="c-666">
+                        <i class="iconfont icon-xiala"></i>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="cl pd-15 bg-1">
+        <div class="bg-fff">
+            <table class="table table-border table-bordered table-hover table-bg table-sort">
+                <thead>
+                <tr class="text-c">
+                    <th width="100">用户名称</th>
+                    <th width="100">密码</th>
+                    <th width="100">昵称</th>
+                    <th width="100">性别</th>
+                    <th width="100">所属部门</th>
+                    <th width="100">辅导费审核时间</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/educational/course/course-export-list.js}"></script>
+</body>
+</html>

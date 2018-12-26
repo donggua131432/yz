@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.graduate.GraduateCheckMapper">
+	
+	<resultMap type="com.yz.model.graduate.CheckDataBaseInfo" id="CheckDataBaseInfo">
+	  <id column="check_id" property="checkId" jdbcType="VARCHAR"></id>
+	  <result column="std_id" property="stdId" jdbcType="VARCHAR"/>
+	  <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	  <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+	  <result column="grade" property="grade" jdbcType="VARCHAR"/>
+	  <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+	  <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+	  <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+	  <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+	  <result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+	  <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+	  <result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+	  <result column="remark" property="remark" jdbcType="VARCHAR"/>
+	  <result column="is_pass" property="ifAffirmOrPass" jdbcType="VARCHAR"/>
+	  <result column="status" property="status" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="selectGradeByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select grade from bd_learn_info where learn_id = #{learnId}
+	</select>
+	<!-- 毕业资料，成绩 -->
+	<select id="queryGraduateDataCheckByPage" resultMap="CheckDataBaseInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+	      bsg.`status`,
+		  bgr.`check_id`,
+		  bli.`std_id`,
+		  bli.`learn_id`,
+		  bsi.`std_name`,
+		  bgr.`remark`,
+		  bgr.`check_status`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  oe.`emp_name` 
+		from
+		  bd_graduate_records bgr 
+		  left join bd_student_graduate bsg 
+		    on bgr.`graduate_id` = bsg.`graduate_id` 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  left join bd_student_enroll bse 
+		    on bli.`std_id` = bse.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_learn_rules blr 
+		    on bli.`learn_id` = blr.`learn_id` 
+		  left join oa_employee oe 
+		    on blr.`tutor` = oe.`emp_id` 
+		where g_check_type = #{gCheckType}
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	
+	<!-- 论文 -->
+	<select id="queryGraduatePaperCheckByPage" resultMap="CheckDataBaseInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+	      bsg.`status`,
+		  bgr.`check_id`,
+		  bli.`std_id`,
+		  bli.`learn_id`,
+		  bsi.`std_name`,
+		  bgr.`remark`,
+		  bgr.`check_status`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  oe.`emp_name`,
+		  bsp.`is_pass` 
+		from
+		  bd_graduate_records bgr 
+		  left join bd_student_graduate bsg 
+		    on bgr.`graduate_id` = bsg.`graduate_id` 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  left join bd_student_enroll bse 
+		    on bli.`std_id` = bse.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_learn_rules blr 
+		    on bli.`learn_id` = blr.`learn_id` 
+		  left join oa_employee oe 
+		    on blr.`tutor` = oe.`emp_id`
+		  left join bd_student_paper bsp
+		  on bli.`learn_id`=bsp.`learn_id` 
+		where g_check_type = #{gCheckType}
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	
+	<!-- 图像采集 -->
+	<select id="queryGraduatePictureCheckByPage" resultMap="CheckDataBaseInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+	      bsg.`status`,
+		  bgr.`check_id`,
+		  bli.`std_id`,
+		  bli.`learn_id`,
+		  bsi.`std_name`,
+		  bgr.`remark`,
+		  bgr.`check_status`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  oe.`emp_name`,
+		  IFNULL(bgc.`confirm_result`,0) as is_pass 
+		from
+		  bd_graduate_records bgr 
+		  left join bd_student_graduate bsg 
+		    on bgr.`graduate_id` = bsg.`graduate_id` 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  left join bd_student_enroll bse 
+		    on bli.`std_id` = bse.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_learn_rules blr 
+		    on bli.`learn_id` = blr.`learn_id` 
+		  left join oa_employee oe 
+		    on blr.`tutor` = oe.`emp_id`
+		  left join bd_graduate_collect bgc
+		  on bli.`learn_id`=bgc.`learn_id` 
+		where g_check_type = #{gCheckType}
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	
+	<resultMap id="EducationalTaskInfo" type="com.yz.model.graduate.EducationalTaskInfo">
+	   <result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+	   <result column="task_content" property="taskContent" jdbcType="VARCHAR"/>
+	   <result column="emp_name" property="pubName" jdbcType="VARCHAR"/>
+	   <result column="task_status" property="taskStatus" jdbcType="VARCHAR"/>
+	   <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+	   <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getEducationalTaskInfo" resultMap="EducationalTaskInfo" parameterType="String">
+		select 
+		  oti.`task_title`,
+		  oti.`task_content`,
+		   bu.`real_name` as emp_name,
+		  ost.`task_status`,
+		  date_format(oti.`start_time`,'%Y-%m-%d') start_time,
+		  date_format(oti.`end_time`,'%Y-%m-%d') end_time 
+		from
+		  oa_student_task ost 
+		  Left join oa_task_info oti 
+		    on ost.`task_id` = oti.`task_id` 
+		  left Join bms_user bu
+		    on oti.`issuer` = bu.`user_id` 
+		where ost.`learn_id` = #{learnId}
+	</select>
+	
+	<update id="checkStatus" parameterType="com.yz.model.graduate.BdGraduateRecordsInfo">
+	  update bd_graduate_records
+		<set>
+			<if test="checkStatus != null">
+				check_status = #{checkStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="checkUserName != null">
+				check_user_name = #{checkUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="checkUserId != null">
+				check_user_id = #{checkUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			check_time=now()
+		</set>
+	    where check_id=#{checkId}
+	</update>
+	
+	<resultMap id="ScoreBaseInfo" type="com.yz.model.graduate.ScoreBaseInfo">
+	    <result column="semester" property="semester" jdbcType="VARCHAR"/>
+	    <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+	    <result column="score" property="score" jdbcType="VARCHAR"/>
+	    <result column="is_pass" property="isPass" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="queryScoreBaseInfo" resultMap="ScoreBaseInfo">
+		select 
+		  semester,
+		  course_name,
+		  score,
+		  is_pass 
+		from
+		  bd_student_t_score 
+		where learn_Id=#{learnId} and std_id=#{stdId} and semester=#{semester}
+	</select>
+	
+	<resultMap id="BdStudentPaperInfo" type="com.yz.model.graduate.BdStudentPaperInfo">
+	    <result column="paper_score" property="paperScore" jdbcType="VARCHAR"/>
+	    <result column="is_pass" property="isPass" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBdStudentPaperInfo" resultMap="BdStudentPaperInfo" parameterType="String">
+		select 
+		  paper_score,
+		  is_pass 
+		from
+		  bd_student_paper 
+		where learn_Id = #{learnId} 
+	</select>
+	<resultMap type="com.yz.model.finance.stdfee.BdStdPayInfoResponse" id="PayInfoResultMap">
+		<result column="item_code" property="itemCode"/>
+	  	<result column="item_name" property="itemName"/>
+	  	<result column="payable" property="payable"/>
+	  	<result column="refund_amount" property="refundAmount"/>
+	  	<result column="sub_order_status" property="subOrderStatus"/>
+    </resultMap>
+  
+	<resultMap id="FeeCheckDataInfo" type="com.yz.model.graduate.FeeCheckDataInfo" extends="CheckDataBaseInfo">
+	   <association property="payInfos" column="learn_id" select="selectPayInfo"/>
+	</resultMap>
+	<select id="selectPayInfo" parameterType="java.lang.String" resultMap="PayInfoResultMap">
+  SELECT 
+	  bfi.`item_code`,
+	  bfi.`item_name`,
+	  bso.`payable`,
+	  bso.`sub_order_status` 
+	FROM
+	  bd_student_order bs 
+	  LEFT JOIN bd_sub_order bso 
+	    ON bso.`order_no` = bs.`order_no` 
+	  LEFT JOIN bd_fee_item bfi 
+	    ON bfi.`item_code` = bso.`item_code` 
+	WHERE bs.`learn_id` = #{learn_id}
+		AND bso.sub_order_status != '4'
+	ORDER BY bfi.order_num;
+  </select>
+  
+  <select id="queryFeeCheckDataInfoByPage" resultMap="FeeCheckDataInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+		  bgr.`check_id`,
+		  bli.`std_id`,
+		  bli.`learn_id`,
+		  bsi.`std_name`,
+		  bgr.`remark`,
+		  bgr.`check_status`,
+		  bli.`grade`,
+		  bli.`recruit_type`,
+		  bu.`unvs_name`,
+		  bse.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  oe.`emp_name`,
+		  bsg.`status` 
+		from
+		  bd_graduate_records bgr 
+		  left join bd_student_graduate bsg 
+		    on bgr.`graduate_id` = bsg.`graduate_id` 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  left join bd_student_enroll bse 
+		    on bli.`std_id` = bse.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_learn_rules blr 
+		    on bli.`learn_id` = blr.`learn_id` 
+		  left join oa_employee oe 
+		    on blr.`tutor` = oe.`emp_id` 
+		where g_check_type = #{gCheckType}
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	
+	
+	
+	<resultMap type="com.yz.model.graduate.BdGraduateApprovalInfo" id="BdGraduateApprovalInfo" extends="CheckDataBaseInfo">
+	    <result column="status" property="status" jdbcType="VARCHAR"/>
+	    <result column="data_status" property="dataStatus" jdbcType="VARCHAR"/>
+	    <result column="picture_status" property="pictureStatus" jdbcType="VARCHAR"/>
+	    <result column="paper_status" property="paperStatus" jdbcType="VARCHAR"/>
+	    <result column="score_status" property="scoreStatus" jdbcType="VARCHAR"/>
+	    <result column="fee_status" property="feeStatus" jdbcType="VARCHAR"/>
+	    <result column="graduate_id" property="graduateId" jdbcType="VARCHAR"/>
+	    <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="queryBdGraduateApprovalInfo" resultMap="BdGraduateApprovalInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	     SELECT 
+		  bsg.`graduate_id`,
+		  bsg.`status`,
+		  bsg.`std_id`,
+		  bsg.`learn_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bli.`std_stage`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  bse.`pfsn_level`,
+		  bu.`unvs_name`,
+		  bli.`recruit_type`,
+		  temp_table.data_status,
+		  temp_table.picture_status,
+		  temp_table.paper_status,
+		  temp_table.score_status,
+		  temp_table.fee_status 
+		FROM
+		  bd_student_graduate bsg 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bsg.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsg.`std_id` = bsi.`std_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bli.`pfsn_id` = bup.`pfsn_id` 
+		  LEFT JOIN bd_student_enroll bse 
+		    ON bsi.`std_id` = bse.`std_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON bse.`learn_id` = blr.`learn_id` 
+		  LEFT JOIN 
+		    (SELECT 
+		      graduate_id,
+		      MAX(
+		        CASE
+		          g_check_type 
+		          WHEN '1' 
+		          THEN check_status 
+		          ELSE 1 
+		        END
+		      ) 'data_status',
+		      MAX(
+		        CASE
+		          g_check_type 
+		          WHEN '2' 
+		          THEN check_status 
+		          ELSE 1 
+		        END
+		      ) 'picture_status',
+		      MAX(
+		        CASE
+		          g_check_type 
+		          WHEN '3' 
+		          THEN check_status 
+		          ELSE 1 
+		        END
+		      ) 'paper_status',
+		      MAX(
+		        CASE
+		          g_check_type 
+		          WHEN '4' 
+		          THEN check_status 
+		          ELSE 1 
+		        END
+		      ) 'score_status',
+		      MAX(
+		        CASE
+		          g_check_type 
+		          WHEN '5' 
+		          THEN check_status 
+		          ELSE 1 
+		        END
+		      ) 'fee_status' 
+		    FROM
+		      bd_graduate_records 
+		    GROUP BY graduate_id) temp_table 
+		    ON bsg.`graduate_id` = temp_table.graduate_id 
+		WHERE bsg.`status` !='2'
+		<if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+	</select>
+	
+	<resultMap type="com.yz.model.graduate.BdCheckResultInfo" id="BdCheckResultInfo">
+	   <result column="check_id" property="checkId" jdbcType="VARCHAR"/>
+	   <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+	   <result column="check_user_name" property="checkUserName" jdbcType="VARCHAR"/>
+	   <result column="remark" property="remark" jdbcType="VARCHAR"/>
+	   <result column="check_time" property="checkTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBdCheckResultInfo" resultMap="BdCheckResultInfo">
+		SELECT 
+		  check_id,
+		  check_status,
+		  date_format(`check_time`,'%Y-%m-%d %H:%i') check_time,
+		  check_user_name,
+		  remark 
+		FROM
+		  bd_graduate_records 
+		WHERE graduate_id = #{graduateId} 
+		  AND g_check_type=#{gCheckType}
+	</select>
+	
+	<resultMap id="BdGraduateCollectInfo" type="com.yz.model.graduate.BdGraduateCollectInfo">
+	    <result column="confirm_location" property="confirmLocation" jdbcType="VARCHAR"/>
+	    <result column="confirm_time" property="confirmTime" jdbcType="VARCHAR"/>
+	    <result column="confirm_result" property="confirmResult" jdbcType="VARCHAR"/>
+	    <result column="xin_hua" property="xinHua" jdbcType="VARCHAR"/>
+	    <result column="information" property="information" jdbcType="VARCHAR"/>
+	    <result column="remark" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBdGraduateCollectInfo" resultMap="BdGraduateCollectInfo" parameterType="String">
+		select 
+		  *
+		from
+		  bd_graduate_collect 
+		where learn_Id = #{learnId} 
+	</select>
+	
+	<resultMap id="BdGraduateRecordsInfo" type="com.yz.model.graduate.BdGraduateRecordsInfo">
+	  <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+	  <result column="check_time" property="checkTime" jdbcType="VARCHAR"/>
+	  <result column="check_user_name" property="checkUserName" jdbcType="VARCHAR"/>
+	  <result column="remark" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getBdGraduateRecordsInfo" resultMap="BdGraduateRecordsInfo" parameterType="String">
+	   SELECT 
+		  check_status,
+		  check_time,
+		  check_user_name,
+		  remark 
+		FROM
+		  bd_graduate_records
+		where check_id=#{checkId}
+	</select>
+	
+	<update id="checkAffirm">
+	   update bd_student_graduate
+	   <set>
+			<if test="checkStatus != null and '' != checkStatus">
+				status = #{checkStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and '' != remark">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set> 
+	   where graduate_id=#{graduateId}
+	</update>
+	
+	<update id="updateStdStageByLearnId">
+	   update bd_learn_info set std_stage='9' where learn_Id=#{learnId}
+	</update>
+</mapper>

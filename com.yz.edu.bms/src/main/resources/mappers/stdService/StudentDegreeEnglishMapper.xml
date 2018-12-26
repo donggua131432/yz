@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentDegreeEnglishMapper">
+
+	<resultMap type="com.yz.model.stdService.StudentDegreeEnglishInfo" id="StudentDegreeMap">
+		<result column="degree_id" property="degreeId" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="is_view" property="isView" jdbcType="VARCHAR"/>
+		<result column="view_time" property="viewTime" jdbcType="VARCHAR"/>
+		<result column="is_enroll" property="isEnroll" jdbcType="VARCHAR"/>
+		<result column="enroll_no" property="enrollNo" jdbcType="VARCHAR"/>
+		<result column="is_scene_confirm" property="isSceneConfirm" jdbcType="VARCHAR"/>
+		<result column="degree_score" property="score" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+		<result column="is_reset" property="isReset" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="findAllDegreeEnglishList" resultMap="StudentDegreeMap">
+		SELECT
+		a.degree_id,
+		oti.task_title,
+		bli.std_no,
+		bli.school_roll,
+		bsi.std_name,
+		bsi.id_card,
+		bli.grade,
+		u.unvs_name,
+		p.pfsn_code,
+		p.pfsn_level,
+		p.pfsn_name,
+		bli.std_stage,
+		a.is_view,
+		date_format(a.view_time,'%Y-%m-%d %H:%i:%S') view_time,
+		a.is_enroll,
+		a.enroll_no,
+		a.is_scene_confirm,
+		bli.degree_score,
+		oe.emp_name,
+		a.is_reset,
+		a.remark,
+		a.task_id,
+		a.learn_id
+		FROM
+		oa_student_degree_english_task a
+		LEFT JOIN bd_learn_info bli ON a.learn_id = bli.learn_id
+		LEFT JOIN bd_student_info bsi ON bli.std_id = bsi.std_id
+		LEFT JOIN oa_task_info oti ON a.task_id = oti.task_id
+		LEFT JOIN bd_learn_rules blr ON a.learn_id = blr.learn_id
+		LEFT JOIN oa_employee oe ON blr.tutor = oe.emp_id
+		LEFT JOIN bd_university u ON bli.unvs_id = u.unvs_id
+		LEFT JOIN bd_unvs_profession p ON bli.pfsn_id = p.pfsn_id
+		WHERE 1=1
+			<if test="queryInfo.degreeId !=null and '' != queryInfo.degreeId">
+				and a.`degree_id` = #{queryInfo.degreeId,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+		  		and bsi.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.stdNo !=null and '' != queryInfo.stdNo">
+				and bli.`std_no` like concat('%',#{queryInfo.stdNo,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+				and bli.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+			</if>
+		  	<if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+		  		and bsi.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.remark !=null and '' != queryInfo.remark">
+				and a.`remark` like concat('%',#{queryInfo.remark,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="queryInfo.taskId !=null and '' != queryInfo.taskId">
+				and a.`task_id` = #{queryInfo.taskId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitType !=null and '' != queryInfo.recruitType">
+				and bli.`recruit_type` = #{queryInfo.recruitType,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.grade !=null and '' != queryInfo.grade">
+		  		and bli.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+		  		and bli.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+		  		and p.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+		  		and bli.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="queryInfo.isView !=null and '' != queryInfo.isView">
+		  		and a.`is_view` = #{queryInfo.isView,jdbcType=VARCHAR}
+		  	</if>
+			<if test="queryInfo.isReset !=null and '' != queryInfo.isReset">
+				and a.`is_reset` = #{queryInfo.isReset,jdbcType=VARCHAR}
+			</if>
+		  	<if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+		  		and oe.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.isEnroll !=null and '' != queryInfo.isEnroll">
+		  		and a.is_enroll like concat('%',#{queryInfo.isEnroll,jdbcType=VARCHAR},'%')
+		  	</if>
+		  	<if test="queryInfo.isSceneConfirm !=null and '' != queryInfo.isSceneConfirm">
+		  		and a.is_scene_confirm like concat('%',#{queryInfo.isSceneConfirm,jdbcType=VARCHAR},'%')
+		  	</if>
+			<if test="queryInfo.isRemark !=null and '' != queryInfo.isRemark">
+				<if test="queryInfo.isRemark == 0">
+					and a.remark is null
+				</if>
+				<if test="queryInfo.isRemark == 1">
+					and LENGTH(a.remark)>0
+				</if>
+			</if>	
+			<if test="queryInfo.isPass !=null and '' != queryInfo.isPass">
+				<if test="queryInfo.isPass == 0">
+					and bli.degree_score <![CDATA[<60]]> 
+				</if>
+				<if test="queryInfo.isPass == 1">
+					and bli.degree_score<![CDATA[>=60]]> 
+				</if>
+				
+				
+			</if>	
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 6">
+						and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+					</when>
+					<otherwise>
+						and blr.tutor = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		order by a.create_time desc
+	</select>
+	<update id="updateRemark">
+		UPDATE oa_student_degree_english_task SET remark= #{remark,jdbcType=VARCHAR},is_scene_confirm= #{isSceneConfirm,jdbcType=VARCHAR}
+		WHERE degree_id =#{degreeId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="resetTask">
+		UPDATE oa_student_degree_english_task SET is_view=0,view_time=NULL,
+		is_enroll = 0,enroll_no=NULL,
+		is_reset = 1,is_scene_confirm='0',
+		reset_time=now()
+		WHERE degree_id = #{degreeId,jdbcType=VARCHAR};
+		
+		UPDATE oa_student_task set task_status = 0
+		WHERE task_id = #{taskId,jdbcType=VARCHAR} and learn_id = #{learnId,jdbcType=VARCHAR};
+	</update>
+	
+	<select id="getNonExistsStudent" resultType="java.util.Map">
+		DROP TEMPORARY TABLE IF EXISTS tmp_student_degree;
+		CREATE TEMPORARY TABLE tmp_student_degree (
+		std_name VARCHAR (50),
+		id_card VARCHAR (50),
+		grade VARCHAR (50));
+		INSERT INTO tmp_student_degree (
+		std_name,
+		id_card,
+		grade
+		)
+		VALUES
+		<foreach collection="studentDegreeEnglishInfoList" item="info" separator=",">
+			(
+			#{info.stdName, jdbcType=VARCHAR},
+			#{info.idCard, jdbcType=VARCHAR},
+			#{info.grade, jdbcType=VARCHAR}
+			)
+		</foreach>;
+		SELECT
+		d.std_name,
+		d.id_card,
+		d.grade
+		FROM
+		oa_student_degree_english_task a
+		LEFT JOIN bd_learn_info bli ON a.learn_id = bli.learn_id
+		LEFT JOIN bd_student_info bsi ON bsi.std_id = bli.std_id
+		RIGHT JOIN tmp_student_degree d 
+		ON d.std_name = bsi.std_name
+		AND d.id_card = bsi.id_card
+		AND d.grade = bli.grade
+		WHERE
+		degree_id IS NULL;
+	</select>
+
+	<insert id="insert">
+		DROP TEMPORARY TABLE IF EXISTS tmp_student_degree;
+		CREATE TEMPORARY TABLE tmp_student_degree (
+		std_name VARCHAR (50),
+		id_card VARCHAR (50),
+		grade VARCHAR (50),
+		score VARCHAR(10)
+		);
+		INSERT INTO tmp_student_degree
+		VALUES
+		<foreach collection="studentDegreeEnglishInfoList" item="info" separator=",">
+			(
+			#{info.stdName, jdbcType=VARCHAR},
+			#{info.idCard, jdbcType=VARCHAR},
+			#{info.grade, jdbcType=VARCHAR},
+			#{info.score, jdbcType=VARCHAR}
+			)
+		</foreach>;
+		UPDATE bd_learn_info bli
+		INNER JOIN oa_student_degree_english_task ost ON ost.learn_id = bli.learn_id
+		INNER JOIN bd_student_info bsi ON bsi.std_id = bli.std_id
+		INNER JOIN tmp_student_degree d 
+		ON  d.std_name = bsi.std_name
+		AND d.id_card = bsi.id_card
+		AND d.grade = bli.grade
+		SET bli.degree_score = d.score;
+		
+		
+	</insert>
+
+
+	<!-- 批量初始化 英语学位报名学员任务数据 -->
+	<insert id="addStuDegreeEnglishInfo">
+		INSERT INTO oa_student_degree_english_task (degree_id,task_id,learn_Id,create_time) 
+        VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.degreeId, jdbcType=VARCHAR},
+			 #{item.taskId, jdbcType=VARCHAR},
+			 #{item.learnId,jdbcType=VARCHAR},
+			 NOW())
+		</foreach>
+	</insert>
+	
+	<!-- 单个添加 英语学位报名学员任务数据 -->
+	<insert id="singleAddStuEnglishInfo" parameterType="com.yz.model.stdService.StudentDegreeEnglishInfo">
+		INSERT INTO oa_student_degree_english_task (degree_id,task_id,learn_Id,create_time) 
+        VALUES(#{degreeId,jdbcType=VARCHAR},
+               #{taskId,jdbcType=VARCHAR},
+               #{learnId,jdbcType=VARCHAR},
+               now())
+	</insert>
+	
+	<!-- 批量删除  英语学位报名学员任务数据 -->
+	<delete id="delStuDegreeEnglishInfo">
+		delete from oa_student_degree_english_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	<!-- 单个删除 -->
+	<delete id="aloneStuDegreeEnglishInfo">
+		delete from oa_student_degree_english_task
+		where task_id=#{taskId,jdbcType=VARCHAR} and learn_id =#{learnId,jdbcType=VARCHAR}
+	</delete>
+
+</mapper>

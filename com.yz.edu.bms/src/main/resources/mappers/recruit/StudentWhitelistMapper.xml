@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.recruit.StudentWhitelistMapper">
+	
+	<select id="countBy" resultType="int">
+		select 
+		  count(1) 
+		from
+		  bd_white_list w 
+		where w.`std_id` = #{stdId, jdbcType=VARCHAR}
+		  and w.`scholarship` = #{scholarship, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteWhitelist" >
+		delete 
+		from
+		  bd_white_list 
+		where std_id in (
+			<foreach collection="stdIds" item="stdId" separator=",">
+				#{stdId, jdbcType=VARCHAR}
+			</foreach>
+		)
+	</delete>
+	
+	<insert id="setting" >
+		INSERT INTO `bd_white_list` (
+		  `wl_id`,
+		  `scholarship`,
+		  `std_id`,
+		  `update_user_id`,
+		  `update_user`
+		) 
+		VALUES
+		<foreach collection="wlList" item="wl" separator=",">
+			(
+		    #{wl.wlId, jdbcType=VARCHAR},
+		    #{wl.scholarship, jdbcType=VARCHAR},
+		    #{wl.stdId, jdbcType=VARCHAR},
+		    #{wl.updateUserId, jdbcType=VARCHAR},
+		    #{wl.updateUser, jdbcType=VARCHAR}
+		  ) 
+		</foreach>
+	</insert>
+	
+	<resultMap id="WlStudentListMap" type="com.yz.model.recruit.StudentWhitelistPage">
+		<id column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="id_card" jdbcType="VARCHAR" property="idCard" />
+		<result column="id_type" jdbcType="VARCHAR" property="idType" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+		<association column="std_id" select="getLearnList" property="learnList" />
+		<association column="std_id" select="getWhitelist" property="whitelist" />
+	</resultMap>
+	
+	<select id="getStudents" parameterType="com.yz.model.condition.recruit.StudentWhitelistQuery" resultMap="WlStudentListMap">
+		select 
+		  s.`std_id`,
+		  s.`std_name`,
+		  s.`id_card`,
+		  s.`id_type`,
+		  s.`mobile`,
+		  date_format(s.`create_time`, '%Y-%m-%d %H:%i:%s') as create_time
+		from
+		  bd_student_info s 
+		<where>
+			<if test="stdName != null and stdName != ''">
+				s.`std_name` like concat('%', #{stdName, jdbcType=VARCHAR} , '%') 
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and s.`mobile` like concat('%', #{mobile, jdbcType=VARCHAR} , '%') 
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and s.`id_card` like concat('%', #{idCard, jdbcType=VARCHAR} , '%') 
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="LearnInfoMap" type="com.yz.model.recruit.StudentAllListInfo">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="scholarship" jdbcType="VARCHAR" property="scholarship" />
+		<result column="is_completed" jdbcType="VARCHAR" property="isCompleted" />
+	</resultMap>
+	
+	<select id="getLearnList" parameterType="string" resultMap="LearnInfoMap">
+		SELECT 
+		  l.`learn_id`,
+		  l.`grade`,
+		  l.`recruit_type`,
+		  u.`unvs_name`,
+		  p.`pfsn_name`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  l.`std_stage`,
+		  l.`scholarship`,
+		  l.`is_completed` 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		WHERE l.std_id = #{stdId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getWhitelist" parameterType="string" resultType="string">
+		SELECT 
+		  w.`scholarship` 
+		FROM
+		  bd_white_list w 
+		WHERE w.`std_id` = #{stdId, jdbcType=VARCHAR}
+	</select>
+</mapper>

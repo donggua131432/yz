@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/js/zTree/v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/custom.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <!--/meta 作为公共模版分离出去-->
+    <title>智米赠送申请</title>
+</head>
+<body>
+    <nav class="breadcrumb">
+        <i class="Hui-iconfont">&#xe67f;</i>智米管理
+        <span class="c-gray en">/</span>智米赠送申请
+        <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="iconfont icon-shuaxin"></i>
+        </a>
+    </nav>
+    <div class="page-container">
+        <div class="text-l search" style="position: relative">
+            <div class="cl">
+                <form id="searchForm">
+                    <div class="cl">
+                        <div class="f-l">
+                            <span>远智编号：</span>
+                            <input type="text" id="yzCode" name="yzCode" class="input-text radius ml-10"/>
+                        </div>
+                        <div class="f-l">
+                            <span>真实姓名：</span>
+                            <input type="text" id="realName" name="realName" class="input-text radius ml-10" />
+                        </div>
+                        <div class="f-l">
+                            <span>手机号 ：</span>
+                            <input type="text" id="mobile" name="mobile" class="input-text radius ml-10">
+                        </div>
+                        <div class="f-r mr-5">
+                            <a class="btn btn-primary radius" href="javascript:;" onclick="_search();" /><i class="iconfont icon-sousuo"></i>搜索</a>
+                            <a class="btn btn-normal-outline radius" href="javascript:" onclick="_reset();"><i class="iconfont icon-shuaxin"></i></a>
+                        </div>
+                    </div>
+                    <div class="cl">
+                        <div class="f-l">
+                            <span>身份证号：</span>
+                            <input type="text" id="certNo" name="certNo" class="input-text radius ml-10"/>
+                        </div>
+                        <div class="f-l">
+                            <span>提交开始时间：</span>
+                            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'createTimeEnd\')||\'%y-%M-%d\'}' })" id="createTime" name="createTime" class="input-text Wdate" style="width: 180px;" />-
+                        </div>
+                        <div class="f-l">
+                            <span>提交结束时间：</span>
+                            <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="createTimeEnd" name="createTimeEnd" class="input-text Wdate" style="width: 180px;" />
+                        </div>
+                    </div>
+                    <div class="cl">
+                        <div class="f-l">
+                            <span>申请进度：</span>
+                            <select class="select" size="1" id="reasonStatus" name="reasonStatus">
+                                <option></option>
+                                <option value="1">已提交</option>
+                                <option value="2">已通过</option>
+                                <option value="3">已驳回</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                <!--<div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+                    <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666"><i class="iconfont icon-xiala"></i></p>
+                </div>-->
+            </div>
+        </div>
+        <div class="bg-1">
+            <div class="cl pd-15 bg-1">
+                <span class="l mt-15 mb-15">
+                    <a href="javascript:void(0);" onclick="giveZhimi_add()" class="btn btn-primary radius">
+                        <i class="iconfont icon-tianjia"></i>新增
+                    </a>
+                    <a href="javascript:void(0);" onclick="delAll()" class="btn btn-danger radius">
+                        <i class="iconfont icon-shanchu"></i>批量删除
+                    </a>
+				</span>
+                <div class="mt-35 bg-fff">
+                    <table class="table table-border table-bordered table-hover table-bg table-sort">
+                        <thead>
+                        <tr class="text-c">
+                            <th index="0" width="10"><input type="checkbox" name="all"/></th>
+                            <th index="1" width="40">远智编号</th>
+                            <th index="2" width="40">昵称</th>
+                            <th index="3" width="40">真实姓名</th>
+                            <th index="4" width="40">手机号</th>
+                            <th index="5" width="40">智米数</th>
+                            <th index="6" width="40">智米类型</th>
+                            <th index="7" width="40">申请智米</th>
+                            <th index="8" width="120">申请原因</th>
+                            <th index="9" width="40">提交人</th>
+                            <th index="10" width="40">提交时间</th>
+                            <th index="11" width="40">申请进度</th>
+                            <th index="12" width="40">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--_footer 作为公共模版分离出去-->
+    <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+    <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+    <!--/_footer 作为公共模版分离出去-->
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+    <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+    <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+    <script type="text/javascript" th:src="@{/js/webjs/zhimi/give/give-list.js}"></script>
+
+</body>
+</html>

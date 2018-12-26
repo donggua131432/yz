@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdPayeeMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.BdPayee" >
+    <id column="payee_id" property="payeeId" jdbcType="VARCHAR" />
+    <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+    <result column="card_type" property="cardType" jdbcType="VARCHAR" />
+    <result column="bod" property="bod" jdbcType="VARCHAR" />
+    <result column="belong" property="belong" jdbcType="VARCHAR" />
+    <result column="bank_type" property="bankType" jdbcType="VARCHAR" />
+    <result column="bod_no" property="bodNo" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    payee_id, card_no, card_type, bod, belong, bank_type, bod_no, is_allow, update_time, 
+    update_user, update_user_id, create_user_id, create_user, create_time, ext_1, ext_2, 
+    ext_3
+  </sql>
+  
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.bd_payee
+    where is_allow = '1'
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.bd_payee
+    where payee_id = #{payeeId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.BdPayee" >
+    insert into bms.bd_payee
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="payeeId != null" >
+        payee_id,
+      </if>
+      <if test="cardNo != null" >
+        card_no,
+      </if>
+      <if test="cardType != null" >
+        card_type,
+      </if>
+      <if test="bod != null" >
+        bod,
+      </if>
+      <if test="belong != null" >
+        belong,
+      </if>
+      <if test="bankType != null" >
+        bank_type,
+      </if>
+      <if test="bodNo != null" >
+        bod_no,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="payeeId != null" >
+        #{payeeId,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardType != null" >
+        #{cardType,jdbcType=VARCHAR},
+      </if>
+      <if test="bod != null" >
+        #{bod,jdbcType=VARCHAR},
+      </if>
+      <if test="belong != null" >
+        #{belong,jdbcType=VARCHAR},
+      </if>
+      <if test="bankType != null" >
+        #{bankType,jdbcType=VARCHAR},
+      </if>
+      <if test="bodNo != null" >
+        #{bodNo,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.BdPayee" >
+    update bms.bd_payee
+    <set >
+      <if test="cardNo != null" >
+        card_no = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType,jdbcType=VARCHAR},
+      </if>
+      <if test="bod != null" >
+        bod = #{bod,jdbcType=VARCHAR},
+      </if>
+      <if test="belong != null" >
+        belong = #{belong,jdbcType=VARCHAR},
+      </if>
+      <if test="bankType != null" >
+        bank_type = #{bankType,jdbcType=VARCHAR},
+      </if>
+      <if test="bodNo != null" >
+        bod_no = #{bodNo,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where payee_id = #{payeeId,jdbcType=VARCHAR}
+  </update>
+ 
+</mapper>

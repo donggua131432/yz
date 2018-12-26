@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BsOrderMapper" >
+  <resultMap id="BsOrderInfoMap" type="com.yz.model.BsOrderInfo" >
+    <id column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="orderType" property="orderType" jdbcType="VARCHAR" />
+    <result column="transAmount" property="transAmount" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="TIMESTAMP" />
+    <result column="userId" property="userId" jdbcType="VARCHAR" />
+    <result column="orderTime" property="orderTime" jdbcType="VARCHAR" />
+    
+    <result column="jd_order_id" property="jdOrderId" jdbcType="VARCHAR"/>
+    <result column="order_status" property="orderStatus" jdbcType="VARCHAR"/>
+    <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+	<result column="unit_price" property="unitPrice" jdbcType="VARCHAR"/>
+	<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+	<result column="sku_id" property="skuId" jdbcType="VARCHAR"/>
+	 <result column="freight" property="freight" jdbcType="VARCHAR"/>
+	 <result column="order_price" property="orderPrice" jdbcType="VARCHAR"/>
+	 <result column="price" property="jdPrice" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <insert id="addNewBsOrder" parameterType="com.yz.model.BsOrderInfo">
+     <selectKey keyProperty="orderNo" resultType="string" order="BEFORE">
+		select seq()
+	 </selectKey>
+	insert into goods.`bs_order` (
+	  `order_no`,
+	  `acc_type`,
+	  `order_type`,
+	  `trans_amount`,
+	  `user_name`,
+	  `mobile`,
+	  `user_id`,
+	  `order_time`,
+	  `order_status`,
+	  `order_desc`,
+	  `jd_order_id`,
+	  `freight`,
+	  `order_price`,
+	  `order_naked_price`,
+	  `order_tax_price`
+	) 
+	values
+	  (#{orderNo,jdbcType=VARCHAR},
+	   #{accType,jdbcType=VARCHAR},
+	   #{orderType,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   #{userName,jdbcType=VARCHAR},
+	   #{mobile,jdbcType=VARCHAR},
+	   #{userId,jdbcType=VARCHAR},
+	   now(),
+	   #{orderStatus,jdbcType=VARCHAR},
+	   #{orderDesc,jdbcType=VARCHAR},
+	   #{jdOrderId,jdbcType=VARCHAR},
+	   #{freight,jdbcType=VARCHAR},
+	   #{orderPrice,jdbcType=VARCHAR},
+	   #{orderNakedPrice,jdbcType=VARCHAR},
+	   #{orderTaxPrice,jdbcType=VARCHAR}
+	  )
+  </insert>
+  
+  <insert id="addNewBsSerial" parameterType="com.yz.model.BsSerialInfo">
+     <selectKey keyProperty="serialNo" resultType="string" order="BEFORE">
+		select seq()
+	 </selectKey>
+     insert into goods.`bs_serial` (
+	  `serial_no`,
+	  `order_no`,
+	  `trans_amount`,
+	  `user_name`,
+	  `user_id`,
+	  `mobile`,
+	  `acc_type`,
+	  `serial_status`,
+	  `create_time`,
+	  `update_time`,
+	  `out_serial_no`
+	) 
+	values
+	  (#{serialNo,jdbcType=VARCHAR},
+	   #{orderNo,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   #{userName,jdbcType=VARCHAR},
+	   #{userId,jdbcType=VARCHAR},
+	   #{mobile,jdbcType=VARCHAR},
+	   #{accType,jdbcType=VARCHAR},
+	   #{serialStatus,jdbcType=VARCHAR},
+	   now(),
+	   now(),
+	   #{outSerialNo,jdbcType=VARCHAR}
+	  )
+  </insert>
+  
+  <insert id="addNewBsSalesOrder" parameterType="com.yz.model.BsSalesOrderInfo">
+    <selectKey keyProperty="subOrderNo" resultType="string" order="BEFORE">
+		select seq()
+	</selectKey>
+    insert into goods.`bs_sales_order` (
+	  `sub_order_no`,
+	  `order_no`,
+	  `cost_price`,
+	  `original_price`,
+	  `unit_price`,
+	  `sales_id`,
+	  `sales_type`,
+	  `sales_name`,
+	  `goods_id`,
+	  `goods_count`,
+	  `goods_name`,
+	  `acc_type`,
+	  `trans_amount`,
+	  `sub_order_time`,
+	  `user_id`,
+	  `sub_order_status`,
+	  `sub_order_desc`,
+	  `unit`,
+	  `goods_type`,
+	  `goods_img`,
+	  `sku_id`,
+	  `num`,
+	  `category`,
+	  `name`,
+	  `tax`,
+	  `price`,
+	  `tax_price`,
+	  `naked_price`,
+	  `type`,
+	  `oid`
+	) 
+	values
+	  (#{subOrderNo,jdbcType=VARCHAR},
+	   #{orderNo,jdbcType=VARCHAR},
+	   #{costPrice,jdbcType=VARCHAR},
+	   #{originalPrice,jdbcType=VARCHAR},
+	   #{unitPrice,jdbcType=VARCHAR},
+	   #{salesId,jdbcType=VARCHAR},
+	   #{salesType,jdbcType=VARCHAR},
+	   #{salesName,jdbcType=VARCHAR},
+	   #{goodsId,jdbcType=VARCHAR},
+	   #{goodsCount,jdbcType=VARCHAR},
+	   #{goodsName,jdbcType=VARCHAR},
+	   #{accType,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   now(),
+	   #{userId,jdbcType=VARCHAR},
+	   #{subOrderStatus,jdbcType=VARCHAR},
+	   #{subOrderDesc,jdbcType=VARCHAR},
+	   #{unit,jdbcType=VARCHAR},
+	   #{goodsType,jdbcType=VARCHAR},
+	   #{goodsImg,jdbcType=VARCHAR},
+	   #{skuId,jdbcType=VARCHAR},
+	   #{num,jdbcType=VARCHAR},
+	   #{category,jdbcType=VARCHAR},
+	   #{name,jdbcType=VARCHAR},
+	   #{tax,jdbcType=VARCHAR},
+	   #{price,jdbcType=VARCHAR},
+	   #{taxPrice,jdbcType=VARCHAR},
+	   #{nakedPrice,jdbcType=VARCHAR},
+	   #{type,jdbcType=VARCHAR},
+	   #{oid,jdbcType=VARCHAR}
+	  )
+  </insert>
+  
+  <resultMap type="java.util.HashMap" id="BsMyOrderInfo">
+     <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+     <result column="trans_amount" property="transAmount" jdbcType="VARCHAR"/>
+     <result column="order_time" property="orderTime" jdbcType="VARCHAR"/>
+     <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+     <result column="order_status" property="orderStatus" jdbcType="VARCHAR"/>
+     <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR"/>
+     <result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+     <result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+     <result column="goods_img" property="goodsImg" jdbcType="VARCHAR"/>
+     <result column="goods_type" property="goodsType" jdbcType="VARCHAR"/>
+     <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+     <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR"/>
+     <result column="transport_no" property="transportNo" jdbcType="VARCHAR"/>
+     <result column="jd_order_id" property="jdOrderId" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="getBsMyOrderInfo" resultMap="BsMyOrderInfo" parameterType="string">
+     select 
+	  bo.`order_no`,
+	  bo.`jd_order_id`,
+	  bo.`trans_amount`,
+	  bo.`order_time`,
+	  bso.`sales_type`,
+	  bo.`order_status`,
+	  bl.`logistics_id`,
+	  bso.`sales_name`,
+	  bso.`goods_id`,
+	  bso.`goods_img`,
+	  bso.`goods_type`,
+	  bso.`goods_name`,
+	  bl.`logistics_id`,
+	  bl.`transport_no`    
+	from
+	  goods.`bs_order` bo 
+	  left join goods.`bs_sales_order` bso 
+	    on bo.`order_no` = bso.`order_no` 
+	  left join goods.`bs_logistics` bl 
+	    on bl.`order_no`= bo.`order_no`  
+	where bo.`user_id` = #{userId}
+	order by bo.`order_time` desc
+  </select>
+  
+  <resultMap type="java.util.HashMap" id="BsOrderDetailInfo">
+	<result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+	<result column="order_desc" property="orderDesc" jdbcType="VARCHAR"/>
+	<result column="goods_img" property="goodsImg" jdbcType="VARCHAR"/>
+	<result column="order_time" property="orderTime" jdbcType="VARCHAR"/>
+	<result column="unit_price" property="unitPrice" jdbcType="VARCHAR"/>
+	<result column="goods_count" property="goodsCount" jdbcType="VARCHAR"/>
+	<result column="trans_amount" property="transAmount" jdbcType="VARCHAR"/>
+	<result column="order_status" property="orderStatus" jdbcType="VARCHAR"/>
+	<result column="user_name" property="userName" jdbcType="VARCHAR"/>
+	<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	<result column="address" property="address" jdbcType="VARCHAR"/>
+	<result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+	<result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+	<result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+	<result column="goods_id" property="goodsId" jdbcType="VARCHAR"/>
+	<result column="sub_order_no" property="subOrderNo" jdbcType="VARCHAR"/>
+	<result column="goods_type" property="goodsType" jdbcType="VARCHAR"/>
+	<result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+	<result column="jd_order_id" property="jdOrderId" jdbcType="VARCHAR"/>
+	
+	 <association property="memberList" column="sub_order_no" select="selectMemberList"/>
+  </resultMap>
+  <select id="getBsOrderDetailInfo" resultMap="BsOrderDetailInfo" parameterType="string">
+    SELECT 
+	  bo.`order_no`,
+	  bo.`jd_order_id`,
+	  bo.`order_desc`,
+	  bso.`goods_img`,
+	  bo.`order_time`,
+	  bso.`unit_price`,
+	  bso.`goods_count`,
+	  bso.`sub_order_no`,
+	  bo.`trans_amount`,
+	  bo.`order_status`,
+	  bl.`user_name`,
+	  bl.`mobile`,
+	  bl.`province_name`,
+	  bl.`city_name`,
+	  bl.`district_name`,
+	  bl.`address`,
+	  bso.`goods_id`,
+	  bso.`goods_type`,
+	  bso.`goods_name` 
+	FROM
+	  goods.`bs_order` bo 
+	  LEFT JOIN goods.`bs_sales_order` bso 
+	    ON bo.`order_no` = bso.`order_no` 
+	  LEFT JOIN goods.`bs_logistics` bl 
+	    ON bl.`order_no` = bo.`order_no`
+	 WHERE bo.`order_no`=#{orderNo}
+  </select>
+  
+  <resultMap type="com.yz.model.BsActionMember" id="BsActionMember">
+  	<result column="name" property="name" jdbcType="VARCHAR"/>
+  	<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="selectMemberList" resultMap="BsActionMember">
+     SELECT name,mobile FROM goods.`bs_action_member` WHERE sub_order_no=#{sub_order_no}
+  </select>
+  
+  <insert id="addNewBsGoodsOrder" parameterType="com.yz.model.BsGoodsOrder">
+   <selectKey keyProperty="subOrderNo" resultType="string" order="BEFORE">
+		select seq()
+	</selectKey>
+  	insert into goods.`bs_goods_order` (
+	  `sub_order_no`,
+	  `order_no`,
+	  `cost_price`,
+	  `original_price`,
+	  `unit_price`,
+	  `goods_id`,
+	  `goods_count`,
+	  `goods_name`,
+	  `goods_img`,
+	  `unit`,
+	  `trans_amount`,
+	  `sub_order_time`,
+	  `user_id`,
+	  `sub_order_status`,
+	  `sub_order_desc`
+	) 
+	values
+	  (#{subOrderNo,jdbcType=VARCHAR},
+	   #{orderNo,jdbcType=VARCHAR},
+	   #{costPrice,jdbcType=VARCHAR},
+	   #{originalPrice,jdbcType=VARCHAR},
+	   #{unitPrice,jdbcType=VARCHAR},
+	   #{goodsId,jdbcType=VARCHAR},
+	   #{goodsCount,jdbcType=VARCHAR},
+	   #{goodsName,jdbcType=VARCHAR},
+	   #{goodsImg,jdbcType=VARCHAR},
+	   #{unit,jdbcType=VARCHAR},
+	   #{transAmount,jdbcType=VARCHAR},
+	   NOW(),
+	   #{userId,jdbcType=VARCHAR},
+	   #{subOrder_status,jdbcType=VARCHAR},
+	   #{subOrderDesc,jdbcType=VARCHAR},
+	  )
+  </insert>
+  
+  <insert id="insertBsActionMember" parameterType="list">
+		INSERT INTO goods.`bs_action_member` (
+		  mem_id,
+		  `name`,
+		  mobile,
+		  sub_order_no
+		) 
+		VALUES
+		<foreach collection="list" item="info" index="index"
+			separator=",">
+			(
+			seq(),
+			#{info.name, jdbcType=VARCHAR},
+			#{info.mobile,jdbcType=VARCHAR},
+			#{info.subOrderNo,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertBsLogistics" parameterType="com.yz.model.BsLogistics">
+        <selectKey keyProperty="logisticsId" resultType="string" order="BEFORE">
+		select seq()
+	    </selectKey>
+		INSERT INTO goods.`bs_logistics` (
+		  `logistics_id`,
+		  `order_no`,
+		  `transport_no`,
+		  `user_name`,
+		  `mobile`,
+		  `province`,
+		  `city`,
+		  `district`,
+		  `street`,
+		  `address`,
+		  `logistics_status`,
+		  `logistics_name`,
+		  `province_name`,
+		  `city_name`,
+		  `district_name`,
+		  `street_name`
+		) 
+		VALUES
+		  (#{logisticsId,jdbcType=VARCHAR},
+		   #{orderNo,jdbcType=VARCHAR},
+		   #{transportNo,jdbcType=VARCHAR},
+		   #{userName,jdbcType=VARCHAR},
+		   #{mobile,jdbcType=VARCHAR},
+		   #{province,jdbcType=VARCHAR},
+		   #{city,jdbcType=VARCHAR},
+		   #{district,jdbcType=VARCHAR},
+		   #{street,jdbcType=VARCHAR},
+		   #{address,jdbcType = VARCHAR},
+		   #{logisticsStatus,jdbcType=VARCHAR},
+		   #{logisticsName,jdbcType=VARCHAR},
+		   #{provinceName,jdbcType=VARCHAR},
+		   #{cityName,jdbcType=VARCHAR},
+		   #{districtName,jdbcType=VARCHAR},
+		   #{streetName,jdbcType=VARCHAR}
+		   )
+	</insert>
+	
+  	<!-- 获取收货地址 -->
+	<resultMap id="AddressMap" type="java.util.HashMap">
+		<id column="sa_id" property="saId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="sa_name" property="saName" jdbcType="VARCHAR" />
+		<result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+		<result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+		<result column="street_code" property="streetCode" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="is_default" property="isDefault" jdbcType="CHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="street_code" property="streetCode" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+		<result column="city_name" property="cityName" jdbcType="VARCHAR" />
+		<result column="district_name" property="districtName" jdbcType="VARCHAR" />
+		<result column="street_name" property="streetName" jdbcType="VARCHAR" />
+	</resultMap>
+  	<select id="getAddress" parameterType="string" resultMap="AddressMap">
+  	SELECT 
+	  sa_id,
+	  sa_name,
+	  province_code,
+	  city_code,
+	  district_code,
+	  street_code,
+	  address,
+	  mobile,
+	  street_code,
+	  email,
+	  province_name,
+	  city_name,
+	  district_name,
+	  street_name,
+	  is_default,
+	  DATE_FORMAT(
+	    update_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS update_time 
+	FROM
+	  us.`us_address` 
+	WHERE sa_id = #{saId, jdbcType=VARCHAR} 
+  </select>
+   <update id="updateJdOrderStatus">
+  		update goods.`bs_order` set order_status=#{orderStatus,jdbcType=VARCHAR} where order_no=#{orderNo,jdbcType=VARCHAR};
+		update goods.`bs_sales_order` set sub_order_status=#{orderStatus,jdbcType=VARCHAR}  where order_no=#{orderNo,jdbcType=VARCHAR};
+		update goods.`bs_logistics` set logistics_status=#{orderStatus,jdbcType=VARCHAR} where order_no=#{orderNo,jdbcType=VARCHAR};
+   </update>
+</mapper>

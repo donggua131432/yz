@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.pubquery.TutorshipBookSendMapper">
+    <resultMap id="TutorshipBookSendMap" type="java.util.Map">
+        <result column="std_name" property="stdName" jdbcType="VARCHAR" />
+        <result column="grade" property="grade" jdbcType="VARCHAR" />
+        <result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+        <result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+        <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+        <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+        <result column="fee_amount" property="feeAmount" jdbcType="VARCHAR" />
+        <result column="payable" property="payable" jdbcType="VARCHAR" />
+        <result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR" />
+        <result column="logistics_name" property="logisticsName" jdbcType="VARCHAR" />
+        <result column="receive_status" property="receiveStatus" jdbcType="VARCHAR" />
+        <result column="sub_order_status" property="subOrderStatus" jdbcType="VARCHAR" />
+        <result column="order_book_status" property="orderBookStatus" jdbcType="VARCHAR" />
+        <association column="send_id" property="books" select="selectTextBookSend" />
+    </resultMap>
+    <select id="findAllTutorshipBookSend" resultMap="TutorshipBookSendMap" >
+        SELECT
+        b.std_name,
+        b.id_card,
+        b.mobile,
+        a.grade,
+        a.recruit_type,
+        a.std_stage,
+        a.scholarship,
+        d.unvs_name,
+        e.pfsn_name,
+        e.pfsn_code,
+        c.pfsn_level,
+        g.emp_name,
+        h.campus_name,
+        j.fee_amount,
+        j.payable,
+        k.send_id,
+        k.logistics_no,
+        k.logistics_name,
+        k.receive_status,
+        j.sub_order_status,
+        k.order_book_status
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+        LEFT JOIN bd_student_enroll c ON a.learn_id = c.learn_id
+        LEFT JOIN bd_university d ON c.unvs_id = d.unvs_id
+        LEFT JOIN bd_unvs_profession e ON e.pfsn_id = c.pfsn_id
+        LEFT JOIN bd_learn_rules f ON f.learn_id = a.learn_id
+        LEFT JOIN oa_employee g ON g.emp_id = f.recruit
+        LEFT JOIN oa_campus h ON h.campus_id = f.recruit_campus_id
+        LEFT JOIN bd_student_order i ON i.learn_id = a.learn_id
+        LEFT JOIN bd_sub_order j ON j.order_no = i.order_no
+        LEFT JOIN (select * from bd_student_send where textbook_type='FD')  k ON a.learn_id = k.learn_id
+        WHERE
+        a.recruit_type = '1'  AND j.item_code = 'Y0'
+        <if test="query.stdName != null and ''!= query.stdName">
+            AND b.std_name LIKE CONCAT('%',#{query.stdName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.idCard != null and ''!= query.idCard">
+            AND b.id_card LIKE CONCAT('%',#{query.idCard,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.grade != null and ''!= query.grade">
+            AND a.grade = #{query.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="query.unvsName != null and ''!= query.unvsName">
+            AND d.unvs_name LIKE CONCAT('%',#{query.idCard,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.unvsId != null and ''!= query.unvsId">
+            AND d.unvs_id = #{query.unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="query.pfsnLevel != null and ''!= query.pfsnLevel">
+            AND c.pfsn_level LIKE CONCAT('%',#{query.pfsnLevel,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.pfsnName != null and ''!= query.pfsnName">
+            AND e.pfsn_name LIKE CONCAT('%',#{query.pfsnName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.scholarship != null and ''!= query.scholarship">
+            AND a.scholarship = #{query.scholarship,jdbcType=VARCHAR}
+        </if>
+        <if test="query.orderBookStatus != null and ''!= query.orderBookStatus">
+            <if test="query.orderBookStatus == 0">
+                and (k.order_book_status is null  or k.order_book_status in(1,2))
+            </if>
+            <if test="query.orderBookStatus == 1">
+                and k.order_book_status = 3
+            </if>
+        </if>
+        <if test="query.logisticsNo != null and ''!= query.logisticsNo">
+            AND k.logistics_no LIKE CONCAT('%',#{query.logisticsNo,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.mobile != null and ''!= query.mobile">
+            AND b.mobile LIKE CONCAT('%',#{query.mobile,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="user.userLevel != 1">
+            AND f.recruit = #{user.empId, jdbcType=VARCHAR}
+        </if>
+        ORDER BY a.grade DESC,b.`create_time` DESC
+    </select>
+    <select id="selectTextBookSend" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+        b.`textbook_id` textbookId,
+        b.`textbook_name`
+        textbookName
+        FROM
+        bd_textbook_send s
+        LEFT JOIN
+        bd_textbook b
+        ON
+        b.`textbook_id` = s.`textbook_id`
+        WHERE s.`send_id` = #{sendId}
+    </select>
+</mapper>

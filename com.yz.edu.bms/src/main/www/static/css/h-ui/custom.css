@@ -1,0 +1,8 @@
+.page_title{border-bottom: solid 1px #ddd;margin: 0 30px 0 30px;font-size: 28px;}
+
+.page-container .half_page_left{width:50%;margin-bottom:20px;float:left;}
+.page-container .half_page_right{width:50%;margin-bottom:20px;float:right;}
+
+.form select:disabled,.form select:readonly,.form input:disabled,.form input:readonly {background-color: rgb(235, 235, 228);}
+
+.form select{width:100%;}

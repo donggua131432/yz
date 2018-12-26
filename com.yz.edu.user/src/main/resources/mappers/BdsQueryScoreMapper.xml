@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsQueryScoreMapper">
+
+
+	<select id="selectScoreInfo" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+		l.learn_id, l.std_id, i.exam_no, s.mobile, i.stu_name, i.stu_sex, s.id_card, i.test_type, i.test_room_no, i.seat_no, i.fingerprint, i.test_name, i.test_addr, i.test_remark
+		FROM `bms`.bd_learn_info l
+		LEFT JOIN `bms`.bd_student_info s ON s.std_id = l.std_id
+		LEFT JOIN `bms`.bd_test_confirm c on c.learn_id = l.learn_id
+		LEFT JOIN `bms`.bd_test_prove_info i on i.learn_id = l.learn_id
+		WHERE l.std_id=#{stdId,jdbcType=VARCHAR} and s.id_card=#{idCard,jdbcType=VARCHAR} and l.learn_id=#{learnId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectFinalScoreInfo" resultType="java.util.Map">
+		SELECT
+		course_name courseName,
+		score
+		FROM
+			`bms`.bd_student_t_score
+		WHERE
+			learn_id = #{learnId}
+		AND semester = #{semester}
+	</select>
+	
+</mapper>

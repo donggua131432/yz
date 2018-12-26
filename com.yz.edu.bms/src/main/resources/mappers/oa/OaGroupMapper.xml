@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaGroupMapper" >
+	<resultMap id="OaGroupInfoMap" type="com.yz.model.oa.OaGroupInfo">
+	    <id column="group_id"  property="groupId" jdbcType="VARCHAR" />
+	    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+	    <result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+	    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+	    <result column="is_stop" property="isStop" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="VARCHAR"  />
+	    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	    <result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+	</resultMap> 
+  <!-- 人事管理-部门招生组管理 -->
+  <!-- 所有部门招生组 -->
+  <select id="selectAllGroupInfo" resultMap="OaGroupInfoMap" parameterType="com.yz.model.oa.OaGroupInfo">
+	 select og.`group_id`,og.`is_stop`,og.`group_name`,od.`dp_name`,og.`emp_id`,og.`create_user`,date_format(og.`create_time`,'%Y-%m-%d %H:%i:%s') as create_time from oa_group og
+	 left join oa_department od on og.`dp_id`=od.`dp_id`
+	  where '1' = '1'
+	      <if test="groupName != null and '' != groupName">  
+             and og.group_name LIKE CONCAT('%', CONCAT(#{groupName}, '%'))
+         </if>
+         <if test="dpId !=null and '' != dpId">
+             and og.dp_id=#{dpId}
+         </if>
+  </select>
+    <!-- 根据部门招生组名字和所在部门查询招生组数量 -->
+    <select id="selectCountByGroupName" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	select 
+  		count(1)
+  		from oa_group og 
+  	where 
+  		og.group_name = #{groupName} and og.dp_id=#{dpId}
+  </select>
+  
+  <!-- 新增部门招生组 -->
+  <insert id="insertGroupInfo" parameterType="com.yz.model.oa.OaGroupInfo">
+    insert into oa_group (group_id, group_name, dp_id, emp_id,create_user_id,create_user,create_time)
+    values(#{groupId},#{groupName},#{dpId},#{empId},#{createUserId}, #{createUser},now())
+  </insert>
+  <!-- 修改部门招生组信息 -->
+  <update id="updateOaGroupInfo" parameterType="com.yz.model.oa.OaGroupInfo">
+    update oa_group set group_name=#{groupName},dp_id=#{dpId},emp_id=#{empId},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where group_id=#{groupId}
+  </update>
+  <!-- 获取某个部门招生组详细  -->
+  <select id="getOaGroupInfo" resultMap="OaGroupInfoMap" parameterType="java.lang.String">
+     SELECT * FROM oa_group WHERE group_id=#{groupId}
+  </select>
+  <!-- 启用或者停用 -->
+  <update id="groupBlock" parameterType="com.yz.model.oa.OaGroupInfo">
+    update oa_group set is_stop=#{isStop},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where group_id=#{groupId}
+  </update> 
+  <!-- 某个部门下的所有招生组信息 -->
+  <select id="findAllListByDpId" resultMap="OaGroupInfoMap" parameterType="java.lang.String">
+    SELECT group_id,group_name FROM oa_group WHERE dp_id =#{dpId}
+  </select>
+</mapper>

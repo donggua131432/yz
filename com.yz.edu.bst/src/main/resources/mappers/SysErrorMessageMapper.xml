@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.SysErrorMessageMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.system.SysErrorMessage">
+		<id column="error_code" property="errorCode" jdbcType="VARCHAR" />
+		<result column="sys_msg" property="sysMsg" jdbcType="VARCHAR" />
+		<result column="app_msg" property="appMsg" jdbcType="VARCHAR" />
+		<result column="sys_belong" property="sysBelong" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		error_code, sys_msg, app_msg, sys_belong, description, update_time,
+		update_user,
+		update_user_id
+	</sql>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_error_message
+		<where>
+		<if test="errorCode != null and '' != errorCode">
+			and error_code = #{errorCode,jdbcType=VARCHAR}
+		</if>
+		<if test="sysMsg != null and '' != sysMsg">
+			and sys_msg = #{sysMsg,jdbcType=VARCHAR}
+		</if>
+		<if test="appMsg != null and '' != appMsg">
+			and app_msg = #{appMsg,jdbcType=VARCHAR}
+		</if>
+		<if test="sysBelong != null and '' != sysBelong">
+			and sys_belong = #{sysBelong,jdbcType=VARCHAR}
+		</if>
+		<if test="description != null and '' != description">
+			and description = #{description,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null and '' != updateTime">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateUser != null and '' != updateUser">
+			and update_user = #{updateUser,jdbcType=VARCHAR}
+		</if>
+		<if test="updateUserId != null and '' != updateUserId">
+			and update_user_id = #{updateUserId,jdbcType=VARCHAR}
+		</if>
+		</where>
+		order by update_time desc
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from sys_error_message
+		where error_code = #{errorCode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteAllSysErrorMessage">
+		delete from sys_error_message
+		where error_code in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	<delete id="deleteErrorMsg" parameterType="java.lang.String">
+		delete from sys_error_message
+		where error_code = #{errorCode,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insert" parameterType="com.yz.model.system.SysErrorMessage">
+		insert into sys_error_message (error_code, sys_msg, app_msg,
+		sys_belong, description, update_time, update_user, update_user_id
+		)
+		values (#{errorCode,jdbcType=VARCHAR}, #{sysMsg,jdbcType=VARCHAR},
+		#{appMsg,jdbcType=VARCHAR},
+		#{sysBelong,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.system.SysErrorMessage">
+		insert into sys_error_message
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="errorCode != null">
+				error_code,
+			</if>
+			<if test="sysMsg != null">
+				sys_msg,
+			</if>
+			<if test="appMsg != null">
+				app_msg,
+			</if>
+			<if test="sysBelong != null">
+				sys_belong,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="errorCode != null">
+				#{errorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="sysMsg != null">
+				#{sysMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="appMsg != null">
+				#{appMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="sysBelong != null">
+				#{sysBelong,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.system.SysErrorMessage">
+		update sys_error_message
+		<set>
+			<if test="sysMsg != null">
+				sys_msg = #{sysMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="appMsg != null">
+				app_msg = #{appMsg,jdbcType=VARCHAR},
+			</if>
+			<if test="sysBelong != null">
+				sys_belong = #{sysBelong,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where error_code = #{errorCode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.system.SysErrorMessage">
+		update sys_error_message
+		set sys_msg = #{sysMsg,jdbcType=VARCHAR},
+		app_msg = #{appMsg,jdbcType=VARCHAR},
+		sys_belong = #{sysBelong,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user = #{updateUser,jdbcType=VARCHAR},
+		update_user_id = #{updateUserId,jdbcType=VARCHAR}
+		where error_code = #{errorCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

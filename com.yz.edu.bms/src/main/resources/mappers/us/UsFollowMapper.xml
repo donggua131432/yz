@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.us.UsFollowMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.us.UsFollow" >
+    <id column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="assign_flag" property="assignFlag" jdbcType="VARCHAR" />
+    <result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+    <result column="dp_manager" property="dpManager" jdbcType="VARCHAR" />
+    <result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+    <result column="campus_manager" property="campusManager" jdbcType="VARCHAR" />
+    <result column="assign_time" property="assignTime" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    user_id, emp_id, dp_id, dp_manager, campus_id, campus_manager, assign_time
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    user_id, emp_id, dp_id, dp_manager, campus_id, campus_manager,assign_flag, assign_time
+    from us.`us_follow`
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.yz.model.us.UsFollow" >
+    insert into us.`us_follow`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="dpId != null" >
+        dp_id,
+      </if>
+      <if test="dpManager != null" >
+        dp_manager,
+      </if>
+      <if test="campusId != null" >
+        campus_id,
+      </if>
+      <if test="campusManager != null" >
+        campus_manager,
+      </if>
+      <if test="assignFlag != null and assignFlag!=''">
+        assign_flag,
+      </if>
+      <if test="assignTime != null and assignTime != ''">
+        assign_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpId != null" >
+        #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpManager != null" >
+        #{dpManager,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null" >
+        #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusManager != null" >
+        #{campusManager,jdbcType=VARCHAR},
+      </if>
+      <if test="assignFlag != null and assignFlag!=''">
+        #{assignFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="assignTime != null and assignTime != ''">
+        DATE_FORMAT(#{assignTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.us.UsFollow" >
+    update us.`us_follow`
+    <set >
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpId != null" >
+        dp_id = #{dpId,jdbcType=VARCHAR},
+      </if>
+      <if test="dpManager != null" >
+        dp_manager = #{dpManager,jdbcType=VARCHAR},
+      </if>
+      <if test="campusId != null" >
+        campus_id = #{campusId,jdbcType=VARCHAR},
+      </if>
+      <if test="campusManager != null" >
+        campus_manager = #{campusManager,jdbcType=VARCHAR},
+      </if>
+      <if test="assignFlag != null and assignFlag!=''">
+        assign_flag = #{assignFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="assignTime != null and assignTime != ''">
+        assign_time = DATE_FORMAT(#{assignTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+      </if>
+      update_time = now()
+    </set>
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByMobile" parameterType="string" resultMap="BaseResultMap">
+  	SELECT 
+	  f.user_id,
+	  f.emp_id,
+	  f.dp_id,
+	  f.dp_manager,
+	  f.campus_id,
+	  f.campus_manager 
+	FROM
+	  us.`us_follow` f 
+	WHERE f.user_id = 
+	  (SELECT 
+	    u.user_id 
+	  FROM
+	    us.`us_base_info` u 
+	  WHERE u.mobile = #{mobile, jdbcType=VARCHAR} LIMIT 0,1) 
+  </select>
+  
+  <select id="selectUserIdByMobile" parameterType="string" resultType="string">
+  	select u.user_id from us.`us_base_info` u where u.mobile = #{mobile, jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="inertEnrollLog" parameterType="map">
+  	insert into us.`us_enroll_log`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        enroll_id,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="idCard != null" >
+        id_card,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="unvsId != null" >
+        unvs_id,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="unvsName != null" >
+        unvs_name,
+      </if>
+      <if test="pfsnLevel != null" >
+        pfsn_level,
+      </if>
+      <if test="pfsnId != null" >
+        pfsn_id,
+      </if>
+      <if test="pfsnName != null" >
+        pfsn_name,
+      </if>
+      <if test="taId != null" >
+        ta_id,
+      </if>
+      <if test="taName != null" >
+        ta_name,
+      </if>
+      <if test="sg != null" >
+        sg,
+      </if>
+      <if test="scholarship != null" >
+        scholarship,
+      </if>
+      <if test="enrollTime != null" >
+        enroll_time,
+      </if>
+      <if test="enrollChannel != null" >
+        enroll_channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{enrollId,jdbcType=VARCHAR},
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null" >
+        #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsId != null" >
+        #{unvsId,jdbcType=VARCHAR},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=VARCHAR},
+      </if>
+      <if test="unvsName != null" >
+        #{unvsName,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnLevel != null" >
+        #{pfsnLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnId != null" >
+        #{pfsnId,jdbcType=VARCHAR},
+      </if>
+      <if test="pfsnName != null" >
+        #{pfsnName,jdbcType=VARCHAR},
+      </if>
+      <if test="taId != null" >
+        #{taId,jdbcType=VARCHAR},
+      </if>
+      <if test="taName != null" >
+        #{taName,jdbcType=VARCHAR},
+      </if>
+      <if test="sg != null" >
+        #{sg,jdbcType=VARCHAR},
+      </if>
+      <if test="scholarship != null" >
+        #{scholarship,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollTime != null" >
+        str_to_date(#{enrollTime,jdbcType=VARCHAR}, '%Y%m%d%H%i%s'),
+      </if>
+      <if test="enrollChannel != null" >
+        #{enrollChannel,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectOpenIdByEmpId" parameterType="string" resultType="string">
+    select bind_id as open_id from us.`us_base_info` ubi where ubi.emp_id=#{empId, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectOpenIdByStdId" parameterType="string" resultType="string">
+    select bind_id as open_id from us.`us_base_info` ubi where ubi.std_id=#{stdId, jdbcType=VARCHAR}
+  </select>
+</mapper>

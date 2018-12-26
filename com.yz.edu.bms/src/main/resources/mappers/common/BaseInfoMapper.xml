@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.common.BaseInfoMapper">
+	<resultMap id="UnvsMap" type="com.yz.model.common.UnvsSelectInfo">
+		<id column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="unvs_code" property="unvsCode" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="PfsnMap" type="com.yz.model.common.PfsnSelectInfo">
+		<id column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="year" property="year" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="TaMap" type="com.yz.model.common.TaSelectInfo">
+		<id column="ta_id" property="taId" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="ta_code" property="taCode" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="ItemMap" type="com.yz.model.common.ItemSelectInfo">
+		<result column="item_code" property="itemCode" jdbcType="VARCHAR" />
+		<result column="item_name" property="itemName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getFeeItemList" resultMap="ItemMap" parameterType="com.yz.model.condition.common.SelectQueryInfo">
+		SELECT 
+		  bfi.item_code,
+		  bfi.`item_name` 
+		FROM
+		  bd_fee_item bfi 
+		  LEFT JOIN `bd_rt_item` bri 
+		    ON bri.`item_code` = bfi.`item_code` 
+		<where>
+		  and bfi.`status` = '1'
+		  <if test="sId != null and sId !=''">
+		  	and bri.`recruit_type` = #{sId}
+		  </if>
+		</where>
+		GROUP BY bfi.`item_code` 
+		order by bfi.order_num
+	</select>
+	
+	<select id="getUnvsSelectList" resultMap="UnvsMap" parameterType="com.yz.model.condition.common.SelectQueryInfo">
+		SELECT 
+		  u.`unvs_id`,
+		  u.`unvs_code`,
+		  u.`unvs_name`,
+		  u.`recruit_type` 
+		FROM
+		  bd_university u
+		  <if test="ext2 != null and ext2 != ''">
+			LEFT JOIN bd_unvs_profession bup 
+   			 ON u.`unvs_id` = bup.`unvs_id` 
+		  </if>
+		<where>
+			<if test="sName != null and sName !=''">
+				(
+				    u.unvs_name LIKE CONCAT('%', #{sName}, '%') 
+				    OR u.`unvs_code` LIKE CONCAT('%', #{sName}, '%') 
+				 ) 
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				and u.recruit_type = #{ext1, jdbcType=VARCHAR}
+			</if>
+			<if test="ext2 != null and ext2 != ''">
+				and bup.`pfsn_level` = #{ext2}
+			</if>
+			and u.is_stop = '0'
+		</where>
+			<if test="ext2 != null and ext2 != ''">
+				GROUP BY u.`unvs_id` 
+			</if>
+	</select>
+
+	<select id="getPfsnSelectList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="PfsnMap"  >
+		select 
+		  p.`pfsn_id`,
+		  p.`pfsn_name`,
+		  p.`pfsn_code`,
+		  p.`pfsn_level`,
+		  p.`year`
+		from
+		  bd_unvs_profession p 
+		<where>
+		  <if test="sId != null and sId !=''">
+		  	and p.`unvs_id` = #{sId} 
+		  </if>
+		  <if test="sName != null and sName !=''">
+		  	and (p.`pfsn_name` like CONCAT('%', #{sName}, '%') or p.`pfsn_code` like CONCAT('%', #{sName}, '%'))
+		  </if>
+		  <if test="ext1 != null and ext1 != ''">
+		  	and p.pfsn_level = #{ext1}
+		  </if>
+		  <if test="ext2 != null and ext2 != ''">
+		  	and p.grade = #{ext2}
+		  </if>
+		</where>
+	</select>
+
+	<select id="getTaSelectList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="TaMap">
+		SELECT 
+		  t.`ta_name`,
+		  t.`ta_code`,
+		  t.`ta_id` 
+		FROM
+		  bd_test_area t 
+		  <if test="sId != null and sId !=''">
+		  LEFT JOIN bd_proferssion_ta pt 
+		    ON t.`ta_id` = pt.`ta_id` 
+		    </if>
+		<where> 
+			<if test="sId != null and sId !=''">
+		      pt.`pfsn_id` = #{sId, jdbcType=VARCHAR} 
+		    </if>
+		  AND t.`is_allow` = '1' 
+		  <if test="sName != null and sName !=''">
+		  AND (
+		    t.`ta_name` LIKE CONCAT('%', #{sName}, '%') 
+		    OR t.`ta_code` LIKE CONCAT('%', #{sName}, '%')
+		  )
+		  </if>
+		</where>
+	</select>
+	
+	<select id="getUPTName" resultType="map">
+		SELECT 
+		  u.`unvs_name` AS unvsName,
+		  p.`pfsn_name` AS pfsnName,
+		  t.`ta_name` AS taName
+		FROM
+		  bd_university u 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = #{pfsnId, jdbcType=VARCHAR}
+		  LEFT JOIN bd_test_area t 
+		    ON t.`ta_id` = #{taId, jdbcType=VARCHAR} 
+		WHERE u.`unvs_id` = #{unvsId, jdbcType=VARCHAR} 
+	</select>
+	
+	<resultMap id="CampusMap" type="com.yz.model.common.CampusSelectInfo">
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="finance_no" property="financeNo" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getCampusList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="CampusMap">
+		select 
+		  c.`campus_id`,
+		  c.`finance_no`,
+		  c.`campus_name` 
+		from
+		  oa_campus c 
+		<where>
+			<if test="sName != null and sName != ''">
+				and (
+				    c.`campus_name` like CONCAT('%', #{sName}, '%') 
+				    or c.`finance_no` like CONCAT('%', #{sName}, '%')
+				  )
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="DpMap" type="com.yz.model.common.DpSelectInfo">
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getDepartmentList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="DpMap">
+		select 
+		  d.`dp_id`,
+		  d.`dp_name`
+		from
+		  oa_department d 
+		<where>
+			<if test="sId != null and sId != ''">
+				and d.`campus_id` = #{sId}
+			</if>
+			<if test="sName != null and sName != ''">
+				and d.`dp_name` like CONCAT('%', #{sName}, '%')
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="GroupMap" type="com.yz.model.common.GroupSelectInfo">
+		<result column="group_id" property="groupId" jdbcType="VARCHAR" />
+		<result column="group_name" property="groupName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getGroupList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="GroupMap">
+		select 
+		  g.`group_id`,
+		  g.`group_name` 
+		from
+		  oa_group g 
+		<where>
+			<if test="sId != null and sId != ''">
+				and g.`dp_id` = #{sId}
+			</if>
+			<if test="sName != null and sName != ''">
+				and g.`group_name` like CONCAT('%', #{sName}, '%')
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="EmployeeMap" type="com.yz.model.common.EmpSelectInfo">
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getEmployeeList" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="EmployeeMap">
+		select 
+		  e.`emp_id`,
+		  e.`emp_name`,
+		  e.`mobile` 
+		from
+		  oa_employee e 
+		  left join oa_employee_title t 
+		    on t.`emp_id` = e.`emp_id` 
+		  left join oa_employee_job j 
+		    on j.`emp_id` = e.`emp_id` 
+		where 
+		<where>
+			<if test="ext1 != null and ext1 != ''">
+				<choose>
+					<when test="ext1 = 'ZSLS'">
+						<if test="sId != null and sId != ''">
+							and j.`group_id` = #{sId}
+						</if>
+					</when>
+					<otherwise>
+					 	<if test="sId != null and sId != ''">
+							and j.`dp_id` = #{sId}
+						</if>
+					</otherwise>
+				</choose>
+				and t.jt_id = #{ext1, jdbcType=VARCHAR}
+			</if>
+			<if test="sName != null and sName != ''">
+				and (e.`emp_name` like concat('%', #{sName, jdbcType=VARCHAR}) 
+				or e.`mobile` like concat('%', #{sName}, '%') 
+				or j.`recruit_code` like concat('%', #{sName}, '%'))
+			</if>
+		</where>  
+		
+	</select>
+
+	<resultMap id="EmpListMap" type="com.yz.model.common.EmpListInfo">
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="finance_no" property="financeNo" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+		<result column="group_id" property="groupId" jdbcType="VARCHAR" />
+		<result column="group_name" property="groupName" jdbcType="VARCHAR" />
+		<result column="jt_id" property="jtId" jdbcType="VARCHAR" />
+		<result column="campus_manager" property="campusManager" jdbcType="VARCHAR" />
+		<result column="dp_manager" property="dpManager" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getEmpList" parameterType="com.yz.model.common.EmpQueryInfo" resultMap="EmpListMap">
+		select
+			e.emp_id,e.emp_name,e.emp_status,e.mobile,
+			c.campus_id,c.campus_name,c.finance_no,c.emp_id as campus_manager,
+			d.dp_id,d.dp_name,d.emp_id as dp_manager,
+			t.jt_id,g.group_id,g.group_name
+		from oa_employee e
+		left join oa_employee_job j on j.emp_id = e.emp_id
+		left join oa_campus c on c.campus_id = j.campus_id
+		left join oa_department d on d.dp_id = j.dp_id
+		left join oa_employee_title t on t.emp_id = e.emp_id
+		left join oa_group g on g.group_id = j.group_id
+		  <where>
+		  	e.`emp_status` != '2'
+		  	and t.jt_id in
+		  	(
+		  		<foreach collection="queryInfo.jtIds" item="j" separator=",">
+		  			#{j, jdbcType=VARCHAR}
+		  		</foreach>
+		  	)
+			<if test="queryInfo.group != null and queryInfo.group != ''">
+				and g.group_name like concat('%', #{queryInfo.group, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and (e.mobile like concat('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%') or 
+				e.id_card like concat('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%') or 
+				e.emp_name like concat('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%'))
+			</if>
+		  	<if test="queryInfo.campus != null and queryInfo.campus != ''">
+		  		and (c.campus_name like concat('%', #{queryInfo.campus, jdbcType=VARCHAR}, '%') or c.finance_no like concat('%', #{queryInfo.campus}, '%'))
+		  	</if>
+		  	<if test="queryInfo.department != null and queryInfo.department != ''">
+		  		and d.dp_name like concat('%', #{queryInfo.department, jdbcType=VARCHAR}, '%')
+		  	</if>
+		  	<if test="queryInfo.employee != null and queryInfo.employee != ''">
+		  		and (e.emp_name like concat('%', #{queryInfo.employee, jdbcType=VARCHAR}, '%') or e.mobile like concat('%', #{queryInfo.employee, jdbcType=VARCHAR}, '%'))
+		  	</if>
+		  	
+		  	<choose>
+				<when test="user.userLevel == 2">
+					and (j.emp_id = #{user.empId, jdbcType=VARCHAR} or j.campus_id in (
+							<foreach collection="user.myCampusList" item="info" separator=",">
+								#{info.campusId, jdbcType=VARCHAR}
+							</foreach>
+							))
+				</when>
+				<when test="user.userLevel == 3">
+				    and (j.emp_id = #{user.empId, jdbcType=VARCHAR} or j.dp_id in (
+							<foreach collection="user.myDpList" item="info" separator=",">
+								#{info.dpId, jdbcType=VARCHAR}
+							</foreach>
+							))
+				</when>
+				<when test="user.userLevel == 4">
+					  and (j.`emp_id` = #{user.empId, jdbcType=VARCHAR} or j.`emp_id` in (
+							<foreach collection="user.myEmplyeeList" item="info" separator=",">
+								#{info.empId, jdbcType=VARCHAR}
+							</foreach>
+							))
+				</when>
+				<when test="user.userLevel == 5">
+					  and j.`emp_id` = #{user.empId, jdbcType=VARCHAR}
+				</when>
+			</choose>
+		  	
+		  </where>
+	</select>
+	
+	<resultMap id="ThpListMap" type="com.yz.model.common.ThpListInfo">
+		<id column="thp_id" property="thpId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="thp_name" property="thpName" jdbcType="VARCHAR" />
+		<result column="thp_type" property="thpType" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getThpUnSelectedList" parameterType="com.yz.model.common.ThpQueryInfo" resultMap="ThpListMap">
+		SELECT 
+		  t.`thp_id`,
+		  u.`unvs_name`,
+		  u.`recruit_type`,
+		  p.`pfsn_name`,
+		  p.`pfsn_level`,
+		  t.`thp_name`,
+		  t.`semester`,
+		  t.`thp_type` 
+		FROM
+		  bd_teach_plan t 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON t.`pfsn_id` = p.`pfsn_id` 
+		    AND t.`grade` = p.`grade` 
+		  LEFT JOIN bd_university u 
+		    ON p.`unvs_id` = u.`unvs_id` 
+		    AND u.`is_stop` = '0'  
+  		<where>
+  			<if test="unvsName != null and unvsName != ''">
+  				and u.unvs_name like concat('%', #{unvsName, jdbcType=VARCHAR}, '%')
+  			</if>
+  			<if test="pfsnName != null and pfsnName != ''">
+  				and p.pfsn_name like concat('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+  			</if>
+  			<if test="unvsId != null and unvsId != ''">
+  				and u.unvs_id = #{unvsId, jdbcType=VARCHAR} 
+  			</if>
+  			<if test="pfsnId != null and pfsnId != ''">
+  				and p.pfsn_id = #{pfsnId, jdbcType=VARCHAR} 
+  			</if>
+  			<if test="semester != null and semester != ''">
+  				and t.semester = #{semester, jdbcType=VARCHAR} 
+  			</if>
+  			<if test="recruitType != null and recruitType != ''">
+  				and u.recruit_type = #{recruitType, jdbcType=VARCHAR}
+  			</if>
+  			<if test="pfsnLevel != null and pfsnLevel != ''">
+  				and p.pfsn_level = #{pfsnLevel, jdbcType=VARCHAR}
+  			</if>
+  			<if test="grade != null and grade != ''">
+  				and p.grade = #{grade, jdbcType=VARCHAR}
+  			</if>
+  			<if test="selectedThpId != null and selectedThpId.length > 0">
+  				and t.thp_id not in(
+  					<foreach collection="selectedThpId" item="tId" separator=",">
+  						#{tId, jdbcType=VARCHAR}
+  					</foreach>
+  				)
+  			</if>
+  		</where>
+	</select>
+	
+	<select id="getThpSelectedList" parameterType="com.yz.model.common.ThpQueryInfo" resultMap="ThpListMap">
+		SELECT 
+		  t.`thp_id`,
+		  u.`unvs_name`,
+		  u.`recruit_type`,
+		  p.`pfsn_name`,
+		  p.`pfsn_level`,
+		  t.`thp_name`,
+		  t.`semester`,
+		  t.`thp_type`,
+		  t.`grade` 
+		FROM
+		  bd_teach_plan t 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON t.`pfsn_id` = p.`pfsn_id`  
+		    AND t.`grade` = p.`grade` 
+		  LEFT JOIN bd_university u 
+		    ON p.`unvs_id` = u.`unvs_id` 
+		<if test="courseId != null and courseId != ''">
+		  LEFT JOIN bd_plan_course pc
+		    ON t.`thp_id` = pc.`thp_id`
+		</if>
+		<where>
+			<choose>
+				<when test="courseId != null and courseId != ''">
+					pc.`course_id` = #{courseId, jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					t.`thp_id` in (
+					<foreach collection="selectedThpId" item="tId" separator=",">
+						#{tId, jdbcType=VARCHAR}
+					</foreach>
+					)
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<resultMap id="TbListMap" type="com.yz.model.common.TbListInfo">
+		<id column="textbook_id" property="textbookId" jdbcType="VARCHAR" />
+		<result column="textbook_name" property="textbookName" jdbcType="VARCHAR" />
+		<result column="publisher" property="publisher" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getTbUnSelectedList" parameterType="com.yz.model.common.TbQueryInfo" resultMap="TbListMap">
+		select 
+		  b.`textbook_id`,
+		  b.`textbook_name`,
+		  b.`publisher` 
+		from
+		  bd_textbook b 
+  		<where>
+  			<if test="textbookName != null and textbookName != ''">
+  				and b.textbook_name like concat('%', #{textbookName, jdbcType=VARCHAR}, '%')
+  			</if>
+  			<if test="publisher != null and publisher != ''">
+  				and b.publisher like concat('%', #{publisher, jdbcType=VARCHAR}, '%')
+  			</if>
+  			<if test="textbookType != null and textbookType != ''">
+  				and b.textbook_type #{textbookType, jdbcType=VARCHAR}
+  			</if>
+  			<if test="selectedTbIds != null and selectedTbIds.length > 0">
+  				and b.textbook_id not in(
+  					<foreach collection="selectedTbIds" item="tId" separator=",">
+  						#{tId, jdbcType=VARCHAR}
+  					</foreach>
+  				)
+  			</if>
+  		</where>
+	</select>
+	
+	<select id="getTbSelectedList" parameterType="com.yz.model.common.TbQueryInfo" resultMap="TbListMap">
+		select 
+		  b.`textbook_id`,
+		  b.`textbook_name`,
+		  b.`publisher` 
+		from
+		  bd_textbook b 
+		<if test="courseId != null and courseId != ''">
+		  left join bd_course_textbook ct 
+		    on ct.`textbook_id` = b.`textbook_id` 
+		</if>
+		<where>
+			<choose>
+				<when test="courseId != null and courseId != ''">
+					ct.`course_id` = #{courseId, jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					b.`textbook_id` in (
+					<foreach collection="selectedTbIds" item="tId" separator=",">
+						#{tId, jdbcType=VARCHAR}
+					</foreach>
+					)
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="schoolSuperKeyValue" resultType="java.util.Map" parameterType="java.lang.String">
+		select e.emp_id,e.emp_name
+		from oa_employee e
+		left join oa_employee_job j on j.`emp_id` = e.`emp_id`
+		left join oa_campus c on c.`campus_id` = j.`campus_id`
+		left join oa_department d on d.`dp_id` = j.`dp_id`
+		left join oa_employee_title t on t.`emp_id` = e.`emp_id`
+		left join oa_group g on g.`group_id` = j.`group_id`
+		where e.emp_status!='2' and t.jt_id in ('XJ','XB','FXZ')
+		<if test="eName != null and '' != eName">
+			and e.emp_name like CONCAT('%',#{eName},'%')
+		</if>
+	</select>
+
+
+	<select id="getDpIdList" resultType="java.lang.String" parameterType="java.lang.String">
+		select dp_id from oa_department d left join oa_campus c on d.campus_id=c.campus_id where
+		<choose>
+			<when test="empId != null and empId != ''">
+				d.emp_id = #{empId, jdbcType=VARCHAR} or c.emp_id = #{empId, jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				d.emp_id ='0' or c.emp_id = '0'
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getSubEmpIdList" resultType="java.lang.String" parameterType="java.lang.String">
+		select j.emp_id from oa_department d left join oa_employee_job j on d.dp_id=j.dp_id
+		where d.emp_id = #{empId, jdbcType=VARCHAR} and j.emp_id != #{empId, jdbcType=VARCHAR}
+	</select>
+</mapper>

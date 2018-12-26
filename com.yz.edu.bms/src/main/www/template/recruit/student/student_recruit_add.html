@@ -1,0 +1,501 @@
+<!--_meta 作为公共模版分离出去-->
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/custom.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>基本信息</title>
+</head>
+<body>
+  <article class="page-container">
+    <div class="form yz-form">
+      <form method="post" class="form form-horizontal" id="form-student-info" enctype="multipart/form-data">
+        <input type="hidden" name="stdId" id="stdId" />
+        <input type="hidden" name="recruitType" id="recruitType" th:value="${recruitType}" />
+        <ul id="progressbar">
+          <li class="active">基本信息</li>
+          <li>学历信息</li>
+          <li>报读信息</li>
+        </ul>
+        <span class="c-red">说明："*"表示必填项，"<span style="color: green">*</span>"表示审核必须完善的资料</span>
+        <!--------基本信息------->
+        <fieldset page="baseInfo">
+          <div class="cl">
+            <div class="f-l halfPage">
+              <p>基础资料</p>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>姓名：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="姓名" id="stdName" name="stdName" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>证件类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="idType" name="idType">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>证件号：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="证件号" id="idCard" name="idCard" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>性别：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="sexSelect" name="sexSelect">
+                  </select>
+                  <input type="hidden" name="sex" id="sex" value />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>生日：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd'})" id="birthdayInput" name="birthdayInput" class="input-text Wdate" style="width: 180px;" />
+                  <input type="hidden" class="input-text" placeholder="请输入生日" id="birthday" name="birthday" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入手机" id="mobile" name="mobile" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>民族：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="nation" name="nation">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>政治面貌：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="politicalStatus" name="politicalStatus">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>户口类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="rprType" name="rprType">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl city-3">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>户口所在地：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select js-data-example-ajax" id="rprProvinceCode" name="rprProvinceCode" style="width: 30%"></select>
+                  <select class="select" id="rprCityCode" name="rprCityCode" style="width: 30%"></select>
+                  <select class="select" id="rprDistrictCode" name="rprDistrictCode" style="width: 30%"></select>
+                </div>
+              </div>
+              <div class="row cl city-3">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>收教材地址：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="nowProvinceCode" name="nowProvinceCode" style="width: 30%"></select>
+                  <select class="select" id="nowCityCode" name="nowCityCode" style="width: 30%"></select>
+                  <select class="select" id="nowDistrictCode" name="nowDistrictCode" style="width: 30%"></select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"></label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入详细地址" id="address" name="address" />
+                </div>
+              </div>
+              <div th:if="${recruitType}=='1'" class="row cl" >
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>职业：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="jobType" name="jobType"></select>
+                </div>
+              </div>
+              <div th:if="${recruitType}=='2'" class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>在职状况：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="jobStatus" name="jobStatus"></select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">入职时间：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'wpTime\')||\'%y-%M-%d\'}' })" id="wpTime" name="wpTime"
+                    class="input-text Wdate" style="width: 180px;" />
+                </div>
+              </div>
+              <div class="row cl city-3">
+                <label class="form-label col-xs-4 col-sm-3">在职单位所在地：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select js-data-example-ajax" id="wpProvinceCode" name="wpProvinceCode" style="width: 30%"></select>
+                  <select class="select" id="wpCityCode" name="wpCityCode" style="width: 30%"></select>
+                  <select class="select" id="wpDistrictCode" name="wpDistrictCode" style="width: 30%"></select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"></label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入在职单位详细地址" id="wpAddress" name="wpAddress" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">在职单位联系电话：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入在职单位联系电话" id="wpTelephone" name="wpTelephone" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">邮编：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入邮编" id="zipCodeInput" name="zipCodeInput" />
+                  <input type="hidden" class="input-text" id="zipCode" name="zipCode" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">紧急电话：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入紧急电话" id="emergencyContact" name="emergencyContact" />
+                </div>
+              </div>
+            </div>
+            <div class="f-r halfPage">
+              <p>其他资料(选填)</p>
+              <div class="row cl">
+                <label class="form-label col-xs-3 col-sm-3">照片：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <span id="member-photo"></span>
+                  <span class="btn-upload mb-30">
+                    <button class="btn btn-primary radius" onclick="">选取图片</button>
+                    <input type="file" multiple name="headPic" id="selectPhoto" class="input-file" />
+                    <input type="hidden" name="headPortrait" id="headPortrait" value="" />
+                    <input type="hidden" name="isPhotoChange" id="isPhotoChange" value="" />
+                  </span>
+                  <input type="button" name="next" onclick="deletPhoto()" class="btn btn-normal-outline radius mb-30" value="删除" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">座机：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入座机" id="telephone" name="telephone" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">Email：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入Email" id="email" name="email" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">QQ：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入QQ" id="qq" name="qq" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">微信：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入微信" id="wechat" name="wechat" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">职位：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入职称" id="jobTitle" name="jobTitle" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">工作单位：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入工作单位" id="workPlace" name="workPlace" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>婚姻状况：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="maritalStatus" name="maritalStatus"></select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">备注：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <textarea name="remark" id="remark" cols="" rows="" class="textarea" placeholder="请输入备注...最少输入10个字符" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+                  <p class="textarea-numberbar">
+                    <em class="textarea-length">0</em>/100
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="onWindow-r-b">
+            <input type="button" name="next" style="width: 90px;"  id="bt_baseInfo_next" class="next btn btn-primary radius" value="下一步" />
+          </div>
+        </fieldset>
+        <!--------学历信息------->
+        <fieldset page="history">
+          <div class="cl">
+            <div class="fullPage">
+              <p>学历信息</p>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="edcsType" name="edcsType" style="width: 100%"> </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业院校：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入原毕业院校" id="unvsName" name="unvsName" />
+                </div>
+              </div>
+              <div class="row cl city-3">
+                <label class="form-label col-xs-4 col-sm-3">原毕业院校所在地：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="oldProvinceCode" name="oldProvinceCode" style="width: 30%"></select>
+                  <select class="select" id="oldCityCode" name="oldCityCode" style="width: 30%"></select>
+                  <select class="select" id="oldDistrictCode" name="oldDistrictCode" style="width: 30%"></select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">原毕业入学时间：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'graduateTime\')||\'%y-%M-%d\'}' })" id="adminssionTime" name="adminssionTime"
+                    class="input-text Wdate" style="width: 180px;" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业时间：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'adminssionTime\')||\'%y-%M-%d\'}' })" id="graduateTime" name="graduateTime"
+                    class="input-text Wdate" style="width: 180px;" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业专业：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入原毕业专业" id="profession" name="profession" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原毕业证编号：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入原毕业证编号" id="diploma" name="diploma" />
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">原毕业专业学制：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="edcsSystem" name="edcsSystem" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl" th:classappend="${recruitType}=='2'?'show':'invisible'">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>是否电大毕业：</label>
+                <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                  <div class="radio-box">
+                    <input type="radio" name="isOpenUnvs" id="isOpenUnvs-1" value="1" />
+                    <label for="isOpenUnvs-1">是</label>
+                  </div>
+                  <div class="radio-box">
+                    <input type="radio" name="isOpenUnvs" id="isOpenUnvs-0" value="0" />
+                    <label for="isOpenUnvs-0">否</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row cl invisible">
+                <label class="form-label col-xs-4 col-sm-3">原学科：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text"  id="subject" name="subject" class="input-text" placeholder="请输入原学科"/>
+                </div>
+              </div>
+              <div class="row cl invisible">
+                <label class="form-label col-xs-4 col-sm-3">原学科门类：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text"  id="subjectCategory" name="subjectCategory" class="input-text" placeholder="请输入原学科门类"/>
+                </div>
+              </div>
+              <div class="row cl invisible">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历学习类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="studyType" name="studyType" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl invisible">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>原学历证明材料：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="materialType" name="materialType" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl invisible">
+                <label class="form-label col-xs-4 col-sm-3"><span style="color: green">*</span>证明材料编号：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text"  id="materialCode" name="materialCode" class="input-text" placeholder="请输入证明材料编号"/>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-r mt-20">
+            <input type="button" name="previous" class="previous btn btn-normal-outline radius mr-10" value="返回上一步" />
+            <input type="button" name="next" class="next btn btn-primary radius" value="下一步" />
+          </div>
+        </fieldset>
+        <!--------报读信息------->
+        <fieldset page="enroll">
+          <div class="cl">
+            <div class="fullPage mb-10">
+              <p>报读资料</p>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>报考层次：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="pfsnLevel" name="pfsnLevel" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>入学形式：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="enrollType" name="enrollType" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>入学年级：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="grade" name="grade" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>第一志愿：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="unvsId" name="unvsId" style="width: 30%"></select>
+                  <select id="pfsnId" name="pfsnId" style="width: 30%" disabled="disabled"></select>
+                  <select class="select" id="taId" name="taId" style="width: 30%" disabled="disabled"></select>
+                  <!-- <input class="btn btn-secondary radius ml-10" type="button" id="btn_fst" value="&nbsp;重置&nbsp;" /> -->
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">第二志愿：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="secUnvsId" name="secUnvsId" style="width: 30%"></select>
+                  <select id="secPfsnId" name="secPfsnId" style="width: 30%" disabled="disabled"></select>
+                  <select class="select" id="secTaId" name="secTaId" style="width: 30%" disabled="disabled"></select>
+                  <!-- <input class="btn btn-secondary radius ml-10" type="button" id="btn_sec" value="&nbsp;重置&nbsp;" /> -->
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span th:if="${recruitType}=='1'" class="c-red">*</span>加分类型：</label>
+                <div class="formControls col-xs-8 col-sm-9 skin-minimal" id="bpTypeBox"></div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span th:if="${recruitType}=='1'" class="c-red">*</span>加分数：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <input type="text" class="input-text" placeholder="请输入加分数" id="points" name="points" />
+                </div>
+              </div>
+            </div>
+            <div class="fullPage ">
+              <p>费用及优惠</p>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>优惠类型：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <select class="select" id="scholarship" name="scholarship" style="width: 100%">
+                  </select>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">收费标准：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <div class="bg-fff">
+                    <table id="feeTable" class="table table-border table-bordered table-hover table-bg table-sort">
+                      <thead>
+                        <tr class="text-l">
+                          <th width="200">收费项目</th>
+                          <th width="200">收费金额(元)</th>
+                          <th width="200">优惠金额(元)</th>
+                          <th width="200">应缴金额(元)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                      <tfoot>
+                        <tr class="text-l">
+                          <td>总计</td>
+                          <td></td>
+                          <td></td>
+                          <td id="fee_total">9600</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3"></span>收费标准说明：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                  <span id="offerRemark"> </span>
+                </div>
+              </div>
+              <input type="hidden" id="feeId" value="" name="feeId" />
+              <input type="hidden" id="offerId" value="" name="offerId" />
+              <!--/*@thymesVar id="_web_token" type="com.yz.core.security.constants.SecurityConstant"*/-->
+              <input type="hidden" name="_web_token" th:value="${_web_token}" />
+            </div>
+          </div>
+          <div class="text-r mt-20">
+            <input type="button" name="previous" class="previous btn btn-normal-outline radius mr-10" value="返回上一步" />
+            <input id="bt_submit" type="submit" class="submit btn btn-primary radius" value="保存" />
+          </div>
+        </fieldset>
+      </form>
+    </div>
+   
+  </article>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+    <!-- 基础信息JS -->
+  <script type="text/javascript" th:inline="javascript">
+  	  var recruitType_global=[[${recruitType}]];
+  </script>
+  <script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_recruit_add.js}"></script>
+ </body>
+</html>

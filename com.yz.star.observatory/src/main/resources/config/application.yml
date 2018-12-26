@@ -1,0 +1,28 @@
+spring:
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-file-size: 30Mb
+      max-request-size: 30Mb
+server:
+  display-name: star
+  port: 8090
+logging:
+  config: classpath:config/logback.xml
+  dir:  /home/www/webapp/logs/star
+kafka:
+  bootstrapServers: ${kafka.address}
+  kafkaDerail: ${kafka.kafkaDerail}
+es.cluster:
+  name: ${es.cluster.name}
+  addr: ${es.cluster.addr}
+es.alarm:
+  port: 465
+  host: smtp.qq.com
+  username: 295543787@qq.com
+  password: hisxpymlwnuvbjef
+  receiver: huanghw@yzou.cn,liux@yzou.cn,zhulp@yzou.cn,zhanggh@yzou.cn

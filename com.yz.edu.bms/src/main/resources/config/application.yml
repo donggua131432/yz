@@ -1,0 +1,112 @@
+spring:
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-file-size: 30Mb
+      max-request-size: 30Mb
+server:
+  display-name: bms
+  port: 8080
+logging:
+  config: classpath:config/logback.xml
+  dir:  /home/www/webapp/logs/bms
+jdbc:
+  global:
+    user: ${jdbc_user}
+    password: ${jdbc_password}
+    poolsize: ${jdbc_poolsize}
+    driverClassName: ${jdbc_driverclassName}
+    minIdle: ${jdbc_minIdle}
+    maxActive: ${jdbc_maxActive}
+    maxWait: ${jdbc_maxWait}
+    minEictableIdleTimeMillis: ${jdbc_minEictableIdleTimeMillis}
+    defaultDatasource: bms
+  jdbcConfigInfos:
+    - name: bms
+      url: ${jdbc_url}
+      uniqueResourceName: mysql.bms.write
+redis.pool:
+  minIdle: 10
+  maxIdle: 300
+  maxWait: 1000
+  testOnReturn: false
+  testOnBorrow: false
+  timeout: 1000
+  maxActive: 300
+  redisInfos:
+    - name:default
+      isdefault:true
+      host:${redis_host}
+      port:${redis_port}
+      authKey:${redis_authKey}
+      connectType:single
+oss:
+  accessKeyId: LTAICtJ0nsZL33rZ
+  accessKeySecret: iWfK0ZvQMEZQlddj23lF1iwz9O1eLH
+  endpoint: oss-cn-shenzhen.aliyuncs.com
+oss.file.browser: ${oss_file_browser}
+dubbo:
+  registryAddress: ${dubbo.registry.address}
+  application: bms
+upload:
+   handler: ${upload.handler}
+   path: ${upload.path}
+yunsu : 
+  username : yuanzhi
+  password : yz2686013
+  softid : 64700
+  softkey : d36c1a3374dd4f08830aa764a41267ab
+polyv:
+  baseUrl : http://api.polyv.net/live/
+  appId : eynogj82jc
+  appSecret : d3b81fd951f14fe783df5085bce76328
+  userId : 52554be7b4
+cacheFile:
+  dict: dict.json
+  pcd: pcd.json
+  sysParam: param.json
+  mpJar: mpJar.json
+sf:
+  orderUrl: ${sf.orderUrl}
+  checkword: ${sf.checkword}
+  head: ${sf.head}
+  finance_custid : ${sf.finance_custid}
+  zhimi_custid : ${sf.zhimi_custid}
+  sendbook_custid : ${sf.sendbook_custid}
+jd:
+  customerCode: 020K168144
+  appKey: DC077847946162C9021706CC258E9257
+  appSecret: 054ae874102845a79fb42a11b0dd2027
+  accessToken: c7f7752a-4806-47f8-a712-7d842a7bb12d
+  server_url: https://api.jd.com/routerjson
+  wareHouseCode: '001'
+  salePlat: '0030001'  
+wechat_pub:
+  pub_id: yzService0526
+
+kafka:
+  bootstrapServers: ${kafka.address}
+  kafkaDerail: ${kafka.kafkaDerail}
+  
+yzsysconfig:
+  smsSwitch: ${sms.is.on}
+  paymentCouponSwitch: ${payment.coupon.switch}
+  zhiMiScale: ${yz.zhimi.scale}
+  tempBucket: ${aliyun.oss.tempBucket}
+  planSetting: ${discount.plan.setting}
+  bucket: ${aliyun.oss.bucket}
+  reptAmount: ${yz.rept.amount}
+  addressMaxSize: ${address.max.size}
+  signNumber: ${sign.base.number}
+  fileBrowserUrl: ${file.browser.url}
+  salesRemindTime: ${goods.sales.remind.time}
+  submitState: ${submit.state}
+  regCode: ${reg.code}
+  invoicePhone: ${invoice.phone}
+  invoiceType: ${invoice.type}
+  recruitYear: ${yz.recruit.year}
+  lotteryCode: ${lottery.code}

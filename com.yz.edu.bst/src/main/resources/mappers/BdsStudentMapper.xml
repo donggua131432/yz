@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsStudentMapper">
+
+	<resultMap type="com.yz.model.StudentEnrollInfo" id="EnrollInfo">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="nation" property="nation" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="java.util.HashMap" id="EnrollInfoMap">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="nation" property="nation" jdbcType="VARCHAR" />
+		<result column="recruit_name" property="recruitName" jdbcType="VARCHAR" />
+		<result column="recruit_mobile" property="recruitMobile" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getEnrollList" resultMap="EnrollInfoMap" parameterType="string">
+		SELECT 
+		  s.`std_name`,
+		  s.`id_card`,
+		  s.`nation`,
+		  p.`pfsn_name`,
+		  p.`pfsn_level`,
+		  l.`recruit_type`,
+		  u.`unvs_name`,
+		  t.`ta_name`,
+		  l.`learn_id`,
+		  l.`grade`,
+		  e.`emp_name` AS recruit_name,
+		  e.`mobile` AS recruit_mobile 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_test_area t 
+		    ON t.ta_id = l.ta_id 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN oa_employee e 
+		    ON e.`emp_id` = r.`recruit` 
+		where l.`std_id` = #{stdId, jdbcType=VARCHAR}
+		  and l.`is_data_check` = '0'
+	</select>
+	
+	<resultMap type="com.yz.model.StudentHistory" id="HistoryInfo">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="profession" property="profession" jdbcType="VARCHAR" />
+		<result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+		<result column="diploma" property="diploma" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="java.util.HashMap" id="HistoryInfoMap">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="profession" property="profession" jdbcType="VARCHAR" />
+		<result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+		<result column="diploma" property="diploma" jdbcType="VARCHAR" />
+		<result column="edcs_type" property="edcsTpye" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getHistoryInfo" resultMap="HistoryInfoMap" parameterType="string">
+		select 
+		  h.`unvs_name`,
+		  h.`profession`,
+		  h.`graduate_time`,
+		  h.`diploma`,
+		  h.`learn_id`,
+		  h.`edcs_type`
+		from
+		  bd_student_history h 
+		where h.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateAnnex" >
+		update 
+		  bd_student_annex a 
+		set
+		  a.`annex_url` = #{url, jdbcType=VARCHAR},
+		  a.`annex_status` = '2' 
+		where a.`std_id` = #{stdId, jdbcType=VARCHAR} 
+		  and a.`annex_type` = #{annexType, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAnnexStatus" parameterType="string">
+		update bd_student_info set my_annex_status = '2' where std_id = #{stdId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateHistory" parameterType="com.yz.model.StudentHistory">
+		update 
+		  `bd_student_history` 
+		set
+		  `unvs_name` = #{unvsName, jdbcType=VARCHAR},
+		  `graduate_time` = str_to_date(#{graduateTime, jdbcType=VARCHAR}, '%Y-%m-%d'),
+		  `profession` = #{profession, jdbcType=VARCHAR},
+		  `diploma` = #{diploma, jdbcType=VARCHAR},
+		  `edcs_type` = #{edcsType, jdbcType=VARCHAR}
+		where `learn_id` = #{learnId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="testCompleted" parameterType="string">
+		UPDATE bd_learn_info SET is_test_completed = '1' WHERE learn_id = #{learnId, jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

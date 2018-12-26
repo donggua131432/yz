@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.admin.BmsRoleMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.admin.BmsRole">
+    <id column="role_id"  property="roleId" />
+    <result column="role_name" property="roleName" />
+    <result column="role_code" property="roleCode" />
+    <result column="description" property="description" />
+    <result column="update_user_id" property="updateUserId" />
+    <result column="update_user" property="updateUser" />
+  </resultMap>
+  <resultMap id="RoleAndFuncResult" type="com.yz.model.admin.BmsRoleResponse" extends="BaseResultMap">
+    <association property="funcArray" column="role_id" select="selectFuncsByRoleId" />
+  </resultMap>
+  <resultMap id="FuncResultMap" type="java.lang.String">
+  	<id column="func_id"  property="funcId" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    	role_id ,
+  		role_name ,
+  		role_code ,
+  		description,
+  		update_user_id ,
+  		update_user 
+  </sql>
+  
+  <insert id="updateRoleFunc" >
+  	delete from bms_role_func where role_id = #{roleId};
+  	insert into bms_role_func(role_id,func_id) values
+  	<foreach collection="permissions" item="funcId" index="index" separator="," >  
+        (#{roleId},#{funcId})  
+    </foreach>
+  </insert>
+  
+  <select id="selectCountByRoleCode" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	select 
+  		count(1)
+  		from bms_role yr 
+  	where 
+  		yr.role_code = #{roleCode} 
+  </select>
+  <select id="selectCountByRoleName" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select 
+  		count(1)
+  		from bms_role yr 
+  	where 
+  		yr.role_name = #{roleName} 
+  </select>
+  
+  <select id="selectRoleAndFunc" parameterType="java.lang.String" resultMap="RoleAndFuncResult">
+  	select 
+  		<include refid="Base_Column_List" />
+  	from bms_role
+  	where
+  		role_id = #{roleId} 
+  </select>
+  <select id="selectFuncsByRoleId" parameterType="java.lang.String" resultMap="FuncResultMap">
+  	SELECT 
+	  yf.func_id
+	FROM
+	  bms_role_func yrf 
+	  LEFT JOIN bms_func yf 
+	    ON yf.`func_id` = yrf.`func_id` 
+	WHERE yrf.`role_id` = #{roleId} 
+  </select>
+  <select id="selectAllRoles" resultMap="BaseResultMap" parameterType="com.yz.model.admin.BmsRole">
+  	select 
+  		<include refid="Base_Column_List" />
+  	from bms_role
+  	where
+  		'1' = '1'
+  		<if test="roleName != null and roleName != ''">  
+             and role_name LIKE CONCAT('%', CONCAT(#{roleName}, '%'))
+         </if>  
+         <if test="roleCode != null and roleCode != ''">  
+             and role_code = #{roleCode}
+         </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bms_role
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteRoleFuncId" parameterType="java.lang.String">
+  	delete from bms_role
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from bms_role
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="inserRoleFuncs" parameterType="java.util.HashMap">
+  	insert into bms_role_func(func_id,role_id)
+    values
+	<foreach collection="funcs" item="funcId" index="index" separator="," >  
+        (#{funcId},#{roleId})  
+    </foreach>
+  </insert>
+  
+  <insert id="insert" parameterType="com.yz.model.admin.BmsRole">
+    insert into bms_role (role_id, role_name, role_code, description, update_user_id, update_user)
+    values(#{roleId},#{roleName},#{roleCode},
+    	#{description}, #{updateUserId}, #{updateUser})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.admin.BmsRole">
+    insert into bms_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="roleName != null">
+        role_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.admin.BmsRole">
+    update bms_role
+    <set>
+      <if test="roleName != null">
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleCode != null">
+        role_code = #{roleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null">
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.admin.BmsRole">
+    update bms_role
+    set role_name = #{roleName,jdbcType=VARCHAR}
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="findAllKeyValue" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT role_id,role_name FROM bms_role WHERE 1=1
+  	 <if test="rName != null and '' != rName">
+        and role_name like CONCAT('%',#{rName},'%')
+    </if>
+  </select>
+</mapper>

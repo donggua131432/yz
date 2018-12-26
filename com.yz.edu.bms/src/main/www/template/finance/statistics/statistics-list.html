@@ -1,0 +1,236 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" th:href="@{/favicon.ico}">
+<link rel="Shortcut Icon" th:href="@{/favicon.ico}" />
+<!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/jquery.select2/select2.min.css}" />
+<style type="text/css">
+.mask {
+	position: absolute;
+	top: 0px;
+	filter: alpha(opacity = 60);
+	background-color: #777;
+	z-index: 1002;
+	left: 0px;
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+}
+</style>
+<!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+<title>财务统计</title>
+</head>
+<body>
+	<nav class="breadcrumb">
+		<i class="Hui-iconfont">&#xe67f;</i> 财务管理 <span class="c-gray en">/</span>
+		财务统计 <a class="btn btn-success radius r"
+			style="line-height: 1.6em; margin-top: 3px"
+			href="javascript:location.replace(location.href);" title="刷新"><i
+			class="iconfont icon-shuaxin"></i></a>
+	</nav>
+	<div class="page-container">
+		<form id="statistics-form">
+			<input type="hidden" name="excelName" id="excelName" /> <input
+				type="hidden" name="excelType" id="excelType" value="1" />
+			<div class="text-l search" style="position: relative">
+				<div class="cl" style="padding-left: 30px;">
+					<div class="cl">
+						<div class="f-l">
+							<span>院校：</span> <select class="select" size="1" id="unvsId"
+								name="unvsId">
+							</select>
+						</div>
+						<div class="f-l">
+							<span>专业：</span> <select class="select" size="1" id="pfsnId"
+								name="pfsnId">
+							</select>
+						</div>
+						<div class="f-l">
+							<span>年级：</span> <select class="select" size="1" id="grade"
+								name="grade">
+							</select>
+						</div>
+						<div class="f-r mr-15" style="position: absolute; right: 0;">
+							<a class="btn btn-primary radius" href="javascript:;"
+								style="width: 108px !important;" onclick="submit()"> <i
+								class="iconfont icon-sousuo"></i> 导出EXCEL
+							</a> <a class="btn btn-normal-outline radius" onclick="_reset()"><i
+								class="iconfont icon-shuaxin"></i></a><br /> (数据量较大，请选择筛选条件)
+						</div>
+					</div>
+					<div class="cl">
+						<div class="f-l">
+							<span>专业层次：</span> <select class="select" size="1" id="pfsnLevel"
+								name="pfsnLevel">
+							</select>
+						</div>
+						<div class="f-l">
+							<span>学员姓名：</span> <input type="text" class="input-text radius"
+								placeholder="" id="stdName" name="stdName">
+						</div>
+						<div class="f-l">
+							<span>身份证：</span> <input type="text" class="input-text radius"
+								placeholder="" id="idCard" name="idCard">
+						</div>
+
+					</div>
+
+					<div class="cl">
+						<div class="f-l">
+							<span>手机号：</span> <input type="text" class="input-text radius"
+								placeholder="" id="mobile" name="mobile">
+						</div>
+						<div class="f-l">
+							<span>优惠类型：</span> <select class="select" size="1"
+								id="scholarship" name="shcolarship">
+							</select>
+						</div>
+						<div class="f-l">
+							<span>校区:</span> <select class="select" size="1" id="campusId"
+								name="campusId">
+							</select>
+						</div>
+					</div>
+					<div class="cl">
+						<!-- <div class="f-l">
+	              <span>学员阶段:</span>
+	              <select class="select" size="1" id="stdStage" name="stdStage">
+	  			  </select> 
+	           </div> -->
+						<div class="f-l">
+							<span>部门名称:</span> <select class="select" size="1" id="dpId">
+								<option value="" selected>--请选择部门名称--</option>
+							</select>
+						</div>
+						<div class="f-l">
+							<span>缴费开始时间： </span> <input type="text" id="startTime"
+								onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',maxDate:'#F{$dp.$D(\'endTime\')}'})"
+								name="startTime" class="input-text Wdate" style="width: 120px;">
+						</div>
+						<div class="f-l">
+							<span>缴费结束时间： </span> <input type="text" id="endTime"
+								onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm',minDate:'#F{$dp.$D(\'startTime\')}'})"
+								name="endTime" class="input-text Wdate" style="width: 120px;">
+						</div>
+					</div>
+
+					<div class="cl" style="padding-top: 3px;">
+						<div class="row cl">
+							<span class="col-sm-1 text-r" style="width: 120px;">学员阶段：</span>
+							<div id="stdStage" class="col-sm-10"></div>
+						</div>
+					</div>
+					<div class="cl" style="padding-top: 3px;">
+						<div class="row cl">
+							<span class="col-sm-1 text-r" style="width: 120px;">缴费项目：</span>
+							<div id="itemCode" class="col-sm-10"></div>
+						</div>
+
+					</div>
+					<div class="cl" style="padding-top: 3px;">
+						<div class="row cl">
+							<span class="col-sm-1 text-r" style="width: 120px;">归属校区：</span>
+							<div id="homeCampusId" class="col-sm-10"></div>
+						</div>
+
+					</div>
+
+					<div class="text-c showOther" style="background-color: #FBFBFB;"
+						onclick="_showOther()">
+						<p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+							<i class="iconfont icon-xiala"></i>
+						</p>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<div class="bg-1">
+			<div class="cl pd-15 bg-1">
+				<span class="l mt-15 mb-15"> </span>
+				<div class="bg-fff">
+
+					<table
+						class="table table-border table-bordered table-bg table-sort"
+						id="tab">
+						<thead>
+							<tr class="text-c">
+								<th width="40">excel名称</th>
+								<th width="30">类型</th>
+								<th width="30">状态</th>
+								<th width="50">备注</th>
+								<th width="40">创建时间</th>
+								<th width="40">创建人</th>
+								<th width="10">操作</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript"
+		th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript"
+		th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript"
+		th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/zTree/v3/js/jquery.ztree.core-3.5.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/zTree/v3/js/jquery.ztree.excheck-3.5.min.js}"></script>
+	<script type="text/javascript"
+		th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+
+	<script type="text/javascript" th:inline="javascript">
+		var varBrowser = [[${_file_browser}]];
+	</script>
+	<script type="text/javascript"
+		th:src="@{/js/webjs/finance/statistics/statistics-list.js}"></script>
+</body>
+
+</html>

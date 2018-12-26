@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.invite.InviteStayFansMapper">
+
+	<resultMap id="InviteUserListMap" type="com.yz.model.invite.InviteUserList" >
+		<id column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="nickname" property="nickname" jdbcType="VARCHAR" />
+		<result column="yz_code" property="yzCode" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="mobile_location" property="mobileLocation" jdbcType="VARCHAR" />
+		<result column="s_scholarship" property="sScholarship" jdbcType="CHAR" />
+		<result column="d_scholarship" property="dScholarship" jdbcType="VARCHAR" />
+		<result column="reg_time" property="regTime" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="p_id" property="pId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="enroll_time" property="enrollTime" jdbcType="VARCHAR" />
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="dp_manager" property="dpManager" jdbcType="VARCHAR" />
+		<result column="assign_flag" property="assignFlag" jdbcType="VARCHAR" />
+		<result column="p_nickname" property="pNickname" jdbcType="VARCHAR" />
+		<result column="p_yz_code" property="pYzCode" jdbcType="VARCHAR" />
+		<result column="p_name" property="pName" jdbcType="VARCHAR" />
+		<result column="p_id_card" property="pIdCard" jdbcType="VARCHAR" />
+		<result column="p_mobile" property="pMobile" jdbcType="VARCHAR" />
+		<result column="p_mobile_location" property="pMobileLocation" jdbcType="VARCHAR" />
+	</resultMap>
+  
+	<select id="getList" parameterType="com.yz.model.condition.invite.InviteUserQuery" resultMap="InviteUserListMap">
+		SELECT
+		  u.user_id, u.nickname, u.yz_code, u.real_name as name, c.cert_no as id_card, c.cert_type,
+		  u.mobile, u.mobile_location, u.scholarship AS s_scholarship,
+		  e.scholarship AS d_scholarship, DATE_FORMAT(u.reg_time, '%Y-%m-%d %H:%i:%s') AS reg_time,
+		  e.pfsn_level, e.pfsn_name, e.unvs_name, e.grade, u.p_id, f.emp_id, f.emp_status,
+		  DATE_FORMAT(e.enroll_time, '%Y-%m-%d %H:%i:%s') AS enroll_time, f.dp_manager,f.assign_flag,
+		  pu.nickname as p_nickname, pu.yz_code as p_yz_code, pu.real_name as p_name,
+		  pc.cert_no as p_id_card, pu.mobile as p_mobile, pu.mobile_location as p_mobile_location
+		FROM us.`us_base_info` u
+		LEFT JOIN us.`us_enroll_log` e ON e.user_id = u.user_id
+		LEFT JOIN us.`us_certificate` c ON c.user_id = u.user_id AND c.cert_type = '1'
+		LEFT JOIN us.`us_follow` f ON f.user_id = u.user_id
+		LEFT JOIN us.`us_base_info` pu ON pu.user_id=u.p_id
+		LEFT JOIN us.`us_certificate` pc ON pc.user_id = pu.user_id AND pc.cert_type = '1'
+		WHERE (f.emp_status = '2' or f.emp_id in ('1193','538','') or f.emp_id is null)
+		<if test="dpIds != null and dpIds.size()>0">
+			and f.dp_id in
+			<foreach collection="dpIds" item="item" open="(" separator="," close=")">
+				#{item, jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="inviteType != null and inviteType != ''">
+		  AND u.user_type = #{inviteType, jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+		  AND u.real_name LIKE CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+		  AND u.mobile LIKE CONCAT('%', #{mobile, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="yzCode != null and yzCode != ''">
+		  AND u.yz_code LIKE CONCAT('%', #{yzCode, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="idCard != null and idCard != ''">
+		  AND c.cert_no LIKE CONCAT('%', #{idCard, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="pName != null and pName != ''">
+		  AND pu.real_name LIKE CONCAT('%', #{pName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="pMobile != null and pMobile != ''">
+		  AND pu.mobile LIKE CONCAT('%', #{pMobile, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="pYzCode != null and pYzCode != ''">
+		  AND pu.yz_code LIKE CONCAT('%', #{pYzCode, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="empId=='1193'.toString()">
+		  AND (f.emp_id in ('1193','') or f.emp_id is null)
+		</if>
+		<if test="empId != null and empId != '' and empId!='1193'.toString()">
+		  AND f.emp_id = #{empId, jdbcType=VARCHAR}
+		</if>
+		<if test="unvsName != null and unvsName != ''">
+		  AND e.unvs_name LIKE CONCAT('%', #{unvsName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="pfsnName != null and pfsnName != ''">
+		  AND e.pfsn_name LIKE CONCAT('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="sScholarship != null and sScholarship != ''">
+		  AND u.scholarship = #{sScholarship, jdbcType=VARCHAR}
+		</if>
+		<if test="dScholarship != null and dScholarship != ''">
+		  AND e.scholarship = #{dScholarship, jdbcType=VARCHAR}
+		</if>
+		<if test="grade != null and grade != ''">
+		  AND e.grade = #{grade, jdbcType=VARCHAR}
+		</if>
+		<if test="hasFollow != null and hasFollow == '0'.toString()">
+		  AND (f.emp_id in ('1193','538','') or f.emp_id is null)
+		</if>
+		<if test="hasFollow != null and hasFollow == '1'.toString()">
+		  AND (f.emp_id not in ('1193','538','') and f.emp_id is not null)
+		</if>
+		<if test="empStatus != null and empStatus != ''">
+		  AND f.emp_status = #{empStatus, jdbcType=VARCHAR}
+		</if>
+		<if test="mobileLocation != null and mobileLocation != ''">
+		  AND u.mobile_location LIKE CONCAT('%', #{mobileLocation, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="regTime != null and regTime != ''">
+		  AND u.reg_time &gt;= #{regTime, jdbcType=VARCHAR}
+		</if>
+		<if test="regTime1 != null and regTime1 != ''">
+		  AND u.reg_time &lt;= #{regTime1, jdbcType=VARCHAR}
+		</if>
+		order by u.reg_time desc
+	</select>
+
+</mapper>

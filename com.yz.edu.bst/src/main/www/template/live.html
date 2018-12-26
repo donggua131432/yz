@@ -1,0 +1,524 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+    <link rel="stylesheet" th:href="@{/css/h-ui/style.css?v=20180322}" />
+    <title>远智学堂-我的直播</title>
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+
+<body>
+<div class="wrraper">
+    <div class="banner">
+        <div class="tit">远智学堂</div>
+    </div>
+    <div class="breadcrumb">
+        <div class="inner">
+            <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+            <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+            <a class="fc9" href="javascript:void(0);" title="我的课表">我的课表</a> <i class="arr-r"></i>
+            <a class="fc6" href="javascript:void(0);" title="我的直播">我的直播</a>
+        </div>
+    </div>
+    <div class="container">
+        <div id="sidebar1" class="sidebar hidden" th:include="common::sidebar"></div>
+        <div id="sidebar2" class="sidebar hidden">
+            <ul>
+                <li class="active"><a th:href="@{/allCourseLive.do}">直播课程</a></li>
+            </ul>
+        </div>
+        <div class="main my-live">
+            <div class="hd" id="courseName"></div>
+            <div class="bd">
+                <div class="questions">
+                    <div id="tabNav" class="q-hd">
+                        <a class="active" href="#talkList" style="width: 100%">留言区</a>
+                        <a href="#chatList" style="display: none">聊天</a>
+                    </div>
+                    <div class="q-bd">
+                        <div id="talkList" class="talk-list">
+                            <ul></ul>
+                        </div>
+                        <div id="chatList" class="talk-list hidden">
+                            <ul></ul>
+                        </div>
+                    </div>
+                    <div class="q-ft">
+                        <div class="q-ft-h">
+                            <i id="btnToggleEmotion" class="i-emotion"></i>
+                        </div>
+                        <form id="sendQuestion" action="post">
+                            <div><textarea id="chatipt" name="chatipt" maxlength="100" placeholder="我要留言"></textarea></div>
+                            <div class="action">
+                                <span class="num"><span id="count">0</span>/100</span><button>发送</button>
+                            </div>
+                        </form>
+                        <div id="facewrp" class="facewrp hidden"></div>
+                    </div>
+                </div>
+                <div id="player" class="player"></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer" th:include="common::footer">
+    </div>
+</div>
+
+
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script src="//player.polyv.net/livescript/liveplayer.js"></script>
+<script src="//livestatic.videocc.net/assets/wjs/dist/socket.io.min.js"></script>
+<script type="text/javascript" th:src="@{/js/emotions.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.everything.min.js?v=20180322}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<script th:inline="javascript" type="text/javascript">
+    var learnId = store.get('learnId'),
+        uid = '52554be7b4', // 直播账号ID
+        vid = '',     // 频道ID
+        userId = '',
+        nickname = '',
+        pic = '//livestatic.videocc.net/v_102/assets/wimages/missing_face.png',
+        chatHost = window.location.protocol + '//chat.polyv.net',       //socket连接地址
+        chatHost2 = window.location.protocol + '//apichat.polyv.net',   //获取聊天内容地址
+        chatToken = '',
+        isSocketConnect = false,
+        socket = null,
+        page = 1,
+        pageSize = 10;
+
+    $(function() {
+        if (!getQueryString('channelId')) {
+            layer.msg('暂无直播', {icon: 5}, function () {
+                window.history.go(-1);
+            });
+        }
+        if (store.get('banUserRoom') === getQueryString('channelId')) {
+            layer.msg('您未被授权观看本直播', {icon: 5}, function () {
+                window.history.go(-1);
+            });
+            return;
+        }
+        getCourseLive();
+        setEmotions();
+
+        $('#sendQuestion').validate({
+            rules: {
+                chatipt: {required: true}
+            },
+            onkeyup: false,
+            focusCleanup: true,
+            success: 'valid',
+            submitHandler: function (form) {
+                if ($('#tabNav .active').attr('href') === '#talkList') {
+                    sendQuestion();
+                } else {
+                    sendChat();
+                }
+            }
+        });
+    });
+
+    function getQueryString(name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return decodeURIComponent(r[2]);
+        }
+        return null;
+    }
+
+    $('#chatipt').on('keyup change',function () {
+        $('#count').text($(this).val().length);
+    });
+
+    //获取课程直播
+    function getCourseLive() {
+        if (getQueryString('userId')) {
+            $('#sidebar2').show();
+            $('#courseName').html(decodeURIComponent(getQueryString('courseName')));
+            vid = getQueryString('channelId');
+            chatToken = '';
+            userId = getQueryString('userId');
+            nickname = '高校';
+
+            initPlayer();
+            socketConnect();
+        } else {
+            $('#sidebar1').show();
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                data: {learnId: learnId, term: getQueryString('term')},
+                url: [[@{/getCourseLive.do}]],
+                success: function (data) {
+                    if ('00' == data.code) {
+                        var courseId = getQueryString('courseId');
+                        var liveInfo = $.map(data.body.live.courseLive, function (item) {
+                            if (item.courseId === courseId) {
+                                return item;
+                            } else {
+                                return null;
+                            }
+                        });
+                        if (liveInfo.length > 0) {
+                            $('#courseName').html(delCode(liveInfo[0].courseName));
+
+                            vid = liveInfo[0].channelId;
+                            chatToken = liveInfo[0].token;
+                            userId = data.body.userId || getUserId();
+                            nickname = data.body.userName;
+
+                            initPlayer();
+                            socketConnect();
+                        } else {
+                            window.history.go(-1);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // 生成随机userid
+    function getUserId() {
+        var uid = store.get('userId');
+        if (uid) {
+            return uid;
+        } else {
+            uid = 'W' + new Date().getTime();
+            store.set('userId', uid);
+            return uid;
+        }
+    }
+
+    // 初始化播放器
+    function initPlayer() {
+        polyvObject('#player').livePlayer({
+            'width': '100%',
+            'height': '100%',
+            'uid': uid,
+            'vid': vid,
+            'param1': userId,
+            'param2': nickname
+        });
+    }
+
+    // 连接socket，ps:判断浏览器支持WebSocket则优先使用
+    function socketConnect() {
+        var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;
+        if (supportsWebSockets) {
+            socket = io.connect(chatHost, {
+                'query': 'token=' + chatToken,
+                'transports': ['websocket']
+            });
+        } else {
+            socket = io.connect(chatHost, {
+                'query': 'token=' + chatToken,
+                'transports': ['polling']
+            });
+        }
+
+        socket.on('connect', function () {
+            //连接服务器成功
+            isSocketConnect = true;
+            getQuestionContent();
+            getChatContent('prepend');
+            socket.emit('message', JSON.stringify({ //用户登录
+                'EVENT': 'LOGIN',
+                'values': [nickname, pic, userId], //昵称、头像地址、用户id
+                'roomId': vid
+            }));
+            //接收信息事件
+            socket.on('message', function (message) {
+                var data = JSON.parse(message);
+                if (data && data.EVENT) { //根据返回的不同事件类型作相应处理
+                    switch (data.EVENT) {
+                        case 'CLOSEROOM': // room closed
+                            break;
+                        case 'GONGGAO': //系统公告
+                            break;
+                        case 'LOGIN': // 用户登录
+                            addChatList(null, [data]);
+                            break;
+                        case 'SPEAK': // 用户发言
+                            addChatList(null, [data]);
+                            break;
+                        case 'T_ANSWER': // 讲师、助教、管理员的回答
+                            if (data.s_userId !== userId) { // 过滤掉与当前用户无关的消息
+                                break;
+                            }
+                            addQuestionList([data]);
+                            break;
+                        case 'S_QUESTION': // 学生发起的提问（包括所有学生）
+                            if (data.user.userId !== userId) { // 过滤掉与当前用户无关的消息
+                                break;
+                            }
+                            addQuestionList([data]);
+                            break;
+                        case 'ERROR': // 出错了
+                            break;
+                        case 'KICK': // 用户被踢
+                            socketLogout(data);
+                            break;
+                        case 'REMOVE_HISTORY': //清空聊天记录
+                            //$talk.empty();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        });
+    }
+
+    // 获取提问记录
+    function getQuestionContent() {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: chatHost2 + '/front/getQuestionContent',
+            data: {roomId: vid},
+            dataType: 'json',
+            success: function (data) {
+                addQuestionList(data);
+            },
+            complete: function (XMLHttpRequest, textStatus) {}
+        });
+    }
+
+    // 发起提问
+    function sendQuestion() {
+        if (!isSocketConnect) {
+            layer.msg('请稍等，连接中…', {icon: 5});
+            return;
+        }
+
+        // 连接socket后，发送数据
+        socket.emit('message', JSON.stringify({
+            EVENT: 'S_QUESTION',
+            roomId: vid, // 当前频道号
+            user: {
+                nick: nickname, // 昵称
+                pic: pic, // 头像地址
+                userId: userId,
+                actor: '学生',
+                userType: 'student',
+            },
+            content: $('#chatipt').val(), // 提问消息内容
+        }));
+
+        $('#chatipt').val('');
+        $('#count').text(0);
+    }
+
+    // 添加消息到列表
+    function addQuestionList(data) {
+        var oldTime;
+        var html = $.map(data, function (item) {
+            var html = '', className = '', time;
+            if (item.s_userId !== userId && item.user.userId !== userId) { // 过滤掉与当前用户无关的消息
+                return null
+            }
+
+            if (item.user.userId === userId) {
+                className = ' right';
+            } else {
+                item.content = item.user.nick + '：' + item.content;
+            }
+
+            if (item.time) {
+                time = new Date(item.time).format('yyyy-MM-dd hh:mm');
+                if (oldTime !== time) {
+                    oldTime = time;
+                    html += item.time ? '<li class="msg-time">' + time + '</li>' : '';
+                }
+            }
+            return html + '<li class="msg' + className + '"><div class="txt">' + formatEmotions(item.content) + '</div></li>';
+        });
+        $('#talkList > ul').append(html);
+        $('#talkList').scrollTop($('#talkList > ul').height());
+    }
+
+    // 登出聊天室
+    function socketLogout(data) {
+        if (data.user.userId !== userId) {
+            return;
+        }
+        store.set('banUserRoom', data.channelId || data.user.roomId, new Date().getTime() + 1000 * 60 * 60 * 2);
+        layer.msg('您未被授权观看本直播', {icon: 5}, function () {
+            window.history.go(-1);
+        });
+    }
+
+    function delCode(courseName) {
+        return courseName.replace(/【([^】]*)】/g, '');
+    }
+
+    // 提问、聊天切换
+    $('#tabNav').on('click', 'a', function (e) {
+        e.preventDefault();
+        $(this).addClass('active').siblings().removeClass('active');
+        $($(this).attr('href')).show().siblings().hide();
+
+        if ($(this).attr('href') === '#talkList') {
+            $('#chatipt').val('').attr('placeholder', '我要留言').change();
+            $('#talkList').scrollTop($('#talkList > ul').height());
+        } else {
+            $('#chatipt').val('').attr('placeholder', '我也来参与一下互动').change();
+            $('#chatList').scrollTop($('#chatList > ul').height());
+        }
+    });
+
+    // 初始化表情
+    function setEmotions() {
+        var html = $.map(emotionJson, function (item) {
+            return '<li class="emotion-iconbox">\n' +
+                    '  <i class="emotion-icon" data-title="' + item.title + '" data-filename="' + item.fileName + '" style="background-position:' + item.position + '"></i>\n' +
+                    '</li>';
+        });
+        $('#facewrp').html('<ul class="cl">' + html.join('') + '</ul>');
+    }
+
+    // 表情转换
+    function formatEmotions(content) {
+        if (!content) return content;
+        return content.replace(/(\[([^\[^\]]*)\])/g, function ($1) {
+            var cur = $.map(emotionJson, function (item) {
+                if ($1 === '[' + item.title + ']') return item;
+            });
+            if (cur.length === 0) {
+                return content;
+            } else {
+                return '<img class="emotionimg" src="' + emotionUrl + cur[0].fileName + '"/>';
+            }
+        });
+    }
+
+    // 选择表情
+    $('#facewrp').on('click', '.emotion-icon', function () {
+        var title = $(this).data('title');
+        var val = $('#chatipt').val() + '[' + title + ']';
+        $('#chatipt').val(val).change();
+    });
+
+    $('#btnToggleEmotion').on('click', function () {
+        $('#facewrp').toggle();
+    });
+
+    // 关闭表情框
+    $('body').on('click', function (e) {
+        if (['emotion-icon', 'emotion-iconbox'].indexOf(e.target.className) === -1 && e.target.id !== 'btnToggleEmotion') {
+            $('#facewrp').hide();
+        }
+    });
+
+    // 获取聊天记录
+    function getChatContent(type) {
+        var start = (page - 1) * pageSize;
+        var end = page * pageSize - 1;
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: chatHost2 + '/front/history',
+            data: {roomId: vid, start: start, end: end},
+            dataType: 'json',
+            success: function (data) {
+                addChatList(type, data.reverse());
+            },
+            complete: function (XMLHttpRequest, textStatus) {}
+        });
+    }
+    function addChatList(type, data) {
+        var oldTime;
+        var html = $.map(data, function (item) {
+            var html = '', className = '', time;
+
+            if (item.EVENT === 'LOGIN') {
+                return '<li class="msg-time">欢迎' + item.user.nick + '加入！</li>';
+            }
+            className = item.user.userId === userId ? ' right' : '';
+            if (item.time) {
+                time = new Date(item.time).format('yyyy-MM-dd hh:mm');
+                if (oldTime !== time) {
+                    oldTime = time;
+                    html += item.time ? '<li class="msg-time">' + time + '</li>' : '';
+                }
+            }
+            return html + '<li class="msg' + className + '">' +
+                '  <div class="talk-logo"><img src="' + item.user.pic + '"></div>' +
+                '  <div class="talk-box">' +
+                '    <p class="talk-info"><span class="talk-name">' + item.user.nick + '</span></p>' +
+                '    <div class="txt">' + formatEmotions(item.content || item.values[0]) + '</div>' +
+                '  </div>' +
+                '</li>';
+        });
+
+        if (type === 'prepend') {
+            $('#chatList > ul').prepend(html);
+        } else {
+            $('#chatList > ul').append(html);
+        }
+        if (data.length === pageSize) {
+            var btnMore = '<li class="msg-time">\n' +
+                '  <a class="look-more">查看更多...</a>\n' +
+                '</li>';
+            $('#chatList > ul').prepend(btnMore);
+        }
+        if (type !== 'prepend') {
+            $('#chatList').scrollTop($('#chatList > ul').height());
+        }
+    }
+
+    // 查看更新聊天记录
+    $('#chatList').on('click', '.look-more', function () {
+        page = page + 1;
+        getChatContent('prepend');
+        $(this).remove();
+    });
+
+    // 发送聊天
+    function sendChat() {
+        if (!isSocketConnect) {
+            layer.msg('请稍等，连接中…');
+            return;
+        }
+
+        var content = $('#chatipt').val();
+        // 连接socket后，发送数据
+        socket.emit('message', JSON.stringify({
+            EVENT: 'SPEAK',
+            roomId: vid,        // 当前频道号
+            values: [content]   // 发言内容
+        }));
+
+        addChatList(null, [{
+            "user": {"nick": nickname,"pic": pic,"userId": userId},
+            "values": [content]
+        }]);
+
+        $('#chatipt').val('');
+    }
+
+    $('#chatipt').on('keydown', function (e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            $('#sendQuestion').submit();
+        }
+    });
+</script>
+
+
+</body>
+</html>

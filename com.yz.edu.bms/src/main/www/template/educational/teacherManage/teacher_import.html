@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title text="Excel导入"></title>
+<meta name="keywords" content="H-ui.admin v3.0,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
+<meta name="description" content="H-ui.admin v3.0，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+</head>
+<body>
+	<article class="page-container">
+		<form action="" method="post" class="form form-horizontal" id="form-member-add" enctype="multipart/form-data">
+		    <div class="row cl">
+		 		<label class="form-label col-xs-4 col-sm-3">模板：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<a href="../excel/teacher_template.xlsx"><input class="btn btn-primary-outline radius" type="button" value="下载模板"></a>
+				</div>
+			</div>
+			 <div class="row cl">
+		 		<label class="form-label col-xs-4 col-sm-3"></label>
+				<div class="formControls col-xs-8 col-sm-9">
+						说明：</br>
+						关键列：姓名,证件号,性别,年龄,出生年月日,联系地址,课时费用,其它费用,手机,毕业院校,毕业专业,毕业时间,学位,职称,所属校区,工作单位</br>
+						1.生日填写格式(1988-09-23)</br>
+                		2.分配校区填写格式（惠州校区|梅州校区|肇庆校区.....）</br>
+						3.教师资格证种类（幼儿园教师资格|小学教师资格|初级中学教师资格|高级中学教师资格|中等职业学校教师资格|中等职业学校实习指导教师资格|高等学校教师资格|成人/大学教育的教师资格）</br>
+						<font color="red">请严格按模板填写，否则可能导致无法准确导入。</font>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">导入：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span class="btn-upload form-group">
+					  <a href="javascript:void();" class="btn btn-primary radius">
+					    <i class="Hui-iconfont">&#xe63e;</i> 浏览文件
+					  </a>
+					  <input type="file" name="excelTeacher" class="input-file">
+					  <input class="input-text upload-url radius" type="text" name="excelPath" id="excelPath" readonly>
+					</span>
+				</div>
+			</div>
+			</br></br>
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input id="import" class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;开始导入&nbsp;&nbsp;&nbsp;&nbsp;">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input class="btn btn-primary radius" onclick="layer_close();" type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;取消&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;">
+				</div>
+			</div>
+		</form>
+	</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>		
+  <script type="text/javascript" th:src="@{/js/webjs/educational/teacherManage/teacher_import.js}"></script>
+	<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

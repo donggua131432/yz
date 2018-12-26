@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <!--/meta 作为公共模版分离出去-->
+    <title>添加学员</title>
+</head>
+<body>
+    <div class="pd-15">
+        <div class="bg-fff pd-15 bk-gray radius mt-15">
+            <table class="table table-border table-bordered table-hover table-bg table-sort" id="annexListTable">
+                <thead>
+                    <tr class="text-c">
+                        <th width="25"><input type="checkbox" name="all" value=""/></th>
+                        <th width="80">附件名称</th>
+                        <th width="60">图片</th>
+                        <th width="80">是否必传</th>
+                        <th width="100">上传人</th>
+                        <th width="90">上传时间</th>
+                        <th width="40">附件状态</th>
+                        <th width="100">驳回原因</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="photoPreview">
+        <img src="" class="thumbnail" alt="">
+    </div>
+    <input type="hidden" id="learnId" th:value="${leandId}"/>
+    <div id="reason-box" style="visibility: hidden;">
+        <div class="row cl mr-5 ml-5 mt-5">
+            <div class="formControls mt-10">
+                <textarea name="reason" id="reason" cols="" rows="" class="textarea" placeholder="请输入备注...最少输入10个字符"
+                          onKeyUp="$.Huitextarealength(this,100)"></textarea>
+                <p class="textarea-numberbar">
+                    <em class="textarea-length">0</em>/100
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/formdata.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+    	var getDataUrl=[[${getDataUrl}]];
+    	var learnId=[[${learnId}]];
+    	var updateUrl=[[${updateUrl}]];
+    	var deleteUrl=[[${deleteUrl}]];
+    	var chargeUrl=[[${chargeUrl}]];
+    </script>
+    <script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_annex_list.js}"></script>
+</body>
+</html>

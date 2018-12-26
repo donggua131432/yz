@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.recruit.StudentJudgeMapper">
+	<resultMap id="JudgeListMap" type="com.yz.model.recruit.StduentJudgeList">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<result column="nation" property="nation" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="political_status" property="politicalStatus" jdbcType="VARCHAR" />
+		<result column="edcs_type" property="edcsType" jdbcType="VARCHAR" />
+		<result column="wp_province_code" property="wpProvinceCode" jdbcType="VARCHAR" />
+		<result column="wp_city_code" property="wpCityCode" jdbcType="VARCHAR" />
+		<result column="wp_district_code" property="wpDistrictCode" jdbcType="VARCHAR" />
+		<result column="wp_address" property="wpAddress" jdbcType="VARCHAR" />
+		
+		<result column="scholarship" property="scholarship" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="enroll_time" property="enrollTime" jdbcType="VARCHAR" />
+		
+		<result column="h_unvs_name" property="hUnvsName" jdbcType="VARCHAR" />
+		<result column="h_pfsn_name" property="hPfsnName" jdbcType="VARCHAR" />
+		<result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+		<result column="diploma" property="diploma" jdbcType="VARCHAR" />
+		<result column="h_province_code" property="hProvinceCode" jdbcType="VARCHAR" />
+		<result column="h_city_code" property="hCityCode" jdbcType="VARCHAR" />
+		<result column="h_distirct_code" property="hDistirctCode" jdbcType="VARCHAR" />
+		<result column="recruit_name" property="recruitName" jdbcType="VARCHAR" />
+		<result column="scholarship_status" property="scholarshipStatus" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="getStudentList" resultMap="JudgeListMap" parameterType="com.yz.model.condition.recruit.JudgeQueryInfo">
+		SELECT 
+		  l.`learn_id`,
+		  l.`std_id`,
+		  s.`std_name`,
+		  s.`id_card`,
+		  s.`sex`,
+		  s.`nation`,
+		  s.`political_status`,
+		  s.`edcs_type`,
+		  s.`wp_province_code`,
+		  s.`wp_city_code`,
+		  s.`wp_district_code`,
+		  s.`wp_address`,
+		  l.`scholarship`,
+		  l.`recruit_type`,
+		  u.`unvs_name`,
+		  p.`pfsn_name`,
+		  p.`pfsn_level`,
+		  l.`grade`,
+		  t.`ta_name`,
+		  date_format(l.`create_time`, '%Y-%m-%d %H:%i:%s') AS enroll_time,
+		  h.`unvs_name` AS h_unvs_name,
+		  h.`profession` AS h_pfsn_name,
+		  date_format(h.`graduate_time`, '%Y-%m-%d %H:%i:%s') AS graduate_time,
+		  h.`diploma`,
+		  h.`province_code` AS h_province_code,
+		  h.`city_code` AS h_city_code,
+		  h.`district_code` AS h_district_code,
+		  l.`scholarship_status`,
+		  e.`emp_name` as recruit_name
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  LEFT JOIN bd_test_area t 
+		    ON t.`ta_id` = l.`ta_id` 
+		  LEFT JOIN bd_student_history h 
+		    ON h.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN oa_employee e 
+		    ON r.`recruit` = e.`emp_id` 
+		<where>
+			l.`scholarship` in (
+			<foreach collection="scholarships" item="s" separator=",">
+				#{s, jdbcType=VARCHAR}
+			</foreach>
+			)
+			and l.`is_completed` = '0'
+
+			<if test="stdName != null and stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and s.`id_card` LIKE CONCAT('%', #{idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and s.`mobile` LIKE CONCAT('%', #{mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="unvsName != null and unvsName != ''">
+				and u.`unvs_name` LIKE CONCAT('%', #{unvsName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="pfsnName != null and pfsnName != ''">
+				and p.`pfsn_name` LIKE CONCAT('%', #{pfsnName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="grade != null and grade != ''">
+				and l.grade = #{grade, jdbcType=VARCHAR}
+			</if>
+			<if test="scholarship != null and scholarship != ''">
+				and l.scholarship = #{scholarship, jdbcType=VARCHAR}
+			</if>
+			<if test="scholarshipStatus != null and scholarshipStatus != ''">
+				and l.scholarship_status = #{scholarshipStatus, jdbcType=VARCHAR}
+			</if>
+		</where>
+		
+		ORDER BY l.`update_time` DESC
+	</select>
+
+	<update id="doJudge" parameterType="com.yz.model.recruit.StudentJudgeInfo">
+		update 
+		  bd_learn_info l
+		<set>
+		  <if test="scholarshipStatus != null and scholarshipStatus != ''">
+		  	l.`scholarship_status` = #{scholarshipStatus, jdbcType=VARCHAR},
+		  </if>
+		  <if test="scholarshipStatus != null and 3 == scholarshipStatus and reason != null">
+		  	l.`reason` = #{reason, jdbcType=VARCHAR},
+		  </if>
+		</set> 
+		where l.`learn_id` in (
+			<foreach collection="learnIds" item="lId" separator=",">
+				#{lId, jdbcType=VARCHAR}
+			</foreach>
+		)
+	</update>
+	
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.order.BadPaymentOrderMapper">
+	<resultMap type="com.yz.model.order.BadPaymentInfo" id="BsOrderMap">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+		<result column="trans_no" property="transNo" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="deal_type" property="dealType" jdbcType="VARCHAR" />
+		<result column="deal_addr" property="dealAddr" jdbcType="VARCHAR" />
+		<result column="error_msg" property="errorMsg" jdbcType="VARCHAR" />
+		<result column="execute_count" property="executeCount" jdbcType="VARCHAR" />
+		<result column="last_execute_date" property="lastExecuteDate" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getAllData" parameterType="java.lang.String"
+		resultMap="BsOrderMap">
+		SELECT `id`,
+		`pay_no`,
+		`trans_no`,
+		`amount`,
+		`pay_type`,
+		`deal_type`,
+		`deal_addr`,
+		`error_msg`,
+		`execute_count`,
+		`last_execute_date`
+		FROM us.yz_bad_payment
+		WHERE 1=1
+		<if test="payNo !=null and '' != payNo">
+			and pay_no like CONCAT('%',#{payNo,jdbcType=VARCHAR}, '%')
+		</if>
+	</select>
+
+	<select id="getBadPaymentIds" parameterType="list" resultMap="BsOrderMap">
+		SELECT `id`,
+		`pay_no`,
+		`trans_no`,
+		`amount`,
+		`pay_type`,
+		`deal_type`,
+		`deal_addr`,
+		`error_msg`,
+		`execute_count`,
+		`last_execute_date`
+		FROM us.yz_bad_payment
+		WHERE 1=1
+		<foreach open=" and id in (" collection="badPaymentIds" item="s"
+			separator="," close=")">
+			#{s, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+	
+	<delete id="delBadPayment" parameterType="java.lang.String" >
+	delete from us.yz_bad_payment where id=#{id}
+	</delete>
+	
+	<update id="addBadPaymentExecuteCount" parameterType="java.lang.String">
+	update us.yz_bad_payment set execute_count=#{executeCount},last_execute_date=#{lastExecuteDate} where id=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.message.GwSendRecordsMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.message.GwSendRecords" >
+    <id column="sr_id" property="srId" jdbcType="VARCHAR" />
+    <result column="mtp_id" property="mtpId" jdbcType="VARCHAR" />
+    <result column="receiver" property="receiver" jdbcType="VARCHAR" />
+    <result column="receiver_id" property="receiverId" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="VARCHAR" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.message.GwRecordExport" id="GwRecordExport">
+  	<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+  	<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+  	<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+  	<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+  	<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+  	<result column="msg_channel" property="msgChannel" jdbcType="VARCHAR"/>
+  	<result column="grade" property="grade" jdbcType="VARCHAR"/>
+  	<result column="send_status" property="sendStatus" jdbcType="VARCHAR"/>
+  	<result column="send_time" property="sendTime" jdbcType="VARCHAR"/>
+  	<result column="emp_name" property="tutorName" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sr_id, mtp_id, receiver, receiver_id, send_status, operator, operator_id, send_time
+  </sql>
+  <select id="selectRecordByPage" resultType="java.util.HashMap">
+  	SELECT 
+	  r.`operator`,
+	  r.`receiver`,
+	  r.`send_status` sendStatus,
+	  DATE_FORMAT(r.`send_time`, '%Y-%m-%d %H:%i:%S') sendTime, 
+	  t.`msg_channel` msgChannel,
+	  t.`msg_content` msgContent,
+	  t.`msg_title` msgTitle,
+	  v.`dingding`,
+	  v.`mail`,
+	  v.`open_id` openId,
+	  v.`mobile`,
+	  t.`mtp_id` mtpId,
+	  oe.`emp_name` tutorName
+	FROM
+	  bms.`gw_send_records` r 
+	  LEFT JOIN bms.`gw_msg_template` t 
+	    ON t.`mtp_id` = r.`mtp_id` 
+	  LEFT JOIN bms.`gw_receiver` v 
+	    ON v.`receiver_id` = r.`receiver_id`
+	  LEFT JOIN bms.`bd_learn_rules` blr
+	    ON blr.`learn_id` = v.`learn_id`
+	  LEFT JOIN bms.`oa_employee` oe
+	    ON oe.`emp_id` = blr.`tutor`    
+	  where 1=1	and r.mtp_id is not null
+	  	<if test="receiver != null and receiver != ''">
+    		and r.receiver like CONCAT('%', CONCAT(#{receiver}, '%'))
+    	</if>
+    	<if test="sendStatus != null and sendStatus != ''">
+    		and r.send_status = #{sendStatus}
+    	</if>
+    	<if test="msgChannel != null and msgChannel != ''">
+    		and t.msg_channel = #{msgChannel}
+    	</if>
+    	<if test="tutorName != null and tutorName != ''">
+    		and oe.`emp_name` like CONCAT('%', CONCAT(#{tutorName}, '%'))
+    	</if>
+    	<if test="startTime != null and startTime != ''">
+    		and t.send_time &gt;= #{startTime}
+    	</if>
+    	<if test="endTime != null and endTime != ''">
+    		and t.send_time &lt;= #{endTime}
+    	</if>
+    	order by r.send_time desc
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.`gw_send_records`
+    where sr_id = #{srId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bms.`gw_send_records`
+    where sr_id = #{srId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.message.GwSendRecords" >
+    insert into bms.`gw_send_records` (sr_id, mtp_id, receiver, 
+      receiver_id, send_status, operator, 
+      operator_id, send_time)
+    values (#{srId,jdbcType=VARCHAR}, #{mtpId,jdbcType=VARCHAR}, #{receiver,jdbcType=VARCHAR}, 
+      #{receiverId,jdbcType=VARCHAR}, #{sendStatus,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
+      #{operatorId,jdbcType=VARCHAR}, #{sendTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.message.GwSendRecords" >
+    insert into bms.`gw_send_records`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="srId != null" >
+        sr_id,
+      </if>
+      <if test="mtpId != null" >
+        mtp_id,
+      </if>
+      <if test="receiver != null" >
+        receiver,
+      </if>
+      <if test="receiverId != null" >
+        receiver_id,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="sendTime != null" >
+        send_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="srId != null" >
+        #{srId,jdbcType=VARCHAR},
+      </if>
+      <if test="mtpId != null" >
+        #{mtpId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiver != null" >
+        #{receiver,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverId != null" >
+        #{receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+        #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.message.GwSendRecords" >
+    update bms.`gw_send_records`
+    <set >
+      <if test="mtpId != null" >
+        mtp_id = #{mtpId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiver != null" >
+        receiver = #{receiver,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverId != null" >
+        receiver_id = #{receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where sr_id = #{srId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.message.GwSendRecords" >
+    update bms.`gw_send_records`
+    set mtp_id = #{mtpId,jdbcType=VARCHAR},
+      receiver = #{receiver,jdbcType=VARCHAR},
+      receiver_id = #{receiverId,jdbcType=VARCHAR},
+      send_status = #{sendStatus,jdbcType=VARCHAR},
+      operator = #{operator,jdbcType=VARCHAR},
+      operator_id = #{operatorId,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=TIMESTAMP}
+    where sr_id = #{srId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectRecordForExport" resultMap="GwRecordExport">
+  	SELECT 
+	  r.`receiver` std_name,
+	  CASE r.`send_status`
+	  WHEN '1' THEN '成功'
+	  WHEN '2' THEN '失败'
+	  END AS send_status,
+	  DATE_FORMAT(r.`send_time`, '%Y-%m-%d %H:%i:%S') sendTime, 
+	  (SELECT dict_name FROM sys_dict WHERE p_id='msgChannel' AND dict_value=t.`msg_channel`) msgChannel,
+	  v.`mobile`,
+	  bu.unvs_name,
+	  bup.pfsn_name,
+	  bli.grade,
+	  (SELECT dict_name FROM sys_dict WHERE p_id='pfsnLevel' AND dict_value=bup.pfsn_level) pfsn_level,
+	  oe.emp_name	
+	FROM
+	  bms.`gw_send_records` r 
+	  LEFT JOIN bms.`gw_msg_template` t 
+	    ON t.`mtp_id` = r.`mtp_id` 
+	  LEFT JOIN bms.`gw_receiver` v 
+	    ON v.`receiver_id` = r.`receiver_id`
+	  LEFT JOIN bms.`bd_learn_info` bli
+	    ON bli.learn_id = v.learn_id  
+	  LEFT JOIN bms.`bd_university` bu
+	    ON bu.unvs_id = bli.unvs_id
+	  LEFT JOIN bms.`bd_unvs_profession` bup
+	    ON bup.pfsn_id = bli.pfsn_id 
+	  LEFT JOIN bms.`bd_learn_rules` blr
+	    ON blr.`learn_id` = v.`learn_id`
+	  LEFT JOIN bms.`oa_employee` oe
+	    ON oe.`emp_id` = blr.`tutor`     
+	  WHERE 1=1 AND r.mtp_id IS NOT NULL
+	  <if test="receiver != null and receiver != ''">
+    		and r.receiver like CONCAT('%', CONCAT(#{receiver}, '%'))
+    	</if>
+    	<if test="sendStatus != null and sendStatus != ''">
+    		and r.send_status = #{sendStatus}
+    	</if>
+    	<if test="msgChannel != null and msgChannel != ''">
+    		and t.msg_channel = #{msgChannel}
+    	</if>
+    	<if test="tutorName != null and tutorName != ''">
+    		and oe.`emp_name` like CONCAT('%', CONCAT(#{tutorName}, '%'))
+    	</if>
+    	<if test="startTime != null and startTime != ''">
+    		and t.send_time &gt;= #{startTime}
+    	</if>
+    	<if test="endTime != null and endTime != ''">
+    		and t.send_time &lt;= #{endTime}
+    	</if>
+    	order by r.send_time desc
+  </select>
+</mapper>

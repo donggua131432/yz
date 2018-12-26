@@ -1,0 +1,64 @@
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+
+<title>分配日志</title>
+</head>
+<body>
+	<div class="page-container">
+		<div class="bg-1">
+			<div class="cl pd-15 bg-1">
+				<div class="mt-35 bg-fff">
+					<table class="table table-border table-bordered table-hover table-bg table-sort">
+						<thead>
+							<tr class="text-c">
+								<th index="0" width="80">跟进人</th>
+								<th index="1" width="80">部门</th>
+								<th index="2" width="80">校区</th>
+								<th index="3" width="40">分配类型</th>
+								<th index="4" width="40">分配给</th>
+								<th index="5" width="60">操作人</th>
+								<th index="6" width="60">操作时间</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:inline="javascript">
+		 var varUserId=[[${userId}]];
+	</script>
+	<script type="text/javascript" th:src="@{/js/webjs/invite/user/distribution_log.js}"></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.system.BccLogMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.system.BccLog" >
+    <id column="log_id" property="logId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="app_type" property="appType" jdbcType="VARCHAR" />
+    <result column="i_user_type" property="iUserType" jdbcType="VARCHAR" />
+    <result column="app_version" property="appVersion" jdbcType="VARCHAR" />
+    <result column="device_mode" property="deviceMode" jdbcType="VARCHAR" />
+    <result column="interface_name" property="interfaceName" jdbcType="VARCHAR" />
+    <result column="interface_version" property="interfaceVersion" jdbcType="VARCHAR" />
+    <result column="sys_belong" property="sysBelong" jdbcType="VARCHAR" />
+    <result column="ip_address" property="ipAddress" jdbcType="VARCHAR" />
+    <result column="mac_address" property="macAddress" jdbcType="VARCHAR" />
+    <result column="is_success" property="isSuccess" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_time_str" property="updateTimeStr" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.yz.model.system.BccLogWithBLOBs" extends="BaseResultMap" >
+    <result column="reason" property="reason" jdbcType="LONGVARCHAR" />
+    <result column="post_data" property="postData" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    log_id, user_id, app_type, i_user_type, app_version, device_mode, interface_name, 
+    interface_version, sys_belong, ip_address, mac_address, is_success, update_time
+  </sql>
+  
+  <sql id="Blob_Column_List" >
+    reason, post_data
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from bcc_log
+    where log_id = #{logId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.system.BccLogWithBLOBs" >
+    insert into bcc_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="logId != null" >
+        log_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="appType != null" >
+        app_type,
+      </if>
+      <if test="iUserType != null" >
+        i_user_type,
+      </if>
+      <if test="appVersion != null" >
+        app_version,
+      </if>
+      <if test="deviceMode != null" >
+        device_mode,
+      </if>
+      <if test="interfaceName != null" >
+        interface_name,
+      </if>
+      <if test="interfaceVersion != null" >
+        interface_version,
+      </if>
+      <if test="sysBelong != null" >
+        sys_belong,
+      </if>
+      <if test="ipAddress != null" >
+        ip_address,
+      </if>
+      <if test="macAddress != null" >
+        mac_address,
+      </if>
+      <if test="isSuccess != null" >
+        is_success,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="postData != null" >
+        post_data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="logId != null" >
+        #{logId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="iUserType != null" >
+        #{iUserType,jdbcType=VARCHAR},
+      </if>
+      <if test="appVersion != null" >
+        #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceMode != null" >
+        #{deviceMode,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceName != null" >
+        #{interfaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceVersion != null" >
+        #{interfaceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="sysBelong != null" >
+        #{sysBelong,jdbcType=VARCHAR},
+      </if>
+      <if test="ipAddress != null" >
+        #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="macAddress != null" >
+        #{macAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="isSuccess != null" >
+        #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="postData != null" >
+        #{postData,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.system.BccLogWithBLOBs" >
+    update bcc_log
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null" >
+        app_type = #{appType,jdbcType=VARCHAR},
+      </if>
+      <if test="iUserType != null" >
+        i_user_type = #{iUserType,jdbcType=VARCHAR},
+      </if>
+      <if test="appVersion != null" >
+        app_version = #{appVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceMode != null" >
+        device_mode = #{deviceMode,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceName != null" >
+        interface_name = #{interfaceName,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceVersion != null" >
+        interface_version = #{interfaceVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="sysBelong != null" >
+        sys_belong = #{sysBelong,jdbcType=VARCHAR},
+      </if>
+      <if test="ipAddress != null" >
+        ip_address = #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="macAddress != null" >
+        mac_address = #{macAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="isSuccess != null" >
+        is_success = #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="postData != null" >
+        post_data = #{postData,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where log_id = #{logId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectAll" parameterType="com.yz.model.condition.system.LogQueryInfo" resultMap="ResultMapWithBLOBs">
+  	SELECT 
+	  log_id,
+	  user_id,
+	  app_type,
+	  i_user_type,
+	  app_version,
+	  device_mode,
+	  interface_name,
+	  interface_version,
+	  sys_belong,
+	  ip_address,
+	  mac_address,
+	  is_success,
+	  DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') AS update_time_str,
+	  `reason`,
+	  post_data 
+	FROM
+	  bcc_log 
+  	<where>
+  		<if test="postData != null and postData != ''">
+  			and post_data like concat('%', #{postData, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="errorMsg != null and errorMsg != ''">
+  			and reason like concat('%', #{errorMsg, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="interfaceName != null and interfaceName != ''">
+  			and interface_name like concat('%', #{interfaceName, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="interfaceVersion != null and interfaceVersion != ''">
+  			and interface_version like concat('%', #{interfaceVersion, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="ip != null and ip != ''">
+  			and ip_address like concat('%', #{ip, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="mac != null and mac != ''">
+  			and mac_address like concat('%', #{mac, jdbcType=VARCHAR}, '%')
+  		</if>
+  		<if test="isSuccess != null and isSuccess != ''">
+  			and is_success = #{isSuccess, jdbcType=VARCHAR}
+  		</if>
+  		<if test="sysBelong != null and sysBelong != ''">
+  			and sys_belong = #{sysBelong, jdbcType=VARCHAR}
+  		</if>
+  		<if test="startTime != null">
+  			and update_time &gt; #{startTime,jdbcType=TIMESTAMP}
+  		</if>
+  		<if test="endTime != null">
+  			and update_time &lt; #{endTime,jdbcType=TIMESTAMP}
+  		</if>
+  		<if test="userIds == null or userIds.size() == 0">
+			<if test="(mobile != null and mobile != '') or (yzCode != null and yzCode != '') or (realName != null and realName != '')">
+				and 1=0
+			</if>
+		</if>
+  	</where>
+  </select>
+ 
+  
+</mapper>

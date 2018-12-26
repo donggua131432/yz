@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Request service="OrderService" lang="zh-CN">
+	<Head></Head>
+	<Body>
+		<Order orderid="" j_company="" j_contact=""
+			j_tel="" j_mobile="" j_province="" j_city=""
+			j_county="" j_address="" d_company="" d_contact=""
+			d_tel="" d_mobile="" d_province="" d_city="" d_county="" d_address=""
+			express_type="5" pay_method="1" parcel_quantity="" cargo_length=""
+			cargo_width="25" cargo_height="" remark="" custid="">
+		</Order>
+	</Body>
+</Request>

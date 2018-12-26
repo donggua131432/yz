@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.GsLotteryMapper" >
+	
+	<resultMap type="com.yz.model.GsLottery" id="BaseResult">
+		<result column="lottery_id" property="lotteryId" jdbcType="VARCHAR"/>
+		<result column="lottery_name" property="lotteryName" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="selectUnGainTicketUserId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  r.`user_id`
+		FROM
+		  bms.bd_student_serial s 
+		  LEFT JOIN bms.bd_student_info r 
+		    ON r.`std_id` = s.`std_id` 
+		  LEFT JOIN bms.`bd_serial_suborder` so 
+		    ON so.`serial_no` = s.`serial_no` 
+		  LEFT JOIN bms.`bd_sub_order` od 
+		    ON od.`sub_order_no` = so.`sub_order_no` 
+		  LEFT JOIN bms.`bd_student_order` o 
+		    ON o.`order_no` = od.`order_no` 
+		  LEFT JOIN bms.bd_learn_info l 
+		    ON l.`learn_id` = o.`learn_id` 
+		  LEFT JOIN goods.gs_lottery_ticket t 
+		    ON t.user_id = r.`user_id` 
+		WHERE s.`user_id` IS NULL 
+		  AND l.`recruit_type` = '2' 
+		  AND od.`item_code` = 'Y1' 
+		  AND s.`pay_time` >= '2018-03-16 18:00:00' 
+		  AND t.ticket_id IS NULL 
+		  AND r.`user_id` IS NOT NULL
+		GROUP BY s.`serial_mark`
+	</select>
+	
+	<select id="selectAllWinningInfo" resultType="java.util.HashMap">
+		SELECT 
+		  w.`real_name` realName,
+		  p.`winning_time` winningTime,
+		  l.`prize_name` prizeName,
+		  w.`mobile` 
+		FROM
+		  gs_user_prize p 
+		  LEFT JOIN gs_lottery_prize l 
+		    ON l.`prize_id` = p.`prize_id` 
+		  LEFT JOIN gs_lottery_winning w 
+		    ON w.`winning_id` = p.`winning_id` 
+		  LEFT JOIN `gs_lottery` g 
+		    ON g.`lottery_id` = w.`lottery_id` 
+		 where g.lottery_code = #{lotteryCode}
+		ORDER BY l.`order_num` 
+	</select>
+	
+	<update id="updateUserPrizeAddress">
+		UPDATE 
+		  `gs_user_prize` 
+		SET
+		  `user_name` = #{userName},
+		  `mobile` = #{mobile},
+		  `province` = #{province},
+		  `province_code` = #{provinceCode},
+		  `city` = #{city},
+		  `city_code` = #{cityCode},
+		  `district` = #{district},
+		  `district_code` = #{districtCode},
+		  `address` = #{address} 
+		WHERE `up_id` = #{upId}
+	</update>
+	
+	<select id="selectWinningInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  p.`up_id` upId,
+		  r.`prize_name`,
+		  CASE
+		    WHEN r.prize_type = '2' 
+		    THEN '2' 
+		    WHEN (
+		      p.`province` IS NULL 
+		      AND r.prize_type = '1'
+		    ) 
+		    THEN '1' 
+		    ELSE '2' 
+		  END addressStatus 
+		FROM
+		  gs_user_prize p 
+		  LEFT JOIN gs_lottery_winning w 
+		    ON w.`winning_id` = p.`winning_id` 
+		  LEFT JOIN gs_lottery_prize r 
+		    ON r.`prize_id` = p.`prize_id` 
+		WHERE w.`lottery_id` = #{lotteryId}
+		  AND w.`user_id` = #{userId}
+		ORDER BY p.`winning_time` DESC
+	</select>
+	
+	<select id="selectPrizeWinCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  gs_user_prize p 
+		  LEFT JOIN gs_lottery_winning w 
+		    ON w.`winning_id` = p.`winning_id` 
+		WHERE w.`lottery_id` = #{lotteryId}
+		AND p.prize_id = #{prizeId}
+	</select>
+	
+	<select id="selectWinCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  gs_user_prize p 
+		  LEFT JOIN gs_lottery_winning w 
+		    ON w.`winning_id` = p.`winning_id` 
+		WHERE w.`lottery_id` = #{lotteryId}
+	</select>
+	
+	<update id="cutLotterTicket" parameterType="java.lang.String">
+		UPDATE 
+		  `gs_lottery_ticket` 
+		SET
+		  is_used = '1',
+		  used_time = NOW() 
+		WHERE ticket_id = 
+		  (SELECT 
+		    ticket_id 
+		  FROM
+		    (SELECT 
+		      ticket_id 
+		    FROM
+		      gs_lottery_ticket 
+		    WHERE user_id = #{userId} 
+		      AND lottery_id = #{lotteryId} 
+		      AND is_used = '0' 
+		    LIMIT 0, 1) a)
+	</update>
+	
+	<update id="updateUserPrizeSend" parameterType="java.lang.String">
+		UPDATE `gs_user_prize` SET send_status = #{sendStatus} WHERE up_id = #{upId}
+	</update>
+	
+	<insert id="insertUserPrize" parameterType="java.lang.String">
+		<selectKey resultType="java.lang.String" keyProperty="upId" order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		INSERT INTO `gs_user_prize` (
+		  `up_id`,
+		  `winning_id`,
+		  `prize_id`,
+		  `winning_time`
+		) 
+		VALUES
+		  (
+		    #{upId},
+		    #{winningId},
+		    #{prizeId},
+		    now()
+		  )
+	</insert>
+	
+	<update id="cutPrizeStock" parameterType="java.lang.String">
+		UPDATE `gs_prize_stock` SET prize_count = (prize_count - 1) WHERE prize_id = #{prizeId}
+	</update>
+	
+	<insert id="insertLotteryWinning" parameterType="com.yz.model.GsLotteryWinning">
+		<selectKey resultType="java.lang.String" keyProperty="winningId" order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		INSERT INTO `gs_lottery_winning` (
+		  `winning_id`,
+		  `lottery_id`,
+		  `user_id`,
+		  `real_name`,
+		  `mobile`
+		) 
+		VALUES
+		  (
+		    #{winningId},
+		    #{lotteryId},
+		    #{userId},
+		    #{realName},
+		    #{mobile}
+		  )
+	</insert>
+	
+	<select id="selectUserLotteryCount" parameterType="java.lang.String" resultType="com.yz.model.GsLotteryWinning">
+		SELECT 
+		  `winning_id` winningId,
+		  `lottery_id` lotteryId,
+		  `user_id` userId,
+		  `real_name` realName,
+		  `mobile` 
+		FROM
+		  `gs_lottery_winning` 	
+		 WHERE lottery_id  = #{lotteryId} AND user_id = #{userId}
+	</select>
+	
+	<select id="selectPrizes" parameterType="java.lang.String" resultType="com.yz.model.GsPrize">
+		SELECT 
+		  p.`prize_id` prizeId,
+		  p.`prize_name` prizeName,
+		  p.`prize_type` prizeType,
+		  p.`coupon_id` couponId,
+		  FORMAT(s.`prize_count` / 24,2) probability
+		FROM
+		  `gs_lottery_prize` p 
+		  LEFT JOIN `gs_prize_stock` s 
+		    ON s.`prize_id` = p.`prize_id` 
+		WHERE p.lottery_id = #{lotteryId} 
+		AND p.`is_allow` = '1'
+	</select>
+	
+	<select id="selectLotteryCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from gs_lottery where start_time &lt;= now() and end_time &gt;= now() and status = '1'
+		and lottery_id = #{lotteryId}
+	</select>
+	
+	<select id="selectWinnerInfoList" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  w.`real_name`,
+		  p.`winning_time`,
+		  l.`prize_name`
+		FROM
+		  gs_user_prize p 
+		  LEFT JOIN gs_lottery_prize l 
+		    ON l.`prize_id` = p.`prize_id` 
+		  LEFT JOIN gs_lottery_winning w 
+		    ON w.`winning_id` = p.`winning_id` 
+		  LEFT JOIN `gs_lottery` g 
+		    ON g.`lottery_id` = w.`lottery_id` 
+		WHERE g.`lottery_code` =  #{lotteryCode}
+		and is_carousel = '1'
+		ORDER BY p.`winning_time` DESC
+	</select>
+	
+	<select id="selectLotteryByLotteryCode" parameterType="java.lang.String" resultMap="BaseResult">
+		SELECT 
+		  `lottery_id`,
+		  `lottery_code`,
+		  `lottery_name_name`,
+		  `start_time`,
+		  `end_time`,
+		  `status`,
+		  `remark`
+		FROM
+		  `gs_lottery` 
+		where lottery_code = #{lotteryCode}
+		and start_time &lt;= now() 
+		and end_time &gt;= now()
+		and status = '1'
+	</select>
+	
+	<insert id="insertLotteryTicket" parameterType="java.lang.String">
+		INSERT INTO `gs_lottery_ticket` (
+		  `ticket_id`,
+		  `lottery_id`,
+		  `user_id`
+		) 
+		VALUES
+		  (
+		    seq(),
+		    #{lotteryId},
+		    #{userId}
+		  )
+	</insert>
+	
+	<select id="selectTicketCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  gs_lottery_ticket 
+		WHERE lottery_id = #{lotteryId}
+		  AND user_id = #{userId}
+		  AND is_used = '0' 
+	</select>
+	
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.StudentGraduatePaperMapper">
+	<insert id="insertAttachment" parameterType="com.yz.model.paper.StudentAttachment">
+		DELETE FROM oa_student_graduate_paper_attachment WHERE  learn_id = #{learnId} and paper_upload_type = #{paperUploadType};
+		INSERT INTO oa_student_graduate_paper_attachment (attachment_id,learn_id,paper_upload_type,attachment_name,attachment_url,create_time)
+		VALUES (seq(),
+		#{learnId, jdbcType=VARCHAR},
+		#{paperUploadType,jdbcType=VARCHAR},
+		#{attachmentName,jdbcType=VARCHAR},
+		#{attachmentUrl,jdbcType=VARCHAR},
+		NOW());
+	</insert>
+
+	<select id="selectUserStudentAttachment" parameterType="java.lang.String" resultType="com.yz.model.paper.StudentAttachment">
+		SELECT
+			attachment_id attachmentId,
+			attachment_name attachmentName,
+			attachment_url attachmentUrl,
+			comment_content commentContent,
+			date_format(
+				comment_time,
+				'%Y-%m-%d %H:%i'
+			) commentTime,
+			a.check_status checkStatus,
+			a.paper_upload_type paperUploadType,
+			CASE paper_upload_type
+		WHEN 1 THEN
+			b.paper_title
+		ELSE
+			''
+		END paperTitle
+		FROM
+			oa_student_graduate_paper_attachment a
+		LEFT JOIN oa_student_graduate_paper_task b ON a.learn_id = b.learn_id
+		WHERE a.learn_id = #{learnId}
+	</select>
+
+	<select id="getLearnInfo" resultType="java.util.Map">
+		SELECT
+		a.unvs_id,
+		b.pfsn_level,
+		a.grade,
+		b.pfsn_code
+		FROM
+		bd_learn_info a
+		JOIN bd_unvs_profession b ON a.pfsn_id = b.pfsn_id
+		where a.learn_id = #{learnId}
+	</select>
+
+	<update id="updatePaperTitle">
+		UPDATE oa_student_graduate_paper_task
+		SET
+		<if test="title != null and title != ''" >
+			paper_title = #{title},
+		</if>
+		is_upload = 1,
+		check_status = 1
+		where learn_id = #{learnId}
+	</update>
+
+	<select id="getPaperInfoByLearnId" resultType="java.util.Map">
+		SELECT
+		c.school_department,
+		b.pfsn_name,
+		a.school_roll,
+		c.paper_title,
+		c.guide_teacher,
+		c.guide_teacher_email,
+		c.guide_teacher_phone
+		FROM
+		bd_learn_info a
+		JOIN bd_unvs_profession b ON a.pfsn_id = b.pfsn_id
+		LEFT JOIN oa_student_graduate_paper_task c ON a.learn_id = c.learn_id
+		where a.learn_id = #{learnId}
+	</select>
+</mapper>

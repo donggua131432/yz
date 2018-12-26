@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.YzBadPaymentMapper">
+	<insert id="saveBadPayment" parameterType="com.yz.job.model.YzBadPayment">
+		insert into us.yz_bad_payment (pay_no, trans_no,
+		amount, pay_type, deal_type,deal_addr,
+		error_msg, create_date)
+		values (
+		#{payNo,jdbcType=VARCHAR},
+		#{transNo,jdbcType=VARCHAR},
+		#{amount,jdbcType=DECIMAL}, #{payType,jdbcType=VARCHAR}, 
+		#{dealType,jdbcType=VARCHAR},
+		#{dealAddr,jdbcType=VARCHAR},
+		#{errorMsg,jdbcType=VARCHAR},now())
+	</insert>
+</mapper>

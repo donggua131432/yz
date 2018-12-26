@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.graduate.GraduateApplyMapper">
+	<resultMap id="GraduateStudentInfo" type="com.yz.model.graduate.GraduateStudentInfo">
+		<id column="std_id" property="stdId" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!-- 学员信息 -->
+	<select id="queryStudentByCondition" resultMap="GraduateStudentInfo" parameterType="String">
+		select 
+		  bsi.`std_id`,
+		  bli.`grade`,
+		  bli.`learn_id`,
+		  bli.`std_stage`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  bse.`pfsn_level`,
+		  bu.`unvs_name` 
+		from
+		  bd_learn_info bli 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_student_enroll bse 
+		    on bsi.`std_id` = bse.`std_id` 
+		  left join bd_university bu 
+		    on bse.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_learn_rules blr
+		  ON blr.`learn_id` = bli.`learn_id`
+		  where bli.`std_stage`='7' 
+		  and blr.`recruit`=#{userId}
+		  <if test="condition !=null and '' != condition">
+		     and (
+		      bsi.`id_card`=#{condition}
+			  or bli.`std_no`=#{condition}
+			  or bsi.`std_name`=#{condition, jdbcType=VARCHAR}
+		     )
+		  </if>
+	</select>
+	
+	
+	<resultMap type="com.yz.model.graduate.GraduateApplyInfo" id="GraduateApplyInfo">
+	  <id column="graduate_id" property="graduateId" jdbcType="VARCHAR"></id>
+	  <result column="std_id" property="stdId" jdbcType="VARCHAR"/>
+	  <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	  <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+	  <result column="grade" property="grade" jdbcType="VARCHAR"/>
+	  <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+	  <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+	  <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+	  <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+	  <result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+	  <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+	  <result column="tutor" property="tutor" jdbcType="VARCHAR"/>
+	  <result column="is_register" property="isRegister" jdbcType="VARCHAR"/>
+	  <result column="status" property="status" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!--申请列表信息 -->
+	<select id="queryGraduateApplyInfo" resultMap="GraduateApplyInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+	      bsg.`graduate_id`,
+		  bsg.`std_id`,
+		  bsg.`learn_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  bse.`pfsn_level`,
+		  bu.`unvs_name`,
+		  bli.`recruit_type`,
+		  bli.`std_stage`,
+		  (select 
+		    emp_name 
+		  from
+		    oa_employee 
+		  where emp_id = blr.`tutor`) tutor,
+		  (select 
+		    is_register 
+		  from
+		    bd_register_record 
+		  where std_id = bsg.`std_id` 
+		  order by register_timer desc 
+		  limit 1) is_register 
+		from
+		  bd_student_graduate bsg 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_student_enroll bse 
+		    on bsi.`std_id` = bse.`std_id` 
+		  left join bd_university bu 
+		    on bse.`unvs_id` = bu.`unvs_id` 
+		  left join bd_learn_rules blr 
+		    on bse.`learn_id` = blr.`learn_id`
+		 where 1=1
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	<!-- 新增申请 -->
+	<insert id="insertGraduateApply" parameterType="com.yz.model.graduate.GraduateStudentInfo">
+	   insert into bd_student_graduate (
+		  graduate_id,
+		  learn_id,
+		  std_id,
+		  status,
+		  create_time,
+		  create_user,
+		  create_user_id
+		) 
+		values
+		  (#{graduateId},#{learnId},#{stdId},'1',NOW(),#{createUser},#{createUserId})
+	</insert>
+	<!-- 初始化审核类型 -->
+	<insert id="initGCheckTypes" parameterType="list">
+		insert into bd_graduate_records (
+		  check_id,
+		  graduate_id,
+		  check_status,
+		  g_check_type
+		) 
+		VALUES
+		<foreach collection="list" item="info" index="index" separator=",">
+			(
+			#{info.checkId, jdbcType=VARCHAR},
+			#{info.graduateId, jdbcType=VARCHAR},
+			#{info.checkStatus, jdbcType=VARCHAR},
+			#{info.gCheckType,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	<!--删除申请记录 -->
+	<delete id="deleteGraduate">
+		delete from bd_graduate_records
+		where graduate_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from bd_student_graduate
+		where graduate_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<!-- 毕业学员 -->	
+	<select id="queryGraduateStudentInfosByPage" resultMap="GraduateApplyInfo" parameterType="com.yz.model.graduate.GraduateApplyQuery">
+	   select 
+	      bsg.`graduate_id`,
+		  bsg.`std_id`,
+		  bsg.`learn_id`,
+		  bsi.`std_name`,
+		  bli.`grade`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  bse.`pfsn_level`,
+		  bu.`unvs_name`,
+		  bli.`recruit_type`,
+		  bli.`std_stage`,
+		  bsg.`status`
+		from
+		  bd_student_graduate bsg 
+		  left join bd_learn_info bli 
+		    on bsg.`learn_id` = bli.`learn_id` 
+		  left join bd_student_info bsi 
+		    on bsg.`std_id` = bsi.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_student_enroll bse 
+		    on bsi.`std_id` = bse.`std_id` 
+		  left join bd_university bu 
+		    on bse.`unvs_id` = bu.`unvs_id` 
+		  left join bd_learn_rules blr 
+		    on bse.`learn_id` = blr.`learn_id`
+		 where bsg.`status`='2'
+		 <if test="unvsId !=null and '' != unvsId">
+		      and bu.`unvs_id`=#{unvsId}
+		 </if>
+		 <if test="recruitType !=null and '' != recruitType">
+		     and bli.`recruit_type` = #{recruitType}
+		 </if>
+		  <if test="grade !=null and '' != grade">
+		  	 and bli.`grade` =#{grade}
+		 </if>
+		 <if test="pfsnName !=null and '' != pfsnName">
+		  	 and  bup.`pfsn_name` like  CONCAT('%', CONCAT(#{pfsnName}, '%'))
+		 </if>
+		 <if test="stdName !=null and '' != stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		 </if>
+		  <if test="idCard !=null and '' != idCard">
+		    and bsi.`id_card` = #{idCard}
+		 </if>
+		 <if test="mobile !=null and '' != mobile">
+		    and bsi.`mobile`=#{mobile}
+		 </if>
+
+	</select>
+	<!--确认毕业 -->
+	<update id="confirmGraduate">
+	   update bd_learn_info set std_stage='8' where learn_Id=#{learnId}
+	</update>
+</mapper>

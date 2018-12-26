@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdTestAreaMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdTestArea" >
+    <id column="ta_id" property="taId" jdbcType="VARCHAR" />
+    <result column="ta_name" property="taName" jdbcType="VARCHAR" />
+    <result column="ta_type" property="taType" jdbcType="VARCHAR" />
+    <result column="ta_code" property="taCode" jdbcType="VARCHAR" />
+    <result column="province_code" property="provinceId" jdbcType="VARCHAR" />
+    <result column="city_code" property="cityId" jdbcType="VARCHAR" />
+    <result column="district_code" property="areaId" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ta_id, ta_name, ta_type, ta_code, province_code, city_code, district_code, is_allow, 
+    update_time, update_user, update_user_id, create_user_id, create_time, create_user, 
+    ext_1, ext_2, ext_3
+  </sql>
+  
+  <select id="selectProfessionCityCode" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  t.`city_code` 
+	FROM
+	  bd_proferssion_ta u 
+	  LEFT JOIN bd_test_area t 
+	    ON t.`ta_id` = u.`ta_id` 
+	WHERE u.`pfsn_id` = #{pfsnId}
+  </select>
+  
+  <select id="selectUnvsCityCode" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  t.`city_code` 
+	from
+	  bd_university_test u 
+	  left join bd_test_area t 
+	    on t.`ta_id` = u.`ta_id` 
+	where u.unvs_id = #{unvsId}
+  </select>
+  
+  <select id="selectProfessionProvinceCode" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT DISTINCT
+	  t.`province_code`
+	FROM
+	  bd_proferssion_ta u 
+	  LEFT JOIN bd_test_area t 
+	  ON t.`ta_id` = u.`ta_id`
+	WHERE u.`pfsn_id` = #{pfsnId}
+  </select>
+  
+  <select id="selectUnvsProvinceCode" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  t.`province_code`
+	from
+	  bd_university_test u 
+	  left join bd_test_area t 
+	  on t.`ta_id` = u.`ta_id`
+	where u.unvs_id = #{unvsId}
+  </select>
+  <select id="selectTestAreaCity" resultType="com.yz.model.system.SysCity" parameterType="java.lang.String">
+  	SELECT 
+	  c.`city_code` cityCode,
+	  c.`city_name` cityName
+	FROM
+	  `bd_test_area` t 
+	  LEFT JOIN sys_city c 
+	    ON c.`city_code` = t.`city_code` 
+	WHERE c.`province_code` = #{provinceCode} 
+	GROUP BY t.`city_code` 
+  </select>
+  <select id="selectTestAreaProvince" resultType="com.yz.model.system.SysProvince">
+  	select 
+	  t.province_code provinceCode,
+	  p.`province_name` provinceName 
+	from
+	  bd_test_area t 
+	  left join sys_province p 
+	    on p.`province_code` = t.`province_code` 
+	group by t.`province_code` 
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_test_area
+    where ta_id = #{taId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="isExitTaCode" parameterType="java.lang.String" resultType="boolean"> 
+    select count(ta_id) from bd_test_area
+    <where>
+    	<choose>
+    		<when test="exType == 'UPDATE'">
+    			ta_code = #{taCode, jdbcType=VARCHAR} and ta_code != #{oldTaCode, jdbcType=VARCHAR}
+    		</when>
+    		<when test="exType == 'ADD'">
+    			ta_code = #{taCode, jdbcType=VARCHAR}
+    		</when>
+    	</choose>
+    </where> 
+  </select> 
+
+   <select id="findBdTestAreaByPfsnId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select ba.*
+		FROM bd_test_area ba
+		left join bd_proferssion_ta bpt
+	on ba.`ta_id`= bpt.`ta_id`
+		where bpt.`pfsn_id`=#{pfsnId,jdbcType=VARCHAR}
+	order by ba.create_time desc;
+  </select>
+   <select id="findBdTestArea" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bd_test_area
+    where 1 = 1
+       <if test="provice != null and '' != provice" >
+        and province_code = #{provice,jdbcType=VARCHAR}
+      </if>
+      <if test="city != null and '' != city" >
+        and city_code = #{city,jdbcType=VARCHAR}
+      </if>
+      <if test="district != null and '' != district" >
+        and district_code = #{district,jdbcType=VARCHAR}
+      </if>
+    and is_allow = '1'
+  </select>
+  
+  <delete id="deleteAllTestArea">
+		delete from bd_test_area
+		where ta_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.yz.model.baseinfo.BdTestArea" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_test_area
+    where 1 = 1
+    <if test="taName != null and '' != taName" >
+       and ta_name = #{taName,jdbcType=VARCHAR}
+      </if>
+      <if test="taType != null and '' != taType" >
+      and  ta_type = #{taType,jdbcType=VARCHAR}
+      </if>
+      <if test="taCode != null and '' != taCode" >
+       and ta_code = #{taCode,jdbcType=VARCHAR}
+      </if>
+      <if test="provinceId != null and '' != provinceId" >
+       and province_code = #{provinceId,jdbcType=VARCHAR}
+      </if>
+      <if test="cityId != null and '' != cityId" >
+       and city_code = #{cityId,jdbcType=VARCHAR}
+      </if>
+      <if test="areaId != null and '' != areaId" >
+       and district_code = #{areaId,jdbcType=VARCHAR}
+      </if>
+      <if test="isAllow != null and '' != isAllow" >
+       and is_allow = #{isAllow,jdbcType=CHAR}
+      </if>
+      <if test="updateTime != null and '' != updateTime" >
+       and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateUser != null and '' != updateUser" >
+       and update_user = #{updateUser,jdbcType=VARCHAR}
+      </if>
+      <if test="updateUserId != null and '' != updateUserId" >
+       and update_user_id = #{updateUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="createUserId != null and '' != createUserId" >
+       and create_user_id = #{createUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="createTime != null and '' != createTime" >
+       and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createUser != null and '' != createUser" >
+       and create_user = #{createUser,jdbcType=VARCHAR}
+      </if>
+      <if test="ext1 != null and '' != ext1" >
+       and ext_1 = #{ext1,jdbcType=VARCHAR}
+      </if>
+      <if test="ext2 != null and '' != ext2" >
+       and ext_2 = #{ext2,jdbcType=VARCHAR}
+      </if>
+      <if test="ext3 != null and '' != ext3" >
+       and ext_3 = #{ext3,jdbcType=VARCHAR}
+      </if>
+      <if test="sName != null and '' != sName" >
+        and ta_name like concat('%',#{sName},'%')
+      </if>
+    order by update_time desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from  bd_test_area
+    where ta_id = #{taId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.baseinfo.BdTestArea" >
+    insert into bd_test_area (ta_id, ta_name, ta_type, 
+      ta_code, province_code, city_code, 
+      district_code, is_allow,  update_time, 
+      update_user, update_user_id, create_user_id, 
+      create_time, create_user, ext_1, 
+      ext_2, ext_3)
+    values (#{taId}, #{taName,jdbcType=VARCHAR}, #{taType,jdbcType=VARCHAR}, 
+      #{taCode,jdbcType=VARCHAR}, #{provinceId,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, 
+      #{areaId,jdbcType=VARCHAR}, #{isAllow,jdbcType=CHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, 
+      #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdTestArea" >
+    insert into bd_test_area
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        ta_id,
+      <if test="taName != null" >
+        ta_name,
+      </if>
+      <if test="taType != null" >
+        ta_type,
+      </if>
+      <if test="taCode != null" >
+        ta_code,
+      </if>
+      <if test="provinceId != null" >
+        province_code,
+      </if>
+      <if test="cityId != null" >
+        city_code,
+      </if>
+      <if test="areaId != null" >
+        district_code,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{taId,jdbcType=VARCHAR},
+      <if test="taName != null" >
+        #{taName,jdbcType=VARCHAR},
+      </if>
+      <if test="taType != null" >
+        #{taType,jdbcType=VARCHAR},
+      </if>
+      <if test="taCode != null" >
+        #{taCode,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null" >
+        #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.baseinfo.BdTestArea" >
+    update bd_test_area
+    <set >
+      <if test="taName != null and '' != taName" >
+        ta_name = #{taName,jdbcType=VARCHAR},
+      </if>
+      <if test="taType != null and '' != taType" >
+        ta_type = #{taType,jdbcType=VARCHAR},
+      </if>
+      <if test="taCode != null and '' != taCode" >
+        ta_code = #{taCode,jdbcType=VARCHAR},
+      </if>
+      <if test="provinceId != null and '' != provinceId" >
+        province_code = #{provinceId,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null and '' != cityId" >
+        city_code = #{cityId,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null and '' != areaId" >
+        district_code = #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null and '' != isAllow" >
+        is_allow = #{isAllow,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null and '' != updateTime" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and '' != updateUser" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null and '' != updateUserId" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and '' != createUserId" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null and '' != createTime" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null and '' != createUser" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null and '' != ext1" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null and '' != ext2" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null and '' != ext3" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ta_id = #{taId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.baseinfo.BdTestArea" >
+    update bd_test_area
+    set ta_name = #{taName,jdbcType=VARCHAR},
+      ta_type = #{taType,jdbcType=VARCHAR},
+      ta_code = #{taCode,jdbcType=VARCHAR},
+      province_code = #{provinceId,jdbcType=VARCHAR},
+      city_code = #{cityId,jdbcType=VARCHAR},
+      district_code = #{areaId,jdbcType=VARCHAR},
+      is_allow = #{isAllow,jdbcType=CHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where ta_id = #{taId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectTestAreaIds" parameterType="string" resultType="string">
+  	select 
+		  t.`ta_id`
+		from
+		  bd_test_area t 
+		where t.`ta_id` in 
+		  (select 
+		    ta.`ta_id` 
+		  from
+		    bd_proferssion_ta ta 
+		  where ta.pfsn_id = #{pfsnId, jdbcType=VARCHAR})
+  </select>
+
+
+
+
+  <select id="findAllKeyValue" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT ta_id,ta_name FROM bd_test_area WHERE is_allow='1'
+    <if test="eName != null and '' != eName">
+      and ta_name like CONCAT('%',#{eName},'%')
+    </if>
+  </select>
+</mapper>

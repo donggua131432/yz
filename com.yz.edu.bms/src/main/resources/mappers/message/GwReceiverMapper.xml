@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.message.GwReceiverMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.message.GwReceiver" >
+    <id column="receiver_id" property="receiverId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="mail" property="mail" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="dingding" property="dingding" jdbcType="VARCHAR" />
+    <result column="wechat_no" property="wechatNo" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    receiver_id, name, user_id, std_id,learn_id, emp_id, mail, mobile, open_id, qq, dingding, 
+    wechat_no, ext_1, ext_2, ext_3,learn_id
+  </sql>
+  
+  <select id="selectCountByLearnId" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT 
+	  COUNT(*) 
+	FROM
+	  bms.`gw_msg_receiver` mr 
+	  LEFT JOIN bms.`gw_receiver` r 
+	    ON r.`receiver_id` = mr.`receiver_id` 
+	WHERE r.`learn_id` = #{learnId}
+	  AND mr.`mtp_id` = #{mtpId}
+  </select>
+  
+  <delete id="deleteMtpReceiverByLearnId" parameterType="java.lang.String">
+  	DELETE 
+	FROM
+	  bms.`gw_msg_receiver` 
+	WHERE `mtp_id` = #{mtpId}
+	  AND `receiver_id` in (SELECT 
+	    receiver_id 
+	  FROM
+	    bms.gw_receiver 
+	  WHERE learn_id in
+	  <foreach collection="learnIds" item="learnId" open="(" close=")" separator=",">
+		  #{learnId}
+      </foreach>)
+  </delete>
+  
+  <select id="selectReceiveMsgId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select receiver_id from bms.`gw_msg_receiver` where mtp_id = #{mtpId} and receiver_id = #{receiverId}
+  </select>
+  <insert id="insertMsgReceiver">
+  	INSERT INTO bms.`gw_msg_receiver` (mtp_id, receiver_id) 
+	VALUES
+	  (#{mtpId},#{receiverId})
+  </insert>
+  <select id="selectByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select receiver_id from bms.`gw_receiver` where learn_id = #{learnId}
+  </select>
+  <select id="selectRecerverByMtpId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT 
+	  <include refid="Base_Column_List" />
+	FROM
+	  bms.`gw_receiver` r 
+	  LEFT JOIN bms.`gw_msg_receiver` m 
+	    ON m.`receiver_id` = r.`receiver_id` 
+	WHERE m.`mtp_id` = #{mtpId} 
+  </select>
+  <select id="selectByStdId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+    	receiver_id
+    from bms.`gw_receiver`
+    where learn_id = #{learnId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.`gw_receiver`
+    where receiver_id = #{receiverId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bms.`gw_receiver`
+    where receiver_id = #{receiverId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.message.GwReceiver" >
+    insert into bms.`gw_receiver` (receiver_id, name, user_id, 
+      std_id, emp_id, mail, 
+      mobile, open_id, qq, 
+      dingding, wechat_no, ext_1, 
+      ext_2, ext_3)
+    values (#{receiverId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{stdId,jdbcType=VARCHAR}, #{empId,jdbcType=VARCHAR}, #{mail,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, 
+      #{dingding,jdbcType=VARCHAR}, #{wechatNo,jdbcType=VARCHAR}, #{ext1,jdbcType=VARCHAR}, 
+      #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.message.GwReceiver" >
+    insert into bms.`gw_receiver`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="receiverId != null" >
+        receiver_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="empId != null" >
+        emp_id,
+      </if>
+      <if test="mail != null" >
+        mail,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="openId != null" >
+        open_id,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+      <if test="dingding != null" >
+        dingding,
+      </if>
+      <if test="wechatNo != null" >
+        wechat_no,
+      </if>
+      <if test="learnId != null" >
+        learn_id,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+      <if test="ext3 != null" >
+        ext_3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="receiverId != null" >
+        #{receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null" >
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="dingding != null" >
+        #{dingding,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNo != null" >
+        #{wechatNo,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.message.GwReceiver" >
+    update bms.`gw_receiver`
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=VARCHAR},
+      </if>
+      <if test="empId != null" >
+        emp_id = #{empId,jdbcType=VARCHAR},
+      </if>
+      <if test="mail != null" >
+        mail = #{mail,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        qq = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="dingding != null" >
+        dingding = #{dingding,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNo != null" >
+        wechat_no = #{wechatNo,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        learn_id = #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null" >
+        ext_3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where receiver_id = #{receiverId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.message.GwReceiver" >
+    update bms.`gw_receiver`
+    set name = #{name,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      std_id = #{stdId,jdbcType=VARCHAR},
+      emp_id = #{empId,jdbcType=VARCHAR},
+      mail = #{mail,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      open_id = #{openId,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      dingding = #{dingding,jdbcType=VARCHAR},
+      wechat_no = #{wechatNo,jdbcType=VARCHAR},
+      ext_1 = #{ext1,jdbcType=VARCHAR},
+      ext_2 = #{ext2,jdbcType=VARCHAR},
+      ext_3 = #{ext3,jdbcType=VARCHAR}
+    where receiver_id = #{receiverId,jdbcType=VARCHAR}
+  </update>
+</mapper>

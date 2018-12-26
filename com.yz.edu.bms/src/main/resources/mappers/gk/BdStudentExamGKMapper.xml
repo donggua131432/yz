@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.gk.BdStudentExamGKMapper">
+    <resultMap id="StudentExamGKMap" type="java.util.Map">
+        <result column="eig_id" property="eigId" jdbcType="VARCHAR"/>
+        <result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="stdNo" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="exam_course" property="examCourse" jdbcType="VARCHAR"/>
+        <result column="exam_type" property="examType" jdbcType="VARCHAR"/>
+        <result column="exam_place" property="examPlace" jdbcType="VARCHAR"/>
+        <result column="exam_address" property="examAddress" jdbcType="VARCHAR"/>
+        <result column="exam_start_time" property="examStartTime" jdbcType="VARCHAR"/>
+        <result column="exam_end_time" property="examEndTime" jdbcType="VARCHAR"/>
+        <result column="place_name" property="placeName" jdbcType="VARCHAR"/>
+        <result column="seat_num" property="seatNum" jdbcType="VARCHAR"/>
+        <result column="is_read" property="isRead" jdbcType="VARCHAR"/>
+        <result column="is_join" property="isJoin" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findAllStudentExamGK" resultMap="StudentExamGKMap">
+        SELECT
+        c.eig_id,
+        c.exam_year,
+        a.grade,
+        b.std_name,
+        d.pfsn_name,
+        d.pfsn_level,
+        a.school_roll,
+        b.id_card,
+        c.exam_course,
+        c.exam_type,
+        c.exam_place,
+        c.exam_address,
+        DATE_FORMAT(c.exam_start_time, '%Y-%m-%d %p %H:%i') exam_start_time,
+        DATE_FORMAT(c.exam_end_time, '%H:%i') exam_end_time,
+        c.place_name,
+        c.seat_num,
+        c.is_read,
+        c.is_join
+        FROM
+        bd_learn_info a
+        LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+        LEFT JOIN bd_student_exam_gk c ON a.learn_id = c.learn_id
+        LEFT JOIN bd_unvs_profession d ON a.pfsn_id = d.pfsn_id
+        LEFT JOIN bd_learn_rules e ON e.learn_id = a.learn_id
+        LEFT JOIN oa_employee f ON f.emp_id = e.tutor
+        WHERE
+        a.recruit_type = 2 AND a.std_stage = 7
+        <if test="query.stdName != null and ''!= query.stdName">
+            AND b.std_name LIKE CONCAT('%',#{query.stdName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.idCard != null and ''!= query.idCard">
+            AND b.id_card LIKE CONCAT('%',#{query.idCard,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.tutorName != null and ''!= query.tutorName">
+            AND f.emp_name LIKE CONCAT('%',#{query.tutorName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.grade != null and ''!= query.grade">
+            AND a.grade = #{query.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="query.examYear != null and ''!= query.examYear">
+            AND c.exam_year = #{query.examYear,jdbcType=VARCHAR}
+        </if>
+        <if test="query.pfsnLevel != null and ''!= query.pfsnLevel">
+            AND d.pfsn_level = #{query.pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="query.pfsnName != null and ''!= query.pfsnName">
+            AND d.pfsn_name LIKE CONCAT('%',#{query.pfsnName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.examCourse != null and ''!= query.examCourse">
+            AND c.exam_course = #{query.examCourse,jdbcType=VARCHAR}
+        </if>
+        <if test="query.examType != null and ''!= query.examType">
+            AND c.exam_type = #{query.examType,jdbcType=VARCHAR}
+        </if>
+        <if test="query.isJoin != null and ''!= query.isJoin">
+            AND IFNULL(c.is_join,0) = #{query.isJoin,jdbcType=INTEGER}
+        </if>
+        <if test="query.isRead != null and ''!= query.isRead">
+            AND IFNULL(c.is_read,0) = #{query.isRead,jdbcType=INTEGER}
+        </if>
+        <if test="query.examPlace != null and ''!= query.examPlace">
+            AND c.exam_place LIKE CONCAT('%',#{query.examPlace,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.examAddress != null and ''!= query.examAddress">
+            AND c.exam_address LIKE CONCAT('%',#{query.examAddress,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="query.examDate != null and ''!= query.examDate">
+            AND date_format(c.exam_start_time ,'%Y-%m-%d') =#{query.examDate}
+        </if>
+        <if test="query.examStartTime != null and ''!= query.examStartTime">
+            AND date_format(c.exam_start_time ,'%Y-%m-%d %H:%i') =#{query.examStartTime}
+        </if>
+        <if test="query.examEndTime != null and ''!= query.examEndTime">
+            AND date_format(c.exam_end_time ,'%Y-%m-%d %H:%i') =#{query.examEndTime}
+        </if>
+        <if test="user.userLevel == 6">
+            AND e.tutor = #{user.empId, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <update id="updateJoinStatus" parameterType="java.lang.String">
+        update bd_student_exam_gk set is_join = #{status}
+        where
+        eig_id in (
+        <foreach collection="eigIds" item="eigId" index="index" separator=",">
+            #{eigId}
+        </foreach>
+        )
+        <if test="status != null and ''!= status">
+            <if test="status == 1">
+                and `is_join` = 0
+            </if>
+            <if test="status == 0">
+                and `is_join` = 1
+            </if>
+        </if>
+    </update>
+
+    <select id="findExamYear" resultType="java.util.Map">
+        SELECT
+        exam_year dictValue,
+        exam_year dictName
+        FROM
+        bd_student_exam_gk
+        WHERE exam_year is not null
+        GROUP  BY exam_year
+    </select>
+
+    <select id="findExamCourse" resultType="java.util.Map">
+        SELECT
+        exam_course dictValue,
+        exam_course dictName
+        FROM
+        bd_student_exam_gk
+        WHERE exam_course is not null
+        GROUP  BY exam_course
+    </select>
+
+    <select id="findExamType" resultType="java.util.Map">
+        SELECT
+        exam_type dictValue,
+        exam_type dictName
+        FROM
+        bd_student_exam_gk
+        WHERE exam_type is not null
+        GROUP  BY exam_type
+    </select>
+
+    <select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_exam_gk;
+        CREATE TEMPORARY TABLE tmp_student_exam_gk (
+        grade VARCHAR (20),
+        std_name VARCHAR (50),
+        id_card VARCHAR (50),
+        std_no VARCHAR (50));
+        INSERT INTO tmp_student_exam_gk (
+            grade,
+            std_name,
+            id_card,
+            std_no
+        )
+        VALUES
+        <foreach collection="studentExamGKExcelList" item="info" separator=",">
+            (
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.stdNo, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+            a.*
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                tmp_student_exam_gk
+                GROUP BY
+                    grade,
+                    std_name,
+                    id_card,
+                    std_no
+            ) a
+        LEFT JOIN (
+            SELECT
+                a.learn_id,
+                a.grade,
+                a.school_roll,
+                b.id_card,
+                b.std_name
+            FROM
+                bd_learn_info a
+            JOIN bd_student_info b ON a.std_id = b.std_id
+            WHERE
+                a.recruit_type = 2 AND a.std_stage = 7
+        ) b ON a.grade = b.grade
+        AND a.std_name = b.std_name
+        AND a.id_card = b.id_card
+        AND a.std_no = b.school_roll
+        WHERE
+            b.learn_id IS NULL;
+    </select>
+    
+    <insert id="initTmpExamGk">
+    	DROP TEMPORARY TABLE IF EXISTS tmp_student_exam_gk;
+        CREATE TEMPORARY TABLE tmp_student_exam_gk (
+        exam_year varchar(50),
+        grade VARCHAR (20),
+        std_name VARCHAR (50),
+        id_card VARCHAR (50),
+        std_no VARCHAR (50),
+        exam_course varchar(50),
+        exam_type varchar(50),
+        exam_place varchar(50),
+        exam_address varchar(255),
+        exam_start_time datetime,
+        exam_end_time datetime,
+        place_name varchar(50),
+        seat_num varchar(10),
+        tips varchar(255)
+        );
+        INSERT INTO tmp_student_exam_gk
+        VALUES
+        <foreach collection="studentExamGKExcelList" item="info" separator=",">
+            (
+            #{info.examYear, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.stdNo, jdbcType=VARCHAR},
+            #{info.examCourse, jdbcType=VARCHAR},
+            #{info.examType, jdbcType=VARCHAR},
+            #{info.examPlace, jdbcType=VARCHAR},
+            #{info.examAddress, jdbcType=VARCHAR},
+            #{info.examStartTime, jdbcType=VARCHAR},
+            #{info.examEndTime, jdbcType=VARCHAR},
+            #{info.placeName, jdbcType=VARCHAR},
+            #{info.seatNum, jdbcType=VARCHAR},
+            #{info.tips, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    
+    <select id="selectTmpEaxamGkInsert" resultType="java.util.HashMap">
+    	SELECT
+        c.exam_year,
+        c.grade,
+        a.learn_id,
+        b.std_id,
+        c.exam_course,
+        c.exam_type,
+        c.exam_place,
+        c.exam_address,
+        c.exam_start_time,
+        c.exam_end_time,
+        c.place_name,
+        c.seat_num,
+        c.tips,
+        now() update_time,
+        #{user.realName, jdbcType=VARCHAR} update_user,
+        #{user.userId, jdbcType=VARCHAR} update_user_id
+        FROM
+        bd_learn_info a
+        JOIN bd_student_info b ON a.std_id = b.std_id
+        JOIN tmp_student_exam_gk c ON c.grade = a.grade
+        AND c.std_name = b.std_name
+        AND c.id_card = b.id_card
+        AND c.std_no = a.school_roll
+        WHERE a.recruit_type = 2 AND a.std_stage = 7;
+    </select>
+
+    <insert id="insert">
+        REPLACE INTO bd_student_exam_gk (
+        eig_id,
+        exam_year,
+        grade,
+        learn_id,
+        std_id,
+        exam_course,
+        exam_type,
+        exam_place,
+        exam_address,
+        exam_start_time,
+        exam_end_time,
+        place_name,
+        seat_num,
+        tips,
+        update_time,
+        update_user,
+        update_user_id
+        ) values
+        <foreach collection="list" item="info" separator=",">
+            (
+            #{info.eig_id, jdbcType=VARCHAR},
+            #{info.exam_year, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.learn_id, jdbcType=VARCHAR},
+            #{info.std_id, jdbcType=VARCHAR},
+            #{info.exam_course, jdbcType=VARCHAR},
+            #{info.exam_type, jdbcType=VARCHAR},
+            #{info.exam_place, jdbcType=VARCHAR},
+            #{info.exam_address, jdbcType=VARCHAR},
+            #{info.exam_start_time, jdbcType=VARCHAR},
+            #{info.exam_end_time, jdbcType=VARCHAR},
+            #{info.place_name, jdbcType=VARCHAR},
+            #{info.seat_num, jdbcType=VARCHAR},
+            #{info.tips, jdbcType=VARCHAR},
+            #{info.update_time, jdbcType=VARCHAR},
+            #{info.update_user, jdbcType=VARCHAR},
+            #{info.update_user_id, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteStudentExamGK">
+        DELETE
+        FROM
+        bd_student_exam_gk
+        WHERE eig_id in (
+        <foreach collection="eigIds" item="eigId" index="index" separator=",">
+            #{eigId}
+        </foreach>
+        )
+    </delete>
+
+    <select id="findExamTime" resultType="java.util.Map">
+        SELECT
+            CONCAT(
+                DATE_FORMAT(exam_start_time, '%H:%i'),
+                '-',
+                DATE_FORMAT(exam_end_time, '%H:%i')
+            ) dictValue,
+             CONCAT(
+                DATE_FORMAT(exam_start_time, '%H:%i'),
+                '-',
+                DATE_FORMAT(exam_end_time, '%H:%i')
+            ) dictName
+        FROM
+            bd_student_exam_gk
+        WHERE
+            DATE_FORMAT(exam_start_time, '%Y-%m-%d') = #{date}
+        GROUP BY
+            exam_start_time,
+            exam_end_time
+    </select>
+</mapper>

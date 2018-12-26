@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.DepartmentMapper" >
+	<resultMap id="DepartmentInfoMap" type="com.yz.model.oa.DepartmentInfo">
+	    <id column="dp_id"  property="dpId" jdbcType="VARCHAR" />
+	    <result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+	    <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	    <result column="is_recruit" property="isRecruit" jdbcType="VARCHAR" />
+	    <result column="is_participate" property="isParticipate" jdbcType="VARCHAR"  />
+	    <result column="is_stop" property="isStop" jdbcType="VARCHAR" />
+	    <result column="recruit_rules" property="recruitRules" jdbcType="VARCHAR"/>
+	    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+	    <result column="campus_id" property="campusId" jdbcType="VARCHAR"/>
+	    <result column="create_time" property="createTime" jdbcType="VARCHAR"/> 
+	</resultMap> 
+  <!-- 人事管理-部门管理 -->
+  <!-- 所有部门 -->
+  <select id="selectAllDepartmentInfo" resultMap="DepartmentInfoMap" parameterType="com.yz.model.oa.OaDepQueryInfo">
+	  SELECT od.`dp_id`,od.`dp_name`,od.`emp_id`,od.`campus_id`,(SELECT campus_name FROM oa_campus WHERE campus_id=od.`campus_id`) campus_name,
+      (SELECT emp_name FROM oa_employee WHERE emp_id=od.`emp_id`) emp_name,od.`is_recruit`,od.`is_participate`,od.`is_stop`,od.recruit_rules FROM oa_department od
+	  where '1' = '1'
+	      <if test="dpName != null and '' != dpName">  
+             and dp_name LIKE CONCAT('%', CONCAT(#{dpName}, '%'))
+         </if>
+         <if test="campusId !=null and '' != campusId">
+             and campus_id=#{campusId}
+         </if>
+  </select>
+    <!-- 通过部门名称查询部门个数 -->
+    <select id="selectCountByDepName" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	select 
+  		count(1)
+  		from oa_department od 
+  	where 
+  		od.dp_name = #{dpName} and od.campus_id=#{campusId}
+  </select>
+  
+  <!-- 新增部门 -->
+  <insert id="insertDpInfo" parameterType="com.yz.model.oa.DepartmentInfo">
+    insert into oa_department (dp_id, dp_name, campus_id, emp_id, emp_name,is_recruit,is_participate,recruit_rules,create_user_id,create_user,create_time)
+    values(#{dpId},#{dpName},#{campusId},#{empId},#{empName},#{isRecruit},#{isParticipate},#{recruitRules},#{createUserId}, #{createUser},now())
+  </insert>
+  <!-- 修改部门信息 -->
+  <update id="updateDepartmentInfo" parameterType="com.yz.model.oa.DepartmentInfo">
+    update oa_department set dp_name=#{dpName},campus_id=#{campusId},emp_id=#{empId},emp_name=#{empName},is_recruit=#{isRecruit},
+    is_participate=#{isParticipate},recruit_rules=#{recruitRules},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where dp_id=#{dpId}
+  </update>
+  <!-- 获取某个部门详细  -->
+  <select id="getDepartmentInfo" resultMap="DepartmentInfoMap" parameterType="java.lang.String">
+     SELECT * FROM oa_department WHERE dp_id=#{dpId}
+  </select>
+  <!-- 启用或者停用 -->
+  <update id="depBlock" parameterType="com.yz.model.oa.DepartmentInfo">
+    update oa_department set is_stop=#{isStop},update_user_id=#{updateUserId}, update_user=#{updateUser},update_time=now()
+     where dp_id=#{dpId}
+  </update> 
+ 
+   <!-- 获取所有启用部门列表 -->
+  <select id="findAllKeyValue" resultMap="DepartmentInfoMap" parameterType="java.lang.String">
+  	SELECT dp_id,dp_name FROM oa_department WHERE is_stop='0'
+  	 <if test="eName != null and '' != eName">
+        and dp_name like CONCAT('%',#{eName},'%')
+    </if>
+  </select>
+  <!-- 校区下的所有部门 -->
+  <select id="findAllListByCampusId" resultMap="DepartmentInfoMap" parameterType="java.lang.String">
+  	SELECT dp_id,dp_name FROM oa_department WHERE campus_id=#{campusId} and is_stop='0'
+  </select>
+  
+  <!-- 新增部门职称 -->
+  <insert id="insertDepJdIds">
+	insert into oa_dp_title(`dp_id`,`jt_id`)
+	values
+	<foreach collection="ids" item="id" separator=",">
+		(
+		#{dpId, jdbcType=VARCHAR},
+		#{id,jdbcType=VARCHAR}
+		)
+	</foreach> 
+  </insert>
+  <!-- 删除部门职称 -->
+  <delete id="deleteDepTitle">
+  	delete from oa_dp_title where dp_id=#{dpId,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 部门下的所有职称 -->
+  <resultMap type="java.util.HashMap" id="DepTitleMap">
+  	<result column="dp_id" property="dpId" jdbcType="VARCHAR"/>
+  	<result column="jt_id" property="jtId" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="findDepTitle" resultMap="DepTitleMap" parameterType="string">
+  	select dp_id,jt_id from oa_dp_title where dp_id=#{depId,jdbcType=VARCHAR}
+  </select>
+</mapper>

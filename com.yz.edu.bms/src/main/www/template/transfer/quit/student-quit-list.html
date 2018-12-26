@@ -1,0 +1,216 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.progress/control.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>休学申请</title>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 学员异动管理 <span class="c-gray en">/</span> 休学申请<a class="btn btn-success radius r"
+                                                                                        style="line-height: 1.6em; margin-top: 3px"
+                                                                                        href="javascript:location.replace(location.href);"
+                                                                                        title="刷新"><i
+        class="iconfont icon-shuaxin"></i></a>
+</nav>
+<div class="page-container">
+ 	<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token"/>
+    <div class="text-l search" style="position: relative">
+        <div class="cl">
+            <div class="cl">
+                <div class="f-l">
+                    <span>学员姓名:</span>
+                    <input type="text" class="input-text radius ml-10" placeholder="输入学员姓名" id="stdName">
+                </div>
+                <div class="f-l">
+                    <span>手机号:</span>
+                    <input type="text" class="input-text radius ml-10" placeholder="输入手机号" id="mobile">
+                </div>
+                <div class="f-l">
+                    <span>身份证号:</span>
+                    <input type="text" class="input-text radius ml-10" placeholder="输入身份证号" id="idCard">
+                </div>
+                <div class="f-r mr-15">
+                    <a class="btn btn-primary radius" style="width: 90px" href="javascript:;" onclick="_search();"/> <i
+                        class="iconfont icon-sousuo"></i> 搜索 </a> <a
+                        class="btn btn-normal-outline radius" onclick="_reset()"><i
+                        class="iconfont icon-shuaxin"></i></a>
+                </div>
+            </div>
+
+            <div class="cl">
+                <div class="f-l">
+                    <span>学号:</span>
+                    <input type="text" class="input-text radius ml-10" placeholder="输入学号" id="stdNo" name="stdNo">
+                </div>
+                <div class="f-l">
+                    <span>审批状态:</span>
+                    <select class="select" size="1" id="checkStatus">
+                        <option value="" selected>--请选择审批状态--</option>
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>原因:</span>
+                    <select class="select" size="1" id="reason">
+                        <option value="" selected>--请选择原因--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="cl">
+                <div class="f-l">
+                    <span>年级:</span>
+                    <select class="select" size="1" id="grade" name="grade">
+                        <option selected>--请选择年级--</option>
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>在读院校:</span>
+                    <select class="select" size="1" id="unvsId" name="unvsId"></select>
+                </div>
+                <div class="f-l">
+                    <span>专业层次:</span>
+                    <select class="select" size="1" id="pfsnLevel" name="pfsnLevel">
+                        <option selected>--请选择专业层次--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="cl">
+                <div class="f-l">
+                    <span>专业:</span>
+                    <select class="select" size="1" id="pfsnId" name="pfsnId" disabled="disabled">
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>招生老师:</span>
+                    <input type="text" id="recruitName" name="recruitName" class="input-text radius ml-10"
+                           placeholder="输入招生老师姓名"/>
+                </div>
+                <div class="f-l">
+                    <span>班主任:</span>
+                    <input type="text" id="tutorName" name="tutorName" class="input-text radius ml-10"
+                           placeholder="输入班主任姓名"/>
+                </div>
+            </div>
+
+            <div class="cl">
+                <div class="f-l">
+                    <span>招生类型:</span>
+                    <select class="select" size="1" id="recruitType" name="recruitType">
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>优惠分组:</span>
+                    <select class="select" size="1" id="sg" name="sg">
+                        <option value="" selected>--选择优惠分组--</option>
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>优惠类型:</span>
+                    <select class="select" size="1" id="scholarship" name="scholarship">
+                        <option value="" selected>--选择优惠类型--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="cl">
+                <div class="f-l">
+                    <span>入围状态:</span>
+                    <select class="select" size="1" id="inclusionStatus" name="inclusionStatus">
+                        <option value="" selected>--选择入围状态--</option>
+                    </select>
+                </div>
+                <div class="f-l">
+                    <span>发起人:</span>
+                    <input type="text" id="applyUserName" name="applyUserNmae" class="input-text radius ml-10"
+                           placeholder="输入发起人姓名"/>
+                </div>
+                <div class="f-l">
+                    <span>发起时间起：</span>
+                    <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'applyTimeEnd\')}'})" id="applyTimeBegin"
+                           name="applyTimeBegin" class="input-text Wdate"/>
+                </div>
+                <div class="f-l">
+                    <span>发起时间止：</span>
+                    <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'applyTimeBegin\')}'})" id="applyTimeEnd"
+                           name="applyTimeEnd" class="input-text Wdate"/>
+                </div>
+            </div>
+
+            <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+                <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                    <i class="iconfont icon-xiala"></i>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-1">
+        <div class="cl pd-15 bg-1">
+      <span class="l mt-15 mb-15">
+    	  <a href="javascript:;" onclick="studentQuit()" class="btn btn-primary radius"><i
+                  class="iconfont icon-tianjia"></i> 申请休学</a>
+	      <a href="javascript:;" onclick="cancelApply()" class="btn btn-danger radius"><i
+                  class="iconfont icon-shanchu"></i> 撤销申请</a>
+      </span>
+
+            <div class="mt-35 bg-fff">
+                <table class="table table-border table-bordered table-hover table-bg table-sort">
+                    <thead>
+                    <tr class="text-c" style="border: 0px">
+                        <th width="25"><input type="checkbox" name="all" value=""></th>
+                        <th width="50">学员姓名</th>
+                        <th width="50">年级</th>
+                        <th width="100">院校与专业</th>
+                        <th width="60">优惠情况</th>
+                        <th width="60">学号</th>
+                        <th width="60">原学员阶段</th>
+                        <th width="60">现学员阶段</th>
+                        <th width="70">休学原因</th>
+                        <th width="80">发起时间</th>
+                        <th width="80">发起人</th>
+                        <th width="250">审批状态</th>
+                        <th width="40">操作</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.progress/stepBar.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.progress/jquery.easing.1.3.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/transfer/quit/student-quit-list.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.AtsAwardRuleMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.AtsAwardRule" >
+    <id column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="VARCHAR" />
+    <result column="rule_desc" property="ruleDesc" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="CHAR" />
+    <result column="zhimi_count" property="zhimiCount" jdbcType="VARCHAR" />
+    <result column="exp_count" property="expCount" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rule_code, rule_type, rule_desc, is_allow, zhimi_count, exp_count
+  </sql>
+  <select id="getRule" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from goods.`ats_award_rule`
+    where rule_code = #{ruleCode,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from goods.`ats_award_rule`
+    
+  </select>
+  
+</mapper>

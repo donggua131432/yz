@@ -1,0 +1,77 @@
+logging:
+  config: classpath:config/logback.xml
+  dir:  /home/www/webapp/logs/task
+jdbc:
+  global:
+    user: ${jdbc_user}
+    password: ${jdbc_password} 
+    poolsize: ${jdbc_poolsize}
+    driverClassName: ${jdbc_driverclassName}
+    minIdle: ${jdbc_minIdle}
+    maxActive: ${jdbc_maxActive}
+    maxWait: ${jdbc_maxWait}
+    minEictableIdleTimeMillis: ${jdbc_minEictableIdleTimeMillis}
+    defaultDatasource: task
+  jdbcConfigInfos:
+    - name: task
+      url: ${jdbc_url}
+      uniqueResourceName: mysql.bcc.write
+redis.pool:
+  minIdle: 10
+  maxIdle: 300
+  maxWait: 30000
+  testOnReturn: false
+  testOnBorrow: false
+  timeout: 30000
+  maxActive: 300
+  redisInfos:
+    - name:default
+      isdefault:true
+      host:${redis_host}
+      port:${redis_port}
+      authKey:${redis_authKey}
+      connectType:single
+dubbo:
+  registryAddress: ${dubbo.registry.address}
+  application: task
+yp:
+  apikey: ${yp.apikey}
+  host:
+    sign: https://sms.yunpian.com
+    tpl: https://sms.yunpian.com
+    sms: https://sms.yunpian.com
+    voice: https://voice.yunpian.com
+    flow: https://flow.yunpian.com
+    call: https://call.yunpian.com
+    user: https://sms.yunpian.com
+wehchat_pub:
+  auth_token_url: https://api.weixin.qq.com/sns/oauth2/access_token
+  access_token_url: https://api.weixin.qq.com/cgi-bin/token
+  userinfo_url: https://api.weixin.qq.com/sns/userinfo
+  pub_id: yzService0526
+jd_goods:
+  entity_client_id: 8L1cd7dDUmRqJfXKUN2W
+  entity_client_secret: cEZikN35TLLengz725TS
+  entity_pwd: v2RTSvn6
+  entity_card_pwd: YPKmh8vV
+kafka:
+  bootstrapServers: ${kafka.address}
+  kafkaDerail: ${kafka.kafkaDerail}
+yzsysconfig:
+  smsSwitch: ${sms.is.on}
+  paymentCouponSwitch: ${payment.coupon.switch}
+  zhiMiScale: ${yz.zhimi.scale}
+  tempBucket: ${aliyun.oss.tempBucket}
+  planSetting: ${discount.plan.setting}
+  bucket: ${aliyun.oss.bucket}
+  reptAmount: ${yz.rept.amount}
+  addressMaxSize: ${address.max.size}
+  signNumber: ${sign.base.number}
+  fileBrowserUrl: ${file.browser.url}
+  salesRemindTime: ${goods.sales.remind.time}
+  submitState: ${submit.state}
+  regCode: ${reg.code}
+  invoicePhone: ${invoice.phone}
+  invoiceType: ${invoice.type}
+  recruitYear: ${yz.recruit.year}
+  lotteryCode: ${lottery.code}

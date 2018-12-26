@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsTestConfirmMapper">
+
+	<resultMap id="testConfirm" type="com.yz.model.TestConfirm">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="is_print_notice" property="isPrintNotice" jdbcType="VARCHAR" />
+		<result column="is_print_prove" property="isPrintProve" jdbcType="VARCHAR" />
+		<result column="is_exam_notice" property="isExamNotice" jdbcType="VARCHAR" />
+		<result column="is_exam_sign" property="isExamSign" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<resultMap id="testProveInfo" type="com.yz.model.TestProveInfo">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="exam_no" property="examNo" jdbcType="VARCHAR" />
+		<result column="stu_name" property="stuName" jdbcType="VARCHAR" />
+		<result column="stu_sex" property="stuSex" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="test_type" property="testType" jdbcType="VARCHAR" />
+		<result column="test_room_no" property="testRoomNo" jdbcType="VARCHAR" />
+		<result column="seat_no" property="seatNo" jdbcType="VARCHAR" />
+		<result column="fingerprint" property="fingerprint" jdbcType="VARCHAR" />
+		<result column="test_name" property="testName" jdbcType="VARCHAR" />
+		<result column="test_addr" property="testAddr" jdbcType="VARCHAR" />
+		<result column="test_remark" property="testRemark" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List" >
+		learn_id, std_id, exam_no, stu_name, stu_sex, id_card, test_type, test_room_no, seat_no, fingerprint, test_name, test_addr, test_remark
+	</sql>
+	
+	<!--<select id="selectTestProveInfo" resultMap="testProveInfo" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_test_prove_info where std_id=#{stdId,jdbcType=VARCHAR}
+	</select>-->
+
+	<select id="selectTestProveInfo" resultMap="testProveInfo" parameterType="java.util.Map">
+		SELECT
+		l.learn_id, l.std_id, i.exam_no, i.stu_name, i.stu_sex, s.id_card, i.test_type, i.test_room_no, i.seat_no, i.fingerprint, i.test_name, i.test_addr, i.test_remark
+		FROM `bms`.bd_learn_info l
+		LEFT JOIN `bms`.bd_student_info s ON s.std_id = l.std_id
+		LEFT JOIN `bms`.bd_test_confirm c on c.learn_id = l.learn_id
+		LEFT JOIN `bms`.bd_test_prove_info i on i.learn_id = l.learn_id
+		WHERE l.std_id=#{stdId,jdbcType=VARCHAR} and s.id_card=#{idCard,jdbcType=VARCHAR} and l.grade=#{grade,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<update id="updateTestConfirmStat" parameterType="com.yz.model.TestConfirm">
+		update `bms`.bd_test_confirm
+		<set >
+			<if test="isPrintNotice != null and isPrintNotice != ''" >
+				is_print_notice = #{isPrintNotice,jdbcType=VARCHAR},
+			</if>
+			<if test="isPrintProve != null and isPrintProve != ''" >
+				is_print_prove = #{isPrintProve,jdbcType=VARCHAR},
+			</if>
+			<if test="isExamNotice != null and isExamNotice != ''" >
+				is_exam_notice = #{isExamNotice,jdbcType=VARCHAR},
+			</if>
+			<if test="isExamSign != null and isExamSign != ''" >
+				is_exam_sign = #{isExamSign,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where std_id = #{stdId,jdbcType=VARCHAR}
+	</update>
+
+
+	<update id="studentExamSignBySelf">
+		update `bms`.bd_student_exam_affirm set sign_status = '1',sign_time=NOW()
+		where ey_id = #{eyId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	
+	<select id="getStudentLearnIdByIdCard" resultType="java.lang.String">
+		SELECT 
+		  GROUP_CONCAT(learn_Id) 
+		FROM
+		  `bms`.bd_learn_info bli 
+		  LEFT JOIN `bms`.bd_student_info bsi 
+		    ON bsi.`std_id` = bli.`std_id` 
+		WHERE bsi.`id_card` = #{idCard,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getSignStudentInfo" resultType="java.util.HashMap">
+		SELECT 
+		  bsi.`std_name`,
+		  bep.`ep_name`,
+		  bpy.`start_time`,
+		  bpy.`end_time`,
+		  bpi.`place_name`,
+		  bes.`es_num`,
+		  bsea.`py_id`
+		FROM
+		  `bms`.`bd_student_exam_affirm` bsea
+		left join `bms`.`bd_learn_info` bli
+		on bli.`learn_id` = bsea.`learn_id`
+		left join `bms`.`bd_student_info` bsi
+		on bsi.`std_id` = bli.`std_id`
+		LEFT JOIN `bms`.bd_place_year bpy
+		ON bpy.`py_id` = bsea.`py_id`
+		LEFT JOIN `bms`.bd_exam_place bep
+		ON bep.`ep_id` = bpy.`place_id`
+		LEFT JOIN `bms`.bd_exam_seats bes
+		ON bes.`learn_id` = bsea.`learn_id` AND bes.`py_id` = bsea.`py_id`
+		LEFT JOIN `bms`.bd_place_info bpi
+		ON bpi.`place_id` = bes.`place_id`
+		where bsea.learn_Id in 
+		 <foreach collection="ids" item="id" open="(" close=")" separator=",">
+		   #{id, jdbcType=CHAR}
+		 </foreach>
+		order by add_time desc 
+		limit 0, 1
+	</select>
+	
+	<select id="ifExamInfo" resultType="java.lang.Integer">
+		select count(1) from `bms`.bd_student_exam_affirm 
+		where ey_id = #{eyId,jdbcType=VARCHAR} and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		<if test="pyId !=null and pyId=='1'.toString()">
+			and py_id is not null
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<AtsAwardRules>
+    <@yzRuleList ruleCode="register"/>
+	<#list rules as rule>
+	<#if (rule.startTime?datetime lte createDate?datetime)&& (rule.endTime?datetime gte createDate?datetime)>
+	<AtsAwardRule>
+		<ruleGroup>${rule.ruleGroup}</ruleGroup>
+		<isMutex>${rule.isMutex}</isMutex>
+		<ruleCode>${rule.ruleCode}</ruleCode>
+		<sort>${rule.sort}</sort>
+		<ruleType>${rule.ruleType}</ruleType>
+		<ruleDesc>${rule.ruleDesc}</ruleDesc>
+		<zhimiCount>${rule.zhimiCount}</zhimiCount>
+		<expCount>${rule.expCount}</expCount>
+	</AtsAwardRule>
+	</#if>
+	</#list> 
+</AtsAwardRules>

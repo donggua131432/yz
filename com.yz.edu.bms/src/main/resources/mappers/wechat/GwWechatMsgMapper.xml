@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.wechat.GwWechatMsgMapper" >
+   <resultMap type="com.yz.model.wechat.GwWechatReply" id="BaseResultMap">
+   	<result column="reply_id" property="replyId" jdbcType="VARCHAR"/>
+   	<result column="wechat_id" property="wechatId" jdbcType="VARCHAR"/>
+   	<result column="keyword" property="keyword" jdbcType="VARCHAR"/>
+   	<result column="msg_type" property="msgType" jdbcType="VARCHAR"/>
+   	<result column="content" property="content" jdbcType="VARCHAR"/>
+   	<result column="media_id" property="mediaId" jdbcType="VARCHAR"/>
+   	<result column="article_count" property="articleCount" jdbcType="VARCHAR"/>
+   	<result column="status" property="status" jdbcType="VARCHAR"/>
+   	<association property="articles" column="reply_id" select="selectArticles"/>
+   </resultMap>
+   
+   <update id="updateNewsReply" parameterType="com.yz.model.wechat.GwWechatReply">
+    update bms.`gw_wechat_reply`
+    <set >
+      <if test="wechatId != null" >
+        wechat_id = #{wechatId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null" >
+        keyword = #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null" >
+        msg_type = #{msgType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="mediaId != null" >
+        media_id = #{mediaId,jdbcType=VARCHAR},
+      </if>
+      <if test="articleCount != null" >
+        article_count = #{articleCount,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reply_id = #{replyId,jdbcType=VARCHAR};
+ 	<!-- 删除关联图文消息 -->
+    delete from bms.`gw_wechat_article` where reply_id = #{replyId,jdbcType=VARCHAR};
+  	<!-- 插入图文消息 -->
+  	insert into bms.`gw_wechat_article` (article_id, reply_id, title, 
+      description, pic_url, url
+      ) values
+    <foreach collection="articles" item="item" index="index" separator="," >  
+      (#{item.articleId,jdbcType=VARCHAR}, #{replyId,jdbcType=VARCHAR}, #{item.title,jdbcType=VARCHAR}, 
+      #{item.description,jdbcType=VARCHAR}, #{item.picUrl,jdbcType=VARCHAR}, #{item.url,jdbcType=VARCHAR}
+      )
+  	</foreach>
+   </update>
+   
+   <update id="blockReply" parameterType="java.lang.String">
+   	update bms.`gw_wechat_reply` set status = #{status,jdbcType=VARCHAR} where reply_id = #{replyId,jdbcType=VARCHAR}
+   </update>
+   
+   <update id="updateTextReply" parameterType="com.yz.model.wechat.GwWechatReply">
+    update bms.`gw_wechat_reply`
+    <set >
+      <if test="wechatId != null and wechatId != ''" >
+        wechat_id = #{wechatId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null and keyword != ''" >
+        keyword = #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null and msgType != ''" >
+        msg_type = #{msgType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null and content != ''" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="mediaId != null and mediaId != ''" >
+        media_id = #{mediaId,jdbcType=VARCHAR},
+      </if>
+      <if test="articleCount != null and articleCount != ''" >
+        article_count = #{articleCount,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null and updateUserId != ''" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null and createUser != ''" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null and createUserId != ''" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where reply_id = #{replyId,jdbcType=VARCHAR};
+ 	<!-- 删除关联图文消息 -->
+    delete from bms.`gw_wechat_article` where reply_id = #{replyId,jdbcType=VARCHAR};
+   </update>
+   
+   <delete id="deleteReply" parameterType="java.lang.String">
+   	delete from bms.`gw_wechat_reply` where reply_id = #{replyId,jdbcType=VARCHAR};
+   	delete from bms.`gw_wechat_article` where reply_id = #{replyId,jdbcType=VARCHAR};
+   </delete>
+   
+   <select id="selectWechatReply" parameterType="java.lang.String" resultMap="BaseResultMap">
+   	SELECT 
+	  reply_id,
+	  msg_type,
+	  keyword,
+	  content,
+	  wechat_id,
+	  article_count,
+	  status
+	FROM
+	  bms.`gw_wechat_reply`
+	where reply_id = #{replyId,jdbcType=VARCHAR}
+   </select>
+   
+   <insert id="insertNewsReply" parameterType="com.yz.model.wechat.GwWechatReply">
+   	insert into bms.`gw_wechat_reply`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        reply_id,
+      <if test="wechatId != null" >
+        wechat_id,
+      </if>
+      <if test="keyword != null" >
+        keyword,
+      </if>
+      <if test="msgType != null" >
+        msg_type,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="mediaId != null" >
+        media_id,
+      </if>
+      <if test="articleCount != null" >
+        article_count,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{replyId,jdbcType=VARCHAR},
+      <if test="wechatId != null" >
+        #{wechatId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null" >
+        #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null" >
+        #{msgType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="mediaId != null" >
+        #{mediaId,jdbcType=VARCHAR},
+      </if>
+      <if test="articleCount != null" >
+        #{articleCount,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    ;
+    insert into bms.`gw_wechat_article` (article_id, reply_id, title, 
+      description, pic_url, url
+      ) values
+    <foreach collection="articles" item="item" index="index" separator="," >  
+      (#{item.articleId,jdbcType=VARCHAR}, #{replyId,jdbcType=VARCHAR}, #{item.title,jdbcType=VARCHAR}, 
+      #{item.description,jdbcType=VARCHAR}, #{item.picUrl,jdbcType=VARCHAR}, #{item.url,jdbcType=VARCHAR}
+      )
+  	</foreach>
+   </insert>
+   
+   <insert id="insertTextReply" parameterType="com.yz.model.wechat.GwWechatReply" >
+   	insert into bms.`gw_wechat_reply`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      reply_id,
+      <if test="wechatId != null" >
+        wechat_id,
+      </if>
+      <if test="keyword != null" >
+        keyword,
+      </if>
+      <if test="msgType != null" >
+        msg_type,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="mediaId != null" >
+        media_id,
+      </if>
+      <if test="articleCount != null" >
+        article_count,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       #{replyId,jdbcType=VARCHAR},
+      <if test="wechatId != null" >
+        #{wechatId,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null" >
+        #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null" >
+        #{msgType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="mediaId != null" >
+        #{mediaId,jdbcType=VARCHAR},
+      </if>
+      <if test="articleCount != null" >
+        #{articleCount,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+   </insert>
+   
+   <select id="selectArticles" parameterType="java.lang.String" resultType="com.yz.model.wechat.GwWechatArticle">
+   	SELECT 
+	  article_id articleId,
+	  reply_id replyId,
+	  title,
+	  description,
+	  pic_url picUrl,
+	  url
+	FROM
+	  bms.`gw_wechat_article` 
+	WHERE reply_id = #{replyId,jdbcType=VARCHAR}
+   </select>
+   
+   <select id="selectWechatMsgByPage" parameterType="com.yz.model.wechat.GwWechatMsgQuery" resultMap="BaseResultMap">
+   	SELECT 
+	  reply_id,
+	  msg_type,
+	  keyword,
+	  content,
+	  wechat_id,
+	  article_count,
+	  status
+	FROM
+	  bms.`gw_wechat_reply`
+	<where>
+		<if test="msgType != null and msgType != ''">
+			and msg_type = #{msgType,jdbcType=VARCHAR}			
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and keyword LIKE CONCAT('%', CONCAT(#{keyword,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="status != null and status != ''">
+			and status = #{status,jdbcType=VARCHAR}	
+		</if>
+	</where>
+   </select>
+   
+   
+   
+</mapper>

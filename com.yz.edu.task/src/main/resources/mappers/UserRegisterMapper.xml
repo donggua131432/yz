@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.UserRegisterMapper">
+	<resultMap id="BaseResultMap" type="com.yz.job.model.AtsAccount">
+		<id column="acc_id" property="accId" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="acc_type" property="accType" jdbcType="VARCHAR" />
+		<result column="acc_amount" property="accAmount" jdbcType="VARCHAR" />
+		<result column="acc_status" property="accStatus" jdbcType="VARCHAR" />
+		<result column="thaw_time" property="thawTime" jdbcType="VARCHAR" />
+		<result column="frez_time" property="frezTime" jdbcType="VARCHAR" />
+		<result column="can_deposit" property="canDeposit" jdbcType="CHAR" />
+		<result column="is_visiable" property="isVisiable" jdbcType="CHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="initAccount" parameterType="list">
+		INSERT INTO goods.ats_account (
+		acc_id,
+		user_id,
+		acc_type,
+		acc_status,
+		can_deposit,
+		is_visiable,
+		std_id,
+		emp_id
+		)
+		VALUES
+		<foreach collection="accountList" item="info" separator=",">
+			(
+			#{info.accId, jdbcType=VARCHAR},
+			#{info.userId, jdbcType=VARCHAR},
+			#{info.accType, jdbcType=VARCHAR},
+			#{info.accStatus,
+			jdbcType=VARCHAR},
+			#{info.canDeposit, jdbcType=VARCHAR},
+			#{info.isVisiable, jdbcType=VARCHAR},
+			#{info.stdId, jdbcType=VARCHAR},
+			#{info.empId, jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+
+
+	<select id="getAccountInfo" resultMap="BaseResultMap">
+		SELECT
+		a.`acc_id`,
+		a.`user_id`,
+		a.`acc_type`,
+		a.`acc_amount`,
+		a.`acc_status`,
+		a.`thaw_time`,
+		a.`frez_time`,
+		a.`can_deposit`,
+		a.`is_visiable`,
+		a.`std_id`,
+		a.`emp_id`
+		FROM
+		goods.`ats_account` a
+		where a.`acc_type` =#{accType} and
+		a.`user_id` = #{userId} limit 0,1
+	</select>
+
+
+	<!-- 保存奖励激励 -->
+	<insert id="saveAwardRecord" parameterType="com.yz.job.model.AtsAwardRecord">
+		insert into goods.ats_award_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			award_id,
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="ruleCode != null">
+				rule_code,
+			</if>
+			<if test="awardDesc != null">
+				award_desc,
+			</if>
+			<if test="zhimiCount != null">
+				zhimi_count,
+			</if>
+			<if test="expCount != null">
+				exp_count,
+			</if>
+			<if test="mappingId != null">
+				mapping_id,
+			</if>
+			<if test="triggerUserId != null">
+				trigger_user_id,
+			</if>
+			<if test="ruleType != null">
+				rule_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			seq(),
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="ruleCode != null">
+				#{ruleCode,jdbcType=VARCHAR},
+			</if>
+			<if test="awardDesc != null">
+				#{awardDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="zhimiCount != null">
+				#{zhimiCount,jdbcType=VARCHAR},
+			</if>
+			<if test="expCount != null">
+				#{expCount,jdbcType=VARCHAR},
+			</if>
+			<if test="mappingId != null">
+				#{mappingId,jdbcType=VARCHAR},
+			</if>
+			<if test="triggerUserId != null">
+				#{triggerUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="ruleType != null">
+				#{ruleType,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 保存用户的智米帐变流水 -->
+	<insert id="saveSerial" parameterType="com.yz.job.model.AtsAccountSerial">
+		insert into goods.ats_account_serial
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			acc_serial_no,
+			<if test="accId != null">
+				acc_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="mappingId != null">
+				mapping_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="accType != null">
+				acc_type,
+			</if>
+			<if test="action != null">
+				action,
+			</if>
+			<if test="accSerialStatus != null">
+				acc_serial_status,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="beforeAmount != null">
+				before_amount,
+			</if>
+			<if test="afterAmount != null">
+				after_amount,
+			</if>
+			<if test="accSerialType != null">
+				acc_serial_type,
+			</if>
+			<if test="excDesc != null">
+				exc_desc,
+			</if>
+			<if test="isVisiable != null">
+				is_visiable,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="reason != null">
+				reason,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{accSerialNo,jdbcType=VARCHAR},
+			<if test="accId != null">
+				#{accId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="mappingId != null">
+				#{mappingId,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="accType != null">
+				#{accType,jdbcType=VARCHAR},
+			</if>
+			<if test="action != null">
+				#{action,jdbcType=CHAR},
+			</if>
+			<if test="accSerialStatus != null">
+				#{accSerialStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="beforeAmount != null">
+				#{beforeAmount,jdbcType=VARCHAR},
+			</if>
+			<if test="afterAmount != null">
+				#{afterAmount,jdbcType=VARCHAR},
+			</if>
+			<if test="accSerialType != null">
+				#{accSerialType,jdbcType=VARCHAR},
+			</if>
+			<if test="excDesc != null">
+				#{excDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="isVisiable != null">
+				#{isVisiable,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 更新账号余额 -->
+	<update id="updateAccount" parameterType="com.yz.job.model.AtsAccount">
+		update
+		goods.ats_account
+		set acc_amount =acc_amount+#{accAmount,jdbcType=VARCHAR} 
+		where acc_id =
+		#{accId,jdbcType=VARCHAR}
+	</update>
+
+	<!-- 用户派券 -->
+	<insert id="sendCoupon">
+		INSERT INTO `bms`.bd_student_coupon
+		(sc_id, user_id,coupon_id)
+		select
+		seq(),
+		#{userId},
+		c.`coupon_id`
+		from
+		`bms`.bd_coupon c
+		LEFT JOIN `bms`.bd_coupon_trigger t
+		ON t.`coupon_id` = c.`coupon_id`
+		where now() BETWEEN c.`publish_start_time`
+		AND c.`publish_expire_time`
+		AND c.`is_allow` = '1'
+		AND t.`c_trigger_type` = '2'
+	</insert>
+	
+</mapper>

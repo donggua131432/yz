@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.BdsCourseMapper">
+	
+	<select id="selectCourse" resultType="java.util.HashMap" parameterType="java.lang.String">
+		select 
+		  r.`course_name` courseName,
+		  o.`address`,
+		  c.`cp_date` cpDate,
+		  DATE_FORMAT(c.`start_time`,'%H:%i') startTime,
+		  DATE_FORMAT(c.`end_time`,'%H:%i') endTime,
+  		  r.`course_id` courseId,
+  		  c.`cp_type` cpType
+		from
+		  bms.`bd_class_plan` c 
+		  left join bms.`bd_course` r 
+		    on r.`course_id` = c.`course_id` 
+		  left join bms.`oa_campus` o 
+		    on o.`campus_id` = c.`place_id` 
+		where c.`cp_type` not in ('1','2','3','4','8') and  to_days(c.`cp_date`) = to_days(now()) 
+		  and DATE_FORMAT(c.`start_time`, '%H:%i') &gt;= DATE_FORMAT(#{startTimePre}, '%H:%i') 
+		  and DATE_FORMAT(c.`end_time`, '%H:%i') &lt;= DATE_FORMAT(#{endTimePre}, '%H:%i')
+		  and r.`course_type` = #{courseType}
+		group by c.`cp_id` 
+	</select>
+	
+	<select id="selectUserIdByXKCourseId" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		  re.`user_id` 
+		from
+		  bms.`bd_learn_info` bli 
+		  left join bms.`bd_student_info` re 
+		    on re.`std_id` = bli.`std_id` 
+		where bli.`pfsn_id` in 
+		  (select 
+		    u.`pfsn_id` 
+		  from
+		     bms.`bd_course` r 
+		    left join bms.`bd_plan_course` p 
+		      on p.`course_id` = r.`course_id` 
+		    left join bms.`bd_teach_plan` t 
+		      on p.`thp_id` = t.`thp_id` 
+		    left join bms.`bd_unvs_profession` u 
+		      on u.`pfsn_id` = t.`pfsn_id` 
+		   where r.`course_id` = #{courseId}
+		  group by u.`pfsn_id`) 
+		  and bli.`std_stage` = #{stdStage}
+		  and re.`user_id` is not null 
+		group by re.`user_id` 
+	</select>
+	
+	<select id="selectUserIdByFDCourseId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  re.`user_id` 
+		FROM
+		  bms.`bd_learn_info` bli 
+		  LEFT JOIN bms.`bd_student_info` re 
+		    ON re.`std_id` = bli.`std_id` 
+		WHERE bli.`pfsn_id` IN 
+		  (SELECT 
+		    u.`pfsn_id` 
+		  FROM
+		    bms.`bd_course` r 
+		    LEFT JOIN bms.`bd_test_subject` b 
+		      ON b.`subject_id` = r.`test_subject` 
+		    LEFT JOIN bms.`bd_tg` t 
+		      ON t.`subject_id` = b.`subject_id` 
+		    LEFT JOIN bms.`bd_test_group` g 
+		      ON g.`group_id` = t.`group_id` 
+		    LEFT JOIN bms.`bd_unvs_profession` u 
+		      ON u.`group_id` = g.`group_id` 
+		  WHERE r.`course_id` = #{courseId}
+		     AND r.`grade` = u.`grade`
+		  GROUP BY u.`pfsn_id`) 
+		  AND bli.`std_stage` = #{stdStage} 
+		  AND re.`user_id` IS NOT NULL 
+		GROUP BY re.`user_id` 
+	</select>
+	
+	  <select id="getOpenIdsByUserIds" resultType="String" parameterType="string">
+	  	SELECT bind_id FROM us.`us_base_info` WHERE user_id in 
+	  	(
+	  	<foreach collection="userIds" item="userId" separator=",">
+	  		#{userId,jdbcType=VARCHAR} 
+	  	</foreach>
+	  	)
+  </select>
+</mapper>

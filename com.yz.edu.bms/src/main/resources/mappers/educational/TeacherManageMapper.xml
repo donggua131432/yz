@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.TeacherManageMapper" >
+	<resultMap id="TeacherShowInfoMap" type="com.yz.model.educational.TeacherShowInfo">
+	    <id column="emp_id"  property="empId" jdbcType="VARCHAR" />
+	    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	    <result column="age" property="age" jdbcType="VARCHAR" />
+	    <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	    <result column="finish_major" property="finishMajor" jdbcType="VARCHAR" />
+ 		<result column="teach" property="teach" jdbcType="VARCHAR"  />
+	    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	    <result column="hour_fee" property="hourFee" jdbcType="VARCHAR" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+	    <result column="work_place" property="workPlace" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="TeacherExportInfoMap" type="com.yz.model.oa.OaEmployeeImportInfo">
+	    <id column="emp_id"  property="empId" jdbcType="VARCHAR" />
+	    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+	    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+	    <result column="sex" property="sex" jdbcType="VARCHAR" />
+	    <result column="age" property="age" jdbcType="VARCHAR" />
+	    <result column="nation" property="nation" jdbcType="VARCHAR" />
+	    <result column="birthday" property="birthday" jdbcType="VARCHAR" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="hour_fee" property="hourFee" jdbcType="VARCHAR" />
+	    <result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+	    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	    <result column="finish_school" property="finishSchool" jdbcType="VARCHAR" />
+	    <result column="finish_major" property="finishMajor" jdbcType="VARCHAR" />
+	    <result column="finish_time" property="finishTime" jdbcType="VARCHAR" />
+	    <result column="job_title" property="jobTitle" jdbcType="VARCHAR" />
+	    <result column="degree" property="degree" jdbcType="VARCHAR" />
+	    <result column="ext_2" property="professionalTime" jdbcType="VARCHAR" />
+	    <result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+	    <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	    <result column="teach" property="teach" jdbcType="VARCHAR" />
+	    <result column="bank_card" property="bankCard" jdbcType="VARCHAR" />
+	    <result column="email" property="email" jdbcType="VARCHAR" />
+ 		<result column="teach_cert_type" property="teachCertType" jdbcType="VARCHAR"  />
+	    <result column="teach_cert_no" property="teachCertNo" jdbcType="VARCHAR" />
+	    <result column="work_place" property="workPlace" jdbcType="VARCHAR" />
+	</resultMap>
+	
+   <!-- 所有招生老师-->
+   <select id="selectAllTeacherInfo" resultMap="TeacherShowInfoMap" parameterType="com.yz.model.condition.educational.TeacherInfoQuery">
+		SELECT
+	  oe.`emp_id`,
+	  oe.`emp_name`,
+	  oeo.`age`,
+	  (SELECT
+	    campus_name
+	  FROM
+	    oa_campus
+	  WHERE campus_id = oej.`campus_id`) campus_name,
+	  oeo.`finish_major`,
+	  oeo.`teach`,
+	  oe.`mobile`,
+	  oeo.`hour_fee`,
+	  oe.`address`,
+	  oeo.`work_place`,
+	  oeo.`other_fee`
+	FROM
+	  oa_employee oe
+	  LEFT JOIN oa_employee_other oeo
+	    ON oe.`emp_id` = oeo.`emp_id`
+	  LEFT JOIN oa_employee_job oej
+	    ON oe.`emp_id` = oej.`emp_id`
+	 WHERE oe.`emp_type`='3'
+	 <if test="campusId !=null and '' != campusId">
+	    and oej.`campus_id`=#{campusId}
+	 </if>
+	 <if test="empName !=null and ''!= empName">
+	    and oe.`emp_name` like CONCAT('%',#{empName},'%')
+	 </if>
+	 <if test="finishMajor !=null and '' != finishMajor">
+	    and oeo.`finish_major` like CONCAT('%',#{finishMajor},'%')
+	 </if>
+	 <if test="teach !=null and '' != teach">
+	    and oeo.`teach` like CONCAT('%',#{teach},'%')
+	 </if>
+	 <if test="mobile !=null and ''!=mobile">
+	    and oe.`mobile`=#{mobile}
+	 </if>
+	 <if test="workPlace !=null and '' != workPlace">
+	    and oeo.`work_place` like CONCAT('%',#{workPlace},'%')
+	 </if>
+	 order by oe.`create_time` desc
+  </select>
+  
+  
+    <!-- 教师管理excel导出结果查询-->
+   <select id="selectExprotTeacherInfo" resultMap="TeacherExportInfoMap" parameterType="com.yz.model.condition.educational.TeacherInfoQuery">
+	SELECT
+	  oe.`emp_id`,
+	  oe.`emp_name`,
+	  oe.`id_card`,
+	  oe.`sex`,
+	  oeo.`age`,
+	  oe.`nation`,
+	  date_format(oe.`birthday`,'%Y-%m-%d') birthday,
+	  oe.`address`,
+	  oeo.`hour_fee`,
+	  oeo.`other_fee`,
+	  oe.`mobile`,
+	  oeo.`finish_school`,
+	  oeo.`finish_major`,
+	  date_format(oeo.`finish_time`,'%Y-%m-%d') finish_time,
+	  oeo.`job_title`,
+	  oeo.`degree`,
+	  oeo.`ext_2`,
+	  oej.`campus_id`,
+	  (SELECT
+	    campus_name
+	  FROM
+	    oa_campus
+	  WHERE campus_id = oej.`campus_id`) campus_name,
+	  oeo.`teach`,
+	  oeo.`bank_card`,
+	  oeo.`email`,
+	  oeo.`teach_cert_type`,
+	  oeo.`teach_cert_no`,
+	  oeo.`work_place`
+	FROM
+	  oa_employee oe
+	  LEFT JOIN oa_employee_other oeo
+	    ON oe.`emp_id` = oeo.`emp_id`
+	  LEFT JOIN oa_employee_job oej
+	    ON oe.`emp_id` = oej.`emp_id`
+	  WHERE oe.`emp_type`='3'
+	 <if test="campusId !=null and '' != campusId">
+	    and oej.`campus_id`=#{campusId}
+	 </if>
+	 <if test="empName !=null and ''!= empName">
+	    and oe.`emp_name` like CONCAT('%',#{empName},'%')
+	 </if>
+	 <if test="finishMajor !=null and '' != finishMajor">
+	    and oeo.`finish_major` like CONCAT('%',#{finishMajor},'%')
+	 </if>
+	 <if test="teach !=null and '' != teach">
+	    and oeo.`teach` like CONCAT('%',#{teach},'%')
+	 </if>
+	 <if test="mobile !=null and ''!=mobile">
+	    and oe.`mobile`=#{mobile}
+	 </if>
+	 <if test="workPlace !=null and '' != workPlace">
+	    and oeo.`work_place` like CONCAT('%',#{workPlace},'%')
+	 </if>
+	 order by oe.`create_time` desc
+  </select>
+
+	<select id="getTeacherRecommend" resultType="java.util.Map" parameterType="com.yz.model.educational.BdTeacherRecommendQuery">
+		SELECT
+		a.emp_name,
+		CASE a.sex
+		WHEN 1 THEN
+		'男'
+		WHEN 2 THEN
+		'女'
+		ELSE
+		''
+		END sex,
+		DATE_FORMAT(a.birthday,'%d/%m/%Y') birthday,
+		b.age,
+		c.dict_name teachEducation,
+		b.degree,
+		b.finish_school,
+		b.finish_major,
+		DATE_FORMAT(b.finish_time,'%d/%m/%Y') finish_time,
+		job_title,
+		DATE_FORMAT(b.ext_2,'%d/%m/%Y') professional_time,
+		d.dict_name teach_cert_type,
+		a.mobile,
+		f.campus_name,
+		f.address,
+		b.work_place,
+		g.*
+		FROM
+		oa_employee a
+		LEFT JOIN oa_employee_other b ON a.emp_id = b.emp_id
+		LEFT JOIN (
+		SELECT
+		dict_name,
+		dict_value
+		FROM
+		sys_dict
+		WHERE
+		p_id = 'teachEducation'
+		) c ON b.ext_1 = c.dict_value
+		LEFT JOIN (
+		SELECT
+		dict_name,
+		dict_value
+		FROM
+		sys_dict
+		WHERE
+		p_id = 'teachCertType'
+		) d ON b.teach_cert_type = d.dict_value
+		LEFT JOIN oa_employee_job e ON e.emp_id = a.emp_id
+		LEFT JOIN oa_campus f ON f.campus_id = e.campus_id
+		RIGHT JOIN (
+		SELECT
+		c.course_name,
+		group_concat(
+		DATE_FORMAT(
+		l.start_time,
+		'%m月%d日 %H:%i'
+		),
+		'-',
+		DATE_FORMAT(l.end_time, '%H:%i')
+		ORDER BY
+		start_time
+		) plan_date,
+		l.emp_id,
+		f.grade,
+		CASE f.pfsn_level
+		WHEN '1' THEN
+		'本科'
+		WHEN '5' THEN
+		'专科'
+		ELSE
+		''
+		END pfsn_level,
+		f.pfsn_name
+		FROM
+		bms.bd_course c
+		LEFT JOIN bms.bd_plan_course p ON p.`course_id` = c.`course_id`
+		LEFT JOIN bms.bd_teach_plan t ON t.`thp_id` = p.`thp_id`
+		LEFT JOIN bms.bd_unvs_profession f ON f.`pfsn_id` = t.`pfsn_id`
+		JOIN bms.bd_class_plan l ON l.course_id = c.course_id
+		WHERE
+		emp_id IS NOT NULL AND l.cp_type in ('5','6','7')
+		<if test="grade !=null and '' != grade">
+			and f.grade =#{grade}
+		</if>
+		<if test="unvsId !=null and '' != unvsId">
+			and f.unvs_id =#{unvsId}
+		</if>
+		<if test="pfsnId !=null and '' != pfsnId">
+			and f.pfsn_id =#{pfsnId}
+		</if>
+		<if test="pfsnLevel !=null and '' != pfsnLevel">
+			and f.pfsn_level =#{pfsnLevel}
+		</if>
+		<if test="semester !=null and '' != semester">
+			and t.`semester` = #{semester}
+		</if>
+		GROUP BY
+		c.`course_id`,
+		l.emp_id,
+		f.pfsn_id
+		) g ON g.emp_id = a.emp_id
+		WHERE
+		a.emp_type = '3'
+	</select>
+	
+	<select id="getNonExistsCampus" resultType="java.util.Map">
+		DROP TEMPORARY TABLE IF EXISTS tmp_teacher_campus;
+		CREATE TEMPORARY TABLE tmp_teacher_campus (
+		campus_name VARCHAR (50)
+		);
+		INSERT INTO tmp_teacher_campus (
+		campus_name
+		)
+		VALUES
+		<foreach collection="teacherlist" item="info" separator=",">
+			(
+			#{info.campusName, jdbcType=VARCHAR}
+			)
+		</foreach>;
+		SELECT
+            a.campus_name as campusName
+        FROM
+            (
+                SELECT
+                    campus_name
+                FROM
+                tmp_teacher_campus 
+                GROUP BY
+                    campus_name
+            ) a
+        LEFT JOIN oa_campus oc ON oc.campus_name = a.campus_name
+        WHERE oc.campus_id is null group by a.campus_name;     
+	</select>
+	
+	<select id="initTmpTeacherInfoTable">
+		DROP TEMPORARY TABLE IF EXISTS tmp_teacher_info;
+        CREATE TEMPORARY TABLE tmp_teacher_info (
+        emp_name varchar(50),
+        id_card VARCHAR (50),
+        sex VARCHAR (10),
+        age VARCHAR (50),
+        nation varchar(10),
+        birthday varchar(50),
+        address varchar(250),
+        hour_fee VARCHAR (50),
+        other_fee varchar(50),
+        mobile varchar(50),
+        finish_school varchar(50),
+        finish_major varchar(50),
+        finish_time varchar(50),
+        job_title varchar(100),
+        degree varchar(50),
+        professional_time varchar(10),
+		campus_name varchar(50),
+        teach varchar(50),
+        bank_card varchar(50),
+        email varchar(50),
+        teach_cert_type varchar(50),
+        teach_cert_no varchar(50),
+        work_place varchar(50)
+        );
+        
+        INSERT INTO tmp_teacher_info
+        VALUES
+        <foreach collection="teacherlist" item="info" separator=",">
+            (
+            #{info.empName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.sex, jdbcType=VARCHAR},
+            #{info.age, jdbcType=VARCHAR},
+            #{info.nation, jdbcType=VARCHAR},
+            #{info.birthday, jdbcType=VARCHAR},
+            #{info.address, jdbcType=VARCHAR},
+            #{info.hourFee, jdbcType=VARCHAR},
+            #{info.otherFee, jdbcType=VARCHAR},
+            #{info.mobile, jdbcType=VARCHAR},
+            #{info.finishSchool, jdbcType=VARCHAR},
+            #{info.finishMajor, jdbcType=VARCHAR},
+	    	#{info.finishTime, jdbcType=VARCHAR},
+	    	#{info.jobTitle, jdbcType=VARCHAR},
+            #{info.degree, jdbcType=VARCHAR},
+	    	#{info.professionalTime, jdbcType=VARCHAR},
+	    	#{info.campusName, jdbcType=VARCHAR},
+	    	#{info.teach, jdbcType=VARCHAR},
+	    	#{info.bankCard, jdbcType=VARCHAR},
+	    	#{info.email, jdbcType=VARCHAR},
+	    	#{info.teachCertType, jdbcType=VARCHAR},
+	    	#{info.teachCertNo, jdbcType=VARCHAR},
+	    	#{info.workPlace, jdbcType=VARCHAR}	
+            )
+       </foreach>;
+	</select>
+	
+	<select id="selectTeacherInfoInsert" resultType="java.util.HashMap">
+		SELECT
+        a.emp_name,a.id_card,a.sex,a.age,a.nation,a.birthday,a.address,a.hour_fee,a.other_fee,
+        a.mobile,a.finish_school,a.finish_major,a.finish_time,a.job_title,a.degree,a.professional_time,
+        oc.campus_id,a.teach,a.bank_card,a.email,a.teach_cert_type,a.teach_cert_no,a.work_place,
+        #{user.realName, jdbcType=VARCHAR} create_user,
+        #{user.userId, jdbcType=VARCHAR} create_user_id
+      FROM tmp_teacher_info a
+      left join oa_campus oc on a.campus_name=oc.campus_name
+      WHERE NOT  EXISTS(select oe.emp_id from oa_employee oe where oe.id_card=a.id_card and oe.emp_type='3')
+	</select>
+	
+	<insert id="insertTeacherInfoExcel">
+		INSERT INTO `oa_employee`(emp_id,emp_name,emp_status,emp_type,id_type,id_card,mobile,birthday,nation,sex,address,emp_source,create_user,create_user_id)
+		values 
+		<foreach collection="list" item="info" separator=",">
+            (
+            #{info.emp_id},
+			#{info.emp_name},
+			'1',
+			'3',
+			'1',
+			#{info.id_card},
+			#{info.mobile},
+			#{info.birthday},
+			#{info.nation},
+			#{info.sex},
+			#{info.address},
+			'1',
+			#{info.create_user},
+			#{info.create_user_id}
+            )
+       </foreach>;
+       
+       INSERT INTO `oa_employee_other`(emp_id,telephone,email,age,degree,finish_school,finish_major,finish_time,work_place,hour_fee,other_fee,job_title,
+       teach_cert_type,teach_cert_no,bank_card,teach,ext_2,update_user,update_user_id)
+		values 
+		<foreach collection="list" item="info" separator=",">
+            (
+            #{info.emp_id},
+			#{info.mobile},
+			#{info.email},
+			#{info.age},
+			#{info.degree},
+			#{info.finish_school},
+			#{info.finish_major},
+			#{info.finish_time},
+			#{info.work_place},
+			#{info.hour_fee},
+			#{info.other_fee},
+			#{info.job_title},
+			#{info.teach_cert_type},
+			#{info.teach_cert_no},
+			#{info.bank_card},
+			#{info.teach},
+			#{info.professional_time},
+			#{info.create_user},
+			#{info.create_user_id}
+            )
+       </foreach>;
+       
+       INSERT INTO oa_employee_job (
+		emp_id,
+		campus_id
+		)
+		VALUES
+		<foreach collection="list" item="info" separator=",">
+            (
+            #{info.emp_id},
+			#{info.campus_id}
+            )
+       </foreach>;
+	</insert>
+	
+	<select id="selectTmpTeacherAnnex" resultType="java.util.HashMap">
+		SELECT
+		oe.emp_id,
+		sd.dict_name as annex_name,
+		sd.dict_value as emp_annex_type,
+		'' annex_url,
+		'1' annex_status,
+		'0' is_require
+		FROM tmp_teacher_info a 
+		left join oa_employee oe on  oe.id_card=a.id_card
+		left join  sys_dict sd on sd.p_id='teacherAnnexType'
+		WHERE NOT  EXISTS (select oea.emp_id from oa_employee_annex oea where oea.emp_id=oe.emp_id )
+		GROUP BY 
+		oe.emp_id ,
+		sd.dict_name;
+	</select>
+	
+	
+	<insert id="insertTmpinitTeacherAnnex">
+		INSERT INTO `oa_employee_annex` (
+		`annex_id`,
+		`emp_annex_type`,
+		`emp_id`,
+		`annex_name`,
+		`annex_url`,
+		`annex_status`,
+		`is_require`
+		) values
+		<foreach collection="list" item="info" separator=",">
+        	(
+        #{info.annex_id},
+		#{info.emp_annex_type},
+		#{info.emp_id},
+		#{info.annex_name},
+		#{info.annex_url},
+		#{info.annex_status},
+		#{info.is_require}
+            )
+       </foreach>
+	</insert>
+</mapper>

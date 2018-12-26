@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsConsultsMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.UsConsults" >
+    <id column="info_id" property="infoId" jdbcType="VARCHAR" />
+    <result column="info_title" property="infoTitle" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="reply_user" property="replyUser" jdbcType="VARCHAR" />
+    <result column="reply_user_id" property="replyUserId" jdbcType="VARCHAR" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+    <result column="info_content" property="infoContent" jdbcType="LONGVARCHAR" />
+    <result column="reply_content" property="replyContent" jdbcType="LONGVARCHAR" />
+    <result column="is_reply" property="isReply" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    info_id, info_title, create_time, mobile, user_name, user_id, reply_user, reply_user_id, 
+    reply_time, info_content, reply_content, is_reply
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from us_consults
+    where info_id = #{infoId,jdbcType=VARCHAR}
+  </select>
+  
+   <resultMap id="ListMap" type="java.util.HashMap" >
+    <id column="info_id" property="infoId" jdbcType="VARCHAR" />
+    <result column="info_title" property="infoTitle" jdbcType="VARCHAR" />
+    <result column="info_content" property="infoContent" jdbcType="LONGVARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="is_reply" property="isReply" jdbcType="CHAR" />
+    <result column="reply_user" property="replyUser" jdbcType="VARCHAR" />
+    <result column="reply_content" property="replyContent" jdbcType="LONGVARCHAR" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <select id="selectMyConsults" resultMap="ListMap" parameterType="java.lang.String" >
+    select 
+	  c.info_id,
+	  c.info_title,
+	  date_format(c.create_time, '%Y-%m-%d %H:%i:%s') as create_time,
+	  c.mobile,
+	  c.user_name,
+	  c.user_id,
+	  c.reply_user,
+	  c.reply_user_id,
+	  date_format(c.reply_time, '%Y-%m-%d %H:%i:%s') as reply_time,
+	  c.info_content,
+	  c.reply_content,
+	  c.is_reply
+	from
+	  us_consults c 
+    where user_id = #{userId, jdbcType=VARCHAR}
+    order by c.create_time desc
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.UsConsults" >
+    insert into us_consults
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        info_id,
+      <if test="infoTitle != null" >
+        info_title,
+      </if>
+        create_time,
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="replyUser != null" >
+        reply_user,
+      </if>
+      <if test="replyUserId != null" >
+        reply_user_id,
+      </if>
+      <if test="replyTime != null" >
+        reply_time,
+      </if>
+      <if test="infoContent != null" >
+        info_content,
+      </if>
+      <if test="replyContent != null" >
+        reply_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        seq(),
+      <if test="infoTitle != null" >
+        #{infoTitle,jdbcType=VARCHAR},
+      </if>
+      now(),
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="replyUser != null" >
+        #{replyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="replyUserId != null" >
+        #{replyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="replyTime != null" >
+        #{replyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="infoContent != null" >
+        #{infoContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="replyContent != null" >
+        #{replyContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

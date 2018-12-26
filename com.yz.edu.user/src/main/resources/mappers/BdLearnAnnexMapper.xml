@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdLearnAnnexMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.BdLearnAnnex" >
+    <id column="annex_id" property="annexId" jdbcType="VARCHAR" />
+    <result column="annex_type" property="annexType" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="annex_name" property="annexName" jdbcType="VARCHAR" />
+    <result column="annex_url" property="annexUrl" jdbcType="VARCHAR" />
+    <result column="annex_status" property="annexStatus" jdbcType="CHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="is_require" property="isRequire" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="upload_user" property="uploadUser" jdbcType="VARCHAR" />
+    <result column="upload_user_id" property="uploadUserId" jdbcType="VARCHAR" />
+    <result column="upload_time" property="uploadTime" jdbcType="TIMESTAMP" />
+    <result column="check_user" property="checkUser" jdbcType="VARCHAR" />
+    <result column="check_user_id" property="checkUserId" jdbcType="VARCHAR" />
+    <result column="check_time" property="checkTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    annex_id, annex_type, learn_id, annex_name, annex_url, annex_status, reason, is_require, 
+    update_time, update_user, update_user_id, upload_user, upload_user_id, upload_time, 
+    check_user, check_user_id, check_time
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.bd_learn_annex
+    where annex_id = #{annexId,jdbcType=VARCHAR}
+  </select>
+ 
+  
+  <insert id="insertSelective" parameterType="com.yz.model.BdLearnAnnex" >
+    insert into bms.bd_learn_annex
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="annexId != null" >
+        annex_id,
+      </if>
+      <if test="annexType != null" >
+        annex_type,
+      </if>
+      <if test="learnId != null" >
+        learn_id,
+      </if>
+      <if test="annexName != null" >
+        annex_name,
+      </if>
+      <if test="annexUrl != null" >
+        annex_url,
+      </if>
+      <if test="annexStatus != null" >
+        annex_status,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="isRequire != null" >
+        is_require,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="uploadUser != null" >
+        upload_user,
+      </if>
+      <if test="uploadUserId != null" >
+        upload_user_id,
+      </if>
+      <if test="uploadTime != null" >
+        upload_time,
+      </if>
+      <if test="checkUser != null" >
+        check_user,
+      </if>
+      <if test="checkUserId != null" >
+        check_user_id,
+      </if>
+      <if test="checkTime != null" >
+        check_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="annexId != null" >
+        #{annexId,jdbcType=VARCHAR},
+      </if>
+      <if test="annexType != null" >
+        #{annexType,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="annexName != null" >
+        #{annexName,jdbcType=VARCHAR},
+      </if>
+      <if test="annexUrl != null" >
+        #{annexUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="annexStatus != null" >
+        #{annexStatus,jdbcType=CHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="isRequire != null" >
+        #{isRequire,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUser != null" >
+        #{uploadUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUserId != null" >
+        #{uploadUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUser != null" >
+        #{checkUser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkUserId != null" >
+        #{checkUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.BdLearnAnnex" >
+    update bms.bd_learn_annex
+    <set >
+      <if test="annexType != null" >
+        annex_type = #{annexType,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        learn_id = #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="annexName != null" >
+        annex_name = #{annexName,jdbcType=VARCHAR},
+      </if>
+      <if test="annexUrl != null" >
+        annex_url = #{annexUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="annexStatus != null" >
+        annex_status = #{annexStatus,jdbcType=CHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="isRequire != null" >
+        is_require = #{isRequire,jdbcType=CHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUser != null" >
+        upload_user = #{uploadUser,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadUserId != null" >
+        upload_user_id = #{uploadUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="uploadTime != null" >
+        upload_time = #{uploadTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUser != null" >
+        check_user = #{checkUser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkUserId != null" >
+        check_user_id = #{checkUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        check_time = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where annex_id = #{annexId,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="batchInsert">
+  	insert into bms.bd_learn_annex(`annex_id`,`annex_type`,`learn_id`,`annex_name`,`annex_status`,`is_require`)
+  	select 
+  		seq(),
+  		dict_value, 
+  		#{learnId}, 
+  		dict_name, 
+  		1, 
+  		if(#{recruitType}=1,if(dict_value in(1,2,3),1,0),if(dict_value=5,1,0))
+    from bms.sys_dict where p_id = 'annexType' 
+  </insert>
+  
+  <resultMap id="AnnexListMap" type="com.yz.model.BdLearnAnnex" >
+    <id column="annex_id" property="annexId" jdbcType="VARCHAR" />
+    <result column="annex_type" property="annexType" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="annex_name" property="annexName" jdbcType="VARCHAR" />
+    <result column="annex_url" property="annexUrl" jdbcType="VARCHAR" />
+    <result column="annex_status" property="annexStatus" jdbcType="CHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="is_require" property="isRequire" jdbcType="CHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="upload_user" property="uploadUser" jdbcType="VARCHAR" />
+    <result column="upload_time_str" property="uploadTimeStr" jdbcType="VARCHAR" />
+    <result column="check_user" property="checkUser" jdbcType="VARCHAR" />
+    <result column="check_time_str" property="checkTimeStr" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getAnnexList" parameterType="string" resultMap="AnnexListMap">
+  	SELECT 
+	  annex_id,
+	  annex_type,
+	  learn_id,
+	  annex_name,
+	  annex_url,
+	  annex_status,
+	  reason,
+	  is_require,
+	  update_user,
+	  upload_user,
+	  DATE_FORMAT(upload_time, '%Y-%m-%d %H:%i:%s') AS upload_time_str,
+	  check_user,
+	  DATE_FORMAT(check_time, '%Y-%m-%d %H:%i:%s') AS check_time_str
+	FROM
+	  bms.bd_learn_annex 
+	WHERE learn_id = #{learnId, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="countBy" resultType="int">
+	SELECT 
+	  COUNT(1) 
+	FROM
+	  bms.`bd_learn_annex` a 
+	WHERE a.`learn_id` = #{learnId, jdbcType=VARCHAR} 
+	  AND a.`annex_status` = #{annexStatus, jdbcType=VARCHAR} 
+	  AND a.`is_require` = '1'
+  </select>
+	
+  <update id="updateLearnAnnexStatus" parameterType="string">
+	UPDATE 
+	  bms.bd_learn_info l 
+	SET
+	  l.`annex_status` = #{annexStatus, jdbcType=VARCHAR}
+	WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+  </update>
+  
+  <resultMap id="AnnexMap" type="com.yz.model.BdLearnAnnex">
+	<id column="annex_id" jdbcType="VARCHAR" property="annexId" />
+	<result column="annex_type" jdbcType="VARCHAR" property="annexType" />
+	<result column="learn_id" jdbcType="VARCHAR" property="learnId" />
+	<result column="annex_name" jdbcType="VARCHAR" property="annexName" />
+	<result column="annex_url" jdbcType="VARCHAR" property="annexUrl" />
+	<result column="annex_status" jdbcType="VARCHAR" property="annexStatus" />
+	<result column="reason" jdbcType="VARCHAR" property="reason" />
+	<result column="is_require" jdbcType="VARCHAR" property="isRequire" />
+	<result column="upload_time_str" jdbcType="VARCHAR" property="uploadTimeStr" />
+	<result column="upload_user" jdbcType="VARCHAR" property="uploadUser" />
+	<result column="check_time_str" jdbcType="VARCHAR" property="checkTimeStr" />
+	<result column="check_user" jdbcType="VARCHAR" property="checkUser" />
+  </resultMap>
+  
+  <select id="selectRequiredAnnex" parameterType="string" resultMap="AnnexMap">
+	select 
+	  a.`annex_id`,
+	  a.`annex_type`,
+	  a.`learn_id`,
+	  a.`annex_name`,
+	  a.`annex_url`,
+	  a.`annex_status`,
+	  a.`is_require`,
+	  a.`update_time`,
+	  a.`update_user`,
+	  a.`reason` 
+	from
+	  bms.bd_learn_annex a 
+	where a.`is_require` = '1' 
+	  and a.`learn_id` = #{learnId, jdbcType=VARCHAR} 
+  </select>
+  
+</mapper>

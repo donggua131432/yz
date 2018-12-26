@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsStudentMapper">
+
+	<resultMap type="com.yz.model.StudentEnrollInfo" id="EnrollInfo">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="nation" property="nation" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="java.util.HashMap" id="EnrollInfoMap">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="ta_name" property="taName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="nation" property="nation" jdbcType="VARCHAR" />
+		<result column="recruit_name" property="recruitName" jdbcType="VARCHAR" />
+		<result column="recruit_mobile" property="recruitMobile" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="CheckWeightMap" type="java.util.Map">
+		<result column="check_order" property="checkOrder" jdbcType="VARCHAR" />
+		<result column="check_type" property="checkType" jdbcType="VARCHAR" />
+		<result column="jt_id" property="jtId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getEnrollList" resultMap="EnrollInfoMap" parameterType="string">
+		SELECT 
+		  s.`std_name`,
+		  s.`id_card`,
+		  s.`nation`,
+		  p.`pfsn_name`,
+		  p.`pfsn_level`,
+		  l.`recruit_type`,
+		  u.`unvs_name`,
+		  t.`ta_name`,
+		  l.`learn_id`,
+		  l.`grade`,
+		  e.`emp_name` AS recruit_name,
+		  e.`mobile` AS recruit_mobile 
+		FROM
+		  `bms`.bd_learn_info l 
+		  LEFT JOIN `bms`.bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT JOIN `bms`.bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  LEFT JOIN `bms`.bd_university u 
+		    ON u.`unvs_id` = l.`unvs_id` 
+		  LEFT JOIN `bms`.bd_test_area t 
+		    ON t.ta_id = l.ta_id 
+		  LEFT JOIN `bms`.bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN `bms`.oa_employee e 
+		    ON e.`emp_id` = r.`recruit` 
+		where l.`std_id` = #{stdId, jdbcType=VARCHAR}
+		  and l.`is_data_check` = '0'
+	</select>
+	
+	<resultMap type="com.yz.model.StudentHistory" id="HistoryInfo">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="profession" property="profession" jdbcType="VARCHAR" />
+		<result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+		<result column="diploma" property="diploma" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="java.util.HashMap" id="HistoryInfoMap">
+		<id column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="profession" property="profession" jdbcType="VARCHAR" />
+		<result column="graduate_time" property="graduateTime" jdbcType="VARCHAR" />
+		<result column="diploma" property="diploma" jdbcType="VARCHAR" />
+		<result column="edcs_type" property="edcsTpye" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getHistoryInfo" resultMap="HistoryInfoMap" parameterType="string">
+		select 
+		  h.`unvs_name`,
+		  h.`profession`,
+		  h.`graduate_time`,
+		  h.`diploma`,
+		  h.`learn_id`,
+		  h.`edcs_type`
+		from
+		  `bms`.bd_student_history h 
+		where h.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateAnnex" >
+		update 
+		  `bms`.bd_student_annex a 
+		set
+		  a.`annex_url` = #{url, jdbcType=VARCHAR},
+		  a.`annex_status` = '2' 
+		where a.`std_id` = #{stdId, jdbcType=VARCHAR} 
+		  and a.`annex_type` = #{annexType, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAnnexStatus" parameterType="string">
+		update `bms`.bd_student_info set my_annex_status = '2' where std_id = #{stdId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateHistory" parameterType="com.yz.model.StudentHistory">
+		update 
+		  `bms`.`bd_student_history` 
+		set
+		  `unvs_name` = #{unvsName, jdbcType=VARCHAR},
+		  `graduate_time` = str_to_date(#{graduateTime, jdbcType=VARCHAR}, '%Y-%m-%d'),
+		  `profession` = #{profession, jdbcType=VARCHAR},
+		  `diploma` = #{diploma, jdbcType=VARCHAR},
+		  `edcs_type` = #{edcsType, jdbcType=VARCHAR}
+		where `learn_id` = #{learnId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="testCompleted" parameterType="string">
+		UPDATE `bms`.bd_learn_info SET is_test_completed = '1' WHERE learn_id = #{learnId, jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="getStudentByMobile" resultType="java.util.HashMap" parameterType="string">
+		select std_id, std_name, id_card, mobile
+		from `bms`.bd_student_info where mobile = #{mobile, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getStudentModify" resultType="java.util.HashMap" parameterType="string">
+		SELECT
+			a.std_name,
+			a.id_card,
+			b.grade,
+			a.check_order,
+			a.pfsn_id,
+			a.new_pfsn_id,
+			pro.pfsn_name,
+			pro.pfsn_level,
+			a.nation,
+			a.sex,
+			pro_new.pfsn_name npfsn_name,
+			a.create_time,
+			a.unvs_id,
+			c.unvs_name,
+			d.check_status,
+			d.reason,
+			a.ext_1
+		FROM
+			`bms`.bd_student_modify a
+		LEFT JOIN `bms`.bd_learn_info b ON a.learn_id = b.learn_id
+		LEFT JOIN `bms`.bd_university c ON a.unvs_id = c.unvs_id
+		LEFT JOIN `bms`.bd_unvs_profession pro ON a.pfsn_id = pro.pfsn_id
+		LEFT JOIN `bms`.bd_unvs_profession pro_new ON a.new_pfsn_id = pro_new.pfsn_id
+		LEFT JOIN `bms`.bd_check_record d ON d.mapping_id = a.modify_id
+		AND d.check_order = a.check_order
+		WHERE
+			a.modify_type = '6'
+		AND d.check_type = '10'
+		AND new_pfsn_id IS NOT NULL
+		AND a.learn_id = #{learnId, jdbcType=VARCHAR}
+		ORDER BY
+			create_time DESC
+		LIMIT 1
+	</select>
+
+	<select id="getStudentInfo" resultType="java.util.HashMap" parameterType="string">
+		SELECT
+		b.std_name,
+		b.id_card,
+		a.grade,
+		d.pfsn_level,
+		a.unvs_id,
+		c.unvs_name,
+		a.pfsn_id,
+		d.pfsn_name,
+		b.nation,
+		b.sex
+		FROM
+			`bms`.bd_learn_info a
+		LEFT JOIN `bms`.bd_student_info b ON a.std_id = b.std_id
+		LEFT JOIN `bms`.bd_university c ON a.unvs_id = c.unvs_id
+		LEFT JOIN `bms`.bd_unvs_profession d ON a.pfsn_id = d.pfsn_id
+		WHERE a.learn_id = #{learnId, jdbcType=VARCHAR}
+	</select>
+
+	<insert id="addStudentModify" parameterType="com.yz.model.student.BdStudentModify">
+		<selectKey resultType="java.lang.String" keyProperty="modifyId"
+				   order="BEFORE">
+			SELECT seq();
+		</selectKey>
+		insert into `bms`.bd_student_modify
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			modify_id,
+			<if test="learnId != null and learnId != ''">
+				learn_id,
+			</if>
+			<if test="stdId != null and stdId != ''">
+				std_id,
+			</if>
+			<if test="modifyType != null and modifyType != ''">
+				modify_type,
+			</if>
+			<if test="checkType != null and checkType != ''">
+				check_type,
+			</if>
+			<if test="stdName != null and stdName != ''">
+				std_name,
+			</if>
+			<if test="sex != null and sex != ''">
+				sex,
+			</if>
+			<if test="idType != null and idType != ''">
+				id_type,
+			</if>
+			<if test="nation != null and nation != ''">
+				nation,
+			</if>
+			<if test="idCard != null and idCard != ''">
+				id_card,
+			</if>
+			<if test="unvsId != null and unvsId != ''">
+				unvs_id,
+			</if>
+			<if test="taId != null and taId != ''">
+				ta_id,
+			</if>
+			<if test="pfsnId != null and pfsnId != ''">
+				pfsn_id,
+			</if>
+			<if test="sg != null and sg != ''">
+				sg,
+			</if>
+			<if test="scholarship != null and scholarship != ''">
+				scholarship,
+			</if>
+			<if test="oldStdStage != null and oldStdStage != ''">
+				old_std_stage,
+			</if>
+			<if test="newStdStage != null and newStdStage != ''">
+				new_std_stage,
+			</if>
+			<if test="newStdName != null and newStdName != ''">
+				new_std_name,
+			</if>
+			<if test="newSex != null and newSex != ''">
+				new_sex,
+			</if>
+			<if test="newIdType != null and newIdType != ''">
+				new_id_type,
+			</if>
+			<if test="newNation != null and newNation != ''">
+				new_nation,
+			</if>
+			<if test="newIdCard != null and newIdCard != ''">
+				new_id_card,
+			</if>
+			<if test="newUnvsId != null and newUnvsId != ''">
+				new_unvs_id,
+			</if>
+			<if test="newTaId != null and newTaId != ''">
+				new_ta_id,
+			</if>
+			<if test="newPfsnId != null and newPfsnId != ''">
+				new_pfsn_id,
+			</if>
+			<if test="newSg != null and newSg != ''">
+				new_sg,
+			</if>
+			<if test="newScholarship != null and newScholarship != ''">
+				new_scholarship,
+			</if>
+			<if test="isDel != null and isDel != ''">
+				is_del,
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user,
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id,
+			</if>
+			<if test="createUserId != null and createUserId != ''">
+				create_user_id,
+			</if>
+			<if test="createUser != null and createUser != ''">
+				create_user,
+			</if>
+			<if test="checkOrder != null and checkOrder != ''">
+				check_order,
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				ext_1,
+			</if>
+			<if test="isComplete != null and isComplete != ''">
+				is_complete,
+			</if>
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{modifyId,jdbcType=VARCHAR},
+			<if test="learnId != null  and learnId != ''">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null  and stdId != ''">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="modifyType != null  and modifyType != ''">
+				#{modifyType,jdbcType=VARCHAR},
+			</if>
+			<if test="checkType != null  and checkType != ''">
+				#{checkType,jdbcType=VARCHAR},
+			</if>
+			<if test="stdName != null  and stdName != ''">
+				#{stdName,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null  and sex != ''">
+				#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="idType != null and idType != ''">
+				#{idType,jdbcType=VARCHAR},
+			</if>
+			<if test="nation != null and nation != ''">
+				#{nation,jdbcType=VARCHAR},
+			</if>
+			<if test="idCard != null and idCard != ''">
+				#{idCard,jdbcType=VARCHAR},
+			</if>
+			<if test="unvsId != null and unvsId != ''">
+				#{unvsId,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null and taId != ''">
+				#{taId,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnId != null and pfsnId != ''">
+				#{pfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="sg != null and sg != ''">
+				#{sg,jdbcType=VARCHAR},
+			</if>
+			<if test="oldStdStage != null and oldStdStage != ''">
+				#{oldStdStage,jdbcType=VARCHAR},
+			</if>
+			<if test="newStdStage != null and newStdStage != ''">
+				#{newStdStage,jdbcType=VARCHAR},
+			</if>
+			<if test="scholarship != null and scholarship != ''">
+				#{scholarship,jdbcType=VARCHAR},
+			</if>
+			<if test="newStdName != null and newStdName != ''">
+				#{newStdName,jdbcType=VARCHAR},
+			</if>
+			<if test="newSex != null and newSex != ''">
+				#{newSex,jdbcType=VARCHAR},
+			</if>
+			<if test="newIdType != null and newIdType != ''">
+				#{newIdType,jdbcType=VARCHAR},
+			</if>
+			<if test="newNation != null and newNation != ''">
+				#{newNation,jdbcType=VARCHAR},
+			</if>
+			<if test="newIdCard != null and newIdCard != ''">
+				#{newIdCard,jdbcType=VARCHAR},
+			</if>
+			<if test="newUnvsId != null and newUnvsId != ''">
+				#{newUnvsId,jdbcType=VARCHAR},
+			</if>
+			<if test="newTaId != null and newTaId != ''">
+				#{newTaId,jdbcType=VARCHAR},
+			</if>
+			<if test="newPfsnId != null and newPfsnId != ''">
+				#{newPfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="newSg != null and newSg != ''">
+				#{newSg,jdbcType=VARCHAR},
+			</if>
+			<if test="newScholarship != null and newScholarship != ''">
+				#{newScholarship,jdbcType=VARCHAR},
+			</if>
+			<if test="isDel != null and isDel != ''">
+				#{isDel,jdbcType=CHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null and createUserId != ''">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null and createUser != ''">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="checkOrder != null and checkOrder != ''">
+				#{checkOrder,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="isComplete != null and isComplete != ''">
+				#{isComplete,jdbcType=VARCHAR},
+			</if>
+			now()
+		</trim>
+	</insert>
+
+	<select id="getCheckWeight" resultMap="CheckWeightMap"
+			parameterType="java.lang.String">
+		SELECT check_order,check_type,jt_id FROM `bms`.bd_check_weight
+		WHERE
+		check_type = #{stdStage,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="addBdCheckRecord" parameterType="com.yz.model.student.BdCheckRecord" >
+		insert into `bms`.bd_check_record
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			cr_id,
+			<if test="mappingId != null" >
+				mapping_id,
+			</if>
+			<if test="empId != null" >
+				emp_id,
+			</if>
+			<if test="checkStatus != null" >
+				check_status,
+			</if>
+			<if test="reason != null" >
+				reason,
+			</if>
+			<if test="checkOrder != null" >
+				check_order,
+			</if>
+			<if test="checkType != null" >
+				check_type,
+			</if>
+			<if test="crStatus != null" >
+				cr_status,
+			</if>
+			<if test="updateTime != null" >
+				update_time,
+			</if>
+			<if test="updateUser != null" >
+				update_user,
+			</if>
+			<if test="updateUserId != null" >
+				update_user_id,
+			</if>
+			<if test="ext1 != null" >
+				ext_1,
+			</if>
+			<if test="ext2 != null" >
+				ext_2,
+			</if>
+			<if test="ext3 != null" >
+				ext_3,
+			</if>
+			<if test="jtId != null" >
+				jt_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			seq(),
+			<if test="mappingId != null" >
+				#{mappingId,jdbcType=VARCHAR},
+			</if>
+			<if test="empId != null" >
+				#{empId,jdbcType=VARCHAR},
+			</if>
+			<if test="checkStatus != null" >
+				#{checkStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null" >
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="checkOrder != null" >
+				#{checkOrder,jdbcType=VARCHAR},
+			</if>
+			<if test="checkType != null" >
+				#{checkType,jdbcType=VARCHAR},
+			</if>
+			<if test="crStatus != null" >
+				#{crStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null" >
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null" >
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null" >
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null" >
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null" >
+				#{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null" >
+				#{ext3,jdbcType=VARCHAR},
+			</if>
+			<if test="jtId != null" >
+				#{jtId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="countYMStudent" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+			`bms`.bd_learn_info
+		WHERE
+			grade = '2018'
+		AND inclusion_status = 2
+		AND scholarship IN ('15', '16', '17', '22')
+		AND learn_id = #{learnId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getUserIdByStdId" resultType="java.lang.String">
+		SELECT user_id from bms.`bd_student_info` where std_id=#{stdId,jdbcType=VARCHAR} limit 1;
+	</select>
+	
+	<update id="updateUserIdByStdId">
+		update bms.`bd_student_info` set user_id=#{userId,jdbcType=VARCHAR} where std_id=#{stdId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateStdMobileByStdId">
+		update bms.`bd_student_info` set mobile=#{mobile,jdbcType=VARCHAR} where std_id=#{stdId,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.goods.GsGoodsCommentMapper" >
+   <resultMap type="com.yz.model.goods.GsGoodsCommentInfo" id="GsGoodsCommentInfo">
+   	 <result column="comment_id" property="commentId" jdbcType="VARCHAR"/>
+   	 <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+   	 <result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+   	 <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+   	 <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+   	 <result column="comment_content" property="commentContent" jdbcType="VARCHAR"/>
+   	 <result column="comment_time" property="commentTime" jdbcType="VARCHAR"/>
+   	 <result column="comment_status" property="commentStatus" jdbcType="VARCHAR"/>
+   	 <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
+   	 <result column="reply_time" property="replyTime" jdbcType="VARCHAR"/>
+   </resultMap>
+   <select id="getGsGoodsCommentInfo" resultMap="GsGoodsCommentInfo">
+   	SELECT 
+	  ggc.`comment_id`,
+	  ggs.`sales_type`,
+	  ggs.`sales_name`,
+	  ggc.`user_name`,
+	  ggc.`mobile`,
+	  ggc.`comment_content`,
+	  date_format(ggc.`comment_time`,'%Y-%m-%d %H:%i:%s') comment_time,
+	  ggc.`comment_status`,
+	  gcr.`reply_content`,
+	  date_format(gcr.`reply_time`,'%Y-%m-%d %H:%i:%s') reply_time
+	FROM
+	  goods.`gs_goods_comment` ggc 
+	  LEFT JOIN goods.`gs_goods_sales` ggs 
+	    ON ggc.`sales_id` = ggs.`sales_id` 
+	  LEFT JOIN goods.`gs_comment_reply` gcr 
+	    ON ggc.`comment_id` = gcr.`comment_id`
+	where 1 =1
+	<if test="goodsName !=null and '' !=goodsName">
+		and ggs.`sales_name` like concat('%',#{goodsName,jdbcType=VARCHAR},'%')
+	</if>   
+   </select>
+   
+   <select id="getGsGoodsCommentDetailInfo" resultMap="GsGoodsCommentInfo">
+   	SELECT 
+	  ggc.`comment_id`,
+	  ggs.`sales_type`,
+	  ggs.`sales_name`,
+	  ggc.`comment_content`,
+	  date_format(ggc.`comment_time`,'%Y-%m-%d %H:%i:%s') comment_time,
+	  ggc.`comment_status`,
+	  gcr.`reply_content`,
+	  date_format( gcr.`reply_time` ,'%Y-%m-%d %H:%i:%s') reply_time
+	FROM
+	  goods.`gs_goods_comment` ggc 
+	  LEFT JOIN goods.`gs_goods_sales` ggs 
+	    ON ggc.`sales_id` = ggs.`sales_id` 
+	  LEFT JOIN goods.`gs_comment_reply` gcr 
+	    ON ggc.`comment_id` = gcr.`comment_id`
+	  WHERE ggc.`comment_id`=#{commentId,jdbcType=VARCHAR}
+   </select>
+   
+   <insert id="addGsCommentReply" parameterType="com.yz.model.goods.GsCommentReply">
+	  INSERT INTO goods.`gs_comment_reply` (
+	  reply_id,
+	  reply_content,
+	  reply_time,
+	  user_id,
+	  head_img_url,
+	  user_name,
+	  comment_id
+	) 
+	VALUES
+	  (#{replyId,jdbcType=VARCHAR},
+	   #{replyContent,jdbcType=VARCHAR},
+	   now(),
+	   #{userId,jdbcType=VARCHAR},
+	   #{headImgUrl,jdbcType=VARCHAR},
+	   #{userName,jdbcType=VARCHAR},
+	   #{commentId,jdbcType=VARCHAR}
+	  )
+   </insert>
+   
+   <delete id="deleteGsGoodsComment">
+ 	  DELETE FROM goods.`gs_comment_reply` WHERE comment_id=#{commentId,jdbcType=VARCHAR};
+      DELETE FROM goods.`gs_goods_comment` WHERE comment_id=#{commentId,jdbcType=VARCHAR}
+   </delete>
+   
+   <update id="updateGoodsCommentStatus">
+   	 UPDATE goods.`gs_goods_comment` set comment_status=#{commentStatus} where comment_id=#{commentId,jdbcType=VARCHAR}
+   </update>
+   
+   <delete id="batchDeleteGsGoodsComment">
+   	    delete from goods.`gs_goods_comment`
+		where comment_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from goods.`gs_comment_reply`
+		where comment_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+   </delete>
+   
+    <update id="batchPassComment">
+   	    update goods.`gs_goods_comment` set comment_status='2'
+		where comment_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+   </update>
+   
+   <update id="batchNoPassComment">
+   	    update goods.`gs_goods_comment` set comment_status='3'
+		where comment_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+   </update>
+</mapper>

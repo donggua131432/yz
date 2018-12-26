@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.wechat.GwWechatMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.wechat.GwWechatMenu" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="menu_title" property="menuTitle" jdbcType="VARCHAR" />
+    <result column="p_id" property="pId" jdbcType="VARCHAR" />
+    <result column="menu_content" property="menuContent" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="VARCHAR" />
+    <result column="belong_public" property="belongPublic" jdbcType="VARCHAR" />
+    <result column="event_type" property="eventType" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="VARCHAR" />
+    <result column="pub_name" property="pubName" jdbcType="VARCHAR" />
+    <association property="pName" column="p_id" select="selectPMenuname"/>
+    <association property="pubName" column="belong_public" select="selectBelongPub"/>
+  </resultMap>
+  
+  <resultMap id="FirstMenu" type="com.yz.model.wechat.GwWechatButton" >
+    <result column="menu_title" property="name" jdbcType="VARCHAR" />
+    <result column="event_type" property="type" jdbcType="VARCHAR" />
+    <result column="menu_content" property="key" jdbcType="VARCHAR" />
+    <association column="id" property="sub_button" select="selectSecondMenu"/>
+  </resultMap>
+  
+  <resultMap type="com.yz.model.wechat.GwWechatSubButton" id="SecondMenuResult">
+  	<result column="menu_title" property="name" jdbcType="VARCHAR" />
+  	<result column="event_type" property="type" jdbcType="VARCHAR" />
+  	<result column="menu_content" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="sMenu" resultMap="BaseResultMap" parameterType="com.yz.model.condition.common.SelectQueryInfo">
+  	select 
+    <include refid="Base_Column_List" />
+    from `gw_wechat_menu`
+    where p_id = 1
+  </select>
+  
+  <select id="selectSecondMenu" resultMap="SecondMenuResult" parameterType="java.lang.String">
+  	SELECT 
+	  menu_title,
+	  menu_content,
+	  event_type
+	FROM
+	  `gw_wechat_menu` 
+	WHERE p_id = #{id}
+	and is_allow = '1'
+	ORDER BY weight 
+  </select>
+  
+  
+  <select id="selectMenuByPubId" parameterType="java.lang.String" resultMap="FirstMenu">
+  	SELECT 
+	  menu_title,
+	  menu_content,
+	  event_type,
+	  id
+	FROM
+	  `gw_wechat_menu` 
+	WHERE p_id = '1' 
+	  AND belong_public = #{pubId}
+	  AND is_allow = '1'
+	ORDER BY weight 
+  </select>
+  
+  <select id="selectPMenuname" parameterType="java.lang.String" resultType="java.lang.String">
+  	select menu_title from `gw_wechat_menu` where id = #{pId}
+  </select>
+  
+  <select id="selectBelongPub" parameterType="java.lang.String" resultType="java.lang.String">
+  	select pub_name from common.`gw_wechat_public` where pub_id = #{belongPublic}
+  </select>
+  
+  <sql id="Base_Column_List" >
+    id, menu_title, p_id, menu_content, weight, belong_public, event_type, is_allow
+  </sql>
+  
+  <delete id="deleteMenus">
+  	delete from `gw_wechat_menu`
+    where id in 
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+    	#{id}
+    </foreach>
+  </delete>
+  
+  <select id="selectWechatMenuByPage" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from `gw_wechat_menu`
+    order by update_time desc
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from `gw_wechat_menu`
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from `gw_wechat_menu`
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertSelective" parameterType="com.yz.model.wechat.GwWechatMenu" >
+    insert into `gw_wechat_menu`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="menuTitle != null" >
+        menu_title,
+      </if>
+      <if test="pId != null" >
+        p_id,
+      </if>
+      <if test="menuContent != null" >
+        menu_content,
+      </if>
+      <if test="weight != null" >
+        weight,
+      </if>
+      <if test="belongPublic != null" >
+        belong_public,
+      </if>
+      <if test="eventType != null" >
+        event_type,
+      </if>
+      <if test="isAllow != null" >
+        is_allow,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="menuTitle != null" >
+        #{menuTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null" >
+        #{pId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuContent != null" >
+        #{menuContent,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="belongPublic != null" >
+        #{belongPublic,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        #{isAllow,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.wechat.GwWechatMenu" >
+    update `gw_wechat_menu`
+    <set >
+      <if test="menuTitle != null" >
+        menu_title = #{menuTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="pId != null" >
+        p_id = #{pId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuContent != null" >
+        menu_content = #{menuContent,jdbcType=VARCHAR},
+      </if>
+      <if test="weight != null" >
+        weight = #{weight,jdbcType=VARCHAR},
+      </if>
+      <if test="belongPublic != null" >
+        belong_public = #{belongPublic,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        event_type = #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="isAllow != null" >
+        is_allow = #{isAllow,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

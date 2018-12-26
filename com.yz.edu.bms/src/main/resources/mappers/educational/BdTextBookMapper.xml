@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdTextBookMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.educational.BdTextBook">
+		<id column="textbook_id" property="textbookId" jdbcType="VARCHAR" />
+		<result column="textbook_name" property="textbookName"
+			jdbcType="VARCHAR" />
+		<result column="textbook_type" property="textbookType"
+			jdbcType="VARCHAR" />
+		<result column="is_book" property="isBook" jdbcType="CHAR" />
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+		<result column="publisher" property="publisher" jdbcType="VARCHAR" />
+		<result column="isbn" property="isbn" jdbcType="VARCHAR" />
+		<result column="price" property="price" jdbcType="VARCHAR" />
+		<result column="count" property="count" jdbcType="VARCHAR" />
+		<result column="store" property="store" jdbcType="VARCHAR" />
+		<result column="alias" property="alias" jdbcType="VARCHAR" />
+		<result column="publisherTime" property="publisherTime"
+			jdbcType="TIMESTAMP" />
+		<result column="author" property="author" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId"
+			jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ProResultMap" type="java.util.Map">
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		textbook_id,test_subject, textbook_name, textbook_type, is_book,
+		publisher, isbn, price, count,
+		store, alias, date_format(publisherTime,'%Y-%m-%d %H:%i:%s') publisherTime, author,
+		remark, update_time, update_user,
+		update_user_id,
+		create_user_id,
+		create_time, create_user, ext_1, ext_2, ext_3
+	</sql>
+	<select id="publisherCount" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		SELECT COUNT(*) FROM bd_textbook WHERE textbook_id like
+		CONCAT('%',#{code},'%')
+	</select>
+	<select id="getTextBook" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM bd_textbook WHERE textbook_id IN (SELECT textbook_id FROM
+		bd_course_textbook WHERE course_id = #{courseId})
+	</select>
+	<select id="findTextBookByName" resultMap="ProResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM bd_textbook WHERE 1=1
+		<if test="sName != null and ''!=sName">
+			and textbook_name like CONCAT('%',#{sName},'%')
+		</if>
+	</select>
+	<select id="findTextBookByThpId" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM bd_textbook WHERE textbook_id IN (SELECT textbook_id FROM
+		bd_plan_textbook WHERE thp_id = #{thpId})
+	</select>
+	<select id="findProfessional" resultMap="ProResultMap">
+		SELECT
+		bup.`pfsn_code`,
+		bup.`pfsn_name`,
+		bup.`pfsn_level`,
+		bup.`grade`,
+		bu.`unvs_name`,
+		bu.`recruit_type`
+		FROM
+		`bd_unvs_profession` bup LEFT JOIN
+		`bd_university` bu ON
+		bu.`unvs_id` = bup.`unvs_id`
+		WHERE bup.`pfsn_id`
+		IN
+		(SELECT
+		pfsn_id
+		FROM
+		bd_teach_plan
+		WHERE thp_id IN
+		(SELECT
+		thp_id
+		FROM
+		bd_plan_textbook
+		WHERE
+		textbook_id = #{textbookId}))
+	</select>
+	
+	<delete id="deletePublisher">
+		delete from bd_textbook
+		where textbook_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteCourseTextbook">
+		delete from bd_course_textbook
+		where textbook_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+	
+	<select id="findAllTextBook" resultMap="BaseResultMap"
+		parameterType="com.yz.model.educational.BdTextBook">
+		select
+		<include refid="Base_Column_List" />
+		from bd_textbook
+		where 1=1
+		<if test="textbookId != null and '' != textbookId">
+			and textbook_id = #{textbookId,jdbcType=VARCHAR}
+		</if>
+		<if test="textbookName != null and ''!=textbookName">
+			and textbook_name like CONCAT('%',#{textbookName},'%')
+		</if>
+		<if test="textbookType != null and ''!=textbookType">
+			and textbook_type = #{textbookType,jdbcType=VARCHAR}
+		</if>
+		<if test="isBook != null and ''!=isBook">
+			and is_book = #{isBook,jdbcType=CHAR}
+		</if>
+		<if test="publisher != null and ''!=publisher">
+			and publisher = #{publisher,jdbcType=VARCHAR}
+		</if>
+		<if test="isbn != null and ''!=isbn">
+			and isbn = #{isbn,jdbcType=VARCHAR}
+		</if>
+		<if test="price != null and ''!=price">
+			and price = #{price,jdbcType=VARCHAR}
+		</if>
+		<if test="count != null and ''!=count">
+			and count = #{count,jdbcType=VARCHAR}
+		</if>
+		<if test="store != null and ''!=store">
+			and store = #{store,jdbcType=VARCHAR}
+		</if>
+		<if test="alias != null and ''!=alias">
+			and alias = #{alias,jdbcType=VARCHAR}
+		</if>
+		<if test="publisherTime != null">
+			and publisherTime = #{publisherTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="author != null and ''!=author">
+			and author = #{author,jdbcType=VARCHAR}
+		</if>
+		order by create_time desc
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_textbook
+		where textbook_id = #{textbookId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_textbook
+		where textbook_id = #{textbookId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdTextBook">
+		insert into bd_textbook
+		(textbook_id, textbook_name, textbook_type,
+		is_book, publisher, isbn,
+		price, count, store,
+		alias, publisherTime, author,
+		remark, update_time,
+		update_user,
+		update_user_id, create_user_id, create_time,
+		create_user,
+		ext_1, ext_2,
+		ext_3)
+		values (#{textbookId,jdbcType=VARCHAR},
+		#{textbookName,jdbcType=VARCHAR},
+		#{textbookType,jdbcType=VARCHAR},
+		#{isBook,jdbcType=CHAR}, #{publisher,jdbcType=VARCHAR},
+		#{isbn,jdbcType=VARCHAR},
+		#{price,jdbcType=VARCHAR},
+		#{count,jdbcType=VARCHAR},
+		#{store,jdbcType=VARCHAR},
+		#{alias,jdbcType=VARCHAR}, #{publisherTime,jdbcType=TIMESTAMP},
+		#{author,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{ext1,jdbcType=VARCHAR},
+		#{ext2,jdbcType=VARCHAR},
+		#{ext3,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdTextBook">
+		
+		insert into bd_textbook
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				textbook_id,
+			<if test="textbookName != null">
+				textbook_name,
+			</if>
+			<if test="testSubject != null">
+				test_subject,
+			</if>
+			<if test="textbookType != null">
+				textbook_type,
+			</if>
+			<if test="isBook != null">
+				is_book,
+			</if>
+			<if test="publisher != null">
+				publisher,
+			</if>
+			<if test="isbn != null">
+				isbn,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="count != null">
+				count,
+			</if>
+			<if test="store != null">
+				store,
+			</if>
+			<if test="alias != null">
+				alias,
+			</if>
+			<if test="publisherTime != null and publisherTime != ''">
+				publisherTime,
+			</if>
+			<if test="author != null">
+				author,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="createUserId != null">
+				create_user_id,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			textbookSeq(#{textbookType, jdbcType=VARCHAR}),
+			<if test="textbookName != null">
+				#{textbookName,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null">
+				#{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="textbookType != null">
+				#{textbookType,jdbcType=VARCHAR},
+			</if>
+			<if test="isBook != null">
+				#{isBook,jdbcType=CHAR},
+			</if>
+			<if test="publisher != null">
+				#{publisher,jdbcType=VARCHAR},
+			</if>
+			<if test="isbn != null">
+				#{isbn,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=VARCHAR},
+			</if>
+			<if test="count != null">
+				#{count,jdbcType=VARCHAR},
+			</if>
+			<if test="store != null">
+				#{store,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null">
+				#{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="publisherTime != null and publisherTime != ''">
+				#{publisherTime,jdbcType=VARCHAR},
+			</if>
+			<if test="author != null">
+				#{author,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdTextBook">
+		update bd_textbook
+		<set>
+			<if test="textbookName != null and ''!=textbookName">
+				textbook_name = #{textbookName,jdbcType=VARCHAR},
+			</if>
+			<if test="textbookType != null and ''!=textbookType">
+				textbook_type = #{textbookType,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject != null and ''!=testSubject">
+			    test_subject = #{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="isBook != null and ''!=isBook">
+				is_book = #{isBook,jdbcType=CHAR},
+			</if>
+			<if test="publisher != null and ''!=publisher">
+				publisher = #{publisher,jdbcType=VARCHAR},
+			</if>
+			<if test="isbn != null and ''!=isbn">
+				isbn = #{isbn,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null and ''!=price">
+				price = #{price,jdbcType=VARCHAR},
+			</if>
+			<if test="count != null and ''!=count">
+				count = #{count,jdbcType=VARCHAR},
+			</if>
+			<if test="store != null and ''!=store">
+				store = #{store,jdbcType=VARCHAR},
+			</if>
+			<if test="alias != null and ''!=alias">
+				alias = #{alias,jdbcType=VARCHAR},
+			</if>
+			<if test="publisherTime != null">
+				publisherTime = #{publisherTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="author != null and ''!=author">
+				author = #{author,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and ''!=remark">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null and ''!=updateTime">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null and ''!=updateUser">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and ''!=updateUserId">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null and ''!=createUserId">
+				create_user_id = #{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null and ''!=createTime">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null and ''!=createUser">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null and ''!=ext1">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null and ''!=ext2">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null and ''!=ext3">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where textbook_id = #{textbookId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdTextBook">
+		update bd_textbook
+		set textbook_name = #{textbookName,jdbcType=VARCHAR},
+		textbook_type =
+		#{textbookType,jdbcType=VARCHAR},
+		is_book = #{isBook,jdbcType=CHAR},
+		publisher = #{publisher,jdbcType=VARCHAR},
+		isbn =
+		#{isbn,jdbcType=VARCHAR},
+		price = #{price,jdbcType=VARCHAR},
+		count =
+		#{count,jdbcType=VARCHAR},
+		store = #{store,jdbcType=VARCHAR},
+		alias =
+		#{alias,jdbcType=VARCHAR},
+		publisherTime =
+		#{publisherTime,jdbcType=TIMESTAMP},
+		author =
+		#{author,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR},
+		create_user_id =
+		#{createUserId,jdbcType=VARCHAR},
+		create_time =
+		#{createTime,jdbcType=TIMESTAMP},
+		create_user =
+		#{createUser,jdbcType=VARCHAR},
+		ext_1 = #{ext1,jdbcType=VARCHAR},
+		ext_2
+		= #{ext2,jdbcType=VARCHAR},
+		ext_3 = #{ext3,jdbcType=VARCHAR}
+		where
+		textbook_id = #{textbookId,jdbcType=VARCHAR}
+	</update>
+</mapper>

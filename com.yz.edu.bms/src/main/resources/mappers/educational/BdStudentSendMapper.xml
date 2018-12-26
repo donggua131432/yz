@@ -1,0 +1,1488 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdStudentSendMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.educational.BdStudentSend">
+		<id column="send_id" property="sendId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="batch_id" property="batchId" jdbcType="VARCHAR" />
+		<result column="order_book_status" property="orderBookStatus" jdbcType="VARCHAR" />
+		<result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR" />
+		<result column="logistics_name" property="logisticsName" jdbcType="VARCHAR" />
+		<result column="logistics_contact" property="logisticsContact" jdbcType="VARCHAR" />
+		<result column="receive_status" property="receiveStatus" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="address_status" property="addressStatus" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+		<result column="textbook_type" property="textbookType" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="AddressResultMap" type="java.util.Map">
+		<result column="send_id" property="sendId" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="address_status" property="addressStatus" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+		<result column="city_name" property="cityName" jdbcType="VARCHAR" />
+		<result column="district_name" property="districtName" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="textbook_type" property="textbookType" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="recruit_name" property="recruitName" jdbcType="VARCHAR"/>
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR"/>
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR"/>
+		<result column="address_update_time" property="addressUpdateTime" jdbcType="VARCHAR"/>
+		<result column="reject_reason" property="rejectReason" jdbcType="VARCHAR"/>
+		<result column="reject_time" property="rejectTime" jdbcType="VARCHAR"/>
+		<result column="reject_user" property="rejectUser" jdbcType="VARCHAR"/>
+		<result column="add_remark" property="addRemark" jdbcType="VARCHAR"/>
+		<result column="tutor_name" property="tutorName" jdbcType="VARCHAR"/>
+		<result column="tutor_status" property="tutorStatus" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<resultMap id="OrderBookResultMap" type="java.util.Map">
+		<result column="send_id" property="sendId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="semester" jdbcType="VARCHAR" />
+		<result column="semester" property="semester" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="zemp_name" property="zempName" jdbcType="VARCHAR" />
+		<result column="femp_name" property="fempName" jdbcType="VARCHAR" />
+		<result column="batch_id" property="batchId" jdbcType="VARCHAR" />
+		<result column="address_status" property="addressStatus" jdbcType="VARCHAR" />
+		<result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR" />
+		<result column="logistics_name" property="logisticsName" jdbcType="VARCHAR" />
+		<result column="receive_status" property="receiveStatus" jdbcType="VARCHAR" />
+		<result column="order_book_status" property="orderBookStatus" jdbcType="VARCHAR" />
+		<result column="textbook_type" property="textbookType" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="reject_reason" property="rejectReason" jdbcType="VARCHAR"/>
+		<result column="reject_time" property="rejectTime" jdbcType="VARCHAR"/>
+		<result column="reject_user" property="rejectUser" jdbcType="VARCHAR"/>
+		<result column="remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="send_date" property="sendDate" jdbcType="VARCHAR"/>
+		<result column="textbook_pfsncode" property="textbookPfsncode" jdbcType="VARCHAR"/>
+		<association property="books" column="send_id" select="selectTextBookSend" />
+
+	</resultMap>
+	<resultMap id="SendResultMap" type="java.util.Map">
+		<result column="send_id" property="sendId" jdbcType="VARCHAR" />
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR" />
+		<result column="logistics_name" property="logisticsName" jdbcType="VARCHAR" />
+		<result column="province_code" property="provinceCode" jdbcType="VARCHAR" />
+		<result column="city_code" property="cityCode" jdbcType="VARCHAR" />
+		<result column="district_code" property="districtCode" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="sa_type" property="saType" jdbcType="VARCHAR" />
+		<result column="send_people" property="sendPeople" jdbcType="VARCHAR" />
+		<result column="send_date" property="sendDate" jdbcType="VARCHAR" />
+		<result column="receive_status" property="receiveStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="TextbookMap" type="java.util.Map">
+		<result column="test_subject" property="testSubject" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectFdSendId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  s.`send_id` 
+		FROM
+		  bd_student_send s 
+		WHERE s.`learn_id` = #{learnId}
+		  AND s.`textbook_type` = 'FD' 
+		  AND s.`order_book_status` IN ('1', '2')
+	</select>
+	
+	<select id="selectFdSendIds" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  s.`send_id` 
+		FROM
+		  bd_student_send s 
+		WHERE s.`learn_id` = #{learnId}
+		  AND s.`textbook_type` = 'FD' 
+		  AND s.`order_book_status` IN ('1', '2')
+	</select>
+
+	<sql id="Base_Column_List">
+		send_id, 
+		learn_id,
+		batch_id,
+		order_book_status,
+		logistics_no,
+		logistics_name,
+		logistics_contact,
+		receive_status,
+		semester,
+		textbook_type,
+		address_status,
+		update_time, 
+		update_user,
+		update_user_id
+	</sql>
+	
+	<select id="selectSendId" parameterType="java.lang.String" resultType="java.lang.String" >
+		SELECT 
+		  s.`send_id` 
+		FROM
+		  bd_student_send s 
+		WHERE s.`learn_id` = #{learnId}
+		  AND s.`semester` = #{semester}
+		  and s.`order_book_status` IN ('1', '2')
+	</select>
+	
+	<select id="selectBookSendCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  bd_student_send s 
+		WHERE s.`learn_id` = #{learnId}
+		  AND s.`semester` = #{semester}
+	</select>
+	
+	<select id="selectLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  l.`learn_id` 
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_student_info i 
+		    ON i.`std_id` = l.`std_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = l.`pfsn_id` 
+		  left join bd_university u 
+		    on u.`unvs_id` = l.`unvs_id` 
+		WHERE l.`grade` = #{grade}
+		  AND i.`id_card` = #{idCard}
+		  AND p.`pfsn_name` = #{pfsnName}
+		  and u.`unvs_name` = #{unvsName}
+	</select>
+
+	<update id="updateSendAddressStatus" parameterType="java.lang.String">
+		update
+		bd_student_send
+		set
+		mobile = #{mobile, jdbcType=VARCHAR},
+		address = #{address, jdbcType=VARCHAR},
+		province_code = #{nowProvinceCode, jdbcType=VARCHAR},
+		city_code = #{nowCityCode, jdbcType=VARCHAR},
+		district_code = #{nowDistrictCode, jdbcType=VARCHAR},
+		address_status = '5',
+		logistics_name = 'jd',
+		address_update_time=NOW() 
+		where learn_id in
+		(select
+			bli.`learn_id`
+		from
+		 bd_learn_info bli
+		 left join bd_student_info bsi
+		 on bsi.`std_id` =bli.`std_id`
+		 where bsi.`std_id` = #{stdId})
+		 and `textbook_type` = 'FD'
+		 and `address_status` in ('6','4','1')
+	</update>
+
+	<select id="selectTextBookSend" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		b.`textbook_id` textbookId,
+		b.`textbook_name`
+		textbookName
+		FROM
+		bd_textbook_send s
+		LEFT JOIN
+		bd_textbook b
+		ON
+		b.`textbook_id` = s.`textbook_id`
+		WHERE s.`send_id` = #{sendId}
+	</select>
+
+	<insert id="insertBdTextBookSend" parameterType="java.lang.String">
+		INSERT INTO
+		bd_textbook_send (send_id, textbook_id)
+		SELECT
+		#{sendId} send_id,
+		b.`textbook_id`
+		FROM
+		bd_textbook b
+		LEFT JOIN
+		bd_plan_textbook p
+		ON
+		p.`textbook_id` = b.`textbook_id`
+		LEFT JOIN bd_teach_plan t
+		ON
+		p.`thp_id` = t.`thp_id`
+		LEFT JOIN bd_learn_info bli
+		ON t.`pfsn_id` =
+		bli.`pfsn_id`
+		WHERE t.`semester`=#{semester} and
+		bli.`learn_id` = #{learnId}
+		GROUP BY b.textbook_id
+	</insert>
+	
+	<delete id="deleteTextBookSend" parameterType="java.lang.String">
+		delete from bd_textbook_send where send_id = #{sendId}
+	</delete>
+	
+	<delete id="deleteBookSend" parameterType="java.lang.String">
+		DELETE FROM bd_student_send WHERE send_id = #{sendId}
+	</delete>
+
+	<insert id="insertBdTextBookSendFD" parameterType="java.lang.String">
+		INSERT INTO bd_textbook_send (send_id, textbook_id)
+		SELECT
+		#{sendId,
+		jdbcType=VARCHAR} send_id,
+		b.`textbook_id`
+		FROM
+		bd_textbook b
+		WHERE b.textbook_type='FD' and
+		b.`test_subject` IN
+		<foreach collection="testSubject" item="sub" open="(" close=")" separator=",">
+			#{sub, jdbcType=VARCHAR}
+		</foreach>
+		GROUP BY b.textbook_id
+	</insert>
+
+	<select id="selectTestBookCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT
+		count(b.`textbook_id`)
+		FROM
+		bd_textbook b
+		WHERE b.`test_subject` IN
+		<foreach collection="testSubject" item="sub" open="(" close=")" separator=",">
+			#{sub, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<select id="selectTestSubByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  b.`subject_id` 
+		FROM
+		  bd_learn_info bli 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  left join bd_test_group g 
+		    on bup.`group_id` = g.`group_id` 
+		  left join bd_tg t 
+		    on t.`group_id` = g.`group_id` 
+		  left join bd_test_subject b 
+		    on b.`subject_id` = t.`subject_id` 
+		WHERE bli.`learn_id` = #{learnId}
+	</select>
+
+	<update id="rejectedEducation">
+		update bd_student_send set address_status = '6',reject_type=#{type},reject_reason=#{reason},
+		reject_user=#{user.username},reject_time = NOW(),address_update_time=null
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="rejectedStudentSend">
+		update bd_student_send set address_status = '3',reject_type=#{type},reject_reason=#{reason},
+		reject_user=#{user.username},reject_time = NOW(),address_update_time=null
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="passStudentSend">
+		update bd_student_send set address_status = '4'
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="passEducation">
+		update bd_student_send set address_status = '5',check_time=now()
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="okOrder">
+		update bd_student_send set order_book_status = '2',logistics_name=#{logisticsName, jdbcType=VARCHAR}
+		where (order_book_status = '1' or order_book_status = '2'  ) and send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="noOrder">
+		update bd_student_send set order_book_status = '1'
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="okReceive">
+		update bd_student_send set receive_status = '2'
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<update id="okSend">
+		update bd_student_send set receive_status = '2'
+		where send_id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+	<select id="findCourseFD" resultMap="TextbookMap" parameterType="java.lang.String">
+		<!-- SELECT textbook_id, textbook_name FROM bd_textbook WHERE textbook_id IN (SELECT textbook_id FROM bd_course_textbook WHERE course_id IN (SELECT course_id FROM bd_course WHERE 
+			pfsn_id = (SELECT pfsn_id FROM bd_learn_info WHERE learn_Id = (SELECT learn_Id FROM bd_student_send bse WHERE send_id = #{sendID})) AND course_type = 'FD')) -->
+		SELECT
+		test_subject
+		FROM
+		bd_unvs_profession
+		WHERE pfsn_id =
+		(SELECT
+		pfsn_id
+		FROM
+		bd_learn_info
+		WHERE learn_Id =
+		(SELECT
+		learn_Id
+		FROM
+		bd_student_send
+		bse
+		WHERE send_id = #{sendID}))
+	</select>
+	<select id="findCourseNoFD" resultMap="TextbookMap" parameterType="java.lang.String">
+		SELECT
+		textbook_id,
+		textbook_name
+		FROM
+		bd_textbook
+		WHERE
+		textbook_id IN
+		(SELECT
+		textbook_id
+		FROM
+		bd_plan_textbook
+		WHERE thp_id IN
+		(SELECT
+		thp_id
+		FROM
+		bd_teach_plan
+		WHERE pfsn_id =
+		(SELECT
+		pfsn_id
+		FROM
+		bd_learn_info
+		WHERE learn_Id =
+		(SELECT
+		learn_Id
+		FROM
+		bd_student_send bse
+		WHERE send_id = #{sendID}))))
+	</select>
+	<select id="findAllStudentOrderBook" resultMap="OrderBookResultMap" parameterType="com.yz.model.educational.BdStudentSendMap">
+		SELECT
+		bse.`send_id`,
+		bsi.`std_name`,
+		bli.`grade`,
+		bli.`std_stage`,
+		bse.`semester`,
+		bup.`pfsn_level`,
+		bup.`pfsn_name`,
+		bup.`textbook_pfsncode`,
+		bu.`unvs_name`,
+		bup.`pfsn_code`,
+		bli.`learn_id`,
+		bli.`std_id`,
+		bli.`std_type`,
+		oeo.`emp_name` zemp_name,
+		oet.`emp_name` femp_name,
+		bse.`batch_id`,
+		bse.`address_status`,
+		bse.`receive_status`,
+		bse.`order_book_status`,
+		bse.`logistics_no`,
+		bse.`logistics_name`,
+		bse.`textbook_type`,
+		bse.`reject_reason`,
+		bse.`reject_time`,
+		bse.`reject_user`,
+		bse.`remark`,
+		date_format(bse.`send_date`,'%Y-%m-%d %H:%i:%s') send_date
+		FROM
+		bd_student_send bse
+		LEFT JOIN bd_learn_info bli
+			ON bse.`learn_id` = bli.`learn_id`
+		LEFT JOIN bd_learn_rules blr
+			ON bse.`learn_id` = blr.`learn_id`
+		LEFT JOIN oa_employee oeo
+			ON blr.`recruit` = oeo.`emp_id`
+		LEFT JOIN oa_employee oet
+			ON blr.`tutor` = oet.`emp_id`
+		LEFT JOIN bd_university bu
+			ON bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+			ON bup.`pfsn_id` = bli.`pfsn_id`
+		LEFT JOIN bd_student_info bsi
+			ON bli.`std_id` = bsi.`std_id`
+		WHERE
+		bse.`address_status` IN ('4', '5','1','6')
+		<if test="stdName != null and ''!= stdName">
+			AND bsi.`std_name` LIKE CONCAT('%',
+			#{stdName,jdbcType=VARCHAR} , '%')
+		</if>
+		<if test="idCard != null and ''!= idCard">
+			AND bsi.`id_card` LIKE CONCAT('%',
+			#{idCard,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="mobile != null and ''!= mobile">
+			AND bse.`mobile` LIKE CONCAT('%',
+			#{mobile,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="unvsId != null and ''!= unvsId">
+			AND bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnId != null and ''!= pfsnId">
+			AND bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="batchId != null and ''!= batchId">
+			AND bse.`batch_id` LIKE CONCAT('%',
+			#{batchId,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="empName != null and ''!= empName">
+			AND (oeo.`emp_name` LIKE CONCAT('%',
+			#{empName,jdbcType=VARCHAR}, '%') or
+			oet.`emp_name` LIKE CONCAT('%',
+			#{empName,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="grade != null and ''!= grade">
+			AND bli.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="stdStage != null and ''!= stdStage">
+			AND bli.`std_stage` = #{stdStage,jdbcType=VARCHAR}
+		</if>
+		<if test="orderBookStatus != null and ''!= orderBookStatus">
+			AND bse.`order_book_status` =
+			#{orderBookStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="addressStatus != null and ''!= addressStatus">
+			AND bse.`address_status` =
+			#{addressStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="semester != null and ''!= semester">
+			AND bse.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+		<if test="receiveStatus != null and ''!= receiveStatus">
+			AND bse.`receive_status` =
+			#{receiveStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel !=null and '' !=pfsnLevel">
+			and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="textbookType !=null and '' !=textbookType">
+			and bse.`textbook_type` =#{textbookType,jdbcType=VARCHAR}
+		</if>
+		<if test="logisticsNo !=null and '' !=logisticsNo">
+			and bse.`logistics_no` = #{logisticsNo,jdbcType=VARCHAR}
+		</if>
+		<if test="year !=null and '' !=year">
+			and bup.`year` = #{year,jdbcType=VARCHAR}
+		</if>
+		<if test="address !=null and '' !=address">
+			<if test="address ==0">
+				and (bse.`address` IS NULL OR bse.`address` ='')
+			</if>
+			<if test="address ==1">
+				and bse.`address` is not null AND bse.`address` !=''
+			</if>
+		</if>
+		<if test="tutorName !=null and '' != tutorName">
+			and oet.emp_name like concat('%',#{tutorName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="recruitName !=null and '' != recruitName">
+			and oeo.emp_name like concat('%',#{recruitName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="stdType !=null and '' != stdType">
+			and bli.`std_type` = #{stdType,jdbcType=VARCHAR}
+		</if>
+		<if test="ifHaveBook != null and '' !=ifHaveBook">
+			<if test="ifHaveBook == '1'.toString()">
+				<![CDATA[ and (select count(1) from bd_textbook_send where send_id=bse.`send_id`) >0 ]]>
+			</if>
+			<if test="ifHaveBook == '0'.toString()">
+				<![CDATA[ and (select count(1) from bd_textbook_send where send_id=bse.`send_id`) <=0 ]]>
+			</if>
+		</if>
+		<if test="ifNewRepeatBook != null and '' !=ifNewRepeatBook">
+			<if test="ifNewRepeatBook == '1'.toString()">
+				<![CDATA[ and (select count(1) from bd_student_send WHERE learn_id=bse.`learn_id` AND textbook_type='FD' ) >1 ]]>
+			</if>
+			<if test="ifNewRepeatBook == '0'.toString()">
+				<![CDATA[ and (select count(1) from bd_student_send WHERE learn_id=bse.`learn_id` AND textbook_type='FD' ) =1 ]]>
+			</if>
+		</if>
+		<if test="startTime !=null and '' !=startTime">	
+	 		<![CDATA[ and DATE_FORMAT(bse.`send_date`, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="endTime !=null and '' !=endTime">
+		 	<![CDATA[ and DATE_FORMAT(bse.`send_date`, '%Y-%m-%d %H:%i:%s') <=  DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="logisticsName !=null and ''!= logisticsName">
+			and bse.`logistics_name` = #{logisticsName,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="findAllOkSend" resultMap="SendResultMap" parameterType="com.yz.model.educational.BdStudentSendMap">
+		SELECT
+		bse.`send_id`,
+		bli.`std_no`,
+		bsi.`std_name`,
+		bse.`logistics_no`,
+		bse.`logistics_name`,
+		bse.`province_code`,
+		bse.`city_code`,
+		bse.`district_code`,
+		bse.`address`,
+		bse.`send_people`,
+		bse.`send_date`,
+		bse.`receive_status`
+		FROM
+		bd_student_send bse
+		LEFT JOIN bd_learn_info bli
+		ON bse.`learn_id` = bli.`learn_id`
+		LEFT JOIN bd_university bu
+		ON bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON bup.`pfsn_id` = bli.`pfsn_id`
+		LEFT JOIN bd_learn_rules blr
+		ON blr.`learn_id` = bli.`learn_id`
+		LEFT JOIN oa_employee oe
+		ON oe.`emp_id` = blr.`tutor`
+		LEFT JOIN bd_student_info bsi
+		ON bli.`std_id` = bsi.`std_id`
+		WHERE bse.`address_status` = '5'
+		<if test="stdName != null and ''!= stdName">
+			AND bsi.`std_name` LIKE CONCAT('%',
+			#{stdName,jdbcType=VARCHAR} , '%')
+		</if>
+		<if test="idCard != null and ''!= idCard">
+			AND bsi.`id_card` LIKE CONCAT('%',
+			#{idCard,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="mobile != null and ''!= mobile">
+			AND bsi.`mobile` LIKE CONCAT('%',
+			#{mobile,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="unvsId != null and ''!= unvsId">
+			AND bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnId != null and ''!= pfsnId">
+			AND bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel != null and ''!= pfsnLevel">
+			AND bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="grade != null and ''!= grade">
+			AND bli.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="addressStatus != null and ''!= addressStatus">
+			AND bse.`address_status` = #{addressStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="semester != null and ''!= semester">
+			AND bse.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+		<if test="receiveStatus != null and ''!= receiveStatus">
+			AND bse.`receive_status` = #{receiveStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="recruitType !=null and '' !=recruitType">
+			and bli.`recruit_type` = #{recruitType,jdbcType=VARCHAR}
+		</if>
+		<if test="tutor != null and ''!= tutor">
+			and oe.`emp_name` like concat('%',#{tutor,jdbcType=VARCHAR},'%') 
+		</if>
+		<if test="logisticsNo !=null and '' != logisticsNo">
+			and bse.`logistics_no` like concat ('%',#{logisticsNo,jdbcType=VARCHAR},'%') 
+		</if>
+		<if test="finishStatus !=null and '' !=finishStatus">
+			<if test="finishStatus == '1'.toString()">
+				and	bse.`address_update_time` is not null
+			</if>
+			<if test="finishStatus == '0'.toString()">
+				and bse.`address_update_time` is null
+			</if>
+		</if>
+		<if test="finishTimeStart !=null and '' != finishTimeStart">
+		     <![CDATA[   and DATE_FORMAT(bse.`address_update_time`, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{finishTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="finishTimeEnd !=null and '' != finishTimeEnd">
+		     <![CDATA[   and DATE_FORMAT(bse.`address_update_time`, '%Y-%m-%d %H:%i:%s')<=  DATE_FORMAT(#{finishTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="ifSendBook !=null and '' !=ifSendBook">
+			<if test="ifSendBook == '1'.toString()">
+				and	bse.`order_book_status` ='3'
+			</if>
+			<if test="ifSendBook == '0'.toString()">
+				and bse.`order_book_status` !='3'
+			</if>
+		</if>
+		<if test="ext1 !=null and '' !=ext1">
+			${ext1}
+		</if>
+	</select>
+
+	<select id="findAllStudentSendSeviEd" resultMap="AddressResultMap" parameterType="com.yz.model.educational.BdStudentSendMap">
+		SELECT 
+		  bss.`send_id`,
+		  bss.`semester`,
+		  bss.`address_status`,
+		  bli.`grade`,
+		  bli.`std_type`,
+		  bli.`std_stage`,
+		  bli.`learn_id`,
+		  bss.`user_name`,
+		  bss.`mobile`,
+		  p.`province_name`,
+		  c.`city_name`,
+		  d.`district_name`,
+		  bss.`address`,
+		  bss.`address_update_time` as create_time,
+		  bsi.std_name,
+		  bsi.`std_id`,
+		  bss.`textbook_type`,
+		  bup.`pfsn_level`,
+		  bup.`pfsn_name`,
+		  bu.`unvs_name`,
+		  bup.`pfsn_code`,
+		  oer.`emp_name` recruit_name,
+		  oer.`emp_status`,
+		  oet.`emp_name` tutor_name,
+		  oet.`emp_status` tutor_status,
+		  bss.`reject_reason`,
+		  bss.`reject_time`,
+		  bss.`reject_user`
+		FROM
+		  bd_student_send bss 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bss.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON blr.`learn_id` = bli.`learn_id`
+		  LEFT JOIN oa_employee oer
+		    ON oer.`emp_id` = blr.`recruit`
+		  LEFT JOIN oa_employee oet
+		    ON oet.`emp_id` = blr.`tutor`
+		  LEFT JOIN sys_province p 
+		    ON p.`province_code` = bss.`province_code` 
+		  LEFT JOIN sys_city c 
+		    ON c.`city_code` = bss.`city_code` 
+		  LEFT JOIN sys_district d 
+		    ON d.`district_code` = bss.`district_code` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.std_id = bli.std_id 
+		WHERE bss.`address_status` IN ('4', '5', '6')
+		<if test="tutor != null and ''!= tutor">
+			AND blr.`tutor` = #{tutor,jdbcType=VARCHAR}
+		</if>
+		<if test="stdName != null and ''!= stdName">
+			AND bsi.`std_name` LIKE CONCAT('%',
+			#{stdName,jdbcType=VARCHAR} , '%')
+		</if>
+		<if test="idCard != null and ''!= idCard">
+			AND bsi.`id_card` LIKE CONCAT('%',
+			#{idCard,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="mobile != null and ''!= mobile">
+			AND bss.`mobile` LIKE CONCAT('%',
+			#{mobile,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="unvsId != null and ''!= unvsId">
+			AND bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnId != null and ''!= pfsnId">
+			AND bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="grade != null and ''!= grade">
+			AND bli.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="addressStatus != null and ''!= addressStatus">
+			AND bss.`address_status` =
+			#{addressStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel !=null and '' !=pfsnLevel">
+			and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="textbookType !=null and '' != textbookType">
+			and bss.`textbook_type` = #{textbookType,jdbcType=VARCHAR}
+		</if>
+		<if test="orderBookStatus != null and ''!= orderBookStatus">
+			AND bss.`order_book_status` =
+			#{orderBookStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="batchId != null and ''!= batchId">
+			AND bss.`batch_id` LIKE CONCAT('%',
+			#{batchId,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="semester != null and ''!= semester">
+			AND bss.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+		<if test="year !=null and '' !=year">
+			and bup.`year` = #{year,jdbcType=VARCHAR}
+		</if>
+		<if test="address !=null and '' !=address">
+			<if test="address ==0">
+				and (bss.`address` IS NULL OR bss.`address` ='')
+			</if>
+			<if test="address ==1">
+				and bss.`address` is not null AND bss.`address` !=''
+			</if>
+		</if>
+		<if test="ifNewRepeatBook != null and '' !=ifNewRepeatBook">
+			<if test="ifNewRepeatBook == '1'.toString()">
+				<![CDATA[ and (select count(1) from bd_student_send WHERE learn_id=bss.`learn_id` AND textbook_type='FD' ) >1 ]]>
+			</if>
+			<if test="ifNewRepeatBook == '0'.toString()">
+				<![CDATA[ and (select count(1) from bd_student_send WHERE learn_id=bss.`learn_id` AND textbook_type='FD' ) =1 ]]>
+			</if>
+		</if>
+		<if test="recruitName !=null and '' != recruitName">
+			and oer.`emp_name` like concat('%',#{recruitName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="tutorName !=null and '' != tutorName">
+			and oet.`emp_name` like concat('%',#{tutorName,jdbcType=VARCHAR},'%')
+		</if>
+		order by bss.update_time DESC
+	</select>
+	
+	<select id="findAllStudentSendSevi" resultMap="AddressResultMap" parameterType="com.yz.model.educational.BdStudentSendMap">
+		SELECT 
+		  bss.`send_id`,
+		  bss.`semester`,
+		  bss.`address_status`,
+		  bli.`grade`,
+		  bss.`user_name`,
+		  bss.`mobile`,
+		  p.`province_name`,
+		  c.`city_name`,
+		  d.`district_name`,
+		  bss.`address`,
+		  bss.`create_time`,
+		  bsi.std_name,
+		  bss.`textbook_type`,
+		  bss.`address_update_time`,
+		  bss.`reject_reason`,
+		  bss.`reject_time`,
+		  bss.`reject_user`,
+		  bss.`add_remark`,
+		  (SELECT CONCAT(oti.`task_title`) FROM  oa_task_info oti  LEFT JOIN oa_student_task ost
+		     ON oti.`task_id` = ost.`task_id`
+		 WHERE ost.learn_Id=bss.`learn_id` AND oti.task_type='3' order by oti.update_time desc LIMIT 0,1) AS `task_title`
+		FROM
+		  bd_student_send bss 
+		  LEFT JOIN bd_learn_info bli 
+		    ON bss.`learn_id` = bli.`learn_id` 
+		  LEFT JOIN bd_university bu 
+		    ON bu.`unvs_id` = bli.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_learn_rules blr 
+		    ON blr.`learn_id` = bli.`learn_id`
+		  LEFT JOIN oa_employee oe
+		    on oe.`emp_id` = blr.`tutor`   
+		  LEFT JOIN sys_province p 
+		    ON p.`province_code` = bss.`province_code` 
+		  LEFT JOIN sys_city c 
+		    ON c.`city_code` = bss.`city_code` 
+		  LEFT JOIN sys_district d 
+		    ON d.`district_code` = bss.`district_code` 
+		  LEFT JOIN bd_student_info bsi 
+		    ON bsi.std_id = bli.std_id 
+		WHERE bss.`address_status` IN ('1', '2', '3', '6', '4')
+		<if test="tutor != null and ''!= tutor">
+			and oe.`emp_name` like concat('%',#{tutor,jdbcType=VARCHAR},'%') 
+		</if>
+		<if test="stdName != null and ''!= stdName">
+			AND bsi.`std_name` LIKE CONCAT('%',
+			#{stdName,jdbcType=VARCHAR} , '%')
+		</if>
+		<if test="idCard != null and ''!= idCard">
+			AND bsi.`id_card` LIKE CONCAT('%',
+			#{idCard,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="mobile != null and ''!= mobile">
+			AND bsi.`mobile` LIKE CONCAT('%',
+			#{mobile,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="unvsId != null and ''!= unvsId">
+			AND bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnId != null and ''!= pfsnId">
+			AND bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="pfsnLevel != null and ''!= pfsnLevel">
+			AND bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="grade != null and ''!= grade">
+			AND bli.`grade` = #{grade,jdbcType=VARCHAR}
+		</if>
+		<if test="recruitType !=null and '' !=recruitType">
+			and bli.`recruit_type` = #{recruitType,jdbcType=VARCHAR}
+		</if>
+		<if test="finishStatus !=null and '' !=finishStatus">
+			<if test="finishStatus == '1'.toString()">
+				and	bss.`address_update_time` is not null
+			</if>
+			<if test="finishStatus == '0'.toString()">
+				and bss.`address_update_time` is null
+			</if>
+		</if>
+		<if test="semester !=null and '' != semester">
+			and bss.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+		<if test="finishTimeStart !=null and '' != finishTimeStart">
+		     <![CDATA[   and DATE_FORMAT(bss.`address_update_time`, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{finishTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="finishTimeEnd !=null and '' != finishTimeEnd">
+		     <![CDATA[   and DATE_FORMAT(bss.`address_update_time`, '%Y-%m-%d %H:%i:%s')<=  DATE_FORMAT(#{finishTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="addressStatus != null and ''!= addressStatus">
+			AND bss.`address_status` =
+			#{addressStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="taskId !=null and '' != taskId">
+			and exists (
+			   select task_id from oa_student_task ost where ost.task_id=#{taskId,jdbcType=VARCHAR}
+			 and ost.learn_Id=bss.`learn_id`)
+		</if>
+		<if test="ext1 !=null and '' !=ext1">
+			${ext1}
+		</if>
+		ORDER BY bss.`create_time` DESC
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bd_student_send
+		where send_id = #{sendId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_student_send
+		where send_id = #{sendId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdStudentSend">
+		insert into bd_student_send
+		(send_id, learn_id, batch_id,
+		order_book_status, logistics_no,
+		logistics_name,
+		logistics_contact, receive_status,
+		semester,
+		address_status, update_time, update_user,
+		update_user_id)
+		values
+		(#{sendId,jdbcType=VARCHAR}, #{learnId,jdbcType=VARCHAR},
+		#{batchId,jdbcType=VARCHAR},
+		#{orderBookStatus,jdbcType=VARCHAR},
+		#{logisticsNo,jdbcType=VARCHAR}, #{logisticsName,jdbcType=VARCHAR},
+		#{logisticsContact,jdbcType=VARCHAR},
+		#{receiveStatus,jdbcType=VARCHAR},
+		#{semester,jdbcType=VARCHAR},
+		#{addressStatus,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdStudentSend">
+		insert into bd_student_send
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			send_id,
+			<if test="learnId != null">
+				learn_id,
+			</if>
+			<if test="batchId != null">
+				batch_id,
+			</if>
+			<if test="orderBookStatus != null">
+				order_book_status,
+			</if>
+			<if test="logisticsNo != null">
+				logistics_no,
+			</if>
+			<if test="logisticsName != null">
+				logistics_name,
+			</if>
+			<if test="logisticsContact != null">
+				logistics_contact,
+			</if>
+			<if test="receiveStatus != null">
+				receive_status,
+			</if>
+			<if test="semester != null">
+				semester,
+			</if>
+			<if test="addressStatus != null">
+				address_status,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="textbookType != null">
+				textbook_type,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="mobile != null">
+				mobile,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="provinceCode != null">
+				province_code,
+			</if>
+			<if test="cityCode != null">
+				city_code,
+			</if>
+			<if test="districtCode != null">
+				district_code,
+			</if>
+			<if test="address !=null">
+				address_update_time
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{sendId,jdbcType=VARCHAR},
+			<if test="learnId != null">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="batchId != null">
+				#{batchId,jdbcType=VARCHAR},
+			</if>
+			<if test="orderBookStatus != null">
+				#{orderBookStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsNo != null">
+				#{logisticsNo,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsName != null">
+				#{logisticsName,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsContact != null">
+				#{logisticsContact,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveStatus != null">
+				#{receiveStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				#{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="addressStatus != null">
+				#{addressStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="textbookType != null">
+				#{textbookType,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode != null">
+				#{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				#{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				#{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="address !=null">
+				NOW()
+			</if>
+			
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdStudentSend">
+		update bd_student_send
+		<set>
+			<if test="learnId != null">
+				learn_id = #{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="batchId != null">
+				batch_id = #{batchId,jdbcType=VARCHAR},
+			</if>
+			<if test="orderBookStatus != null">
+				order_book_status = #{orderBookStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsNo != null">
+				logistics_no = #{logisticsNo,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsName != null">
+				logistics_name = #{logisticsName,jdbcType=VARCHAR},
+			</if>
+			<if test="logisticsContact != null">
+				logistics_contact = #{logisticsContact,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveStatus != null">
+				receive_status = #{receiveStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				semester = #{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="addressStatus != null">
+				address_status = #{addressStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="address !=null">
+				address = #{address,jdbcType=VARCHAR},
+				address_update_time = NOW(),
+			</if>
+			<if test="mobile !=null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="userName !=null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode !=null">
+				province_code = #{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode !=null">
+				city_code = #{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode !=null">
+				district_code  = #{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where send_id = #{sendId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdStudentSend">
+		update
+		bd_student_send
+		set learn_id = #{learnId,jdbcType=VARCHAR},
+		batch_id =
+		#{batchId,jdbcType=VARCHAR},
+		order_book_status =
+		#{orderBookStatus,jdbcType=VARCHAR},
+		logistics_no =
+		#{logisticsNo,jdbcType=VARCHAR},
+		logistics_name =
+		#{logisticsName,jdbcType=VARCHAR},
+		logistics_contact =
+		#{logisticsContact,jdbcType=VARCHAR},
+		receive_status =
+		#{receiveStatus,jdbcType=VARCHAR},
+		semester =
+		#{semester,jdbcType=VARCHAR},
+		address_status =
+		#{addressStatus,jdbcType=VARCHAR},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		update_user_id =
+		#{updateUserId,jdbcType=VARCHAR}
+		where send_id =
+		#{sendId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="getRecordByLearnId" parameterType="string" resultMap="BaseResultMap">
+		SELECT
+		s.`send_id`,
+		s.`learn_id`,
+		s.`batch_id`,
+		s.`order_book_status`,
+		s.`logistics_no`,
+		s.`logistics_name`,
+		s.`logistics_contact`,
+		s.`receive_status`,
+		s.`semester`,
+		s.`address_status`,
+		s.`update_time`,
+		s.`update_user`,
+		s.`update_user_id`,
+		s.`send_people`,
+		s.`send_date`,
+		s.`textbook_type`
+		FROM
+		`bd_student_send` s
+		WHERE s.`learn_id` = #{learnId,jdbcType=VARCHAR}
+		<if test="semester !=null and '' != semester">
+			and s.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+		ORDER BY s.`update_time`
+		LIMIT 0,1
+	</select>
+
+	<update id="queryOkOrder" parameterType="com.yz.model.educational.BdStudentSendMap">
+		UPDATE
+		bd_student_send
+		SET
+		order_book_status = '2',
+		logistics_name=#{logisticsName,jdbcType=VARCHAR}
+		WHERE send_id IN
+		(SELECT
+		temp_table.send_id
+		FROM
+		(SELECT
+		bss.`send_id`
+		FROM
+		bd_student_send bss
+		LEFT JOIN bd_learn_info bli
+		ON bss.learn_id = bli.learn_id
+		LEFT JOIN bd_university bu
+		ON bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON bup.`pfsn_id` = bli.`pfsn_id`
+		<where>
+			(bss.`order_book_status` = '1' or bss.`order_book_status` = '2')
+			<if test="unvsId !=null and '' != unvsId">
+				and bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId !=null and '' !=pfsnId">
+				and bup.pfsn_id = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+			<if test="grade !=null and '' != grade">
+				and bli.`grade` = #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' != pfsnLevel">
+				and bup.pfsn_level = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="semester !=null and '' !=semester">
+			   and bss.`semester` = #{semester,jdbcType=VARCHAR}
+			</if>
+		</where>
+		) temp_table)
+	</update>
+	
+	<resultMap type="com.yz.model.statistics.PfsnMatchBookStatInfo" id="MatchBookStatInfo">
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="match_code" property="matchCode" jdbcType="VARCHAR"/>
+		<result column="semester" property="semester" jdbcType="VARCHAR"/>
+		<result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR"/>
+		<result column="semester_name" property="semesterName" jdbcType="VARCHAR"/>
+		<result column="textbook_pfsncode" property="textbookPfsncode" jdbcType="VARCHAR"/>
+		<association property="bookInfo" column="{pfsnId=pfsn_id}" select="selectBookInfo" />
+		<association property="totalNum" column="{pfsnId=pfsn_id,semester=semester}" select="selectTotalNum"/>
+		<association property="sendNum" column="{pfsnId=pfsn_id,semester=semester}" select="selectSendNum"/>
+	</resultMap>
+	<select id="exportMatchBookInfo" parameterType="com.yz.model.educational.BdStudentSendMap" resultMap="MatchBookStatInfo">
+		select 
+		  bup.`pfsn_id`,
+		  bup.`grade`,
+		  bu.`unvs_name`,
+		  pfsnSys.`dict_name` as pfsn_level,
+		  bup.`pfsn_name`,
+		  bup.`textbook_pfsncode`,
+		  #{semester,jdbcType=VARCHAR} semester,
+		  semesterSys.`dict_name` as semester_name 
+		from
+		  bd_unvs_profession bup 
+		  left join bd_university bu 
+		    on bu.`unvs_id` = bup.`unvs_id`
+		  left join sys_dict pfsnSys
+		    on pfsnSys.dict_value = bup.`pfsn_level` and pfsnSys.p_id ='pfsnLevel'
+		  left join sys_dict semesterSys 
+		    on  semesterSys.dict_value = #{semester,jdbcType=VARCHAR} and semesterSys.p_id='semester'
+		<where>
+			<if test="unvsId !=null and '' !=unvsId">
+				and bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="grade !=null and '' != grade">
+				and bup.`grade` =#{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' !=pfsnLevel">
+				and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId !=null and '' != pfsnId">
+				and bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+		</where>    
+	</select>
+	<select id="selectBookInfo" parameterType="java.util.Map" resultType="java.util.HashMap">
+		SELECT 
+		  b.`textbook_id`,
+		  b.`textbook_name` bookName 
+		FROM
+		  bd_textbook b 
+		  LEFT JOIN bd_plan_textbook p 
+		    ON p.`textbook_id` = b.`textbook_id` 
+		  LEFT JOIN bd_teach_plan t 
+		    ON p.`thp_id` = t.`thp_id` 
+		  LEFT JOIN bd_learn_info bli 
+		    ON t.`pfsn_id` = bli.`pfsn_id` 
+		WHERE b.`textbook_type`='XK'
+		  <if test="pfsnId !=null and '' != pfsnId">
+		  	and bli.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}	
+		  </if>
+		group by b.`textbook_id`
+	</select>
+	<select id="selectTotalNum" parameterType="java.util.Map" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM
+			bd_student_send bss
+			LEFT JOIN bd_learn_info bli
+			ON bli.`learn_id` = bss.`learn_id`
+			WHERE bss.`textbook_type` = 'XK'
+		<if test="pfsnId !=null and '' != pfsnId">
+			and bli.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="semester !=null and '' != semester">
+			and bss.`semester` = #{semester,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="selectSendNum" parameterType="java.util.Map" resultType="int">
+		select 
+		  count(1) 
+		from
+		  bd_student_send bss 
+		  left join bd_learn_info bli 
+		    on bli.`learn_id` = bss.`learn_id`  
+		where bss.`textbook_type`='XK' and bss.`order_book_status` = '3' and logistics_no is not null
+		 <if test="pfsnId !=null and '' != pfsnId">
+		  	and bli.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}	
+		  </if>
+		  <if test="semester !=null and '' != semester">
+		  	and bss.`semester` = #{semester,jdbcType=VARCHAR}	
+		  </if> 
+	</select>
+
+	<select id="selectRefreshTextbookData" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from bd_student_send
+		where send_id in 
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</select>
+	
+	<select id="selectSendBookNum" resultType="java.lang.Integer">
+		select count(1) from bd_textbook_send where send_id=#{sendId,jdbcType=VARCHAR}	
+	</select>
+	
+	
+	<select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_order_book;
+        CREATE TEMPORARY TABLE tmp_student_order_book (
+        grade VARCHAR (20),
+        std_name VARCHAR (50),
+        id_card VARCHAR (50));
+        INSERT INTO tmp_student_order_book (
+            grade,
+            std_name,
+            id_card
+        )
+        VALUES
+        <foreach collection="stuOrderBookList" item="info" separator=",">
+            (
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+            a.*
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                tmp_student_order_book
+                GROUP BY
+                    grade,
+                    std_name,
+                    id_card
+            ) a
+        LEFT JOIN (
+            SELECT
+                a.learn_id,
+                a.grade,
+                a.school_roll,
+                b.id_card,
+                b.std_name
+            FROM
+                bd_learn_info a
+            JOIN bd_student_info b ON a.std_id = b.std_id
+        ) b ON a.grade = b.grade
+        AND a.std_name = b.std_name
+        AND a.id_card = b.id_card
+        WHERE
+            b.learn_id IS NULL;
+    </select>
+    
+    <update id="updateStuSendByCond" parameterType="com.yz.model.educational.BdStudentSendImport">
+		update bd_student_send
+		<set>
+			<if test="logisticsName != null">
+				logistics_name = #{logisticsName,jdbcType=VARCHAR},
+			</if>
+			<if test="batchId != null">
+				batch_id = #{batchId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			update_time = now(),
+			order_book_status = '2'
+		</set>
+		where learn_id = #{learnId,jdbcType=VARCHAR}
+		  and semester = #{semester,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getTeacherUserIdByLearnId" resultType="java.lang.String">
+		SELECT oe.`user_id` FROM bd_learn_info bli
+		LEFT JOIN bd_learn_rules blr
+		ON blr.`learn_id` = bli.`learn_id`
+		LEFT JOIN oa_employee oe ON oe.`emp_id` = blr.`recruit`
+		WHERE bli.`learn_id`= #{learnId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getStuNameByLearnId" resultType="java.lang.String">
+		SELECT bsi.`std_name` FROM bd_learn_info bli
+		LEFT JOIN bd_student_info bsi 
+		ON bsi.`std_id` = bli.`std_id` 
+		WHERE bli.`learn_id`=#{learnId,jdbcType=VARCHAR};
+	</select>
+	
+	<update id="resetAddressTask">
+		update oa_student_task ost 
+		left join oa_task_info oti 
+		on oti.`task_id` = ost.`task_id`
+		SET ost.`task_status`='0'
+		where ost.`learn_id`=#{learnId,jdbcType=VARCHAR}
+		 and oti.`task_type`='3'
+	</update>
+	
+	<update id="addRemark">
+		update bd_student_send
+		<set>
+			<if test="remark !=null and '' !=remark">
+				add_remark=#{remark,jdbcType=VARCHAR}
+			</if>
+		</set> 
+		where send_id = #{sendId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateAddress">
+		update bd_student_send
+		<set>
+		 	<if test="detailAddress !=null and '' !=detailAddress">
+		 		address=#{detailAddress,jdbcType=VARCHAR},	
+		 	</if>
+		 	<if test="provinceCode !=null and '' !=provinceCode">
+		 		province_code=#{provinceCode,jdbcType=VARCHAR},
+		 	</if>
+		 	<if test="cityCode !=null and '' != cityCode">
+		 		city_code=#{cityCode,jdbcType=VARCHAR},
+		 	</if>
+		 	<if test="districtCode !=null and '' !=districtCode">
+		 		district_code=#{districtCode,jdbcType=VARCHAR},
+		 	</if>
+		 	<if test="takeUserName !=null and '' !=takeUserName">
+		 		user_name = #{takeUserName,jdbcType=VARCHAR},
+		 	</if>
+		 	<if test="takeMobile !=null and '' !=takeMobile">
+		 		mobile = #{takeMobile,jdbcType=VARCHAR},
+		 	</if>
+			address_status = '1',
+			address_update_time=NOW()
+		</set>
+	    where send_id = #{sendId,jdbcType=VARCHAR}
+	</update>
+	
+	
+	<select id="initTmpUnvsPsfnInfoTable">
+		DROP TEMPORARY TABLE IF EXISTS tmp_learnunvspsfn;
+		CREATE TEMPORARY TABLE tmp_learnunvspsfn (
+		unvs_name VARCHAR (50),
+		pfsn_name VARCHAR (50),
+		grade  VARCHAR (50),
+		pfsn_level VARCHAR (50),
+		textbook_pfsncode VARCHAR (50)
+		);
+		INSERT INTO tmp_learnunvspsfn (
+		unvs_name,
+		pfsn_name,
+		grade,
+		pfsn_level,
+		textbook_pfsncode
+		)
+		VALUES
+		<foreach collection="list" item="info" separator=",">
+			(
+			#{info.unvsName, jdbcType=VARCHAR},
+			#{info.pfsnName, jdbcType=VARCHAR},
+			#{info.grade, jdbcType=VARCHAR},
+			#{info.pfsnLevel, jdbcType=VARCHAR},
+			#{info.textbookPfsncode, jdbcType=VARCHAR}
+			)
+		</foreach>;
+	</select>
+	
+	
+	<select id="getNonExistsUnvsNamePsfnName" resultType="java.util.Map">
+		SELECT
+            a.unvs_name, a.pfsn_name,a.grade,a.pfsn_level
+        FROM
+            (
+                SELECT
+                    unvs_name,pfsn_name,grade,pfsn_level
+                FROM
+                tmp_learnunvspsfn 
+                GROUP BY
+                    unvs_name,
+                    pfsn_name,
+                    grade,
+                    pfsn_level
+            ) a
+        LEFT JOIN bd_university u ON u.unvs_name = a.unvs_name
+        LEFT JOIN bd_unvs_profession p ON u.unvs_id=p.unvs_id and p.pfsn_name = a.pfsn_name and p.grade=a.grade and p.pfsn_level=a.pfsn_level
+        WHERE u.unvs_id is null or p.pfsn_id is null group by a.unvs_name,a.pfsn_name,a.pfsn_level,a.grade; 
+	</select>
+	
+	<insert id="insertByExcel">
+		UPDATE bms.bd_unvs_profession p
+		LEFT  JOIN bd_university u 
+			 	ON u.unvs_id = p.unvs_id
+		INNER JOIN tmp_learnunvspsfn tmp 
+			 	ON tmp.unvs_name=u.unvs_name and tmp.pfsn_name=p.pfsn_name and tmp.grade=p.grade and tmp.pfsn_level=p.pfsn_level
+		SET   p.textbook_pfsncode=tmp.textbook_pfsncode;
+	</insert>
+</mapper>

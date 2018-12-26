@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.message.GwMsgTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.message.GwMsgTemplate" >
+    <id column="mtp_id" property="mtpId" jdbcType="VARCHAR" />
+    <result column="mtp_type" property="mtpType" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="send_type" property="sendType" jdbcType="VARCHAR" />
+    <result column="msg_channel" property="msgChannel" jdbcType="VARCHAR" />
+    <result column="msg_title" property="msgTitle" jdbcType="VARCHAR" />
+    <result column="msg_name" property="msgName" jdbcType="VARCHAR" />
+    <result column="msg_code" property="msgCode" jdbcType="VARCHAR" />
+    <result column="msg_content" property="msgContent" jdbcType="VARCHAR" />
+    <result column="msg_other" property="msgOther" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="mtp_status" property="mtpStatus" jdbcType="VARCHAR" />
+    <result column="schedule_id" property="scheduleId" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="check_user" property="checkUser" jdbcType="VARCHAR" />
+    <result column="check_time" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="check_user_id" property="checkUserId" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="cron_str" property="cronStr" jdbcType="VARCHAR" />
+    <result column="otp_id" property="otpId" jdbcType="VARCHAR" />
+    <result column="sender" property="sender" jdbcType="VARCHAR" />
+    <result column="skip_url" property="skipUrl" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    mtp_id, mtp_type, send_type, msg_channel, msg_title, msg_content, msg_other, 
+    DATE_FORMAT(send_time, '%Y-%m-%d %H:%i:%S') send_time, 
+    mtp_status, create_user, 
+    DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%S') create_time, 
+    check_user, 
+    DATE_FORMAT(check_time, '%Y-%m-%d %H:%i:%S') check_time, 
+    create_user_id, update_user, 
+    update_time, check_user_id, update_user_id, cron_str, otp_id, sender, skip_url,schedule_id,
+    msg_name,msg_code,remark
+  </sql>
+  
+  <select id="selectLearnIdsByMtpId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  r.`learn_id` 
+	FROM
+	  bms.gw_msg_receiver mr 
+	  LEFT JOIN bms.`gw_receiver` r 
+	    ON r.`receiver_id` = mr.`receiver_id` 
+	WHERE mr.`mtp_id` = #{mtpId}
+  </select>
+  
+  <select id="selectMtpIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  mr.`mtp_id` 
+	FROM
+	  bms.gw_receiver r 
+	  LEFT JOIN bms.`gw_msg_receiver` mr 
+	    ON mr.`receiver_id` = r.`receiver_id` 
+	WHERE r.`learn_id` = #{learnId}
+	GROUP BY mr.`mtp_id`
+  </select>
+  
+  <select id="selectWechatTemplate" parameterType="java.lang.String" resultType="java.lang.String">
+  	select 
+	  template_code 
+	from
+	  common.`gw_wechat_template` 
+	where template_id = #{templateId}
+  </select>
+  
+  <select id="selectMsgReceiver" parameterType="java.lang.String" resultType="java.util.HashMap">
+  	select r.learn_id learnId from bms.`gw_msg_receiver` m 
+  	left join bms.`gw_receiver` r 
+  	on r.receiver_id = m.receiver_id where m.mtp_id = #{mtpId}
+  	and r.learn_id is not null
+  </select>
+  <select id="selectMsgByPage" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+    from bms.`gw_msg_template`
+    where 1=1
+    	<if test="createUserName != null and createUserName != ''">
+    		and create_user like CONCAT('%', CONCAT(#{createUserName}, '%'))
+    	</if>
+    	<if test="mtpType != null and mtpType != ''">
+    		and mtp_type = #{mtpType}
+    	</if>
+    	<if test="msgChannel != null and msgChannel != ''">
+    		and msg_channel = #{msgChannel}
+    	</if>
+    	<if test="mtpStatus != null and mtpStatus != ''">
+    		and mtp_status = #{mtpStatus}
+    	</if>
+    	and mtp_status in 
+    	<foreach collection="statuses" item="status" open="(" close=")" separator=",">
+	    	#{status}
+	    </foreach>
+	    order by update_time desc
+  </select>
+  <update id="updateMtpStatus">
+  	UPDATE 
+	  bms.`gw_msg_template` 
+	SET
+	  mtp_status = #{status},
+	  remark = #{remark}
+	WHERE mtp_id = #{mtpId}
+  </update>
+  <update id="updateMtpStatusBatch">
+  	UPDATE 
+	  bms.`gw_msg_template` 
+	SET
+	  mtp_status = #{status} 
+	WHERE mtp_id in
+	<foreach collection="mtpIds" item="mtpId" open="(" close=")" separator=",">
+    	#{mtpId}
+    </foreach>
+  </update>
+  <delete id="deleteMsgReceiver" parameterType="java.lang.String">
+  	delete from bms.`gw_msg_receiver` where mtp_id = #{mtpId}
+  </delete>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bms.`gw_msg_template`
+    where mtp_id = #{mtpId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bms.`gw_msg_template`
+    where mtp_id = #{mtpId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.message.GwMsgTemplate" >
+    insert into bms.`gw_msg_template` (mtp_id, mtp_type, send_type, 
+      msg_channel, msg_title, msg_content, 
+      msg_other, send_time, mtp_status, 
+      create_user, create_time, check_user, 
+      check_time, create_user_id, update_user, 
+      update_time, check_user_id, update_user_id, 
+      cron_str, otp_id, sender,schedule_id
+      )
+    values (#{mtpId,jdbcType=VARCHAR}, #{mtpType,jdbcType=VARCHAR}, #{sendType,jdbcType=VARCHAR}, 
+      #{msgChannel,jdbcType=VARCHAR}, #{msgTitle,jdbcType=VARCHAR}, #{msgContent,jdbcType=VARCHAR}, 
+      #{msgOther,jdbcType=VARCHAR}, #{sendTime,jdbcType=TIMESTAMP}, #{mtpStatus,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{checkUser,jdbcType=VARCHAR}, 
+      #{checkTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{checkUserId,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{cronStr,jdbcType=VARCHAR}, #{otpId,jdbcType=VARCHAR}, #{sender,jdbcType=VARCHAR},
+      #{schedule_id,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.message.GwMsgTemplate" >
+    insert into bms.`gw_msg_template`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mtpId != null" >
+        mtp_id,
+      </if>
+      <if test="mtpType != null" >
+        mtp_type,
+      </if>
+      <if test="sendType != null" >
+        send_type,
+      </if>
+      <if test="msgChannel != null" >
+        msg_channel,
+      </if>
+      <if test="msgTitle != null" >
+        msg_title,
+      </if>
+      <if test="msgContent != null" >
+        msg_content,
+      </if>
+      <if test="msgOther != null" >
+        msg_other,
+      </if>
+      <if test="sendTime != null" >
+        send_time,
+      </if>
+      <if test="mtpStatus != null" >
+        mtp_status,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="checkUser != null" >
+        check_user,
+      </if>
+      <if test="checkTime != null" >
+        check_time,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="checkUserId != null" >
+        check_user_id,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="cronStr != null" >
+        cron_str,
+      </if>
+      <if test="otpId != null" >
+        otp_id,
+      </if>
+      <if test="sender != null" >
+        sender,
+      </if>
+      <if test="scheduleId != null" >
+        schedule_id,
+      </if>
+      <if test="skipUrl != null" >
+        skip_url,
+      </if>
+      <if test="msgName != null" >
+         msg_name,
+      </if>
+      <if test="msgCode != null" >
+         msg_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mtpId != null" >
+        #{mtpId,jdbcType=VARCHAR},
+      </if>
+      <if test="mtpType != null" >
+        #{mtpType,jdbcType=VARCHAR},
+      </if>
+      <if test="sendType != null" >
+        #{sendType,jdbcType=VARCHAR},
+      </if>
+      <if test="msgChannel != null" >
+        #{msgChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="msgTitle != null" >
+        #{msgTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="msgContent != null" >
+        #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="msgOther != null" >
+        #{msgOther,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+        #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mtpStatus != null" >
+        #{mtpStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUser != null" >
+        #{checkUser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUserId != null" >
+        #{checkUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="cronStr != null" >
+        #{cronStr,jdbcType=VARCHAR},
+      </if>
+      <if test="otpId != null" >
+        #{otpId,jdbcType=VARCHAR},
+      </if>
+      <if test="sender != null" >
+        #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduleId != null" >
+         #{scheduleId,jdbcType=VARCHAR},
+      </if>
+      <if test="skipUrl != null" >
+         #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="msgName != null" >
+         #{msgName,jdbcType=VARCHAR},
+      </if>
+      <if test="msgCode != null" >
+         #{msgCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.message.GwMsgTemplate" >
+    update bms.`gw_msg_template`
+    <set >
+      <if test="mtpType != null" >
+        mtp_type = #{mtpType,jdbcType=VARCHAR},
+      </if>
+      <if test="sendType != null" >
+        send_type = #{sendType,jdbcType=VARCHAR},
+      </if>
+      <if test="msgChannel != null" >
+        msg_channel = #{msgChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="msgTitle != null" >
+        msg_title = #{msgTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="msgContent != null" >
+        msg_content = #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="msgOther != null" >
+        msg_other = #{msgOther,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mtpStatus != null" >
+        mtp_status = #{mtpStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUser != null" >
+        check_user = #{checkUser,jdbcType=VARCHAR},
+      </if>
+      <if test="checkTime != null" >
+        check_time = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkUserId != null" >
+        check_user_id = #{checkUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="cronStr != null" >
+        cron_str = #{cronStr,jdbcType=VARCHAR},
+      </if>
+      <if test="otpId != null" >
+        otp_id = #{otpId,jdbcType=VARCHAR},
+      </if>
+      <if test="sender != null" >
+        sender = #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="skipUrl != null" >
+        skip_url = #{skipUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="scheduleId != null" >
+        schedule_id = #{scheduleId,jdbcType=VARCHAR},
+      </if>
+      <if test="msgName != null" >
+        msg_name = #{msgName,jdbcType=VARCHAR},
+      </if>
+      <if test="msgCode != null" >
+        msg_code = #{msgCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where mtp_id = #{mtpId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.message.GwMsgTemplate" >
+    update bms.`gw_msg_template`
+    set mtp_type = #{mtpType,jdbcType=VARCHAR},
+      send_type = #{sendType,jdbcType=VARCHAR},
+      msg_channel = #{msgChannel,jdbcType=VARCHAR},
+      msg_title = #{msgTitle,jdbcType=VARCHAR},
+      msg_content = #{msgContent,jdbcType=VARCHAR},
+      msg_other = #{msgOther,jdbcType=VARCHAR},
+      send_time = #{sendTime,jdbcType=TIMESTAMP},
+      mtp_status = #{mtpStatus,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      check_user = #{checkUser,jdbcType=VARCHAR},
+      check_time = #{checkTime,jdbcType=TIMESTAMP},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      check_user_id = #{checkUserId,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      cron_str = #{cronStr,jdbcType=VARCHAR},
+      otp_id = #{otpId,jdbcType=VARCHAR},
+      sender = #{sender,jdbcType=VARCHAR},
+      skip_url = #{skipUrl,jdbcType=VARCHAR},
+      schedule_id = #{skipUrl,jdbcType=VARCHAR},
+    where mtp_id = #{scheduleId,jdbcType=VARCHAR}
+  </update>
+</mapper>

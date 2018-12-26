@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.PerformanceMapper">
+	<resultMap id="RecruitStudentListMap" type="java.util.HashMap">
+		<result column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="unvs_id" jdbcType="VARCHAR" property="unvsId" />
+		<result column="pfsn_id" jdbcType="VARCHAR" property="pfsnId" />
+	</resultMap>
+
+	<resultMap id="MonthExpenseResult" type="com.yz.model.oa.OaMonthExpense">
+		<result column="expenseId" jdbcType="VARCHAR" property="expenseId" />
+		<result column="empId" jdbcType="VARCHAR" property="empId" />
+		<result column="empName" jdbcType="VARCHAR" property="empName" />
+		<result column="year" jdbcType="VARCHAR" property="year" />
+		<result column="empType" jdbcType="VARCHAR" property="empType" />
+		<result column="empStatus" jdbcType="VARCHAR" property="empStatus" />
+		<result column="dpName" jdbcType="VARCHAR" property="dpName" />
+		<result column="campusName" jdbcType="VARCHAR" property="campusName" />
+		<association property="jtIds" column="empId" select="selectEmpTitles" />
+	</resultMap>
+	
+	<select id="selectUnderEmpId" resultType="com.yz.model.oa.OaEmployeeBaseInfo">
+		SELECT 
+		  o.`emp_name` empName,
+		  o.emp_id empId
+		FROM
+		  oa_department d 
+		  LEFT JOIN oa_employee_job j 
+		    ON j.`dp_id` = d.`dp_id` 
+		  LEFT JOIN oa_employee o 
+		    ON o.`emp_id` = j.`emp_id` 
+		WHERE d.`emp_id` = #{sId}
+		  AND is_stop = '0' 
+	</select>
+
+	<select id="getRecruitList" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		SELECT emp.emp_id empId,emp.emp_name empName,
+		dict.dict_name empStatus,
+		cam.campus_name campusName,dep.dp_name dpName FROM bms.oa_employee emp
+		LEFT JOIN bms.sys_dict dict ON dict.dict_value=emp.emp_status AND
+		dict.p_id='empStatus'
+		LEFT JOIN bms.`oa_employee_job` job ON job.emp_id=emp.emp_id
+		LEFT JOIN
+		bms.oa_campus cam ON cam.campus_id=job.campus_id
+		LEFT JOIN
+		bms.oa_department dep ON dep.dp_id=job.dp_id WHERE 1=1
+		and emp.emp_type = '1'
+		<if test="sName != null and '' != sName">
+			and emp.emp_name like CONCAT('%',#{sName},'%')
+		</if>
+	</select>
+
+
+	<select id="selectExpenseInfo" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT
+		e.`expense_id` expenseId,
+		e.`year`,
+		e.`month` `month`,
+		e.`amount`,
+		date_format(e.`create_time`,'%Y-%m-%d %H:%i:%s') createTime,
+		e.`remark`,
+		o.`emp_id` empId,
+		oe.emp_name empName
+		FROM
+		oa_expense o
+		LEFT JOIN oa_expense_info e
+		ON o.`expense_id` = e.`expense_id`
+		left join oa_employee oe
+		on o.emp_id = oe.emp_id
+		WHERE o.`emp_id` = #{empId}
+		AND o.`year` = #{year}
+	</select>
+
+	<insert id="insertExpense" parameterType="com.yz.model.oa.OaMonthExpense">
+		INSERT INTO `oa_expense_info` (
+		`ei_id`,
+		`expense_id`,
+		`year`,
+		`month`,
+		`amount`,
+		`remark`,
+		`update_user`,
+		`update_user_id`,
+		`create_user_id`,
+		`create_user`
+		)
+		VALUES
+		(
+		#{eiId},
+		(select expense_id from oa_expense where emp_id = #{empId} and year =
+		#{year}),
+		#{expenseYear},
+		#{month},
+		#{amount},
+		#{remark},
+		#{updateUser},
+		#{updateUserId},
+		#{createUserId},
+		#{createUser}
+		)
+	</insert>
+
+	<select id="selectRenderd" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		REPLACE(FORMAT(IFNULL(SUM(i.`amount`), 0), 2),',','')
+		FROM
+		oa_expense e
+		LEFT JOIN oa_expense_info i
+		ON i.`expense_id` = e.`expense_id`
+		WHERE e.`emp_id` = #{empId}
+		AND e.`year` = #{year}
+	</select>
+
+	<select id="selectRecruitCount" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		CASE
+		WHEN l.scholarship = '14'
+		THEN REPLACE(FORMAT(IFNULL(a.`audit`, '1') * 0.5, 2),',','')
+		ELSE REPLACE(FORMAT(IFNULL(a.`audit`, '1'), 2),',','')
+		END
+		FROM
+		bd_learn_info l
+		INNER JOIN bd_student_info s
+		ON s.`std_id` = l.`std_id`
+		LEFT JOIN bd_learn_rules r
+		ON r.`learn_id` = l.`learn_id`
+		LEFT JOIN bd_audit a
+		ON (
+		a.`unvs_id` = l.`unvs_id`
+		AND a.`grade` = l.`grade`
+		and a.scholarship = l.scholarship
+		)
+		WHERE 1 = 1
+		AND l.expense_time &gt;= STR_TO_DATE(#{startTime}, '%Y-%m-%d %H:%i:%s')
+		AND l.expense_time &lt;= STR_TO_DATE(#{endTime}, '%Y-%m-%d %H:%i:%s')
+		AND l.grade IN
+		<foreach collection="grades" item="grade" open="(" close=")"
+			separator=",">
+			#{grade}
+		</foreach>
+		and l.std_stage in
+		<foreach collection="stdStages" item="stdStage" open="("
+			close=")" separator=",">
+			#{stdStage}
+		</foreach>
+		<choose>
+			<when test="user.userLevel == 3">
+				and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id
+				in (
+				<foreach collection="user.myDpList" item="info" separator=",">
+					#{info.dpId, jdbcType=VARCHAR}
+				</foreach>
+				))
+			</when>
+			<otherwise>
+				and r.recruit = #{user.empId, jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectGradeByYear" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select dict_value from sys_dict where ext_2 = #{year} and p_id = 'grade'
+	</select>
+
+	<select id="selectEmpTitles" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		t.`jt_id`
+		FROM
+		oa_employee_title t
+		WHERE t.`emp_id` = #{empId}
+	</select>
+
+	<select id="selectMonthExpenseByPage" parameterType="com.yz.model.oa.OaMonthExpenseQuery"
+		resultMap="MonthExpenseResult">
+		SELECT
+		e.expense_id expenseId,
+		e.`year`,
+		e.`emp_id` empId,
+		oe.`emp_name` empName,
+		oe.`emp_type` empType,
+		oe.`emp_status` empStatus,
+		d.`dp_name` dpName,
+		c.`campus_name` campusName
+		FROM
+		oa_expense e
+		LEFT JOIN oa_employee oe
+		ON oe.`emp_id` = e.`emp_id`
+		LEFT JOIN oa_employee_job j
+		ON j.`emp_id` = e.`emp_id`
+		LEFT JOIN oa_department d
+		ON d.`dp_id` = j.`dp_id`
+		LEFT JOIN oa_campus c
+		ON c.`campus_id` = j.`campus_id`
+		where 1 = 1
+		and oe.emp_type = '1'
+		<if test="empStatus != null and '' != empStatus and empStatus == 1">
+			and oe.emp_status in ('1','3')
+		</if>
+		<if test="empStatus != null and '' != empStatus and empStatus == 2">
+			and oe.emp_status = '2'
+		</if>
+		<if test="year != null and '' != year">
+			and e.year = #{year}
+		</if>
+		<if test="recruitCampus != null and '' != recruitCampus">
+			and c.campus_id = #{recruitCampus}
+		</if>
+		<if test="recruitName != null and '' != recruitName">
+			and oe.emp_name like CONCAT('%', CONCAT(#{recruitName}, '%'))
+		</if>
+		<if test="recruitDepartment != null and '' != recruitDepartment">
+			and d.dp_id = #{recruitDepartment}
+		</if>
+	</select>
+
+	<select id="selectExpense" parameterType="com.yz.model.oa.OaMonthExpenseQuery"
+		resultMap="MonthExpenseResult">
+		SELECT
+		e.expense_id expenseId,
+		e.`year`,
+		e.`emp_id` empId,
+		oe.`emp_name` empName,
+		oe.`emp_type` empType,
+		oe.`emp_status` empStatus,
+		d.`dp_name` dpName,
+		c.`campus_name` campusName
+		FROM
+		oa_expense e
+		LEFT JOIN oa_expense_info ei
+		ON ei.expense_id = ei.expense_id
+		LEFT JOIN oa_employee oe
+		ON oe.`emp_id` = e.`emp_id`
+		LEFT JOIN oa_employee_job j
+		ON j.`emp_id` = e.`emp_id`
+		LEFT JOIN oa_department d
+		ON d.`dp_id` = j.`dp_id`
+		LEFT JOIN oa_campus c
+		ON c.`campus_id` = j.`campus_id`
+		where e.emp_id = #{empId}
+		and e.year = #{year}
+		GROUP BY e.expense_id
+	</select>
+
+	<select id="selectStudentByMonth" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT
+		l.`std_id` stdId,
+		l.`learn_id` learnId,
+		l.`std_stage` stdStage,
+		l.unvs_id unvsId,
+		l.grade,
+		l.pfsn_id pfsnId,
+		u.unvs_name unvsName,
+		p.pfsn_level pfsnLevel,
+		p.pfsn_code pfsnCode,
+		p.pfsn_name pfsnName,
+		s.std_name stdName,
+		s.id_card idCard,
+		ta.ta_name taName,
+		s.mobile,
+		l.scholarship,
+		oe.`emp_name` empName,
+		IFNULL(a.audit, '1') audit,
+		CASE
+		WHEN l.scholarship = '14'
+		THEN REPLACE(FORMAT(60 * 0.5, 2), ',', '')
+		ELSE REPLACE(FORMAT(60, 2), ',', '')
+		END AS recruitAmount
+		FROM
+		bd_learn_info l
+		INNER JOIN bd_student_info s
+		ON s.`std_id` = l.`std_id`
+		INNER JOIN bd_university u
+		ON u.unvs_id = l.unvs_id
+		INNER JOIN bd_unvs_profession p
+		ON p.pfsn_id = l.pfsn_id
+		INNER JOIN bd_test_area ta
+		ON ta.ta_id = l.ta_id
+		LEFT JOIN bd_learn_rules r
+		ON r.`learn_id` = l.`learn_id`
+		LEFT JOIN oa_employee oe
+		ON r.`recruit` = oe.`emp_id`
+		LEFT JOIN bd_audit a
+		ON (
+		a.`unvs_id` = l.`unvs_id`
+		AND a.`grade` = l.`grade`
+		and a.scholarship = l.scholarship
+		)
+		where 1=1
+		and DATE_FORMAT(l.expense_time,'%Y-%m') in
+		<foreach collection="months" item="month" open="(" close=")"
+			separator=",">
+			#{month}
+		</foreach>
+		and l.grade in
+		<foreach collection="grades" item="grade" open="(" close=")"
+			separator=",">
+			#{grade}
+		</foreach>
+		and l.std_stage in ('3','4','10','5','6','7','8','12')
+		<choose>
+			<when test="user.userLevel == 3">
+				and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id
+				in (
+				<foreach collection="user.myDpList" item="info" separator=",">
+					#{info.dpId, jdbcType=VARCHAR}
+				</foreach>
+				))
+			</when>
+			<otherwise>
+				and r.recruit = #{user.empId, jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectAudit" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select audit from bd_audit where unvs_id = #{unvsId} and grade = #{grade}
+	</select>
+
+	<select id="selectMonths" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT recruit_time FROM oa_recruit_year WHERE `year` = #{year} AND `month`
+		= #{month}
+	</select>
+
+	<select id="findRecruitStudents" resultType="java.lang.String">
+		SELECT
+		CASE
+		WHEN l.scholarship = '14'
+		THEN REPLACE(FORMAT(IFNULL(a.`audit`, '1') * 0.5, 2),',','')
+		ELSE REPLACE(FORMAT(IFNULL(a.`audit`, '1'), 2),',','')
+		END
+		FROM
+		bd_learn_info l
+		INNER JOIN bd_student_info s
+		ON s.`std_id` = l.`std_id`
+		LEFT JOIN bd_learn_rules r
+		ON r.`learn_id` = l.`learn_id`
+		LEFT JOIN bd_audit a
+		ON (
+		a.`unvs_id` = l.`unvs_id`
+		AND a.`grade` = l.`grade`
+		and a.`scholarship` = l.`scholarship`
+		)
+		where 1=1
+		AND l.`expense_time` IS NOT NULL
+		<if test="months != null">
+			and DATE_FORMAT(l.expense_time,'%Y-%m') in
+			<foreach collection="months" item="month" open="(" close=")"
+				separator=",">
+				#{month}
+			</foreach>
+		</if>
+		and l.grade in
+		<foreach collection="grades" item="grade" open="(" close=")"
+			separator=",">
+			#{grade}
+		</foreach>
+		and l.std_stage in
+		<foreach collection="stdStages" item="stdStage" open="("
+			close=")" separator=",">
+			#{stdStage}
+		</foreach>
+		<choose>
+			<when test="user.userLevel == 3">
+				and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id
+				in (
+				<foreach collection="user.myDpList" item="info" separator=",">
+					#{info.dpId, jdbcType=VARCHAR}
+				</foreach>
+				))
+			</when>
+			<otherwise>
+				and r.recruit = #{user.empId, jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectReplyedAmount" parameterType="com.yz.model.oa.OaMonthExpense"
+		resultType="java.lang.String">
+		SELECT
+		REPLACE(FORMAT(IFNULL(SUM(i.`amount`), 0), 2),',','')
+		FROM
+		oa_expense e
+		LEFT JOIN oa_expense_info i
+		ON i.`expense_id` = e.`expense_id`
+		WHERE e.`emp_id` = #{empId}
+		AND e.`year` = #{year}
+
+	</select>
+
+	<select id="selectReplayed" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		REPLACE(FORMAT(IFNULL(SUM(i.`amount`), 0), 2),',','')
+		FROM
+		oa_expense e
+		LEFT JOIN oa_expense_info i
+		ON i.`expense_id` = e.`expense_id`
+		WHERE e.`emp_id` = #{empId}
+		AND e.`year` = #{year}
+		<if test="months != null">
+			AND i.`month` in
+			<foreach collection="months" item="month" open="(" close=")"
+				separator=",">
+				#{month}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectReplayedByRecruit" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		REPLACE(FORMAT(IFNULL(SUM(i.`amount`), 0), 2),',','')
+		FROM
+		oa_expense e
+		LEFT JOIN oa_expense_info i
+		ON i.`expense_id` = e.`expense_id`
+		WHERE e.`emp_id` = #{empId}
+		AND i.`year` = #{year}
+		AND i.`month` = #{month}
+	</select>
+
+</mapper>

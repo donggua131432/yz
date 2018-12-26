@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.OaTaskInfoMapper">
+	<resultMap type="com.yz.model.educational.OaTaskInfo" id="OaTaskInfo">
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR" />
+		<result column="task_content" property="taskContent" jdbcType="VARCHAR" />
+		<result column="creater" property="creater" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="total_count" property="totalCount" jdbcType="VARCHAR" />
+		<result column="finish_count" property="finishCount" jdbcType="VARCHAR" />
+		<result column="task_url" property="taskUrl" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="VARCHAR" />
+		<result column="is_need_check" property="isNeedCheck" jdbcType="VARCHAR" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="issuer" property="issuer" jdbcType="VARCHAR" />
+		<result column="task_type" property="taskType" jdbcType="VARCHAR" />
+		<result column="ey_id" property="eyId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectOaTaskInfo" resultMap="OaTaskInfo"
+		parameterType="com.yz.model.condition.educational.OaTaskInfoQuery">
+		SELECT
+		oti.`task_id`,
+		oti.`task_title`,
+		oti.`task_content`,
+		oti.`issuer`,
+		bu.`real_name` creater,
+		DATE_FORMAT(oti.`start_time`, '%Y-%m-%d %H:%i:%s') start_time ,
+		DATE_FORMAT(oti.`end_time`, '%Y-%m-%d %H:%i:%s') end_time,
+		oti.`task_url`,
+		oti.`is_allow`,
+		oti.`is_need_check`,
+		(select
+		count(*)
+		from
+		oa_student_task
+		where task_id = oti.`task_id`) total_count,
+		(select
+		count(*)
+		from
+		oa_student_task
+		where task_id = oti.`task_id`
+		and task_status = '1') finish_count
+		FROM
+		oa_task_info oti
+		left join bms_user bu
+		on oti.`issuer` = bu.`user_id`
+		where 1=1
+		<if test="issuer !=null and '' !=null">
+			and oti.`issuer`=#{issuer}
+		</if>
+		<if test="taskTitle !=null and '' != taskTitle">
+			and oti.`task_title` like CONCAT('%', CONCAT(#{taskTitle}, '%'))
+		</if>
+		<if test="taskId !=null and '' != taskId">
+			and oti.`task_id` = #{taskId,jdbcType=VARCHAR}
+		</if>
+		<if test="creater !=null and '' != creater">
+			and bu.`real_name` like CONCAT('%', CONCAT(#{creater}, '%'))
+		</if>
+		<if test="isAllow !=null and '' != isAllow">
+			and oti.`is_allow`=#{isAllow}
+		</if>
+		<if test="isNeedCheck !=null and '' != isNeedCheck">
+			and oti.`is_need_check`=#{isNeedCheck}
+		</if>
+		<if test="startTimeStart !=null and '' != startTimeStart">
+		     <![CDATA[   and DATE_FORMAT(oti.`start_time`, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="startTimeEnd !=null and '' != startTimeEnd">
+		     <![CDATA[   and DATE_FORMAT(oti.`start_time`, '%Y-%m-%d %H:%i:%s')<=  DATE_FORMAT(#{startTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="endTimeStart !=null and '' != endTimeStart">
+		     <![CDATA[   and DATE_FORMAT(oti.`end_time`, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{endTimeStart}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		<if test="endTimeEnd !=null and '' != endTimeEnd">
+		     <![CDATA[   and DATE_FORMAT(oti.`end_time`, '%Y-%m-%d %H:%i:%s')<= DATE_FORMAT(#{endTimeEnd}, '%Y-%m-%d %H:%i:%s')   ]]>
+		</if>
+		order by oti.`create_time` desc
+	</select>
+
+	<select id="getTaskInfoById" resultMap="OaTaskInfo"
+		parameterType="String">
+		SELECT
+		task_id,
+		task_title,
+		task_content,
+		task_url,
+		DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') start_time,
+		DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') end_time,
+		create_user,
+		DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') create_time,
+		is_allow,
+		is_need_check,
+		task_type,
+		ey_id
+		FROM
+		oa_task_info
+		where task_id=#{taskId}
+	</select>
+
+	<insert id="insertTask" parameterType="com.yz.model.educational.OaTaskInfo">
+		insert into `oa_task_info`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`task_id`,
+			<if test="taskTitle != null">
+				`task_title`,
+			</if>
+			<if test="taskContent !=null">
+				`task_content`,
+			</if>
+			<if test="taskType !=null">
+				`task_type`,
+			</if>
+			<if test="issuer !=null">
+				`issuer`,
+			</if>
+			<if test="taskUrl !=null">
+				`task_url`,
+			</if>
+			<if test="eyId !=null">
+				`ey_id`,
+			</if>
+			<if test="principal != null">
+				`principal`,
+			</if>
+			<if test="startTime != null">
+				`start_time`,
+			</if>
+			<if test="endTime != null">
+				`end_time`,
+			</if>
+			<if test="isAllow != null">
+				`is_allow`,
+			</if>
+			<if test="isNeedCheck != null">
+				`is_need_check`,
+			</if>
+			<if test="createUser != null">
+				`create_user`,
+			</if>
+			<if test="createUserId != null">
+				`create_user_id`,
+			</if>
+			`create_time`
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{taskId, jdbcType=VARCHAR},
+			<if test="taskTitle != null">
+				#{taskTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="taskContent !=null">
+				#{taskContent,jdbcType=VARCHAR},
+			</if>
+			<if test="taskType !=null">
+				#{taskType,jdbcType=VARCHAR},
+			</if>
+			<if test="issuer !=null">
+				#{issuer,jdbcType=VARCHAR},
+			</if>
+			<if test="taskUrl !=null">
+				#{taskUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="eyId !=null">
+				#{eyId,jdbcType=VARCHAR},
+			</if>
+			<if test="principal != null">
+				#{principal,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				#{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime != null">
+				#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="isAllow != null">
+				#{isAllow,jdbcType=VARCHAR},
+			</if>
+			<if test="isNeedCheck != null">
+				#{isNeedCheck,jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			NOW()
+		</trim>
+	</insert>
+
+	<update id="updateTask" parameterType="com.yz.model.educational.OaTaskInfo">
+		update oa_task_info
+		<set>
+			<if test="taskTitle !=null and '' != taskTitle">
+				task_title = #{taskTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="taskType !=null and '' !=taskType">
+				task_type = #{taskType,jdbcType=VARCHAR},
+			</if>
+			<if test="taskContent !=null and '' != taskContent">
+				task_content=#{taskContent,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				start_time=#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				end_time=#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="taskUrl !=null and '' !=taskUrl ">
+				task_url = #{taskUrl,jdbcType = VARCHAR},
+			</if>
+			<if test="eyId !=null and '' !=eyId ">
+				ey_id = #{eyId,jdbcType = VARCHAR},
+			</if>
+			<if test="isAllow !=null and '' != isAllow">
+				is_allow = #{isAllow,jdbcType= VARCHAR},
+			</if>
+			<if test="isNeedCheck !=null and '' != isNeedCheck">
+				is_need_check = #{isNeedCheck,jdbcType =VARCHAR},
+			</if>
+			<if test="principal !=null and '' != principal">
+				principal = #{principal,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId !=null and '' != updateUserId">
+				update_user_id=#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser !=null and '' !=updateUser">
+				update_user=#{updateUser,jdbcType=VARCHAR},
+			</if>
+			update_time=now()
+		</set>
+		where task_id=#{taskId}
+	</update>
+
+
+
+	<resultMap id="OaTaskStudentInfo" type="com.yz.model.educational.OaTaskStudentInfo">
+		<id column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR" />
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR" />
+		<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR" />
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR" />
+		<result column="tutor" property="tutor" jdbcType="VARCHAR" />
+		<result column="tutor_name" property="tutorName" jdbcType="VARCHAR" />
+		<result column="std_type" property="stdType" jdbcType="VARCHAR" />
+		<result column="tutor_status" property="tutorStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 学员信息 -->
+	<select id="queryOaTaskStudentInfo" resultMap="OaTaskStudentInfo"
+		parameterType="com.yz.model.condition.educational.OaTaskTargetStudentQuery">
+		select
+		bsi.`std_id`,
+		bli.`grade`,
+		bli.`learn_id`,
+		bli.`std_stage`,
+		bup.`pfsn_name`,
+		bup.`pfsn_code`,
+		bup.`pfsn_level`,
+		bu.`unvs_name`,
+		ost.`task_id`,
+		bsi.`std_name`,
+		bli.`recruit_type`,
+		blr.`tutor`,
+		oe.`emp_name` tutor_name,
+		oe.`emp_status` tutor_status,
+		bli.`std_type`
+		from
+		bd_learn_info bli
+		left join bd_student_info bsi
+		on bsi.`std_id` = bli.`std_id`
+		left join bd_unvs_profession bup
+		on bli.`pfsn_id` = bup.`pfsn_id`
+		left join bd_university bu
+		on bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_learn_rules blr
+		ON blr.`learn_id` = bli.`learn_id`
+		LEFT JOIN oa_student_task ost
+		ON bli.`learn_id`=ost.`learn_id` and ost.`task_id`=#{taskId}
+		LEFT JOIN oa_employee oe
+		ON oe.emp_id = blr.`tutor`
+		LEFT JOIN bd_test_area bta
+		ON bta.`ta_id` = bli.`ta_id`
+		LEFT JOIN bd_check_record bcr on
+		bcr.`mapping_id` = bli.`learn_id` and bcr.`check_type`='7'
+		LEFT JOIN (
+		select check_status,bsg.`learn_id` from bd_graduate_records bgr left join
+		bd_student_graduate bsg
+		on bsg.`graduate_id` = bgr.`graduate_id` where bgr.`g_check_type`='1')
+		g_data
+		on g_data.learn_id= bli.`learn_id`
+		LEFT JOIN (
+		select check_status,bsg.`learn_id` from bd_graduate_records bgr left join
+		bd_student_graduate bsg
+		on bsg.`graduate_id` = bgr.`graduate_id` where bgr.`g_check_type`='5')
+		g_finance
+		on g_finance.learn_id = bli.`learn_id`
+		where 1=1
+		<if test="unvsId !=null and '' != unvsId">
+			and bu.`unvs_id`=#{unvsId}
+		</if>
+		<if test="recruitType !=null and '' != recruitType">
+			and bli.`recruit_type` = #{recruitType}
+		</if>
+		<if test="grade !=null and '' != grade">
+			and bli.`grade` =#{grade}
+		</if>
+		<if test="pfsnId !=null and '' != pfsnId">
+			and bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+		</if>
+		<if test="stdName !=null and '' != stdName">
+			and bsi.`std_name` like CONCAT('%', CONCAT(#{stdName}, '%'))
+		</if>
+		<if test="idCard !=null and '' != idCard">
+			and bsi.`id_card` = #{idCard}
+		</if>
+		<if test="mobile !=null and '' != mobile">
+			and bsi.`mobile`=#{mobile}
+		</if>
+		<if test="isChecked == 1">
+			and ost.`task_id`=#{taskId}
+		</if>
+		<if test="tutorName !=null and '' != tutorName">
+			and oe.`emp_name` like concat('%',#{tutorName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="pfsnLevel !=null and '' !=pfsnLevel">
+			and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+		</if>
+		<if test="taName !=null and '' != taName">
+			and bta.`ta_name` like concat('%',#{taName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="address !=null and '' !=address">
+			and bsi.address like concat('%',#{address,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="sg !=null and '' != sg">
+			and bli.`sg` = #{sg,jdbcType=VARCHAR}
+		</if>
+		<if test="inclusionStatus !=null and '' != inclusionStatus">
+			and bli.`inclusion_status` = #{inclusionStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="scholarship !=null and '' != scholarship">
+			and bli.`scholarship` = #{scholarship,jdbcType=VARCHAR}
+		</if>
+		<if test="stdType !=null and '' != stdType">
+			and bli.`std_type` = #{stdType,jdbcType=VARCHAR}
+		</if>
+		<if test="examDataCheck !=null and '' !=examDataCheck">
+			and bcr.`check_status` = #{examDataCheck,jdbcType=VARCHAR}
+		</if>
+		<if test="graduateDataCheck !=null and '' !=graduateDataCheck">
+			and g_data.`check_status` = #{graduateDataCheck,jdbcType=VARCHAR}
+		</if>
+		<if test="graduateFinanceCheck !=null and '' != graduateFinanceCheck">
+			and g_finance.`check_status` = #{graduateFinanceCheck,jdbcType=VARCHAR}
+		</if>
+		<if test="stdStageArray != null and stdStageArray.length != '0'.toString()">
+			and bli.std_stage in
+			<foreach collection="stdStageArray" item="item" index="index"
+				open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<insert id="addStu">
+		INSERT INTO oa_student_task (task_id,
+		learn_id,tutor_id,task_status,open_id)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{taskId,
+			jdbcType=VARCHAR},#{item.learnId,jdbcType=VARCHAR},#{item.tutor,jdbcType=VARCHAR},'0',#{item.openId,jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+
+	<delete id="delStu">
+		delete from oa_student_task
+		where task_id=#{taskId,jdbcType=VARCHAR}
+		and learn_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</delete>
+
+	<insert id="batchImport">
+		INSERT INTO oa_student_task (task_id, learn_id, task_status)
+		VALUES
+		<foreach collection="strs" item="id" separator=",">
+			(#{taskId,
+			jdbcType=VARCHAR},#{id,jdbcType=VARCHAR},'0')
+		</foreach>
+	</insert>
+	<insert id="singleImport">
+		INSERT INTO oa_student_task (task_id, learn_id,
+		task_status,tutor_id)
+		VALUES(#{taskId,
+		jdbcType=VARCHAR},#{learnId,jdbcType=VARCHAR},'0',#{tutorId,jdbcType=VARCHAR})
+	</insert>
+	<select id="getOaTaskStudentInfoByIdCard" resultMap="OaTaskStudentInfo"
+		parameterType="String">
+		select
+		bli.`learn_id`,
+		bli.`std_id`,
+		blr.`tutor`
+		from
+		bd_learn_info bli
+		left join bd_student_info bsi
+		on bli.`std_id` = bsi.`std_id`
+		LEFT JOIN bd_learn_rules blr
+		on blr.`learn_id` = bli.`learn_id`
+		where bsi.`id_card` = #{idCard} and bli.`std_stage` !='10' and
+		bli.`grade`=#{grade,jdbcType=VARCHAR} limit 0,1
+	</select>
+
+
+	<resultMap type="com.yz.model.educational.OaTaskStatisticsInfo"
+		id="OaTaskStatisticsInfo">
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="total_count" property="totalCount" jdbcType="VARCHAR" />
+		<result column="finish_count" property="finishCount" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getOaTaskStatisticsInfo" resultMap="OaTaskStatisticsInfo"
+		parameterType="String">
+		SELECT
+		(SELECT
+		emp_name
+		FROM
+		oa_employee
+		WHERE emp_id = tutor_id) emp_name,
+		COUNT(*) total_count,
+		COUNT(
+		CASE
+		WHEN task_status = 1
+		THEN 1
+		ELSE NULL
+		END
+		) finish_count
+		FROM
+		oa_student_task
+		WHERE task_id = #{taskId} group by tutor_id
+	</select>
+
+	<resultMap type="com.yz.model.educational.OaStudentTask" id="OaStudentTask">
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="task_title" property="taskTitle" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="tutor_id" property="tutorId" jdbcType="VARCHAR" />
+		<result column="task_status" property="taskStatus" jdbcType="VARCHAR" />
+		<result column="is_notify" property="isNotify" jdbcType="VARCHAR" />
+		<result column="open_id" property="openId" jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="task_content" property="taskContent" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getOaStudentTask" resultMap="OaStudentTask">
+		SELECT
+		ost.`task_id`,
+		oti.`task_title`,
+		DATE_FORMAT(oti.`end_time`, '%Y-%m-%d') end_time,
+		ost.`learn_id`,
+		ost.`tutor_id`,
+		ost.`task_status`,
+		ost.`is_notify`,
+		ost.`open_id`
+		FROM
+		`oa_student_task` ost
+		LEFT JOIN oa_task_info oti
+		ON ost.`task_id` = oti.`task_id`
+		WHERE ost.`task_id` = #{taskId,jdbcType=VARCHAR}
+		AND ost.`is_notify` = '0'
+	</select>
+
+	<update id="updateStudentTaskIsNotify">
+		UPDATE
+		oa_student_task
+		SET
+		is_notify = '1'
+		WHERE task_id = #{taskId,jdbcType=VARCHAR} AND
+		learn_id=#{learnId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="getUserIdByLearnId" resultType="String"
+		parameterType="String">
+		SELECT
+		bsi.`user_id`
+		FROM
+		bd_learn_info bli
+		LEFT JOIN bd_student_info bsi
+		ON bsi.`std_id` = bli.`std_id`
+		WHERE bli.learn_id = #{learnId,jdbcType=VARCHAR};
+	</select>
+
+	<select id="getTaskUnfinishedStudent" resultMap="OaStudentTask">
+		SELECT
+		ost.`task_id`,
+		oti.`task_title`,
+		oti.`task_content`,
+		DATE_FORMAT(oti.`end_time`, '%Y-%m-%d') end_time,
+		ost.`learn_id`,
+		ost.`tutor_id`,
+		ost.`task_status`,
+		ost.`is_notify`,
+		ost.`open_id`
+		FROM
+		`oa_student_task` ost
+		LEFT JOIN oa_task_info oti
+		ON ost.`task_id` = oti.`task_id`
+		WHERE ost.`task_id` = #{taskId,jdbcType=VARCHAR}
+		AND ost.`task_status` = '0'
+	</select>
+
+	<select id="getTaskUnfinishedStudentReport" resultMap="OaStudentTask">
+	SELECT stu.`std_name` stuName,
+	stu.`id_card` cardId,
+	uni.`unvs_name` universitiy,
+	pro.`pfsn_name` specialty,
+	dict.`dict_name` grad,
+	emp.`emp_name` follow 
+	FROM bms.`bd_student_info` stu
+	LEFT JOIN bms.`bd_learn_info` lea ON lea.`std_id`=stu.`std_id`
+	LEFT JOIN bms.`bd_unvs_profession` pro 	ON pro.`pfsn_id` = lea.`pfsn_id`
+	LEFT JOIN bms.`bd_university` uni 	ON uni.`unvs_id`=lea.`unvs_id`
+	LEFT JOIN bms.`oa_student_task` task 	ON task.`learn_id`=lea.`learn_id`
+	LEFT JOIN bms.`oa_employee` emp 	ON emp.`emp_id`=task.`tutor_id`
+	LEFT JOIN bms.`sys_dict` dict 	ON dict.p_id='pfsnLevel' AND dict.`dict_value`=pro.`pfsn_level`
+	WHERE task.`task_id`=#{taskId,jdbcType=VARCHAR}
+	AND task.`task_status` = '0';
+	</select>
+
+	<select id="getOaStudentTaskForPage" resultMap="OaStudentTask">
+		SELECT
+		ost.`task_id`,
+		oti.`task_title`,
+		DATE_FORMAT(oti.`end_time`, '%Y-%m-%d') end_time,
+		ost.`learn_id`,
+		ost.`tutor_id`,
+		ost.`task_status`,
+		ost.`is_notify`,
+		ost.`open_id`
+		FROM
+		`oa_student_task` ost
+		LEFT JOIN oa_task_info oti
+		ON ost.`task_id` = oti.`task_id`
+		WHERE ost.`task_id` = #{taskId,jdbcType=VARCHAR}
+		AND ost.`is_notify` = '0' limit #{start},#{size}
+	</select>
+
+	<select id="getOaStudentTaskForUnfinished" resultMap="OaStudentTask">
+		SELECT
+		ost.`task_id`,
+		oti.`task_title`,
+		oti.`task_content`,
+		DATE_FORMAT(oti.`end_time`, '%Y-%m-%d') end_time,
+		ost.`learn_id`,
+		ost.`tutor_id`,
+		ost.`task_status`,
+		ost.`is_notify`,
+		ost.`open_id`
+		FROM
+		`oa_student_task` ost
+		LEFT JOIN oa_task_info oti
+		ON ost.`task_id` = oti.`task_id`
+		WHERE ost.`task_id` = #{taskId,jdbcType=VARCHAR}
+		AND ost.`task_status` = '0' limit #{start},#{size}
+	</select>
+
+	<select id="getCountByLearnIdAndTaskId" resultType="int">
+		select count(1) from `oa_student_task`
+		where task_id=#{taskId,jdbcType=VARCHAR} and
+		learn_id=#{learnId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="affirmCount" resultType="int">
+		select
+		count(1)
+		from
+		`bd_student_exam_affirm`
+		where task_id = #{taskId,jdbcType=VARCHAR}
+		and ey_Id = #{eyId,jdbcType=VARCHAR}
+		and py_id is not null
+	</select>
+
+	<select id="findAllTaskInfo" resultType="java.util.HashMap">
+		select task_id,task_title from oa_task_info
+		where 1=1
+		<if test="sName !=null and '' != sName">
+			and task_title like concat('%',#{sName,jdbcType=VARCHAR},'%')
+		</if>
+		order by create_time desc
+	</select>
+
+	<delete id="aloneDelStu">
+		delete from oa_student_task
+		where
+		task_id=#{taskId,jdbcType=VARCHAR} and learn_id
+		=#{learnId,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="singleAddStu" parameterType="com.yz.model.educational.OaTaskStudentInfo">
+		INSERT INTO
+		oa_student_task (task_id, learn_id,tutor_id,task_status,open_id)
+		VALUES (#{taskId,jdbcType=VARCHAR},#{learnId,jdbcType=VARCHAR},
+		#{tutor,jdbcType=VARCHAR},'0',#{openId,jdbcType=VARCHAR})
+	</insert>
+
+
+	<select id="getGKExamYear" resultType="java.util.HashMap">
+		SELECT exam_year FROM
+		`bd_student_exam_gk` GROUP BY exam_year
+	</select>
+
+	<delete id="deleteTask">
+		DELETE a.*, b.*
+		FROM
+		oa_task_info a
+		LEFT JOIN oa_student_task b ON a.task_id = b.task_id
+		WHERE
+		a.task_id in(
+		<foreach collection="taskIds" item="taskId" index="index"
+			separator=",">
+			#{taskId}
+		</foreach>
+		)
+	</delete>
+
+	<select id="findGraduateDataTaskInfo" resultType="java.util.HashMap">
+		select task_id,task_title from oa_task_info
+		where 1=1
+		<if test="sName !=null and '' != sName">
+			and task_title like concat('%',#{sName,jdbcType=VARCHAR},'%')
+		</if>
+		and task_type='6'
+		order by create_time desc
+	</select>
+
+	<select id="findTaskInfoByType" resultType="java.util.HashMap">
+		select task_id,task_title from oa_task_info
+		where 1=1
+		<if test="sName !=null and '' != sName">
+			and task_title like
+			concat('%',#{sName,jdbcType=VARCHAR},'%')
+		</if>
+		and task_type=#{taskType,jdbcType=VARCHAR}
+		order by create_time desc
+	</select>
+	
+	
+	<select id="getExamYearForGK" resultType="java.util.HashMap">
+		SELECT ey_id,exam_year FROM `bd_exam_year_gk`
+		 WHERE 1=1
+		 <if test="null != status">
+		  and `status`=#{status,jdbcType=VARCHAR}
+		 </if> 
+		
+	</select>
+	
+	<select id="getGkUnifiedExam" resultType="java.util.HashMap">
+		SELECT id,title FROM `bd_gk_unified_exam_set`
+		 WHERE 1=1
+		 <if test="null != status">
+		  and `if_show`=#{status,jdbcType=VARCHAR}
+		 </if> 
+	</select>
+</mapper>

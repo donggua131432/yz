@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+
+<title th:text="UPDATE == ${exType} ? 修改系统参数 : 添加系统参数"></title>
+<meta name="keywords" content="H-ui.admin v3.0,H-ui网站后台模版,后台模版下载,后台管理系统模版,HTML后台模版下载">
+<meta name="description" content="H-ui.admin v3.0，是一款由国人开发的轻量级扁平化网站后台模板，完全免费开源的网站后台管理系统模版，适合中小型CMS后台系统。">
+</head>
+<body>
+  <article class="page-container">
+    <form action="" method="post" class="form form-horizontal max-w"  id="form-member-add" th:object="${studentRollModifyInfo}">
+    <input type="hidden" class="input-text" id="modifyId" name="modifyId" th:value="*{modifyId}" style="border: 0;" readonly="readonly">
+     <input type="hidden" th:value="${exType}" name="exType" id="exType" /> 
+     <input type="hidden" th:value="*{crId}" name="crId" id="crId" /> 
+     <input type="hidden" name="checkStatus" id="checkStatus" />
+      <input type="hidden" name="reason" id="reason" />
+        <div class="mb-5 bk-gray radius" style="padding-bottom: 20px;">
+            <div class="layui-layer-title">学员信息</div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">姓名：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{stdName}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">年级：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="grade" th:value="*{grade}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">层次：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="pfsnLevel" th:value="*{pfsnLevel}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">院校：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="unvsName" th:value="*{unvsName}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">专业：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="pfsnName" style="border: 0;" readonly="readonly">
+                    <input type="hidden" class="input-text" id="pfsnCodev"  th:value="*{pfsnCode}"/>
+                    <input type="hidden" class="input-text" id="pfsnNamev"  th:value="*{pfsnName}"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">学员阶段</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="stdStage" th:value="*{stdStage}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+        </div>
+        <div class="mb-5 bk-gray radius" style="padding-bottom: 20px;">
+            <div class="layui-layer-title">申请修改内容</div>
+            <div class="row cl" th:hidden="null==*{newStdName}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">姓名：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{stdName}" style="border: 0; width: 25%" readonly="readonly">
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text"  th:value="*{newStdName}" style="border: 0;" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{newIdCard}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">身份证号码：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" th:value="*{idCard}" style="border: 0;width: 25%" readonly="readonly">
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text"  th:value="*{newIdCard}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{newSex}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">性别：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="sexv" th:value="*{sex}" style="border: 0;width: 25%" readonly="readonly">
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text" id="sex" th:value="*{newSex}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{newNation}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">民族：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="nationv" th:value="*{nation}" style="border: 0;width: 25%" readonly="readonly" />
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text" id="nation"  th:value="*{newNation}" style="border: 0;" readonly="readonly" />
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{nunvsName}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">院校：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="unvsNamev" th:value="*{unvsName}" style="border: 0;width: 25%" readonly="readonly" />
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text" id="nunvsName"  th:value="*{nunvsName}" style="border: 0;" readonly="readonly" />
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{npfsnName}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">专业：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="pfsnName" th:value="*{pfsnName}" style="border: 0;width: 25%" readonly="readonly" />
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text" id="npfsnName"  th:value="*{npfsnName}" style="border: 0;" readonly="readonly" />
+                </div>
+            </div>
+            <div class="row cl" th:hidden="null==*{ntaName}?true:false">
+                <label class="form-label col-xs-4 col-sm-3">考区：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="taName" th:value="*{taName}" style="border: 0;width: 25%" readonly="readonly" />
+                    <img src="/images/u13205.png" class="ml-20 mr-20"/>
+                    <input type="text" class="input-text" id="ntaName"  th:value="*{ntaName}" style="border: 0;" readonly="readonly" />
+                </div>
+            </div>
+        </div>
+        <div class="mb-5 bk-gray radius" style="padding-bottom: 20px;">
+            <div class="row cl" >
+                <label class="form-label col-xs-4 col-sm-3">提交人：</label>
+                <div class="formControls col-xs-8 col-sm-2">
+                    <input type="text" class="input-text" th:value="*{createUser}" style="border: 0;" readonly="readonly">
+                </div>
+                <label class="form-label col-xs-4 col-sm-2">提交时间：</label>
+                <div class="formControls col-xs-8 col-sm-5">
+                    <input type="text" class="input-text" id="createTime" th:value="*{createTime}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl" >
+                <label class="form-label col-xs-4 col-sm-3">学籍受理：</label>
+                <div class="formControls col-xs-8 col-sm-2">
+                    <input type="text" class="input-text" th:value="${studentRollModifyInfo.check[1].empName}" style="border: 0;" readonly="readonly">
+                </div>
+                <label class="form-label col-xs-4 col-sm-2">受理时间：</label>
+                <div class="formControls col-xs-8 col-sm-5">
+                    <input type="text" class="input-text" id="bcruptime" th:value="${studentRollModifyInfo.check[1].bcrUpdateTime}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl" >
+                <label class="form-label col-xs-4 col-sm-3">学籍执行：</label>
+                <div class="formControls col-xs-8 col-sm-2">
+                    <input type="text" class="input-text" th:value="${studentRollModifyInfo.check[2].empName}" style="border: 0;" readonly="readonly">
+                </div>
+                <label class="form-label col-xs-4 col-sm-2">执行时间：</label>
+                <div class="formControls col-xs-8 col-sm-5">
+                    <input type="text" class="input-text" id="bcruptime" th:value="${studentRollModifyInfo.check[2].bcrUpdateTime}" style="border: 0;" readonly="readonly">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">驳回信息：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <textarea type="text" class="bk-gray radius mt-10" th:value="null==${studentRollModifyInfo.check[0].reason}?(null==${studentRollModifyInfo.check[1].reason}?(nul==${studentRollModifyInfo.check[2].reason}?studentRollModifyInfo.check[2].reason:${studentRollModifyInfo.check[2].reason}):${studentRollModifyInfo.check[1].reason}):${studentRollModifyInfo.check[0].reason}" style="width: 100%;height: 70px" readonly="readonly"></textarea>
+                </div>
+            </div>
+        </div>
+
+     <div class="row cl">
+        <div class="col-xs-8 col-sm-7 col-xs-offset-4 col-sm-offset-5">
+          <input class="btn btn-success radius" type="submit" onclick="$('#checkStatus').val('2')" id="subButton" value="受理" style="width: 90px"> <input
+            class="btn btn-normal-outline radius ml-5" type="submit" onclick="$('#checkStatus').val('3')" value="驳回" style="width: 90px">
+        </div>
+      </div>
+    </form>
+  </article>
+
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+   <script th:online="javascript" type="text/javascript">
+  	var gloabl_exType = [[${exType}]];
+  	var global_updateUser = [[${studentRollModifyInfo.updateUser}]];
+  </script>
+    <script type="text/javascript" th:src="@{/js/webjs/transfer/roll/student-roll-audit-edit.js}"></script>
+  <!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>滞留账户详情</title>
+<meta name="keywords">
+<meta name="description">
+</head>
+<body>
+		<article class="page-container">
+				<form class="form form-horizontal" id="">
+						<input type="hidden" th:value="${stdId}" name="stdId" id="stdId" />
+						<div class="row cl mb-15	">
+								<label class="form-label col-xs-4 col-sm-3"><h5>滞留账户余额：</h5></label>
+								<div class="formControls col-xs-8 col-sm-9">
+										<h5><span th:text=${demurrageAmount}></span></h5>
+								</div>
+						</div>
+						<div class="bg-1">
+								<div class="cl pd-5 bg-1 bk-gray mt-">
+										<div class="mt-35 bg-fff">
+												<table class="table table-border table-bordered table-bg table-sort-de">
+														<thead>
+																<tr class="text-c">
+																		<th width="10">流水号</th>
+																		<th width="10">账户ID</th>
+																		<th width="10">进出账</th>
+																		<th width="10">金额</th>
+																		<th width="10">操作前金额</th>
+																		<th width="10">操作后金额</th>
+																		<th width="10">状态</th>
+																		<th width="30">描述</th>
+																		<th width="20">时间</th>
+																</tr>
+														</thead>
+												</table>
+										</div>
+								</div>
+						</div>
+				</form>
+
+		</article>
+
+		<!--_footer 作为公共模版分离出去-->
+		<!--_footer 作为公共模版分离出去-->
+		<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+		<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+		<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+		<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+		<!--/_footer 作为公共模版分离出去-->
+
+		<!--请在下方写此页面业务相关的脚本-->
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+		<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+		<script type="text/javascript" th:src="@{/js/webjs/finance/stdfee/demurrage-list.js}"></script>
+		<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

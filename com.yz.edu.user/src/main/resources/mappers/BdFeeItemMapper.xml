@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdFeeItemMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.payment.BdFeeItem" >
+    <id column="item_code" property="itemCode" jdbcType="VARCHAR" />
+    <result column="p_item_code" property="pItemCode" jdbcType="VARCHAR" />
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="item_type" property="itemType" jdbcType="VARCHAR" />
+    <result column="item_year" property="itemYear" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <association property="recruitTypes" column="item_code" select="selectRecruitTypeByItemCode"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    item_code, p_item_code, item_name, item_type, item_year, status, remark,
+    update_time, update_user, update_user_id, create_user_id, 
+    date_format(bfi.create_time,'%Y-%m-%d %H:%i:%s') as createTime, create_user
+  </sql>
+  
+  <select id="selectItemInfoById" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select
+  		<include refid="Base_Column_List" />
+  	from 
+  		bms.`bd_fee_item` bfi 
+	where 
+		bfi.item_code = #{itemCode}
+  </select>
+  
+  <select id="selectRecruitTypeByItemCode" resultType="java.lang.String">
+  	SELECT 
+	  bri.`recruit_type` 
+	FROM
+	  bms.`bd_rt_item` bri 
+	WHERE bri.`item_code` = #{itemCode} 
+  </select>
+</mapper>

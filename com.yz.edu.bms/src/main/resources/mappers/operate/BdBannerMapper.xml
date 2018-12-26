@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.operate.BdBannerMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.operate.banner.BdBanner">
+		<result column="banner_id" property="bannerId" jdbcType="VARCHAR" />
+		<result column="banner_url" property="bannerUrl" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="VARCHAR" />
+		<result column="redirect_url" property="redirectUrl" jdbcType="VARCHAR" />
+		<result column="banner_name" property="bannerName" jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="VARCHAR" />
+		<result column="banner_type" property="bannerType" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectBannerUrls" resultType="string">
+		select banner_url from bd_banner where banner_id in
+		<foreach collection="bannerIds" item="bannerId" open="(" close=")" separator="," >  
+	        #{bannerId}
+	    </foreach>
+	</select>
+	
+	<delete id="deleteBanners">
+		delete from bd_banner where banner_id in
+		<foreach collection="bannerIds" item="bannerId" open="(" close=")" separator="," >  
+	        #{bannerId}
+	    </foreach>
+	</delete>
+	
+	<select id="selectBannerAllowCount" resultType="java.lang.Integer">
+		select count(1) from bd_banner where is_allow = '1'
+	</select>
+	
+	<update id="updateBannerAllow" parameterType="com.yz.model.operate.banner.BdBanner">
+		update 
+		  bd_banner 
+		set
+		  is_allow = #{isAllow} 
+		where banner_id = #{bannerId}
+	</update>
+	
+	<update id="updateBanner" parameterType="com.yz.model.operate.banner.BdBanner">
+		update 
+		  bd_banner
+		<set>
+		  <if test="bannerName != null and bannerName !=''">
+		    banner_name = #{bannerName,jdbcType=VARCHAR},
+		  </if>
+		  <if test="bannerType != null and bannerType !=''">
+		    banner_type = #{bannerType,jdbcType=VARCHAR},
+		  </if>
+		  <if test="redirectUrl != null and redirectUrl !=''">
+		    redirect_url = #{redirectUrl,jdbcType=VARCHAR},
+		  </if>
+		  <if test="sort != null and sort !=''">
+		    sort = #{sort,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUser != null and updateUser !=''">
+		    update_user = #{updateUser,jdbcType=VARCHAR},
+		  </if>
+		  <if test="updateUserId != null and updateUserId !=''">
+		    update_user_id = #{updateUserId,jdbcType=VARCHAR},
+		  </if>
+		</set>
+		where banner_id = #{bannerId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectBannerById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT 
+		  bd.`banner_id`,
+		  bd.`banner_url`,
+		  bd.`sort`,
+		  bd.`redirect_url`,
+		  bd.`banner_name`,
+		  bd.`is_allow`,
+		  bd.`banner_type`
+		FROM
+		  bd_banner bd 
+		where bd.banner_id = #{bannerId}
+	</select>
+	
+	<update id="sortBanner" parameterType="java.lang.String">
+		UPDATE 
+		  bd_banner bd 
+		SET
+		  bd.sort = CAST(CAST(bd.`sort` AS UNSIGNED) + 1 AS CHAR)
+		WHERE (CAST(bd.`sort` AS UNSIGNED) >= CAST(#{sort} AS UNSIGNED))
+			AND bd.`banner_id` != #{bannerId}
+	</update>
+	
+	<insert id="insertBanner">
+		insert into bd_banner (
+		  banner_id,
+		  banner_name,
+		  sort,
+		  redirect_url,
+		  banner_type,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  (#{bannerId}, #{bannerName}, #{sort}, #{redirectUrl}, #{bannerType}, #{updateUser}, #{updateUserId})
+	</insert>
+	
+	<update id="updateBannerUrl">
+		UPDATE 
+		  bd_banner 
+		SET
+		  banner_url = #{bannerUrl},
+		  update_user = #{updateUser},
+		  update_user_id = #{updateUserId}
+		WHERE banner_id = #{bannerId}
+	</update>
+	
+	<select id="selectBannerByPage" resultMap="BaseResultMap">
+		SELECT 
+		  bd.`banner_id`,
+		  bd.`banner_url`,
+		  bd.`sort`,
+		  bd.`redirect_url`,
+		  bd.`banner_name`,
+		  bd.`is_allow` 
+		FROM
+		  bd_banner bd 
+		ORDER BY bd.`update_time` desc
+	</select>
+	
+	
+</mapper>

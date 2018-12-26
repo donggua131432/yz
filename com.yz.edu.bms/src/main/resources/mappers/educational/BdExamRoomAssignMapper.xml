@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdExamRoomAssignMapper">
+    <resultMap id="BaseResultMap" type="com.yz.model.educational.BdPlaceYear">
+        <id column="py_id" property="pyId" jdbcType="VARCHAR"/>
+        <result column="ey_id" property="eyId" jdbcType="VARCHAR"/>
+        <result column="py_code" property="pyCode" jdbcType="VARCHAR"/>
+        <result column="place_id" property="placeId" jdbcType="VARCHAR"/>
+        <result column="seats" property="seats" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="CHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        py_id,ey_id,py_code,place_id,seats,start_time,end_time,remark,`status`,update_time,update_user,update_user_id
+    </sql>
+    <resultMap id="ExamRoomAssignMap" type="com.yz.model.educational.ExamRoomAssign">
+        <result column="py_id" property="pyId" jdbcType="VARCHAR"/>
+        <result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+        <result column="py_code" property="pyCode" jdbcType="VARCHAR"/>
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+        <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+        <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="ep_name" property="epName" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="seats" property="seats" jdbcType="VARCHAR"/>
+        <result column="rest_seats" property="restSeats" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <select id="selectPyCodeByPyId" parameterType="java.lang.String" resultType="java.lang.String">
+    	SELECT py_code FROM bd_place_year WHERE py_id = #{pyId,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="selectClassCountByPyId" parameterType="java.lang.String" resultType="java.lang.Integer">
+    	select count(1) from bd_place_info where py_id = #{pyId,jdbcType=VARCHAR}
+    </select>
+    
+    <delete id="deleteExamClass" parameterType="java.lang.String">
+    	DELETE 
+		FROM
+		  bd_place_info 
+		WHERE py_id = #{pyId,jdbcType=VARCHAR}
+    </delete>
+    <select id="findAllExamRoomAssign" resultMap="ExamRoomAssignMap"
+            parameterType="com.yz.model.educational.ExamRoomAssignQuery">
+        SELECT
+        a.py_id,
+        b.exam_year,
+        a.py_code,
+        d.province_name,
+        e.city_name,
+        f.district_name,
+        c.address,
+        c.ep_name,
+        DATE_FORMAT(a.start_time, '%Y-%m-%d %p %H:%i') start_time,
+        DATE_FORMAT(a.end_time, '%H:%i') end_time,
+        a.seats,
+        (a.seats - ifnull(g.seats, 0)) rest_seats,
+        a.`status`,
+        a.remark
+        FROM
+        bd_place_year a
+        LEFT JOIN bd_exam_year b ON a.ey_id = b.ey_id
+        LEFT JOIN bd_exam_place c ON a.place_id = c.ep_id
+        LEFT JOIN sys_province d ON c.province_code = d.province_code
+        LEFT JOIN sys_city e ON c.city_code = e.city_code
+        LEFT JOIN sys_district f ON c.district_code = f.district_code
+        LEFT JOIN (
+        SELECT
+        py_id,
+        count(*) seats
+        FROM
+        bd_student_exam_affirm
+        GROUP BY
+        py_id
+        ) g ON a.py_id = g.py_id
+        WHERE 1=1
+        <if test="pyCode != null and ''!= pyCode">
+            AND a.py_code LIKE CONCAT('%',#{pyCode,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="placeId != null and ''!= placeId">
+            AND a.place_id LIKE CONCAT('%',#{placeId,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="address != null and ''!= address">
+            AND CONCAT(d.province_name,e.city_name,f.district_name,c.address) LIKE
+            CONCAT('%',#{address,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="provinceCode != null and ''!= provinceCode">
+            AND c.province_code = #{provinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="cityCode != null and ''!= cityCode">
+            AND c.city_code = #{cityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="districtCode != null and ''!= districtCode">
+            AND c.district_code = #{districtCode,jdbcType=VARCHAR}
+        </if>
+        <if test="eyId != null and ''!= eyId">
+            AND b.ey_id = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and ''!= status">
+            AND a.`status` = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="seats != null and ''!= seats">
+            AND a.seats > CONVERT(#{seats},SIGNED)
+        </if>
+        <if test="restSeats != null and ''!= restSeats">
+            AND (a.seats - ifnull(g.seats, 0)) > #{restSeats,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and ''!= startTime">
+            AND DATE_FORMAT(a.start_time, '%Y-%m-%d') &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and ''!= endTime">
+            AND DATE_FORMAT(a.start_time, '%Y-%m-%d') &lt;= #{endTime}
+        </if>
+        order by py_code desc
+    </select>
+
+    <update id="updateStatus" parameterType="java.lang.String">
+        update bd_place_year set status = #{status}
+        where
+        py_id in (
+        <foreach collection="pyIds" item="pyId" index="index" separator=",">
+            #{pyId}
+        </foreach>
+        )
+        <if test="status != null and ''!= status">
+            <if test="status == 1">
+                and `status` = 2
+            </if>
+            <if test="status == 2">
+                and `status` = 1
+            </if>
+        </if>
+    </update>
+
+    <delete id="deleteExamRoomAssign">
+        DELETE
+        FROM
+        bd_place_year
+        WHERE py_id in (
+        <foreach collection="pyIds" item="pyId" index="index" separator=",">
+            #{pyId}
+        </foreach>
+        )
+    </delete>
+
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        bd_place_year
+        where py_Id = #{pyId}
+    </select>
+
+    <select id="findAllKeyValue" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+        ep_id,
+        ep_name
+        FROM
+        bd_exam_place a
+        LEFT JOIN sys_province b ON a.province_code = b.province_code
+        LEFT JOIN sys_city c ON a.city_code = c.city_code
+        LEFT JOIN sys_district d ON a.district_code = d.district_code
+        WHERE 1=1 and a.`status`=1
+        <if test="sName != null and '' != sName">
+            and (
+            a.ep_id like CONCAT('%',#{sName},'%')
+            or a.ep_name like CONCAT('%',#{sName},'%')
+            or b.province_name like CONCAT('%',#{sName},'%')
+            or c.city_name like CONCAT('%',#{sName},'%')
+            or d.district_name like CONCAT('%',#{sName},'%')
+            )
+        </if>
+        order by create_time asc
+    </select>
+
+    <insert id="insert" parameterType="com.yz.model.educational.BdPlaceYear">
+        INSERT INTO `bd_place_year` (
+        `py_id`,
+        `ey_id`,
+        `py_code`,
+        `place_id`,
+        `seats`,
+        `start_time`,
+        `end_time`,
+        `remark`,
+        `status`,
+        `update_time`,
+        `update_user`,
+        `update_user_id`
+        )
+        VALUES
+        (
+        #{pyId},
+        #{eyId},
+        #{pyCode},
+        #{placeId},
+        #{seats},
+        #{startTime},
+        #{endTime},
+        #{remark},
+        '1',
+        #{updateTime},
+        #{updateUser},
+        #{updateUserId}
+        );
+    </insert>
+
+    <update id="update" parameterType="com.yz.model.educational.BdPlaceYear">
+        update bd_place_year
+        <set>
+            <if test="eyId != null">
+                ey_id = #{eyId,jdbcType=VARCHAR},
+            </if>
+            <if test="pyCode != null">
+                py_code = #{pyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="placeId != null">
+                place_id = #{placeId,jdbcType=VARCHAR},
+            </if>
+            <if test="seats != null">
+                seats = #{seats,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where py_id = #{pyId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getMaxExamPlaceNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+      SELECT
+        ifnull(
+            max(
+                CONVERT (
+                    SUBSTRING(
+                        py_code,
+                        LOCATE('-', py_code) + 1
+                    ),
+                    signed
+                )
+            ) + 1,
+            1
+        )
+    FROM
+	bd_place_year
+    WHERE
+        place_id = #{placeId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="countExamAffirm" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM bd_student_exam_affirm
+        WHERE py_id in (
+        <foreach collection="pyIds" item="pyId" index="index" separator=",">
+            #{pyId}
+        </foreach>
+        )
+    </select>
+
+    <select id="countExamAssign" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM bd_place_year
+        WHERE ey_id=#{eyId} and place_id =#{placeId} and start_time=#{startTime,jdbcType=VARCHAR} and end_time=#{endTime,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getBdPlaceYear" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM bd_place_year
+        WHERE ey_id=#{eyId} and place_id =#{placeId} and start_time=#{startTime,jdbcType=VARCHAR} and end_time=#{endTime,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findAllKeyValueByEyId" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+        ep_id,
+        ep_name
+        FROM
+        bd_exam_place a
+        LEFT JOIN sys_province b ON a.province_code = b.province_code
+        LEFT JOIN sys_city c ON a.city_code = c.city_code
+        LEFT JOIN sys_district d ON a.district_code = d.district_code
+        LEFT JOIN bd_place_year e ON e.place_id = a.ep_id
+        WHERE 1=1
+        <if test="sName != null and '' != sName">
+            and (
+            a.ep_id like CONCAT('%',#{sName},'%')
+            or a.ep_name like CONCAT('%',#{sName},'%')
+            or b.province_name like CONCAT('%',#{sName},'%')
+            or c.city_name like CONCAT('%',#{sName},'%')
+            or d.district_name like CONCAT('%',#{sName},'%')
+            )
+        </if>
+        <if test="eyId != null and '' != eyId">
+          and e.ey_id = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="provinceCode != null and '' != provinceCode">
+            and a.province_code = #{provinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="cityCode != null and '' != cityCode">
+            and a.city_code = #{cityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="districtCode != null and '' != districtCode">
+            and a.district_code = #{districtCode,jdbcType=VARCHAR}
+        </if>
+        GROUP BY ep_id
+        order by create_time asc
+    </select>
+
+    <select id="findExamTime" resultType="java.util.Map">
+        SELECT
+        CONCAT(
+        DATE_FORMAT(
+        start_time,
+        '%Y-%m-%d %p %H:%i'
+        ),
+        ' - ',
+        DATE_FORMAT(end_time, '%H:%i')
+        ) dictName,
+        CONCAT(start_time, '=', end_time) dictValue
+        FROM
+        bd_place_year
+        WHERE  1=1
+        <if test="eyId != null and '' != eyId">
+            and ey_id = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="epId != null and '' != epId">
+            and place_id= #{epId,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="findExamRoomAssignPyId" resultType="java.util.Map"
+            parameterType="com.yz.model.educational.ExamRoomAssignQuery">
+        SELECT
+        py_id pyId
+        FROM
+        bd_place_year
+        WHERE 1=1
+        <if test="placeId != null and ''!= placeId">
+            AND place_id = #{placeId,jdbcType=VARCHAR}
+        </if>
+        <if test="eyId != null and ''!= eyId">
+            AND ey_id = #{eyId,jdbcType=VARCHAR}
+        </if>
+        <if test="startTime != null and ''!= startTime">
+            AND start_time = #{startTime}
+        </if>
+        <if test="endTime != null and ''!= endTime">
+            AND end_time = #{endTime}
+        </if>
+    </select>
+</mapper>

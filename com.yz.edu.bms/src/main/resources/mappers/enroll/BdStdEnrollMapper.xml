@@ -1,0 +1,1593 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.enroll.BdStdEnrollMapper" >
+  <resultMap type="com.yz.model.enroll.stdenroll.BdStdEnroll" id="BaseResultMap">
+  	 <result column="std_id" property="stdId" />
+  	 <result column="learn_id" property="learnId" />
+  	 <result column="std_name" property="stdName" />
+  	 <result column="recruit_type" property="recruitType" />
+  	 <result column="grade" property="grade" />
+  	 <result column="emp_name" property="recruit" />
+  	 <result column="std_stage" property="stdStage" />
+  	 <result column="exam_no" property="ticketNo" />
+  	 <result column="unvs_name" property="unvsName" />
+  	 <result column="pfsn_code" property="pfsnCode" />
+  	 <result column="pfsn_id" property="pfsnId" />
+  	 <result column="unvs_id" property="unvsId" />
+  	 <result column="pfsn_name" property="pfsnName" />
+  	 <result column="pfsn_level" property="pfsnLevel" />
+  	 <result column="campus_name" property="campusName" />
+  	 <result column="scholarship" property="scholarship" />
+  	 <result column="points" property="points" />
+  	 <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+  	 <result column="home_campus_id" property="homeCampusId" jdbcType="VARCHAR"/>
+  	 <association property="scores" column="learn_id" select="selectStdEScores"/>
+  	 <association property="firstAdmit" column="learn_id" select="selectFirstAdmit"/>
+  	 <association property="secondAdmit" column="learn_id" select="selectSecondAdmit"/>
+  </resultMap>
+    
+  <resultMap type="com.yz.model.enroll.stdenroll.BdStdEnrollImport" id="ImportResultMap" extends="BaseResultMap">
+  </resultMap>
+  
+  <resultMap type="com.yz.model.enroll.stdenroll.BdStdEnroll" id="QueryBatchAdmitResultMap">
+  	 <result column="learn_id" property="learnId" />
+  	 <result column="grade" property="grade" />
+  	 <result column="pfsn_id" property="pfsnId" />
+  	 <result column="unvs_id" property="unvsId" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.educational.BdStudentEScore" id="ScoreResultMap">
+  	<result column="course_name" property="courseName" />
+  	<result column="score" property="score" />
+  </resultMap>
+  
+  <resultMap type="com.yz.model.finance.stdfee.BdStdVolunteer" id="AmitResult">
+  	<result column="recruit_type" property="recruitType" />
+  	<result column="unvs_name" property="unvsName" />
+  	<result column="pfsn_code" property="pfsnCode" />
+  	<result column="pfsn_name" property="pfsnName" />
+  	<result column="pfsn_level" property="pfsnLevel" />
+  	<result column="ta_id" property="taId" />
+  </resultMap>
+  <resultMap type="com.yz.model.enroll.stdenroll.BdStdEnrolled" id="EnrolledResult">
+  	<result column="std_name" property="stdName" />
+  	<result column="std_id" property="stdId" />
+  	<result column="learn_id" property="learnId" />
+  	<result column="recruit_type" property="recruitType" />
+  	<result column="unvs_name" property="unvsName" />
+  	<result column="pfsn_code" property="pfsnCode" />
+  	<result column="pfsn_name" property="pfsnName" />
+  	<result column="pfsn_level" property="pfsnLevel" />
+  	<result column="std_stage" property="stdStage" />
+  	<result column="firstYearFee" property="firstYearFee" />
+  	<result column="firstOrderStatus" property="firstOrderStatus" />
+  	<association property="admit" column="learn_id" select="selectAdmit"/>
+  	<association property="enroll" column="learn_id" select="selectEnroll"/>
+  </resultMap>
+  
+  <resultMap id="ReceiverMap" type="com.yz.model.message.GwReceiver" >
+    <id column="receiver_id" property="receiverId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="emp_id" property="empId" jdbcType="VARCHAR" />
+    <result column="mail" property="mail" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+    <result column="dingding" property="dingding" jdbcType="VARCHAR" />
+    <result column="wechat_no" property="wechatNo" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <resultMap id="MsgStdResultMap" type="com.yz.model.message.GwStdInfo" >
+    <id column="std_id" property="stdId" jdbcType="VARCHAR"/>
+	<result column="grade" property="grade" jdbcType="VARCHAR"/>
+	<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+	<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+	<result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+	<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+	<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+	<result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+	<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+	<result column="tutor" property="tutor" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="selectInclusionStatus" parameterType="java.lang.String" resultType="java.lang.String">
+  	select inclusion_status from bd_learn_info where learn_id = #{learnId}
+  </select>
+  
+  <insert id="insertResetOrderError">
+  	INSERT INTO `bd_reset_order_error` (
+	  `id`,
+	  `learn_id`,
+	  `std_name`,
+	  `id_card`,
+	  `grade`,
+	  `error_msg`
+	) 
+	VALUES
+	  (
+	    #{id},
+	    #{learnId},
+	    #{stdName},
+	    #{idCard},
+	    #{grade},
+	    #{errorMsg}
+	  )
+  </insert>
+  
+  <update id="updateSubjectOrderStatus" parameterType="java.lang.String">
+  	UPDATE 
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item i 
+	    ON i.`item_code` = so.`item_code` SET so.`sub_order_status` = #{newOrderStatus}
+	WHERE o.`learn_id` = #{learnId}
+	  AND so.`sub_order_status` = #{oldOrderStatus} 
+	  AND i.`item_type` != '1'
+  </update>
+  
+  <select id="selectstdIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select std_id from bd_learn_info where learn_id = #{learnId}
+  </select>
+  
+  <select id="selectSUbjectPaidItemCode" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  so.item_code
+	FROM
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item i 
+	    ON i.`item_code` = so.`item_code` 
+	WHERE o.`learn_id` = #{learnId}
+	  AND i.`item_type` != '1'
+	  AND so.`sub_order_status` = '2'
+  </select>
+  
+  <select id="selectSubjectPaidAmount" parameterType="java.lang.String" resultType="java.lang.String">  	
+  	SELECT 
+	  SUM(so.`payable`) 
+	FROM
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item i 
+	    ON i.`item_code` = so.`item_code` 
+	WHERE o.`learn_id` = #{learnId}
+	  AND so.`sub_order_status` = '2' 
+	  AND i.`item_type` != '1' 
+  </select>
+  
+  <select id="selectSubjectPaidCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT 
+	  COUNT(*)
+	FROM
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item i 
+	    ON i.`item_code` = so.`item_code` 
+	WHERE o.`learn_id` = #{learnId}
+	  AND i.`item_type` != '1'
+	  AND so.`sub_order_status` = '2'
+  </select>
+  
+  <select id="selectSubjectOrderCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT 
+	  COUNT(*)
+	FROM
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item i 
+	    ON i.`item_code` = so.`item_code` 
+	WHERE o.`learn_id` = #{learnId}
+	  AND i.`item_type` != '1'
+  </select>
+  
+  <select id="queryMsgStudentInfo" resultMap="MsgStdResultMap" parameterType="com.yz.model.message.GwMsgStudentQuery">
+  	select 
+		  bsi.`std_id`,
+		  bli.`grade`,
+		  bli.`learn_id`,
+		  bli.`std_stage`,
+		  bup.`pfsn_name`,
+		  bup.`pfsn_code`,
+		  bse.`pfsn_level`,
+		  bu.`unvs_name`,
+		  bsi.`std_name`,
+		  bli.`recruit_type`,
+		  blr.`tutor`
+		from
+		  bd_learn_info bli 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_student_enroll bse 
+		    on bse.`learn_id`=bli.`learn_id`
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_learn_rules blr
+		    ON blr.`learn_id` = bli.`learn_id`
+		  <if test="query.isChecked != null and '' != query.isChecked">
+		  LEFT JOIN bms.`gw_receiver` gr 
+		    ON bli.`learn_id` = gr.`learn_id` 
+		  LEFT JOIN bms.`gw_msg_receiver` mr 
+		    ON mr.`receiver_id` = gr.`receiver_id` 
+		  </if>
+		  <if test="query.tutorName !=null and '' != query.tutorName">
+		    LEFT JOIN oa_employee oe 
+    		ON blr.`tutor` = oe.`emp_id`
+		  </if>
+    	  <if test="query.recruitName !=null and '' != query.recruitName">
+		    LEFT JOIN oa_employee op 
+    		ON blr.`recruit` = op.`emp_id`
+		  </if>
+    	  <if test="query.recruitCampus !=null and '' != query.recruitCampus">
+		    LEFT JOIN oa_campus oc
+    		ON oc.`campus_id` = blr.`recruit_campus_id`
+		  </if>
+    	  <if test="query.recruitDepartment !=null and '' != query.recruitDepartment">
+		    LEFT JOIN oa_department od
+    		ON od.`dp_id` = blr.`recruit_dp_id`
+		  </if>
+		  where 1=1
+		 <if test="query.unvsId !=null and '' != query.unvsId">
+		      and bu.`unvs_id`=#{query.unvsId}
+		 </if>
+		 <if test="query.recruitType !=null and '' != query.recruitType">
+		     and bli.`recruit_type` = #{query.recruitType}
+		 </if>
+		  <if test="query.grade !=null and '' != query.grade">
+		  	 and bli.`grade` =#{query.grade}
+		 </if>
+		 <if test="query.pfsnId !=null and '' != query.pfsnId">
+		  	 and bup.`pfsn_id` = #{query.pfsnId}
+		 </if>
+		 <if test="query.taId !=null and '' != query.taId">
+		  	 and bli.ta_id = #{query.taId}
+		 </if>
+		 <if test="query.pfsnLevel !=null and '' != query.pfsnLevel">
+		  	 and  bup.`pfsn_level` = #{query.pfsnLevel}
+		 </if>
+		 <if test="query.stdName !=null and '' != query.stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{query.stdName}, '%'))
+		 </if>
+		  <if test="query.idCard !=null and '' != query.idCard">
+		    and bsi.`id_card` like CONCAT('%', CONCAT(#{query.idCard}, '%'))
+		 </if>
+		 <if test="query.mobile !=null and '' != query.mobile">
+		    and bsi.`mobile`=#{query.mobile}
+		 </if>
+		 <if test="query.hasScore != null and '' != query.hasScore and query.hasScore == 1">
+		    and (SELECT COUNT(1) FROM bd_student_e_score sc WHERE sc.`learn_id` = bli.`learn_id`) &gt; 0
+		 </if>
+		 <if test="query.hasScore != null and '' != query.hasScore and query.hasScore == 0">
+		    and (SELECT COUNT(1) FROM bd_student_e_score sc WHERE sc.`learn_id` = bli.`learn_id`) = 0
+		 </if>
+		 <if test="query.tutorName !=null and '' != query.tutorName">
+		    and oe.emp_name like CONCAT('%', CONCAT(#{query.tutorName}, '%'))
+		 </if>
+		 <if test="query.recruitName !=null and '' != query.recruitName">
+		    and op.emp_name like CONCAT('%', CONCAT(#{query.recruitName}, '%'))
+		 </if>
+		 <if test="query.scholarship !=null and '' != query.scholarship">
+		    and bli.scholarship = #{query.scholarship}
+		 </if>
+		 <if test="query.stdType !=null and '' != query.stdType">
+		    and bli.std_type = #{query.stdType}
+		 </if>
+		 <if test="query.isArrearage != null and '' != query.isArrearage and query.isArrearage == 1">
+		    and (SELECT 
+			    COUNT(1) 
+			  FROM
+			    bd_student_order o 
+			    LEFT JOIN bd_sub_order so 
+			      ON so.`order_no` = o.`order_no` 
+			  WHERE o.`learn_id` = bli.`learn_id` 
+			    AND so.`sub_order_status` = '1') &gt; 0
+		 </if>
+		 <if test="query.isArrearage != null and '' != query.isArrearage and query.isArrearage == 0">
+		    and (SELECT 
+			    COUNT(1) 
+			  FROM
+			    bd_student_order o 
+			    LEFT JOIN bd_sub_order so 
+			      ON so.`order_no` = o.`order_no` 
+			  WHERE o.`learn_id` = bli.`learn_id` 
+			    AND so.`sub_order_status` = '1') = 0
+		 </if>
+		 <if test="query.isChecked != null and '' != query.isChecked and query.isChecked == 1">
+		 	and mr.mtp_id = #{query.mtpId}
+		 </if>
+		 <if test="query.isChecked != null and '' != query.isChecked and query.isChecked == 0">
+		 	and mr.mtp_id != #{query.mtpId}
+		 </if>
+		 <if test="query.recruitCampus !=null and '' != query.recruitCampus">
+		    and oc.campus_id = #{query.recruitCampus}
+		 </if>
+		 <if test="query.recruitDepartment !=null and '' != query.recruitDepartment">
+		    and od.dp_id = #{query.recruitDepartment}
+		 </if>
+		 <if test="query.stdStages !=null">
+		    and bli.std_stage in 
+		    <foreach collection="query.stdStages" item="stdStage" open="(" close=")" separator=",">
+		    	#{stdStage}
+		    </foreach>
+		 </if>
+		 <if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 10">
+					  and blr.`tutor`= #{user.empId, jdbcType=VARCHAR}
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+		 group by bli.learn_id
+  </select>
+  
+  <select id="queryMsgLearnIds" resultType="java.lang.String" parameterType="com.yz.model.message.GwMsgStudentQuery">
+  	select 
+		  bli.learn_id
+		from
+		  bd_learn_info bli 
+		  left join bd_student_info bsi 
+		    on bsi.`std_id` = bli.`std_id` 
+		  left join bd_unvs_profession bup 
+		    on bli.`pfsn_id` = bup.`pfsn_id` 
+		  left join bd_student_enroll bse 
+		    on bse.`learn_id`=bli.`learn_id`
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  LEFT JOIN bd_learn_rules blr
+		    ON blr.`learn_id` = bli.`learn_id`
+		  <if test="query.isChecked != null and '' != query.isChecked">
+		  LEFT JOIN bms.`gw_receiver` gr 
+		    ON bli.`learn_id` = gr.`learn_id` 
+		  LEFT JOIN bms.`gw_msg_receiver` mr 
+		    ON mr.`receiver_id` = gr.`receiver_id` 
+		  </if>
+		  <if test="query.tutorName !=null and '' != query.tutorName">
+		    LEFT JOIN oa_employee oe 
+    		ON blr.`tutor` = oe.`emp_id`
+		  </if>
+    	  <if test="query.recruitName !=null and '' != query.recruitName">
+		    LEFT JOIN oa_employee op 
+    		ON blr.`recruit` = op.`emp_id`
+		  </if>
+    	  <if test="query.recruitCampus !=null and '' != query.recruitCampus">
+		    LEFT JOIN oa_campus oc
+    		ON oc.`campus_id` = blr.`recruit_campus_id`
+		  </if>
+    	  <if test="query.recruitDepartment !=null and '' != query.recruitDepartment">
+		    LEFT JOIN oa_department od
+    		ON od.`dp_id` = blr.`recruit_dp_id`
+		  </if>
+		  where 1=1
+		 <if test="query.unvsId !=null and '' != query.unvsId">
+		      and bu.`unvs_id`=#{query.unvsId}
+		 </if>
+		 <if test="query.recruitType !=null and '' != query.recruitType">
+		     and bli.`recruit_type` = #{query.recruitType}
+		 </if>
+		  <if test="query.grade !=null and '' != query.grade">
+		  	 and bli.`grade` =#{query.grade}
+		 </if>
+		 <if test="query.pfsnId !=null and '' != query.pfsnId">
+		  	 and bup.`pfsn_id` = #{query.pfsnId}
+		 </if>
+		 <if test="query.taId !=null and '' != query.taId">
+		  	 and bli.ta_id = #{query.taId}
+		 </if>
+		 <if test="query.pfsnLevel !=null and '' != query.pfsnLevel">
+		  	 and  bup.`pfsn_level` = #{query.pfsnLevel}
+		 </if>
+		 <if test="query.stdName !=null and '' != query.stdName">
+		    and bsi.`std_name` like CONCAT('%', CONCAT(#{query.stdName}, '%'))
+		 </if>
+		  <if test="query.idCard !=null and '' != query.idCard">
+		    and bsi.`id_card` like CONCAT('%', CONCAT(#{query.idCard}, '%'))
+		 </if>
+		 <if test="query.mobile !=null and '' != query.mobile">
+		    and bsi.`mobile`=#{query.mobile}
+		 </if>
+		 <if test="query.hasScore != null and '' != query.hasScore and query.hasScore == 1">
+		    and (SELECT COUNT(1) FROM bd_student_e_score sc WHERE sc.`learn_id` = bli.`learn_id`) &gt; 0
+		 </if>
+		 <if test="query.hasScore != null and '' != query.hasScore and query.hasScore == 0">
+		    and (SELECT COUNT(1) FROM bd_student_e_score sc WHERE sc.`learn_id` = bli.`learn_id`) = 0
+		 </if>
+		 <if test="query.tutorName !=null and '' != query.tutorName">
+		    and oe.emp_name like CONCAT('%', CONCAT(#{query.tutorName}, '%'))
+		 </if>
+		 <if test="query.recruitName !=null and '' != query.recruitName">
+		    and op.emp_name like CONCAT('%', CONCAT(#{query.recruitName}, '%'))
+		 </if>
+		 <if test="query.scholarship !=null and '' != query.scholarship">
+		    and bli.scholarship = #{query.scholarship}
+		 </if>
+		 <if test="query.stdType !=null and '' != query.stdType">
+		    and bli.std_type = #{query.stdType}
+		 </if>
+		 <if test="query.isArrearage != null and '' != query.isArrearage and query.isArrearage == 1">
+		    and (SELECT 
+			    COUNT(1) 
+			  FROM
+			    bd_student_order o 
+			    LEFT JOIN bd_sub_order so 
+			      ON so.`order_no` = o.`order_no` 
+			  WHERE o.`learn_id` = bli.`learn_id` 
+			    AND so.`sub_order_status` = '1') &gt; 0
+		 </if>
+		 <if test="query.isArrearage != null and '' != query.isArrearage and query.isArrearage == 0">
+		    and (SELECT 
+			    COUNT(1) 
+			  FROM
+			    bd_student_order o 
+			    LEFT JOIN bd_sub_order so 
+			      ON so.`order_no` = o.`order_no` 
+			  WHERE o.`learn_id` = bli.`learn_id` 
+			    AND so.`sub_order_status` = '1') = 0
+		 </if>
+		 <if test="query.isChecked != null and '' != query.isChecked and query.isChecked == 1">
+		 	and mr.mtp_id = #{query.mtpId}
+		 </if>
+		 <if test="query.isChecked != null and '' != query.isChecked and query.isChecked == 0">
+		 	and mr.mtp_id != #{query.mtpId}
+		 </if>
+		 <if test="query.recruitCampus !=null and '' != query.recruitCampus">
+		    and oc.campus_id = #{query.recruitCampus}
+		 </if>
+		 <if test="query.recruitDepartment !=null and '' != query.recruitDepartment">
+		    and od.dp_id = #{query.recruitDepartment}
+		 </if>
+		 <if test="query.stdStages !=null">
+		    and bli.std_stage in 
+		    <foreach collection="query.stdStages" item="stdStage" open="(" close=")" separator=",">
+		    	#{stdStage}
+		    </foreach>
+		 </if>
+		 <if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 10">
+					  and blr.`tutor`= #{user.empId, jdbcType=VARCHAR}
+					</when>
+					<otherwise>
+					</otherwise>
+				</choose>
+			</if>
+		 group by bli.learn_id
+  </select>
+  
+  <select id="selectStdLearnInfo" resultType="java.util.HashMap">
+  	SELECT 
+	  bli.`std_id` stdId,
+	  bli.`learn_id` learnId,
+	  bli.`std_stage` stdStage,
+	  b.`std_name` stdName,
+	  u.`unvs_name` unvsName,
+	  p.`pfsn_code` pfsnCode,
+	  p.`pfsn_name` pfsnName,
+	  p.`pfsn_level` pfsnLevel,
+	  bli.`recruit_type` recruitType,
+	  bli.`grade` grade
+	FROM
+	  bd_learn_info bli 
+	  LEFT JOIN bd_student_info b 
+	    ON b.`std_id` = bli.`std_id` 
+	  LEFT JOIN bd_university u 
+	    ON u.`unvs_id` = bli.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession p 
+	    ON p.`pfsn_id` = bli.`pfsn_id` 
+	WHERE bli.`learn_id` = #{learnId}
+  </select>
+  
+  <select id="selectStdInfoByLearnId" parameterType="java.lang.String" resultMap="ReceiverMap">
+  	SELECT 
+	  s.`std_name` `name`,
+	  s.`std_id`,
+	  s.`mobile`,
+	  s.`user_id`,
+	  bli.`learn_id`
+	FROM
+	  bd_student_info s 
+	  LEFT JOIN bd_learn_info bli
+	    on bli.std_id = s.std_id
+	    WHERE bli.learn_id = #{learnId}
+  </select>
+  
+  <select id="selectStdInfo" parameterType="java.lang.String" resultMap="ReceiverMap">
+  	SELECT 
+	  s.`std_name` `name`,
+	  s.`std_id`,
+	  s.`mobile`,
+	  s.`user_id`,
+	  bli.`learn_id`
+	FROM
+	  bd_student_info s 
+	  LEFT JOIN bd_learn_info bli
+	    on bli.std_id = s.std_id
+	    WHERE s.`std_name` = #{stdName}
+	    and s.`id_card` = #{idCard}
+	    and bli.`grade` = #{grade}
+  </select>
+  
+  <update id="updateLearnInfo">
+	UPDATE 
+	  bd_learn_info 
+	SET
+	  unvs_id = #{unvsId},
+	  pfsn_id = #{pfsnId},
+	  ta_id = #{taId} 
+	WHERE learn_id = #{learnId}   
+  </update>
+  
+  <select id="selectStdScore" resultType="java.lang.String" parameterType="java.lang.String">
+  	SELECT 
+	  SUM(bss.`score`)
+	FROM
+	  bd_student_e_score bss 
+	WHERE bss.`learn_id` = #{learnId}
+  </select>
+  
+  <select id="selectLearnId" resultMap="ImportResultMap">
+  	SELECT 
+	  bli.`learn_id`,
+	  bu.`unvs_id`,
+	  bup.`pfsn_id`  
+	FROM
+	  bd_student_info bsi 
+	  LEFT JOIN bd_learn_info bli 
+	    ON bsi.`std_id` = bli.`std_id` 
+	  LEFT JOIN bd_student_enroll bse 
+	    ON bli.`learn_id` = bse.`learn_id` 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bse.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.`pfsn_id` = bse.`pfsn_id` 
+	WHERE bsi.`std_name` = #{stdName}
+	  AND bsi.`id_card` = #{idCard} 
+	  AND bu.`unvs_name` = #{unvsName} 
+	  AND bup.`pfsn_name` = #{pfsnName}
+	  AND bup.`grade` = #{grade}
+	  AND bli.`std_stage` = '12'
+  </select>
+  
+  <delete id="deleteRelationSubOrderAndAdmitInfo" parameterType="java.lang.String">
+  	DELETE 
+	  bso 
+	FROM
+	  bd_sub_order bso,
+	  bd_student_order bs 
+	WHERE bs.`order_no` = bso.order_no 
+	  AND bs.`learn_id` = #{learnId}
+	  AND bso.item_code != 'Y0';
+	DELETE 
+	FROM
+	  bd_student_admit 
+	WHERE learn_id = #{learnId}
+  </delete>
+  
+  <select id="selectEnrolledInfoExist" resultType="java.lang.Integer">
+  	SELECT 
+	  COUNT(1) 
+	FROM
+	  bd_student_admit bsa 
+	WHERE bsa.`learn_id` = #{learnId} 
+	  AND bsa.`pfsn_id` = #{pfsnId}
+	  AND bsa.`scholarship` = #{scholarship}
+	  AND bsa.`unvs_id` = #{unvsId} 
+  </select>
+  
+  <select id="selectPaidItem" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	 bso.payable
+	FROM
+	  bd_student_order bs 
+	  LEFT JOIN bd_sub_order bso 
+	    ON bs.`order_no` = bso.`order_no` 
+	WHERE bs.`learn_id` = #{learnId}
+	  AND bso.`sub_order_status` = '2' 
+	  AND bso.`item_code` != 'Y0' 
+  </select>
+  
+  <select id="selectTutorPaidTime" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  sr.pay_time
+	FROM
+	  bd_student_order o 
+	  LEFT JOIN bd_sub_order so 
+	    ON so.`order_no` = o.`order_no` 
+	  LEFT JOIN bd_fee_item fi 
+	    ON fi.`item_code` = so.`item_code` 
+	  LEFT JOIN bd_serial_suborder ss 
+	    ON ss.`sub_order_no` = so.`sub_order_no` 
+	  LEFT JOIN bd_student_serial sr 
+	    ON sr.`serial_no` = ss.`serial_no` 
+	WHERE o.`learn_id` = #{learnId}
+	  AND fi.`item_type` = '1' 
+	  AND so.`sub_order_status` = '2' 
+	  AND sr.`serial_status` IN ('2','3')
+	group by sr.serial_no
+  </select>
+  
+  <select id="selectLearnIdByInclusion" resultType="java.lang.String">
+  	SELECT 
+	  l.learn_id 
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_info i 
+	    ON i.`std_id` = l.`std_id` 
+	WHERE i.`std_name` = #{stdName}
+	  AND i.`id_card` = #{idCard}
+	  AND l.`grade` = #{grade}
+	  AND l.`is_completed` = '0' 
+  </select>
+  
+  <select id="selectLearnIdByIdCard" parameterType="java.lang.String" resultType="java.lang.String">
+  	select l.learn_id from bd_student_admit a 
+  	left join bd_learn_info l
+  	on l.learn_id = a.learn_id 
+  	left join bd_student_info i 
+  	on i.std_id = l.std_id 
+  	where a.grade = #{grade}
+  	 <!-- and a.unvs_id = #{unvsId} -->
+  	 and i.id_card = #{idCard} 
+  </select>
+  
+  <select id="selectLearnIdByExamNo" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT learn_id FROM `bd_test_prove_info` WHERE exam_no = #{examNo}
+  </select>
+  
+  <update id="updateAdmitTaId" parameterType="java.lang.String">
+  	update bd_student_admit set ta_id = #{taId} where learn_id = #{learnId};
+  	update bd_learn_info set ta_id = #{taId} where learn_id = #{learnId}
+  </update>
+  
+  <select id="selectTaIdByTaName" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT ta_id FROM bd_test_area WHERE ta_name = #{taName}
+  </select>
+  
+  <select id="selectEnrolledLearnId" resultType="com.yz.model.enroll.BdInclusionStatusImport">
+  	SELECT 
+	  l.learn_id,
+	  i.id_card idCard,
+	  i.std_name stdName,
+	  '2018' as grade
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` 
+	  LEFT JOIN bd_student_info i 
+	    ON i.`std_id` = l.`std_id` 
+	WHERE a.`grade` = '2018' 
+	 <!--  AND l.`std_stage` = '5'  -->
+	  <!-- AND a.`unvs_id` = #{unvsId} --> 
+	  AND l.`is_completed` = '0' 
+	  and i.id_card in
+	 ('440923199805234821',
+'440923199805224842',
+'440981199811181416',
+'440982199904133428',
+'440921199804216549',
+'441481199702027026',
+'440921199710165429',
+'440921199908195463',
+'440881199808023526',
+'445122199703105660',
+'44088119980314242X',
+'440982199806183501',
+'445224199805083149',
+'440982199905283460')
+	  <!-- and l.scholarship in
+	  <foreach collection="scholarships" item="scholarship" open="(" close=")" separator=",">
+			#{scholarship, jdbcType=VARCHAR}
+		</foreach> -->
+  </select>
+  
+  <select id="selectResetOrderErrorCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select count(*) from bd_reset_order_error where id_card = #{idCard}
+  </select>
+  
+  <delete id="deleteResetOrcerInfo" parameterType="java.lang.String">
+  	delete from bd_reset_order_info where learn_id = #{learnId}
+  </delete>
+  
+  <select id="selectEnrolledLearnIdGuangbo" resultType="com.yz.model.enroll.BdInclusionStatusImport">
+  	SELECT 
+	  l.learn_id,
+	  i.id_card idCard,
+	  i.std_name stdName,
+	  '2018' AS grade 
+	FROM
+	  bd_reset_order_info r 
+	  LEFT JOIN bd_learn_info l 
+	    ON r.`learn_id` = l.`learn_id` 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` 
+	  LEFT JOIN bd_student_info i 
+	    ON i.`std_id` = l.`std_id` 
+	WHERE a.`grade` = '2018' 
+	  AND l.`std_stage` = '5' 
+	  AND a.`unvs_id` = #{unvsId} 
+	  AND l.`is_completed` = '0' 
+  </select>
+  
+  <select id="selectOfferIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  o.`offer_id` 
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` 
+	  LEFT JOIN bd_pto o 
+	    ON o.`pfsn_id` = a.`pfsn_id` 
+	    AND o.`ta_id` = a.`ta_id` 
+	    AND o.`inclusion_status` = IFNULL(#{inclusionStatus},'1')
+	  LEFT JOIN bd_offer e 
+	    ON e.`offer_id` = o.`offer_id` 
+	WHERE l.`learn_id` = #{learnId}
+	AND l.`scholarship` = o.`scholarship`
+	  AND e.`status` = '1' 
+	  <if test="tutorPaidTime != null and tutorPaidTime != ''">
+		  AND e.`start_time` &lt;= #{tutorPaidTime}
+	  	  AND e.`expire_time` &gt;= #{tutorPaidTime}
+	  </if>
+  </select>
+  
+  <insert id="insertResetOrderInfo">
+  	INSERT INTO `bd_reset_order_info` (
+	  `learn_id`,
+	  `std_name`,
+	  `id_card`
+	) 
+	VALUES
+	  (
+	    #{learnId},
+	    #{stdName},
+	    #{idCard}
+	  )
+  </insert>
+  
+  <delete id="deleteTestHelpCoupon" parameterType="java.lang.String">
+  	DELETE FROM bd_student_coupon WHERE user_id = (
+	SELECT b.`user_id` FROM bd_student_info b LEFT JOIN bd_learn_info l ON l.`std_id` = b.`std_id` WHERE l.`learn_id` = #{learnId}
+	) AND coupon_id = '67'
+  </delete>
+  
+  <select id="selectResetOrderCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select count(*) from `bd_reset_order_info` where learn_id = #{learnId}
+  </select>
+  
+  <select id="selectScholarshipByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select scholarship from bd_learn_info where learn_id = #{learnId}
+  </select>
+  
+  <select id="selectFeeIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  f.`fee_id` 
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` 
+	  LEFT JOIN bd_ptf f 
+	    ON f.`pfsn_id` = a.`pfsn_id` 
+	    AND f.`ta_id` = a.`ta_id` 
+	  LEFT JOIN bd_fee e 
+	    ON e.`fee_id` = f.`fee_id` 
+	WHERE l.`learn_id` = #{learnId}
+		AND l.`scholarship` = f.`scholarship`
+	  AND e.`status` = '1' 
+  </select>
+  
+  <insert id="insertBdAdmit">
+  	INSERT INTO bd_student_admit (
+	  learn_id,
+	  std_id,
+	  unvs_id,
+	  pfsn_id,
+	  ta_id,
+	  sg,
+	  scholarship,
+	  grade,
+	  exam_num,
+	  is_admit,
+	  update_user,
+	  update_user_id,
+	  create_user,
+	  create_user_id
+	) 
+	VALUES
+	  (
+	  #{learnId},
+	  #{stdId},
+	  #{unvsId},
+	  #{pfsnId},
+	  #{taId},
+	  #{sg},
+	  #{scholarship},
+	  #{grade},
+	  #{examNum},
+	  #{isAdmit},
+	  #{updateUser},
+	  #{updateUserId},
+	  #{createUser},
+	  #{createUserId}
+	  );
+	  update bd_learn_info
+	  set scholarship = #{scholarship},
+	  unvs_id = #{unvsId},
+	  pfsn_id = #{pfsnId},
+	  ta_id = #{taId}
+	  where learn_id = #{learnId}
+  </insert>
+  
+  <update id="updateScholarship" parameterType="java.lang.String">
+  	UPDATE 
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` SET l.`scholarship` = #{scholarship},
+	  a.`scholarship` = #{scholarship} 
+	WHERE l.`learn_id` = #{learnId} 
+  </update>
+  
+  <update id="updateInclusionStatus" parameterType="java.lang.String" >
+  	UPDATE 
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_admit a 
+	    ON a.`learn_id` = l.`learn_id` SET l.`inclusion_status` = #{inclusionStatus},
+	  a.`inclusion_status` = #{inclusionStatus} 
+	WHERE l.`learn_id` = #{learnId} 
+  </update>
+  
+  <select id="selectLearnInfoByLearnId" parameterType="java.lang.String" resultType="com.yz.model.recruit.BdLearnInfo">
+  	select 
+	  bsi.`std_name` stdName,
+	  bsi.`mobile`,
+	  bsi.`std_id` stdId,
+	  oc.`finance_no` financeCode,
+	  bli.recruit_type recruitType,
+	  bli.std_stage stdStage,
+	  btc.exam_no examNo,
+	  bli.ta_id taId,
+	  bli.`grade`,
+	  bli.scholarship,
+	  bli.unvs_id unvsId,
+	  bli.pfsn_id pfsnId
+	from
+	  bd_learn_info bli 
+	  left join bd_student_info bsi 
+	    on bsi.`std_id` = bli.`std_id` 
+	  left join bd_learn_rules blr 
+	    on blr.`learn_id` = bli.`learn_id` 
+	  left join oa_employee oe 
+	    on oe.`emp_id` = blr.`recruit` 
+	  left join oa_employee_job od
+	    on od.emp_id = oe.emp_id
+	  left join oa_campus oc 
+	    on oc.`campus_id` = od.`campus_id` 
+	   left join bd_test_confirm btc
+	     on btc.learn_id = bli.learn_id
+	where bli.`learn_id` = #{learnId}
+  </select>
+  
+  <select id="selectAdmit" parameterType="java.lang.String" resultType="com.yz.model.finance.stdfee.BdStdVolunteer">
+  	SELECT 
+	  bu.`recruit_type` recruitType,
+	  bu.`unvs_name` unvsName,
+	  bup.`pfsn_code` pfsnCode,
+	  bup.`pfsn_name` pfsnName,
+	  bup.`pfsn_level` pfsnLevel
+	FROM
+	  bd_student_admit bsa 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bsa.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+    	ON bup.pfsn_id = bsa.pfsn_id 
+	WHERE bsa.`learn_id` = #{learnId}
+  </select>
+  
+  <select id="selectEnroll" parameterType="java.lang.String" resultType="com.yz.model.finance.stdfee.BdStdVolunteer">
+  	SELECT 
+	  bu.`recruit_type` recruitType,
+	  bu.`unvs_name` unvsName,
+	  bup.`pfsn_code` pfsnCode,
+	  bup.`pfsn_name` pfsnName,
+	  bup.`pfsn_level` pfsnLevel
+	FROM
+	  bd_student_enroll bsa 
+	  LEFT JOIN bd_university bu 
+	    ON bu.`unvs_id` = bsa.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+    	ON bup.pfsn_id = bsa.pfsn_id 
+	WHERE bsa.`learn_id` = #{learnId}
+  </select>
+
+
+<select id="selectStdEnrolledByPage" parameterType="com.yz.model.enroll.stdenroll.BdStdEnrollQuery" resultType="java.util.HashMap">
+	SELECT bsi.std_name, bli.std_id, bli.learn_id, bli.`school_roll`, bli.std_stage, bli.recruit_type, bli.unvs_id, bli.pfsn_id, buli.unvs_name,
+		bup.pfsn_code, bup.pfsn_name, bup.pfsn_level, bso.payable as firstYearFee, bso.sub_order_status as firstOrderStatus, bses.score_sum,
+		bse.points, bsa.is_admit, bsa.unvs_id as unvs_id_admit, busa.unvs_name as unvs_name_admit, bsa.pfsn_id as pfsn_id_admit,
+		bupsa.pfsn_code as pfsn_code_admit, bupsa.pfsn_name as pfsn_name_admit, bupsa.pfsn_level as pfsn_level_admit, bsa.ext_1 as enroll_unvs_name,
+		bsc.`campus_name`, bta.`ta_name`, ttt.ct_status, btpi.`exam_no`
+	FROM bd_learn_info bli
+	LEFT JOIN bd_university buli ON buli.unvs_id = bli.unvs_id
+	LEFT JOIN bd_student_order bs ON bs.learn_id = bli.learn_id
+	LEFT JOIN (select payable,sub_order_status,order_no from bd_sub_order where item_code = 'Y1' and
+	sub_order_status in('1','2')) bso ON bso.order_no = bs.order_no
+	LEFT JOIN (select bbb.`ct_status`,bso.`order_no` from bd_sub_order bso
+	left join bd_serial_suborder bss on bss.`sub_order_no` = bso.`sub_order_no`
+	left join bd_student_serial bbb on bbb.`serial_no` = bss.`serial_no`
+	where bso.`item_code` = 'Y1' and bso.sub_order_status in ('1','2')
+	) ttt ON ttt.order_no = bs.`order_no`
+	LEFT JOIN bd_student_info bsi ON bsi.std_id = bli.std_id
+	LEFT JOIN bd_unvs_profession bup ON bli.pfsn_id = bup.pfsn_id
+	LEFT JOIN bd_learn_rules blr on blr.learn_id = bli.learn_id
+	LEFT JOIN oa_campus oc on oc.campus_id = blr.recruit_campus_id
+	LEFT JOIN oa_department od on od.dp_id = blr.recruit_dp_id
+	LEFT JOIN oa_employee oe on oe.emp_id = blr.recruit
+	LEFT JOIN bd_test_confirm btc on btc.learn_id = bli.learn_id
+	LEFT JOIN bd_test_prove_info btpi on btpi.learn_id = bli.learn_id
+	LEFT JOIN bd_student_enroll bse on bse.learn_id = bli.learn_id
+	LEFT JOIN (select learn_id, std_id, sum(score) as score_sum from bd_student_e_score group by learn_id, std_id)
+	bses on bses.learn_id = bli.learn_id
+	LEFT JOIN bd_student_admit bsa ON bsa.`learn_id` = bli.`learn_id`
+	LEFT JOIN bd_university busa ON busa.unvs_id = bsa.unvs_id
+	LEFT JOIN bd_unvs_profession bupsa ON bsa.pfsn_id = bupsa.pfsn_id
+	left join bd_student_campus bsc on bsc.`id` = bli.`home_campus_id`
+	left join bd_test_area bta on bta.`ta_id` = bli.`ta_id`
+	WHERE bli.std_stage = '5' and bli.recruit_type='1'
+	<if test="stdName != null and stdName != ''">
+		and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+	</if>
+	<if test="idCard != null and idCard != ''">
+		and bsi.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+	</if>
+	<if test="mobile != null and mobile != ''">
+		and bsi.mobile LIKE CONCAT('%', CONCAT(#{mobile}, '%'))
+	</if>
+	<if test="unvsId != null and unvsId != ''">
+		and buli.unvs_id = #{unvsId}
+	</if>
+	<if test="pfsnId != null and pfsnId != ''">
+		and bup.pfsn_id = #{pfsnId}
+	</if>
+	<if test="grade != null and grade != ''">
+		and bli.grade = #{grade}
+	</if>
+	<if test="pfsnLevel != null and pfsnLevel != ''">
+		and bup.pfsn_level = #{pfsnLevel}
+	</if>
+	<if test="stdStage != null and stdStage != ''">
+		and bli.std_stage = #{stdStage}
+	</if>
+	<if test="recruitType != null and recruitType != ''">
+		and bli.recruit_type = #{recruitType}
+	</if>
+	<if test="scholarship != null and scholarship != ''">
+		and bli.scholarship = #{scholarship}
+	</if>
+	<if test="campusId != null and campusId != ''">
+		and oc.campus_id = #{campusId}
+	</if>
+	<if test="dpId != null and dpId != ''">
+		and od.dp_id = #{dpId}
+	</if>
+	<if test="taName != null and taName != ''">
+		and bs.ta_name like concat('%',#{taName},'%')
+	</if>
+	<if test="recruitName != null and recruitName != ''">
+		and oe.emp_name LIKE CONCAT('%', CONCAT(#{recruitName}, '%'))
+	</if>
+	<if test="recruitStatus != null and recruitStatus != ''">
+		and oe.emp_status = #{recruitStatus}
+	</if>
+	<if test="isOk == '0'.toString()">
+		and (btc.is_ok = #{isOk} or btc.is_ok is null)
+	</if>
+	<if test="isOk == '1'.toString()">
+		and btc.is_ok = #{isOk}
+	</if>
+	<if test="isExamNo == '0'.toString()">
+		and btpi.exam_no is null
+	</if>
+	<if test="isExamNo == '1'.toString()">
+		and btpi.exam_no is not null
+	</if>
+	<if test="isExamSign == '0'.toString()">
+		and (btc.is_exam_sign = #{isExamSign} or btc.is_exam_sign is null)
+	</if>
+	<if test="isExamSign == '1'.toString()">
+		and btc.is_exam_sign = #{isExamSign}
+	</if>
+	<if test="isScore == '0'.toString()">
+		and bses.score_sum is null
+	</if>
+	<if test="isScore == '1'.toString()">
+		and bses.score_sum is not null
+	</if>
+	<if test="scoreMax != null and scoreMax != ''">
+		and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &gt; CONVERT(#{scoreMax},SIGNED)
+	</if>
+	<if test="scoreMin != null and scoreMin != ''">
+		and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &lt; CONVERT(#{scoreMin},SIGNED)
+	</if>
+	<if test="isAddScore == '0'.toString()">
+		and CONVERT(bse.points,SIGNED) &lt;= 0
+	</if>
+	<if test="isAddScore == '1'.toString()">
+		and CONVERT(bse.points,SIGNED) &gt; 0
+	</if>
+	<if test="isAdmit != null and isAdmit != ''">
+		and bsa.is_admit = #{isAdmit}
+	</if>
+	<if test="unvsIdAdmit != null and unvsIdAdmit != ''">
+		and bsa.unvs_id = #{unvsIdAdmit}
+	</if>
+	<if test="pfsnIdAdmit != null and pfsnIdAdmit != ''">
+		and bsa.pfsn_id = #{pfsnIdAdmit}
+	</if>
+	<if test="isAdmitEnroll == '0'.toString()">
+		and IFNULL(bli.unvs_id,0) <![CDATA[<>]]> IFNULL(bsa.unvs_id,0)
+	</if>
+	<if test="isAdmitEnroll == '1'.toString()">
+		and bsa.unvs_id = buli.unvs_id
+	</if>
+	<if test="stdType != null and stdType != ''">
+		and bli.std_type = #{stdType}
+	</if>
+	<if test="stdNo !=null and '' != stdNo">
+		and btpi.`exam_no` LIKE '${stdNo}%'
+	</if>
+	<if test="homeCampusId !=null and '' !=homeCampusId">
+		and bli.`home_campus_id` = #{homeCampusId,jdbcType=VARCHAR}
+	</if>
+	<if test="ifCampusId =='0'.toString()">
+		and bli.`home_campus_id` is null
+	</if>
+	<if test="ifCampusId =='1'.toString()">
+		and bli.`home_campus_id` is not null
+	</if>
+	GROUP BY bli.`learn_id`
+	order by bli.update_time desc
+</select>
+  
+  <select id="selectFirstAdmit" parameterType="java.lang.String" resultMap="AmitResult">
+  	SELECT 
+  	  bse.ta_id,
+	  bu.`unvs_name`,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  bu.`recruit_type` 
+	FROM
+	  bd_student_enroll bse 
+	  LEFT JOIN bd_university bu 
+	    ON bse.`unvs_id` = bu.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bup.`pfsn_id` = bse.`pfsn_id` 
+	WHERE bse.`learn_id` = #{learnId} 
+  </select>
+  
+  <select id="selectSecondAdmit" parameterType="java.lang.String" resultMap="AmitResult">
+  	select 
+  	  bse.ta_id,
+	  bu.`unvs_name`,
+	  bup.`pfsn_code`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_level`,
+	  bu.`recruit_type` 
+	from
+	  bd_student_enroll bse 
+	  left join bd_university bu 
+	    on bse.`sec_unvs_id` = bu.`unvs_id` 
+	  left join bd_unvs_profession bup 
+	    on bup.`pfsn_id` = bse.`sec_pfsn_id` 
+	where bse.`learn_id` = #{learnId} 
+  </select>
+  
+  <select id="selectStdEnrollInfoByLearnId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+	  bli.std_id,
+	  bli.learn_id,
+	  bsi.`std_name`,
+	  bli.`recruit_type`,
+	  bli.`grade`,
+	  oe.`emp_name`,
+	  bli.`std_stage`,
+	  btc.`exam_no`,
+	  bse.pfsn_level,
+	  bup.pfsn_id,
+	  bu.`unvs_name`,
+	  bup.`pfsn_name`,
+	  bup.`pfsn_code`,
+	  oc.campus_name,
+	  bli.scholarship,
+	  bu.unvs_id,
+	  bse.`points`,
+	  bsi.`id_card`,
+	  bli.home_campus_id
+	from
+	  bd_learn_info bli 
+	  left join bd_student_info bsi 
+	    on bsi.`std_id` = bli.`std_id` 
+	  left join bd_learn_rules blr 
+	    on blr.`learn_id` = bli.`learn_id` 
+	  left join oa_employee oe 
+	    on oe.`emp_id` = blr.`recruit`
+	  left join oa_employee_job od
+	    on od.emp_id = oe.emp_id
+	  left join oa_campus oc
+	    on oc.campus_id = od.campus_id
+	  left join bd_test_confirm btc 
+	    on btc.`learn_id` = bli.`learn_id` 
+	  left join bd_student_enroll bse 
+	    on bse.`learn_id` = bli.`learn_id` 
+	  left join bd_university bu 
+	    on bu.`unvs_id` = bse.unvs_id 
+	  left join bd_unvs_profession bup 
+	    on bup.`pfsn_id` = bse.pfsn_id 
+	where bli.`learn_id` = #{learnId}
+  </select>
+  
+  <select id="selectStdEScores" parameterType="java.lang.String" resultMap="ScoreResultMap">
+  	SELECT 
+	  bse.course_name,
+	  bse.score
+	FROM
+	  bd_student_e_score bse 
+	WHERE bse.`learn_id` = #{learn_id} 
+  </select>
+  <!--  筛选后批量录取查询结果-->
+  <select id="selectBatchAdmitResult" parameterType="com.yz.model.enroll.stdenroll.BdStdEnrollQuery" resultMap="QueryBatchAdmitResultMap">
+  	select  bli.std_id,
+	  bli.learn_id,
+	  bli.`grade`,
+	  bup.pfsn_id,
+	  bu.unvs_id
+	from
+	bd_learn_info bli
+	left join bd_student_info bsi on bsi.`std_id` = bli.`std_id`
+	left join bd_student_order bs on bs.learn_id = bli.learn_id
+	left join bd_learn_rules blr on blr.`learn_id` = bli.`learn_id`
+	left join oa_employee oe on oe.`emp_id` = blr.`recruit`
+	left join bd_test_confirm btc on btc.`learn_id` = bli.`learn_id`
+	left join bd_student_enroll bse on bse.`learn_id` = bli.`learn_id`
+	left join bd_university bu  on bu.`unvs_id` = bse.unvs_id
+	left join bd_unvs_profession bup on bup.`pfsn_id` = bse.pfsn_id
+	left join oa_campus oc on oc.campus_id = blr.recruit_campus_id
+	left join oa_department od on od.dp_id = blr.recruit_dp_id
+	left join bd_test_prove_info btpi on btpi.learn_id = bli.learn_id
+	left join (select learn_id,std_id, sum(score) as score_sum from bd_student_e_score group by learn_id,std_id) bses on bses.learn_id=bli.learn_id
+	where bli.`std_stage` = '12'
+	<if test="stdName != null and stdName != ''">
+	  and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+	</if>
+	<if test="idCard != null and idCard != ''">
+	  and bsi.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+	</if>
+	<if test="mobile != null and mobile != ''">
+	  and bsi.mobile LIKE CONCAT('%', CONCAT(#{mobile}, '%'))
+	</if>
+	<if test="unvsId != null and unvsId != ''">
+	  and bu.unvs_id = #{unvsId}
+	</if>
+	<if test="pfsnId != null and pfsnId != ''">
+	  and bup.pfsn_id = #{pfsnId}
+	</if>
+	<if test="grade != null and grade != ''">
+	  and bli.grade = #{grade}
+	</if>
+	<if test="pfsnLevel != null and pfsnLevel != ''">
+	  and bup.pfsn_level = #{pfsnLevel}
+	</if>
+	<if test="stdStage != null and stdStage != ''">
+	  and bli.std_stage = #{stdStage}
+	</if>
+	<if test="recruitType != null and recruitType != ''">
+	  and bli.recruit_type = #{recruitType}
+	</if>
+	<if test="scholarship != null and scholarship != ''">
+	  and bli.scholarship = #{scholarship}
+	</if>
+	<if test="campusId != null and campusId != ''">
+	  and oc.campus_id = #{campusId}
+	</if>
+	<if test="dpId != null and dpId != ''">
+	  and od.dp_id = #{dpId}
+	</if>
+	<if test="taName != null and taName != ''">
+	  and bs.ta_name = #{taName}
+	</if>
+	<if test="recruitName != null and recruitName != ''">
+	  and oe.emp_name LIKE CONCAT('%', CONCAT(#{recruitName}, '%'))
+	</if>
+	<if test="recruitStatus != null and recruitStatus != ''">
+	  and oe.emp_status = #{recruitStatus}
+	</if>
+	<if test="isOk == '0'.toString()">
+	  and (btc.is_ok = #{isOk} or btc.is_ok is null)
+	</if>
+	<if test="isOk == '1'.toString()">
+	  and btc.is_ok = #{isOk}
+	</if>
+	<if test="isExamNo == '0'.toString()">
+	  and btpi.exam_no is null
+	</if>
+	<if test="isExamNo == '1'.toString()">
+	  and btpi.exam_no is not null
+	</if>
+	<if test="isExamSign == '0'.toString()">
+	  and (btc.is_exam_sign = #{isExamSign} or btc.is_exam_sign is null)
+	</if>
+	<if test="isExamSign == '1'.toString()">
+	  and btc.is_exam_sign = #{isExamSign}
+	</if>
+	<if test="isScore == '0'.toString()">
+	  and bses.score_sum is null
+	</if>
+	<if test="isScore == '1'.toString()">
+	  and bses.score_sum is not null
+	</if>
+	<if test="scoreMax != null and scoreMax != ''">
+	  and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &gt; CONVERT(#{scoreMax},SIGNED)
+	</if>
+	<if test="scoreMin != null and scoreMin != ''">
+	  and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &lt; CONVERT(#{scoreMin},SIGNED)
+	</if>
+	<if test="isAddScore == '0'.toString()">
+	  and CONVERT(bse.points,SIGNED) &lt;= 0
+	</if>
+	<if test="isAddScore == '1'.toString()">
+	  and CONVERT(bse.points,SIGNED) &gt; 0
+	</if>
+	<if test="stdType != null and stdType != ''">
+	  and bli.std_type = #{stdType}
+	</if>
+	order by bli.`update_time` desc
+  </select>
+
+<select id="selectStdEnrollByPage" parameterType="com.yz.model.enroll.stdenroll.BdStdEnrollQuery" resultMap="BaseResultMap">
+	select bli.std_id, bli.learn_id, bli.`recruit_type`, bli.`grade`, bli.`std_stage`, bsi.`std_name`, oe.`emp_name`,
+		btpi.`exam_no`, bse.pfsn_level, bu.`unvs_name`, bup.`pfsn_name`, bup.`pfsn_code`, bse.`points`
+	from bd_learn_info bli
+	left join bd_student_info bsi on bsi.`std_id` = bli.`std_id`
+	left join bd_student_order bs on bs.learn_id = bli.learn_id
+	left join bd_learn_rules blr on blr.`learn_id` = bli.`learn_id`
+	left join oa_employee oe on oe.`emp_id` = blr.`recruit`
+	left join bd_test_confirm btc on btc.`learn_id` = bli.`learn_id`
+	left join bd_student_enroll bse on bse.`learn_id` = bli.`learn_id`
+	left join bd_university bu on bu.`unvs_id` = bse.unvs_id
+	left join bd_unvs_profession bup on bup.`pfsn_id` = bse.pfsn_id
+	left join oa_campus oc on oc.campus_id = blr.recruit_campus_id
+	left join oa_department od on od.dp_id = blr.recruit_dp_id
+	left join bd_test_prove_info btpi on btpi.learn_id = bli.learn_id
+	left join (select learn_id,std_id, sum(score) as score_sum from bd_student_e_score group by learn_id,std_id) bses on bses.learn_id=bli.learn_id
+	where bli.`std_stage` = '12' and bli.recruit_type='1'
+	<if test="stdName != null and stdName != ''">
+		and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+	</if>
+	<if test="idCard != null and idCard != ''">
+		and bsi.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+	</if>
+	<if test="mobile != null and mobile != ''">
+		and bsi.mobile LIKE CONCAT('%', CONCAT(#{mobile}, '%'))
+	</if>
+	<if test="unvsId != null and unvsId != ''">
+		and bu.unvs_id = #{unvsId}
+	</if>
+	<if test="pfsnId != null and pfsnId != ''">
+		and bup.pfsn_id = #{pfsnId}
+	</if>
+	<if test="grade != null and grade != ''">
+		and bli.grade = #{grade}
+	</if>
+	<if test="pfsnLevel != null and pfsnLevel != ''">
+		and bup.pfsn_level = #{pfsnLevel}
+	</if>
+	<if test="stdStage != null and stdStage != ''">
+		and bli.std_stage = #{stdStage}
+	</if>
+	<if test="recruitType != null and recruitType != ''">
+		and bli.recruit_type = #{recruitType}
+	</if>
+	<if test="scholarship != null and scholarship != ''">
+		and bli.scholarship = #{scholarship}
+	</if>
+	<if test="campusId != null and campusId != ''">
+		and oc.campus_id = #{campusId}
+	</if>
+	<if test="dpId != null and dpId != ''">
+		and od.dp_id = #{dpId}
+	</if>
+	<if test="taName != null and taName != ''">
+		and bs.ta_name = #{taName}
+	</if>
+	<if test="recruitName != null and recruitName != ''">
+		and oe.emp_name LIKE CONCAT('%', CONCAT(#{recruitName}, '%'))
+	</if>
+	<if test="recruitStatus != null and recruitStatus != ''">
+		and oe.emp_status = #{recruitStatus}
+	</if>
+	<if test="isOk == '0'.toString()">
+		and (btc.is_ok = #{isOk} or btc.is_ok is null)
+	</if>
+	<if test="isOk == '1'.toString()">
+		and btc.is_ok = #{isOk}
+	</if>
+	<if test="isExamNo == '0'.toString()">
+		and btpi.exam_no is null
+	</if>
+	<if test="isExamNo == '1'.toString()">
+		and btpi.exam_no is not null
+	</if>
+	<if test="isExamSign == '0'.toString()">
+		and (btc.is_exam_sign = #{isExamSign} or btc.is_exam_sign is null)
+	</if>
+	<if test="isExamSign == '1'.toString()">
+		and btc.is_exam_sign = #{isExamSign}
+	</if>
+	<if test="isScore == '0'.toString()">
+		and bses.score_sum is null
+	</if>
+	<if test="isScore == '1'.toString()">
+		and bses.score_sum is not null
+	</if>
+	<if test="scoreMax != null and scoreMax != ''">
+		and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &gt; CONVERT(#{scoreMax},SIGNED)
+	</if>
+	<if test="scoreMin != null and scoreMin != ''">
+		and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &lt; CONVERT(#{scoreMin},SIGNED)
+	</if>
+	<if test="isAddScore == '0'.toString()">
+		and CONVERT(bse.points,SIGNED) &lt;= 0
+	</if>
+	<if test="isAddScore == '1'.toString()">
+		and CONVERT(bse.points,SIGNED) &gt; 0
+	</if>
+	<if test="stdType != null and stdType != ''">
+		and bli.std_type = #{stdType}
+	</if>
+	order by bli.`update_time` desc
+</select>
+  
+  <update id="updateStuCampusId">
+  	 update bd_learn_info set 
+	  	home_campus_id=#{campusId,jdbcType=VARCHAR},
+	  	fp_campus_user_id=#{user.userId},
+	  	fp_campus_user=#{user.realName},
+	  	fp_campus_time=now()
+  	 where learn_Id=#{learnId,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <select id="selectNeedOperStdByPage" parameterType="com.yz.model.enroll.stdenroll.BdStdEnrollQuery" resultType="java.util.HashMap">
+	 SELECT 
+	  bsi.std_name,
+	  bli.std_id,
+	  bli.learn_id,
+	  bli.`school_roll`,
+	  bli.std_stage,
+	  bli.recruit_type,
+	  bli.unvs_id,
+	  buli.unvs_name,
+	  bli.pfsn_id,
+	  bup.pfsn_code,
+	  bup.pfsn_name,
+	  bup.pfsn_level,
+	  bso.payable as firstYearFee,
+	  bso.sub_order_status as firstOrderStatus,
+	  bses.score_sum,
+	  bse.points,
+	  bsa.is_admit,
+	  bsa.unvs_id as unvs_id_admit,
+	  busa.unvs_name as unvs_name_admit,
+	  bsa.pfsn_id as pfsn_id_admit,
+	  bupsa.pfsn_code as pfsn_code_admit,
+	  bupsa.pfsn_name as pfsn_name_admit,
+	  bupsa.pfsn_level as pfsn_level_admit,
+	  bsa.ext_1 as enroll_unvs_name,
+	  bsc.`campus_name`,
+	  bta.`ta_name`,
+	  ttt.ct_status 
+	FROM
+	  bd_learn_info bli 
+	  LEFT JOIN bd_university buli 
+	    ON buli.unvs_id = bli.unvs_id 
+	  LEFT JOIN bd_student_order bs 
+	    ON bs.learn_id = bli.learn_id 
+	  LEFT JOIN (select payable,sub_order_status,order_no from bd_sub_order where item_code = 'Y1' and sub_order_status in ('1','2')) bso 
+	    ON bso.order_no = bs.order_no 
+	  LEFT JOIN 
+	    (select bbb.`ct_status`,bso.`order_no` from bd_sub_order bso 
+	      left join bd_serial_suborder bss on bss.`sub_order_no` = bso.`sub_order_no` 
+	      left join bd_student_serial bbb 
+	      on bbb.`serial_no` = bss.`serial_no` 
+	    where bso.`item_code` = 'Y1' and bso.sub_order_status in ('1','2')) ttt 
+	  ON ttt.order_no = bs.`order_no` 
+	  LEFT JOIN bd_student_info bsi 
+	    ON bsi.std_id = bli.std_id 
+	  LEFT JOIN bd_unvs_profession bup 
+	    ON bli.pfsn_id = bup.pfsn_id 
+	  LEFT JOIN bd_learn_rules blr 
+	    on blr.learn_id = bli.learn_id 
+	  LEFT JOIN oa_campus oc 
+	    on oc.campus_id = blr.recruit_campus_id 
+	  LEFT JOIN oa_department od 
+	    on od.dp_id = blr.recruit_dp_id 
+	  LEFT JOIN oa_employee oe 
+	    on oe.emp_id = blr.recruit 
+	  LEFT JOIN bd_test_confirm btc 
+	    on btc.learn_id = bli.learn_id 
+	  LEFT JOIN bd_test_prove_info btpi 
+	    on btpi.learn_id = bli.learn_id 
+	  LEFT JOIN bd_student_enroll bse 
+	    on bse.learn_id = bli.learn_id 
+	  LEFT JOIN 
+	    (select 
+	      learn_id,
+	      std_id,
+	      sum(score) as score_sum 
+	    from
+	      bd_student_e_score 
+	    group by learn_id,
+	      std_id) bses 
+	    on bses.learn_id = bli.learn_id 
+	  LEFT JOIN bd_student_admit bsa 
+	    ON bsa.`learn_id` = bli.`learn_id` 
+	  LEFT JOIN bd_university busa 
+	    ON busa.unvs_id = bsa.unvs_id 
+	  LEFT JOIN bd_unvs_profession bupsa 
+	    ON bsa.pfsn_id = bupsa.pfsn_id 
+	  left join bd_student_campus bsc 
+	    on bsc.`id` = bli.`home_campus_id` 
+	  left join bd_test_area bta 
+	    on bta.`ta_id` = bli.`ta_id` 
+	WHERE bli.std_stage = '5' 
+	<if test="stdName != null and stdName != ''">
+		and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+	</if>
+	<if test="idCard != null and idCard != ''">
+		and bsi.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+	</if>
+	<if test="mobile != null and mobile != ''">
+		and bsi.mobile LIKE CONCAT('%', CONCAT(#{mobile}, '%'))
+	</if>
+	<if test="unvsId != null and unvsId != ''">
+		and buli.unvs_id = #{unvsId}
+	</if>
+	<if test="pfsnId != null and pfsnId != ''">
+		and bup.pfsn_id = #{pfsnId}
+	</if>
+	<if test="grade != null and grade != ''">
+	  and bli.grade = #{grade}
+	</if>
+	<if test="pfsnLevel != null and pfsnLevel != ''">
+	  and bup.pfsn_level = #{pfsnLevel}
+	</if>
+	<if test="stdStage != null and stdStage != ''">
+	  and bli.std_stage = #{stdStage}
+	</if>
+	<if test="recruitType != null and recruitType != ''">
+	  and bli.recruit_type = #{recruitType}
+	</if>
+	<if test="scholarship != null and scholarship != ''">
+	  and bli.scholarship = #{scholarship}
+	</if>
+	<if test="campusId != null and campusId != ''">
+	  and oc.campus_id = #{campusId}
+	</if>
+	<if test="dpId != null and dpId != ''">
+	  and od.dp_id = #{dpId}
+	</if>
+	<if test="taName != null and taName != ''">
+	  and bs.ta_name like concat('%', #{taName,jdbcType=VARCHAR},'%')
+	</if>
+	<if test="recruitName != null and recruitName != ''">
+	  and oe.emp_name LIKE CONCAT('%', CONCAT(#{recruitName}, '%'))
+	</if>
+	<if test="recruitStatus != null and recruitStatus != ''">
+	  and oe.emp_status = #{recruitStatus}
+	</if>
+	<if test="isOk == '0'.toString()">
+	  and (btc.is_ok = #{isOk} or btc.is_ok is null)
+	</if>
+	<if test="isOk == '1'.toString()">
+	  and btc.is_ok = #{isOk}
+	</if>
+	<if test="isExamNo == '0'.toString()">
+	  and btpi.exam_no is null
+	</if>
+	<if test="isExamNo == '1'.toString()">
+	  and btpi.exam_no is not null
+	</if>
+	<if test="isExamSign == '0'.toString()">
+	  and (btc.is_exam_sign = #{isExamSign} or btc.is_exam_sign is null)
+	</if>
+	<if test="isExamSign == '1'.toString()">
+	  and btc.is_exam_sign = #{isExamSign}
+	</if>
+	<if test="isScore == '0'.toString()">
+	  and bses.score_sum is null
+	</if>
+	<if test="isScore == '1'.toString()">
+	  and bses.score_sum is not null
+	</if>
+	<if test="scoreMax != null and scoreMax != ''">
+	  and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &gt; CONVERT(#{scoreMax},SIGNED)
+	</if>
+	<if test="scoreMin != null and scoreMin != ''">
+	  and if(bses.score_sum = null,0,CONVERT(bses.score_sum,SIGNED)) &lt; CONVERT(#{scoreMin},SIGNED)
+	</if>
+	<if test="isAddScore == '0'.toString()">
+	  and CONVERT(bse.points,SIGNED) &lt;= 0
+	</if>
+	<if test="isAddScore == '1'.toString()">
+	  and CONVERT(bse.points,SIGNED) &gt; 0
+	</if>
+	<if test="isAdmit != null and isAdmit != ''">
+	  and bsa.is_admit = #{isAdmit}
+	</if>
+	<if test="unvsIdAdmit != null and unvsIdAdmit != ''">
+	  and bsa.unvs_id = #{unvsIdAdmit}
+	</if>
+	<if test="pfsnIdAdmit != null and pfsnIdAdmit != ''">
+	  and bsa.pfsn_id = #{pfsnIdAdmit}
+	</if>
+	<if test="isAdmitEnroll == '0'.toString()">
+	  and IFNULL(bli.unvs_id,0) <![CDATA[<>]]> IFNULL(bsa.unvs_id,0)
+	</if>
+	<if test="isAdmitEnroll == '1'.toString()">
+	  and bsa.unvs_id = buli.unvs_id
+	</if>
+	<if test="stdType != null and stdType != ''">
+		and bli.std_type = #{stdType}
+	</if>
+	<if test="stdNo !=null and '' != stdNo">
+	    and btpi.`exam_no` LIKE '${stdNo}%'
+	</if>
+	<if test="homeCampusId !=null and '' !=homeCampusId">
+		and bli.`home_campus_id` = #{homeCampusId,jdbcType=VARCHAR}
+	</if>
+	<if test="ifCampusId =='0'.toString()">
+		and bli.`home_campus_id` is null
+	</if>
+	<if test="ifCampusId =='1'.toString()">
+		and bli.`home_campus_id` is not null
+	</if>
+	GROUP BY bli.`learn_id` 
+	order by bli.update_time desc
+  </select>
+  
+  
+  <select id="getHomeCampusInfo" resultType="java.util.HashMap">
+		 SELECT 
+		   id ,
+		   campus_name campusName
+		 FROM bd_student_campus 
+		   WHERE 1=1
+		   <if test="campusStatus !=null and '' != campusStatus">
+		   	  and is_stop=#{campusStatus,jdbcType=VARCHAR}	
+		   </if>
+	</select>
+	
+	<update id="selectAllocation">
+		update bd_learn_info set home_campus_id = #{campusId,jdbcType=VARCHAR},
+			fp_campus_user_id=#{user.userId},
+		  	fp_campus_user=#{user.realName},
+		  	fp_campus_time=now()
+		where learn_Id in
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+	</update>
+</mapper>

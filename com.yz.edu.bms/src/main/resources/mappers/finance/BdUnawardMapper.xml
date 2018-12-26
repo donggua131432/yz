@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdUnawardMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.BdUnaward" >
+    <id column="records_no" property="recordsNo" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="trigger_user_id" property="triggerUserId" jdbcType="VARCHAR" />
+    <result column="acc_type" property="accType" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="VARCHAR" />
+    <result column="exc_desc" property="excDesc" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="VARCHAR" />
+    <result column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_done" property="isDone" jdbcType="CHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    records_no, user_id, trigger_user_id, acc_type, action, exc_desc, amount, rule_type, 
+    rule_code, create_time, is_done, std_id, ext_1, ext_2
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_unaward
+    where records_no = #{recordsNo,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.yz.model.finance.BdUnaward" >
+    insert into bd_unaward
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        records_no,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="triggerUserId != null" >
+        trigger_user_id,
+      </if>
+      <if test="accType != null" >
+        acc_type,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="excDesc != null" >
+        exc_desc,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+      <if test="ruleCode != null" >
+        rule_code,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="isDone != null" >
+        is_done,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{recordsNo},
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerUserId != null" >
+        #{triggerUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="excDesc != null" >
+        #{excDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCode != null" >
+        #{ruleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDone != null" >
+        #{isDone,jdbcType=CHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId, jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1, jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2, jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insertMap" parameterType="com.yz.model.CommunicationMap" >
+    insert into bd_unaward
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        records_no,
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="triggerUserId != null" >
+        trigger_user_id,
+      </if>
+      <if test="accType != null" >
+        acc_type,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="excDesc != null" >
+        exc_desc,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+      <if test="ruleCode != null" >
+        rule_code,
+      </if>
+      <if test="stdId != null" >
+        std_id,
+      </if>
+      <if test="ext1 != null" >
+        ext_1,
+      </if>
+      <if test="ext2 != null" >
+        ext_2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{recordsNo},
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerUserId != null" >
+        #{triggerUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="excDesc != null" >
+        #{excDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCode != null" >
+        #{ruleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="stdId != null" >
+        #{stdId, jdbcType=VARCHAR},
+      </if>
+      <if test="ext1 != null" >
+        #{ext1, jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        #{ext2, jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.finance.BdUnaward" >
+    update bd_unaward
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="triggerUserId != null" >
+        trigger_user_id = #{triggerUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        acc_type = #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="excDesc != null" >
+        exc_desc = #{excDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        rule_type = #{ruleType,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleCode != null" >
+        rule_code = #{ruleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDone != null" >
+        is_done = #{isDone,jdbcType=CHAR},
+      </if>
+      <if test="stdId != null" >
+        std_id = #{stdId,jdbcType=CHAR},
+      </if>
+      <if test="ext1 != null" >
+        ext_1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null" >
+        ext_2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where records_no = #{recordsNo,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="isExsit" resultType="int">
+  	SELECT 
+	  COUNT(1) 
+	FROM
+	  bd_unaward u 
+	WHERE u.std_id = #{stdId, jdbcType=VARCHAR} 
+	AND u.rule_code = #{ruleCode, jdbcType=VARCHAR} and u.rule_code != 'CC_AF_2017_11_2' and u.rule_code != 'RC_AF_2016_06'
+  </select>
+  
+</mapper>

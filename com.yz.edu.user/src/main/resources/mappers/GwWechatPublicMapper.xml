@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.GwWechatPublicMapper" >
+
+  <resultMap id="BaseResultMap" type="com.yz.model.GwWechatPublic" >
+    <result column="pub_id" property="pubId" jdbcType="VARCHAR" />
+    <result column="pub_name" property="pubName" jdbcType="VARCHAR" />
+    <result column="pub_type" property="pubType" jdbcType="VARCHAR" />
+    <result column="app_id" property="appId" jdbcType="VARCHAR" />
+    <result column="app_secret" property="appSecret" jdbcType="VARCHAR" />
+    <result column="welcome" property="welcome" jdbcType="VARCHAR" />
+    <result column="access_token" property="accessToken" jdbcType="VARCHAR" />
+    <result column="token_expire" property="tokenExpire" jdbcType="VARCHAR" />
+    <result column="jsapi_ticket" property="jsapiTicket" jdbcType="VARCHAR" />
+    <result column="ticket_expire" property="ticketExpire" jdbcType="VARCHAR" />
+    <result column="is_allow" property="isAllow" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getPublicInfo" resultMap="BaseResultMap" parameterType="string">
+  	select 
+	  `pub_id`,
+	  `pub_name`,
+	  `pub_type`,
+	  `app_id`,
+	  `app_secret`,
+	  `welcome`,
+	  `access_token`,
+	  `token_expire`,
+	  `is_allow`,
+	  `jsapi_ticket`,
+	  `ticket_expire`
+	from
+	  common.`gw_wechat_public`
+	  where `is_allow` = '1'
+	  and `pub_id` = #{pubId, jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

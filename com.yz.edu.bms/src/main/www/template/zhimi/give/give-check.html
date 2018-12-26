@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="lib/html5shiv.js"></script>
+	<script type="text/javascript" src="lib/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+	<!--[if IE 6]>
+	<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+	<![endif]-->
+	<title>新增智米赠送申请</title>
+</head>
+<body>
+	<article class="page-container">
+		<form class="form form-horizontal" id="form-charges-add" th:object="${zhimiGive}">
+			<input type="hidden" th:value="${_web_token}" name="_web_token" id="_web_token" />
+			<input type="hidden" id="id" name="id" th:value="*{id}"/>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">昵称：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="nickName" th:text="*{nickName}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">姓名：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="realName" th:text="*{realName}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">手机号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="mobile" th:text="*{mobile}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">远智编号：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="yzCode" th:text="*{yzCode}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">身份证：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="certNo" th:text="*{certNo}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">智米类型：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="zhimiType" th:text="*{zhimiType}=='1'?'进账':'出账'"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">赠送智米：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="zhimiCount" th:text="*{zhimiCount}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">申请原因：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="reasonDesc" th:text="*{reasonDesc}"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">申请状态：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<span id="reasonStatus" th:text="*{reasonStatus}=='1'?'已提交':(*{reasonStatus}=='2'?'已通过':'已驳回')"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">审核备注：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<textarea name="rejectDesc" id="rejectDesc" cols="" rows="" class="textarea"  placeholder="说点什么...50个字符以内" dragonfly="true" onKeyUp="$.Huitextarealength(this,50)"></textarea>
+					<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
+				</div>
+			</div>
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input class="btn btn-success radius inputW9" onclick="checkPass(2);" value="通过"/>
+					<input class="btn btn-danger radius inputW9" onclick="checkPass(3);" value="驳回"/>
+				</div>
+			</div>
+		</form>
+	</article>
+
+	<!--_footer 作为公共模版分离出去-->
+	<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+	<!--/_footer 作为公共模版分离出去-->
+
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+	<script type="text/javascript" th:src="@{/js/webjs/zhimi/give/give-check.js}"></script>
+	
+</body>
+</html>

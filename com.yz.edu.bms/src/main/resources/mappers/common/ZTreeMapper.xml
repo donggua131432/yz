@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.common.ZTreeMapper" >
+  <resultMap type="com.yz.model.finance.fee.ZTreeResponse" id="TaMap">
+  	<result column="ta_id" property="id"/>
+  	<result column="taName" property="name"/>
+  </resultMap>
+ 
+  <resultMap type="com.yz.model.finance.fee.ZTreeResponse" id="PfsnMap">
+  	<result column="pfsn_id" property="id"/>
+  	<result column="pfsnName" property="name"/>
+  </resultMap>
+  
+  <select id="searchTaSingle" parameterType="java.lang.String" resultMap="TaMap">
+  	select distinct
+  		a.ta_id,
+  		CONCAT('(', a.`ta_code`, ')', a.`ta_name`) taName 
+  	from bd_proferssion_ta t
+  		left join bd_test_area a
+  		on a.ta_id = t.ta_id
+  		where t.pfsn_id in
+  		<foreach collection="pfsnIds" item="pfsnId" index="index" open="(" close=")" separator="," >  
+        	#{pfsnId}
+	    </foreach>
+  </select>
+  
+  <select id="searchTa" resultMap="TaMap" >
+  	SELECT distinct 
+  	  a.ta_id,
+	  CONCAT('(', a.`ta_code`, ')', a.`ta_name`) taName 
+	FROM
+	  `bd_proferssion_ta` t 
+	  LEFT JOIN `bd_proferssion_ta` p 
+	    ON p.`pfsn_id` != t.`pfsn_id` 
+	    AND t.`ta_id` = p.`ta_id` 
+	  left join bd_test_area a 
+	    on a.`ta_id` = t.`ta_id` 
+	WHERE t.`pfsn_id` IN 
+		<foreach collection="pfsnIds" item="pfsnId" index="index" open="(" close=")" separator="," >  
+        	#{pfsnId}
+	    </foreach>
+	  AND p.`pfsn_id` IN
+	    <foreach collection="pfsnIds" item="pfsnId" index="index" open="(" close=")" separator="," >  
+        	#{pfsnId}
+	    </foreach>
+	  group by a.ta_id
+  </select>
+  
+  <select id="searchUnvs" parameterType="java.lang.String" resultType="com.yz.model.common.UnvsSelectInfo">
+  	select 
+	  bu.`unvs_id` unvsId,
+	  bu.`unvs_name` unvsName,
+	  bu.`unvs_code` unvsCode,
+	  bu.`recruit_type` recruitType
+	from
+	  bd_university bu 
+	where bu.`unvs_id` = #{unvsId} 
+	  and bu.`is_stop` = '0' 
+  </select>
+  
+  <select id="searchPfsn" parameterType="com.yz.model.condition.common.SelectQueryInfo" resultMap="PfsnMap">
+  	select 
+		  p.`pfsn_id`,
+  		  CONCAT('(',p.`pfsn_code`,')',p.`pfsn_name`,'[',d.dict_name,']') pfsnName
+		from
+		  bd_unvs_profession p 
+		left join sys_dict d
+		  on p.pfsn_level = d.dict_value
+		LEFT JOIN bd_proferssion_ta t 
+    	  ON t.`pfsn_id` = p.`pfsn_id` 
+		<where>
+		  and d.p_id = 'pfsnLevel'
+		  and p.`is_allow` = '1'
+		  AND t.`ta_id` IS NOT NULL
+		  <if test="sId != null and sId !=''">
+		  	and p.`unvs_id` = #{sId} 
+		  </if>
+		  <if test="sName != null and sName !=''">
+		  	and (p.`pfsn_name` like CONCAT('%', #{sName}, '%') or p.`pfsn_code` like CONCAT('%', #{sName}, '%'))
+		  </if>
+		  <if test="ext1 != null and ext1 != ''">
+		  	and p.pfsn_level = #{ext1}
+		  </if>
+		  <if test="ext2 != null and ext2 != ''">
+		  	and p.grade = #{ext2}
+		  </if>
+		</where>
+		group by p.pfsn_id
+  </select>
+  
+</mapper>

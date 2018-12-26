@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.recruit.StudentAnnexCheckMapper">
+	<resultMap id="AnnexCheckListMap" type="com.yz.model.recruit.StudentAnnexCheck">
+		<id column="learn_id" jdbcType="VARCHAR" property="learnId" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="std_name" jdbcType="VARCHAR" property="stdName" />
+		<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+		<result column="recruit_type" jdbcType="VARCHAR" property="recruitType" />
+		<result column="unvs_name" jdbcType="VARCHAR" property="unvsName" />
+		<result column="pfsn_code" jdbcType="VARCHAR" property="pfsnCode" />
+		<result column="pfsn_level" jdbcType="VARCHAR" property="pfsnLevel" />
+		<result column="pfsn_name" jdbcType="VARCHAR" property="pfsnName" />
+		<result column="grade" jdbcType="VARCHAR" property="grade" />
+		<result column="campus_name" jdbcType="VARCHAR" property="campusName" />
+		<result column="annex_status" jdbcType="VARCHAR" property="myAnnexStatus" />
+		<result column="is_data_completed" jdbcType="VARCHAR" property="isDataCompleted" />
+		<result column="recruit_name" jdbcType="VARCHAR" property="recruitName" />
+		<result column="dp_name" jdbcType="VARCHAR" property="dpName" />
+	</resultMap>
+
+	<select id="getStudentAnnexCheckList"  resultMap="AnnexCheckListMap">
+		SELECT s.`std_id`,l.`learn_id`,s.`std_name`, l.`std_stage`, l.`recruit_type`,
+		  u.`unvs_name`, p.`pfsn_code`, p.`pfsn_level`, p.`pfsn_name`, l.`grade`,
+		  c.`campus_name`, l.`annex_status`, l.`is_data_completed`, e.emp_name as recruit_name,dep.dp_name
+		FROM bd_learn_info l
+		LEFT JOIN bd_student_info s  ON s.`std_id` = l.`std_id`
+		LEFT JOIN bd_university u  ON u.`unvs_id` = l.`unvs_id`
+		LEFT JOIN bd_unvs_profession p   ON p.`pfsn_id` = l.`pfsn_id`
+		LEFT JOIN bd_learn_rules r  ON r.`learn_id` = l.`learn_id`
+		LEFT JOIN oa_campus c ON c.`campus_id` = r.`recruit_campus_id`
+		LEFT JOIN oa_employee e ON e.emp_id = r.recruit
+		LEFT JOIN bd_test_area area ON l.ta_id = area.ta_id
+		LEFT JOIN oa_employee_job job ON e.emp_id = job.emp_id
+		LEFT  JOIN oa_department dep ON job.dp_id = dep.dp_id
+		WHERE l.recruit_type='1' and l.std_stage in ('2','3')
+		and l.is_completed = '0' and l.annex_status != '1'
+		<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+			and s.`std_name` like CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR} ,'%')
+		</if>
+		<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+			and s.`mobile` like CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR} ,'%')
+			and s.`mobile` = #{queryInfo.mobile, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+			and s.`id_card` like CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR} ,'%')
+		</if>
+		<if test="queryInfo.myAnnexStatus != null and queryInfo.myAnnexStatus != ''">
+			and l.`annex_status` = #{queryInfo.myAnnexStatus, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.isDataCompleted != null and queryInfo.isDataCompleted != ''">
+			and l.`is_data_completed` = #{queryInfo.isDataCompleted, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+			and l.`recruit_type` = #{queryInfo.recruitType, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.scholarship != null and queryInfo.scholarship != ''">
+			and l.`scholarship` = #{queryInfo.scholarship, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.stdStage != null and queryInfo.stdStage != ''">
+			and l.`std_stage` = #{queryInfo.stdStage, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.grade != null and queryInfo.grade != ''">
+			and l.`grade` = #{queryInfo.grade, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.sg != null and queryInfo.sg != ''">
+			and l.`sg` = #{queryInfo.sg, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+			and l.`unvs_id` = #{queryInfo.unvsId, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+			and p.`pfsn_level` = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+			and l.`pfsn_id` = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.recruitName != null and queryInfo.recruitName != ''">
+			and e.`emp_name` like CONCAT('%', #{queryInfo.recruitName, jdbcType=VARCHAR} ,'%')
+		</if>
+		<if test="queryInfo.inclusionStatus !=null and queryInfo.inclusionStatus !=''">
+			and l.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.campusId !=null and queryInfo.campusId !=''">
+			and r.`recruit_campus_id` = #{queryInfo.campusId,jdbcType=VARCHAR}
+		</if>
+		<if test="user.userLevel != 1">
+			<choose>
+				<when test="user.userLevel == 7"> <!-- 校区助理  -->
+					and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id=#{user.campusId, jdbcType=VARCHAR}  )
+				</when>
+				<otherwise>
+					and 1=1
+				</otherwise>
+			</choose>
+		</if>
+		<if test="queryInfo.ext1 !=null and '' !=queryInfo.ext1">
+			${queryInfo.ext1}
+		</if>
+		<if test="queryInfo.dpId !=null and queryInfo.dpId !=''">
+			and dep.`dp_id` = #{queryInfo.dpId,jdbcType=VARCHAR}
+		</if>
+		<if test="queryInfo.taName !=null and queryInfo.taName !=''">
+			and area.`ta_name` = #{queryInfo.taName,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<resultMap id="AnnexMap" type="com.yz.model.recruit.BdStudentAnnex">
+		<id column="annex_id" jdbcType="VARCHAR" property="annexId" />
+		<result column="annex_type" jdbcType="VARCHAR" property="annexType" />
+		<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+		<result column="annex_name" jdbcType="VARCHAR" property="annexName" />
+		<result column="annex_url" jdbcType="VARCHAR" property="annexUrl" />
+		<result column="annex_status" jdbcType="VARCHAR" property="annexStatus" />
+		<result column="reason" jdbcType="VARCHAR" property="reason" />
+		<result column="is_require" jdbcType="VARCHAR" property="isRequire" />
+		<result column="upload_time_str" jdbcType="VARCHAR" property="uploadTimeStr" />
+		<result column="upload_user" jdbcType="VARCHAR" property="uploadUser" />
+		<result column="check_time_str" jdbcType="VARCHAR" property="checkTimeStr" />
+		<result column="check_user" jdbcType="VARCHAR" property="checkUser" />
+	</resultMap>
+
+	<select id="getAnnexList" resultMap="AnnexMap" parameterType="string">
+		SELECT 
+		  `annex_id`,
+		  `annex_type`,
+		  `std_id`,
+		  `annex_name`,
+		  `annex_url`,
+		  `annex_status`,
+		  `is_require`,
+		  date_format(`upload_time`, '%Y-%m-%d %H:%i:%s') as upload_time_str,
+		  `upload_user`,
+		  date_format(`check_time`, '%Y-%m-%d %H:%i:%s') as check_time_str,
+		  `check_user`,
+		  `reason` 
+		FROM
+		  `bd_student_annex` a 
+		WHERE a.`std_id` = 
+		  (select 
+		    l.`std_id` 
+		  from
+		    bd_learn_info l 
+		  where l.`learn_id` = #{learnId, jdbcType=VARCHAR})
+	</select>
+	
+	<update id="updateAnnexInfo" parameterType="com.yz.model.recruit.BdStudentAnnex">
+		update bd_student_annex 
+		<set>
+			<if test="annexUrl != null">
+				annex_url = #{annexUrl, jdbcType=VARCHAR},
+			</if>
+			<if test="annexStatus != null and annexStatus != ''">
+				annex_status = #{annexStatus, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null and updateUserId != ''">
+				update_user_id = #{updateUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="uploadUser != null and uploadUser != ''">
+				upload_user = #{uploadUser, jdbcType=VARCHAR},
+			</if>
+			<if test="uploadUserId != null and uploadUserId != ''">
+				upload_user_id = #{uploadUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="uploadTime != null">
+				upload_time = #{uploadTime, jdbcType=TIMESTAMP},
+			</if>
+			<if test="checkUser != null and checkUser != ''">
+				check_user = #{checkUser, jdbcType=VARCHAR},
+			</if>
+			<if test="checkUserId != null and checkUserId != ''">
+				check_user_id = #{checkUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="checkTime != null">
+				check_time = #{checkTime, jdbcType=TIMESTAMP},
+			</if>
+			<if test="reason != null">
+				reason = #{reason, jdbcType=VARCHAR},
+			</if>
+		</set>
+		where annex_id = #{annexId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateExpenseTime" parameterType="java.lang.String">
+		update bd_learn_info set expense_time = now() where learn_id = #{learnId}
+	</update>
+	
+	<update id="updateCheckRecord" parameterType="com.yz.model.recruit.StudentCheckRecord">
+		  UPDATE 
+		    bd_check_record r 
+		  SET
+		    r.`emp_id` = #{empId, jdbcType=VARCHAR},
+		    r.`reason` = #{reason, jdbcType=VARCHAR},
+		    r.`update_user` = #{updateUser, jdbcType=VARCHAR},
+		    r.`update_user_id` = #{updateUserId, jdbcType=VARCHAR},
+		    r.`check_status` = #{checkStatus, jdbcType=VARCHAR},
+		    r.`cr_status` = #{crStatus, jdbcType=VARCHAR},
+		    r.`update_time` = str_to_date(#{updateTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+		  WHERE cr_id = #{crId, jdbcType=VARCHAR} 
+	</update>
+	
+	<update id="updateIsDataCheck" parameterType="com.yz.model.recruit.BdLearnInfo">
+		UPDATE
+		bd_learn_info l
+		<set>
+			l.`is_data_check` = #{isDataCheck, jdbcType=VARCHAR},
+			<if test="stdStage != null and stdStage != ''">
+				l.`std_stage` = #{stdStage},
+			</if>
+			<if test="ext1 != null and ext1 != ''">
+				l.`ext_1` = #{ext1},
+			</if>
+			<if test="isDataCompleted != null and isDataCompleted != ''">
+				l.`is_data_completed` = #{isDataCompleted},
+			</if>
+		</set>
+		WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getLearnInfo" parameterType="string" resultType="com.yz.model.recruit.BdLearnInfo">
+		SELECT 
+		  l.`learn_id` as learnId,
+		  l.`std_stage` as stdStage,
+		  l.`is_data_check` as isDataCheck
+		FROM
+		  bd_learn_info l 
+		WHERE l.`learn_id` = #{learnId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectRequiredAnnex" parameterType="string" resultMap="AnnexMap">
+		select 
+		  a.`annex_id`,
+		  a.`annex_type`,
+		  a.`std_id`,
+		  a.`annex_name`,
+		  a.`annex_url`,
+		  a.`annex_status`,
+		  a.`is_require`,
+		  a.`update_time`,
+		  a.`update_user`,
+		  a.`reason` 
+		from
+		  bd_student_annex a 
+		where a.`is_require` = '1' 
+		  and a.`std_id` = #{stdId, jdbcType=VARCHAR} 
+	</select>
+	
+	<update id="updateStudentAnnexStatus" parameterType="string">
+		UPDATE 
+		  bd_student_info s 
+		SET
+		  s.`my_annex_status` = #{annexStatus, jdbcType=VARCHAR}
+		WHERE s.`std_id` = #{stdId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="countBy" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  `bd_student_annex` a 
+		WHERE a.`std_id` = #{stdId, jdbcType=VARCHAR} 
+		  AND a.`annex_status` = #{annexStatus, jdbcType=VARCHAR} 
+		  AND a.`is_require` = '1'
+	</select>
+	
+</mapper>

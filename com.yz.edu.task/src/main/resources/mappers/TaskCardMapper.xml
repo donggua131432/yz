@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.TaskCardMapper" >
+    <resultMap id="bdTaskCardResultMap" type="java.util.Map" >
+        <id column="task_id" property="taskId" jdbcType="VARCHAR" />
+        <result column="task_type" property="taskType" jdbcType="VARCHAR" />
+        <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+        <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+        <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+        <result column="task_count" property="taskCount" jdbcType="VARCHAR" />
+        <result column="task_reward" property="taskReward" jdbcType="CHAR" />
+        <result column="task_status" property="taskStatus" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectBdTaskCard" resultMap="bdTaskCardResultMap">
+        select task_id, task_type, task_name, start_time, end_time, task_target as task_count, task_reward, task_status
+        from bms.bd_task_card  where task_status in ('2','3')
+    </select>
+
+
+    <resultMap id="usTaskCardResultMap" type="java.util.Map" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+        <result column="task_count" property="taskCount" jdbcType="VARCHAR" />
+        <result column="complete_count" property="completeCount" jdbcType="VARCHAR" />
+        <result column="complete_status" property="completeStatus" jdbcType="CHAR" />
+        <result column="is_award" property="isAward" jdbcType="CHAR" />
+        <result column="complete_time" property="completeTime" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="task_reward" property="taskReward" jdbcType="VARCHAR" />
+        <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+        <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectUsTaskCard" parameterType="java.lang.String" resultMap="usTaskCardResultMap">
+        select utc.id, utc.user_id, utc.task_id, utc.task_count, utc.complete_count, utc.complete_status, utc.is_award,
+        date_format(utc.complete_time,'%Y-%c-%d %h:%i:%s') as complete_time, date_format(utc.create_time,'%Y-%c-%d %h:%i:%s') as create_time,
+        btc.task_name, btc.task_reward, us.bind_id as open_id
+        from us.us_task_card utc
+        left join bms.bd_task_card btc on btc.task_id = utc.task_id
+        left join us.us_base_info us on us.user_id = utc.user_id
+        where utc.complete_status = '1' and utc.is_award='0'
+    </select>
+
+
+    <update id="updateBdTaskCard" parameterType="java.util.Map">
+        update bms.bd_task_card
+        <set>
+            <if test="taskStatus != null and taskStatus != ''">
+                task_status = #{taskStatus,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where task_id = #{taskId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateIsAward" parameterType="java.util.Map">
+        update us.us_task_card set is_award = '1'  where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>招生老师变更记录</title>
+</head>
+<body>
+  <div class="page-container">
+    <div class="bg-1">
+      <div class="cl pd-5 bg-1 bk-gray mt-20">
+        <div class="mt-35 bg-fff">
+          <table class="table table-border table-bordered table-hover table-bg table-sort" id="modifyListTable">
+            <thead>
+              <tr class="text-c">
+                <th width="120">变更记录编号</th>
+                <th width="150">变更内容</th>
+                <th width="80">操作人</th>
+                <th width="100">操作时间</th>
+                <th width="80">计划生效时间</th>
+                <th width="30">状态</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" th:online="javascript" >
+    var varEmpId= '[[${empId}]]'
+   </script>
+<script type="text/javascript" th:src="@{/js/webjs/oa/recruiter/recruiter_modify.js}"></script>
+</body>
+</html>

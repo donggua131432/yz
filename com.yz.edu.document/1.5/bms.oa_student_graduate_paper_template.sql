@@ -1,0 +1,6 @@
+alter table oa_student_graduate_paper_template add column grade varchar(8) comment '年级' after unvs_id;
+
+INSERT INTO `bms`.`oa_student_graduate_paper_template` (`id`, `unvs_id`, `grade`, `pfsn_level`, `template_url`, `seq_num`, `is_show`, `create_time`) VALUES (seq(), '29', '2016', '1', '/paper-template/29-1-2016-lunwenliuchengjigeshi.jpg', '1', '1', '2018-06-06 18:10:41');
+INSERT INTO `bms`.`oa_student_graduate_paper_template` (`id`, `unvs_id`, `grade`, `pfsn_level`, `template_url`, `seq_num`, `is_show`, `create_time`) VALUES (seq(), '29', '2016', '1', '/paper-template/29-1-2016-lunwenyangben.jpg', '2', '1', '2018-06-06 18:12:03');
+INSERT INTO `bms`.`oa_student_graduate_paper_template` (`id`, `unvs_id`, `grade`, `pfsn_level`, `template_url`, `seq_num`, `is_show`, `create_time`) VALUES (seq(), '29', '2017', '1', '/paper-template/29-1-2017-lunwenliuchengjigeshi.jpg', '1', '1', '2018-06-06 18:13:44');
+INSERT INTO `bms`.`oa_student_graduate_paper_template` (`id`, `unvs_id`, `grade`, `pfsn_level`, `template_url`, `seq_num`, `is_show`, `create_time`) VALUES (seq(), '29', '2017', '1', '/paper-template/29-1-2017-lunwenyangben.jpg', '2', '1', '2018-06-06 18:14:35');

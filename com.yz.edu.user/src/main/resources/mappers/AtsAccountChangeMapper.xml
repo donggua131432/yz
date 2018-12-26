@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.AtsAccountChangeMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.AtsAccountChange">
+		<id column="change_id" property="changeId" jdbcType="VARCHAR" />
+		<result column="acc_id" property="accId" jdbcType="VARCHAR" />
+		<result column="old_user_id" property="oldUserId" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="acc_type" property="accType" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="old_std_id" property="oldStdId" jdbcType="VARCHAR" />
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		change_id, acc_id, old_user_id, user_id, acc_type, reason, old_std_id, std_id,
+		create_time
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from goods.ats_account_change
+		where change_id = #{changeId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertSelective" parameterType="com.yz.model.AtsAccountChange">
+		insert into goods.ats_account_change
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			change_id,
+			<if test="accId != null">
+				acc_id,
+			</if>
+			<if test="oldUserId != null">
+				old_user_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="accType != null">
+				acc_type,
+			</if>
+			<if test="reason != null">
+				reason,
+			</if>
+			<if test="oldStdId != null">
+				old_std_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			seq(),
+			<if test="accId != null">
+				#{accId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldUserId != null">
+				#{oldUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="accType != null">
+				#{accType,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="oldStdId != null">
+				#{oldStdId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.AtsAccountChange">
+		update goods.ats_account_change
+		<set>
+			<if test="accId != null">
+				acc_id = #{accId,jdbcType=VARCHAR},
+			</if>
+			<if test="oldUserId != null">
+				old_user_id = #{oldUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="accType != null">
+				acc_type = #{accType,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				reason = #{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="oldStdId != null">
+				old_std_id = #{oldStdId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where change_id = #{changeId,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

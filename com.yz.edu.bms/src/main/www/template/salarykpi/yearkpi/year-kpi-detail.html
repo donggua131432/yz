@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <!--/meta 作为公共模版分离出去-->
+    <title>详情</title>
+    <style>
+        .formControls.col-xs-2.col-sm-2{
+            line-height: 31px;
+            text-align: left;
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+<article class="page-container">
+    <form method="post" class="form form-horizontal yz-form-box  max-w" id="form-grade">
+        <input type="hidden" th:value="${_web_token}" name="_web_token"/>
+        <div class="mb-5 bk-gray radius" style="padding-bottom: 10px;">
+            <div class="layui-layer-title">基础信息</div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    姓名：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="empName" name="empName" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    身份证号：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="idCard" name="idCard" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    校区：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="campusName" name="campusName" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    部门：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="dpName" name="dpName" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    职位：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="jtId" name="jtId" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    用户类别：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="empType" name="empType" readonly="readonly"/>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-3">
+                    是否在职：
+                </label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" id="empStatus" name="empStatus" readonly="readonly"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5 bk-gray radius" style="padding-bottom: 10px;">
+            <div class="layui-layer-title">绩效信息</div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">惠州圆梦入围标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细"  onclick="studentDetail('hzym_rw','17','2')"><span id="hzymRwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">被推荐人标准参考人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="empCount"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">惠州圆梦非入围标准标准人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('hzym_frw','17','3')"><span id="hzymFrwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">减标准任务人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="taskCount"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">东莞圆梦标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('dgym','15,16,22','')"><span id="dgymCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">单生工龄奖励：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="award"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">奖学金≧150分标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('jxj_rw','','5,6')"><span id="jxjRwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">个人标准单生绩效值：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="singleStandardKPIValue"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">奖学金<150分标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('jxj_frw','','4')"><span id="jxjFrwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">个人实际单生绩效值：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="singleRealKPIValue"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">201703，201709国开注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('gk')"> <span
+                        id="gkCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">个人应发绩效：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="KPIValue"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">考前冲刺标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('kqcc','11','')"><span id="kqccCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">已发放工资：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="salarySum"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">汕尾肋学入围标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('swzx_rw','18','7')"><span id="swzxRwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">已发放报销：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="receiptSum"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">汕尾肋学非入围标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('swzx_frw','18','8')"><span id="swzxFrwCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">实发绩效：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="finalKPIValue"></span></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">普通全额标准注册人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('ptqe_zc','1','')"><span id="ptqeZcCount"></span></a></div>
+                <label class="form-label col-xs-4 col-sm-4">普通全额标准参考人数：</label>
+                <div class="formControls col-xs-2 col-sm-2"><a href="javascript:;" class="c-blue" title="点击查看明细" onclick="studentDetail('qtqeCk')"><span id="ptqeCkCount"></span></a></div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-4">个人标准注册人数合计：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="zcSum"></span></div>
+                <label class="form-label col-xs-4 col-sm-4">标准参考人数合计：</label>
+                <div class="formControls col-xs-2 col-sm-2"><span id="ckSum"></span></div>
+            </div>
+            <div class="row cl">
+                <div class="text-r mt-10">
+                    <input type="button" class="previous btn btn-normal-outline radius" value="取消" id="bt_cancel"
+                           onclick="layer_close();"/>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</article>
+<!--_footer 作为公共模版分离出去-->
+
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/salarykpi-yearkpi/year-kpi-detail.js}"></script>
+
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

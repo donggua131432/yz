@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.baseinfo.BdUniversityTestMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.baseinfo.BdUniversityTest">
+		<result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+		<result column="ta_id" property="taId" jdbcType="VARCHAR" />
+	</resultMap>
+	<insert id="insert" parameterType="com.yz.model.baseinfo.BdUniversityTest">
+		insert into bd_university_test (unvs_id, ta_id)
+		values (#{unvsId,jdbcType=VARCHAR}, #{taId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.baseinfo.BdUniversityTest">
+		insert into bd_university_test
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="unvsId != null">
+				unvs_id,
+			</if>
+			<if test="taId != null">
+				ta_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="unvsId != null">
+				#{unvsId,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null">
+				#{taId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getTaMap" parameterType="string"  resultType="java.util.HashMap">
+		SELECT 
+		  t.ta_id AS taId,
+		  t.ta_name AS taName 
+		FROM
+		  bd_test_area t 
+		  LEFT JOIN bd_university_test u 
+		    ON u.`ta_id` = t.`ta_id` 
+		WHERE u.`unvs_id` = #{unvsId, jdbcType=VARCHAR}
+		AND t.`is_allow` = '1'
+	</select>
+	
+	<select id="getTestArea" parameterType="string"  resultMap="BaseResultMap">
+		select
+		*
+		from bd_university_test where unvs_id = #{unvsId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateBdUniversityTest">
+		update bd_university_test set ta_id = #{testAreaId, jdbcType=VARCHAR} where unvs_id = #{unvsId, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteBdUniversityTest">
+		delete from  bd_university_test  where unvs_id = #{unvsId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertBatch">
+		insert into bd_university_test (unvs_id, ta_id)
+		values
+		<foreach collection="taIds" item="taId" separator=",">
+			(#{unvsId,jdbcType=VARCHAR}, #{taId,jdbcType=VARCHAR})
+		</foreach> 
+		
+	</insert>
+</mapper>

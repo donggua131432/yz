@@ -1,0 +1,1846 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdStdPayFeeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.yz.model.finance.stdfee.BdPayableInfoResponse">
+		<result column="std_id" property="stdId" />
+		<result column="std_name" property="stdName" />
+		<result column="learn_id" property="learnId" />
+		<result column="std_stage" property="stdStage" />
+		<result column="acc_amount" property="accAmount" />
+		<result column="recruit_type" property="recruitType" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="grade" property="grade" />
+		<result column="pfsn_code" property="pfsnCode" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="pfsn_level" property="pfsnLevel" />
+		<result column="learn_id" property="learnId" />
+		<result column="order_status" property="orderStatus" />
+		<result column="std_type" property="stdType" />
+		<result column="fee_id" property="feeId" />
+		<result column="scholarship" property="scholarship" />
+		<result column="inclusion_status" property="inclusionStatus" />
+		<result column="ta_id" property="taId" />
+		<result column="pfsn_id" property="pfsnId" />
+		<association property="payInfos" column="learn_id" select="selectPayInfo" />
+	</resultMap>
+
+	<resultMap id="PayableInfoResultMap"
+		type="com.yz.model.finance.stdfee.BdPayableInfoResponse">
+		<result column="std_id" property="stdId" />
+		<result column="std_name" property="stdName" />
+		<result column="learn_id" property="learnId" />
+		<result column="std_stage" property="stdStage" />
+		<result column="acc_amount" property="accAmount" />
+		<result column="recruit_type" property="recruitType" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="grade" property="grade" />
+		<result column="pfsn_code" property="pfsnCode" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="pfsn_level" property="pfsnLevel" />
+		<result column="learn_id" property="learnId" />
+		<result column="scholarship" property="scholarship" />
+		<association property="tutorPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectTutorPayableInfo" />
+		<association property="firstPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectFirstPayableInfo" />
+		<association property="secondPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectSecondPayableInfo" />
+		<association property="thirdPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectThirdPayableInfo" />
+		<association property="fourPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectFourPayableInfo" />
+		<association property="otherPayInfos"
+			column="{learnId=learn_id,subOrderStatus=subOrderStatus}" select="selectOtherPayableInfo" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.finance.stdfee.BdStdPayInfoResponse"
+		id="PayInfoResultMap">
+		<result column="item_code" property="itemCode" />
+		<result column="item_name" property="itemName" />
+		<result column="item_year" property="itemYear" />
+		<result column="payable" property="payable" />
+		<result column="refund_amount" property="refundAmount" />
+		<result column="sub_order_status" property="subOrderStatus" />
+		<result column="sub_order_no" property="subOrderNo" />
+		<result column="amount" property="xjAmount" />
+		<result column="zmamount" property="zmAmount" />
+		<result column="zlamount" property="zlAmount" />
+		<result column="yhqamount" property="yhqAmount" />
+	</resultMap>
+
+	<select id="selectFeeStandard" resultType="java.lang.String">
+		SELECT 
+		  bp.fee_id 
+		FROM
+		  `bd_ptf` bp 
+		  LEFT JOIN bd_fee f 
+		  ON f.`fee_id` = bp.`fee_id`
+		WHERE bp.`ta_id` = #{ta_id}
+		  AND bp.`pfsn_id` = #{pfsn_id}
+		  AND scholarship = #{scholarship}
+		  AND f.`status` = '1' 
+		group by bp.`fee_id` 
+	</select>
+
+	<select id="selectRecruitType" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select
+		bli.`recruit_type`
+		from
+		bd_learn_info bli
+		where
+		bli.`learn_id` = #{learnId}
+	</select>
+	<select id="selectStdStageByLearnId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select bli.std_stage from bd_learn_info bli where
+		bli.learn_id = #{learnId}
+	</select>
+	<resultMap id="StudentMap" type="java.util.Map">
+		<result column="std_id" property="stdId" jdbcType="VARCHAR" />
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+		<result column="std_name" property="stdName" jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.finance.BdOrder" id="OrderResult">
+		<result column="order_no" property="orderNo" />
+		<result column="amount" property="amount" />
+		<result column="payable" property="payable" />
+		<result column="discount" property="discount" />
+		<result column="learn_id" property="learnId" />
+		<result column="std_id" property="stdId" />
+		<result column="std_name" property="stdName" />
+		<result column="mobile" property="mobile" />
+		<result column="unvs_id" property="unvsId" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="pfsn_id" property="pfsnId" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="ta_id" property="taId" />
+		<result column="ta_name" property="taName" />
+		<result column="create_time" property="createTime" />
+		<result column="expire_time" property="expireTime" />
+		<result column="order_status" property="orderStatus" />
+		<result column="payee_id" property="payeeId" />
+		<association property="subOrders" column="order_no"
+			select="selectSubOrder" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.finance.stdfee.BdStudentSerial"
+		id="PayDetailResult">
+		<result column="serial_no" property="serialNo" />
+		<result column="serial_mark" property="serialMark" />
+		<result column="std_id" property="stdId" />
+		<result column="amount" property="amount" />
+		<result column="payment_type" property="paymentType" />
+		<result column="pay_time" property="payTime" />
+		<result column="payable" property="payable" />
+		<result column="order_no" property="orderNo" />
+		<result column="out_serial_no" property="outSerialNo" />
+		<result column="emp_id" property="empId" />
+		<result column="emp_name" property="empName" />
+		<result column="serial_status" property="serialStatus" />
+		<result column="demurrage_before" property="demurrageBefore" />
+		<result column="demurrage_after" property="demurrageAfter" />
+		<result column="check_user" property="checkUser" />
+		<result column="check_user_id" property="checkUserId" />
+		<result column="rept_status" property="reptStatus" />
+		<result column="remark" property="remark" />
+		<association property="payInfos" column="serial_no"
+			select="selectPaidInfo" />
+		<association property="subSerials" column="serial_no"
+			select="selectSubSerial" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.finance.coupon.BdCoupon" id="CouponReulst">
+		<result column="amount" property="amount" />
+		<result column="coupon_name" property="couponName" />
+		<result column="coupon_id" property="couponId" />
+		<result column="sc_id" property="scId" />
+		<association property="itemCodes" column="coupon_id"
+			select="selectItemCodes" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.oa.OaCampusInfo" id="CampusResult">
+		<result column="campus_name" property="campusName" />
+		<result column="finance_no" property="financeNo" />
+		<result column="address" property="address" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.finance.stdfee.BdSubSerial" id="SubSerialResult">
+		<result column="sub_serial_no" property="subSerialNo" jdbcType="VARCHAR" />
+		<result column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="acc_type" property="accType" jdbcType="VARCHAR" />
+		<result column="payment_type" property="paymentType" jdbcType="VARCHAR" />
+		<result column="out_serial_no" property="outSerialNo" jdbcType="VARCHAR" />
+		<result column="sub_serial_status" property="subSerialStatus"
+			jdbcType="VARCHAR" />
+		<result column="coupon_id" property="couponId" jdbcType="VARCHAR" />
+		<result column="coupon_name" property="couponName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<update id="updateTutionTime" parameterType="java.lang.String">
+		update bd_learn_info
+		set tuition_time = now() where learn_id = #{learnId}
+		and tuition_time
+		is null
+	</update>
+
+	<select id="selectPaidSumByStdId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		convert(SUM(s.`payable`),decimal(10,2))
+		FROM
+		bd_student_serial s
+		WHERE
+		s.`std_id` = #{stdId}
+		AND s.`serial_status` IN
+		('2', '3')
+	</select>
+
+	<select id="selectWithdrawByStdId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		convert(SUM(w.`amount`),decimal(10,2))
+		FROM
+		bd_student_withdraw w
+		WHERE
+		w.`std_id` = #{stdId}
+		AND w.`check_status` =
+		'3'
+	</select>
+
+	<select id="selectStdIdByUserId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT std_id FROM bd_student_info WHERE user_id = #{stdId}
+	</select>
+
+	<select id="selectOfferNameByLearnId" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+		e.`offer_name`
+		FROM
+		bd_learn_info l
+		LEFT JOIN bd_pto
+		o
+		ON o.`pfsn_id` = l.`pfsn_id`
+		AND o.`ta_id` = l.`ta_id`
+		AND
+		o.`inclusion_status` = IFNULL(l.`inclusion_status`,'1')
+		LEFT JOIN
+		bd_offer e
+		ON e.`offer_id` = o.`offer_id`
+		WHERE l.`learn_id` =
+		#{learnId}
+		AND l.`scholarship` = o.`scholarship`
+		AND e.`status` = '1'
+		limit 0,1
+	</select>
+
+	<select id="selectFeeNameByLearnId" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+		e.`fee_name`
+		FROM
+		bd_learn_info l
+		LEFT JOIN bd_ptf f
+		ON f.`pfsn_id` = l.`pfsn_id`
+		AND f.`ta_id` = l.`ta_id`
+		LEFT JOIN bd_fee
+		e
+		ON e.`fee_id` = f.`fee_id`
+		WHERE l.`learn_id` = #{learnId}
+		AND
+		l.`scholarship` = f.`scholarship`
+		AND e.`status` = '1'
+		limit 0,1
+	</select>
+
+	<select id="selectGradeByLearnId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select grade from bd_learn_info where learn_id = #{learnId}
+	</select>
+
+	<insert id="insertSerialBatch">
+		insert into bd_student_serial (
+		serial_no,
+		serial_mark,
+		amount,
+		deduction,
+		payable,
+		payment_type,
+		order_no,
+		std_id,
+		std_name,
+		emp_id,
+		emp_name,
+		mobile,
+		out_serial_no,
+		serial_status,
+		check_user,
+		check_user_id,
+		user_id,
+		is_assembly,
+		charge_place,
+		finance_code,
+		campus_name,
+		pay_time,
+		payee_id,
+		remark
+		)
+		values (
+		#{serialNo},
+		#{serialMark},
+		#{amount},
+		#{deduction},
+		#{payable},
+		#{paymentType},
+		#{orderNo},
+		#{stdId},
+		#{stdName},
+		#{empId},
+		#{empName},
+		#{mobile},
+		#{outSerialNo},
+		#{serialStatus},
+		#{checkUser},
+		#{checkUserId},
+		#{userId},
+		#{isAssembly},
+		#{chargePlace},
+		#{financeCode},
+		#{campusName},
+		#{payTime},
+		#{payeeId},
+		#{remark}
+		);
+		insert into bd_serial_suborder(serial_no,sub_order_no)
+		values
+		(#{serialNo},#{subOrderNo});
+
+		insert into bd_sub_serial
+		(sub_serial_no,
+		serial_no,
+		amount,
+		unit,
+		acc_type,
+		payment_type,
+		qr_code,
+		sub_serial_status,
+		coupon_id,
+		coupon_name,
+		sc_id,
+		out_serial_no,
+		zm_scale,
+		remark)
+		values
+		<foreach collection="subSerials" item="subSerial" index="index"
+			separator=",">
+			(
+			#{subSerial.subSerialNo,jdbcType=VARCHAR},
+			#{serialNo,jdbcType=VARCHAR},
+			#{subSerial.amount,jdbcType=VARCHAR},
+			#{subSerial.unit,jdbcType=VARCHAR},
+			#{subSerial.accType,jdbcType=VARCHAR},
+			#{subSerial.paymentType,jdbcType=VARCHAR},
+			#{subSerial.qrCode,jdbcType=VARCHAR},
+			#{subSerial.subSerialStatus,jdbcType=VARCHAR},
+			#{subSerial.couponId,jdbcType=VARCHAR},
+			#{subSerial.couponName,jdbcType=VARCHAR},
+			#{subSerial.scId,jdbcType=VARCHAR},
+			#{subSerial.outSerialNo,jdbcType=VARCHAR},
+			#{subSerial.zmScale,jdbcType=VARCHAR},
+			#{subSerial.remark,jdbcType=VARCHAR}
+			)
+		</foreach>
+
+	</insert>
+
+	<select id="selectPaySubOrderNos" resultType="java.lang.String">
+		select
+		bso.sub_order_no
+		from
+		bd_student_order bs
+		left join bd_sub_order
+		bso
+		on bso.order_no = bs.order_no
+		where bs.learn_id = #{learnId}
+		and
+		bso.item_code in
+		<foreach collection="itemCodes" item="itemCode" open="("
+			close=")" separator=",">
+			#{itemCode}
+		</foreach>
+		and bso.sub_order_status = '1'
+	</select>
+
+	<select id="selectItemNameBySerialMark" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		i.`item_name`
+		FROM
+		bd_student_serial s
+		LEFT JOIN
+		bd_serial_suborder bss
+		ON s.serial_no = bss.serial_no
+		LEFT JOIN
+		bd_sub_order bs
+		ON bs.`sub_order_no` = bss.`sub_order_no`
+		left join
+		bd_fee_item i
+		on i.`item_code` = bs.`item_code`
+		WHERE s.`serial_mark` =
+		#{serialMark}
+	</select>
+	
+	<select id="selectItemCodeByStdid" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT item_code FROM bms.`bd_sub_order` WHERE std_id=#{stdId} AND sub_order_status =2 ;
+	</select>
+
+	<update id="updateSerialSurplus" parameterType="com.yz.model.finance.stdfee.BdSerialSurplus">
+		update
+		bd_serial_surplus
+		<set>
+			<if test="serialMark != null">
+				`serial_mark` = #{serialMark,jdbcType=VARCHAR},
+			</if>
+			<if test="accType != null">
+				`acc_type` = #{accType,jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null">
+				`unit` = #{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				`amount` = #{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				`status` = #{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where `surplus_id` = #{surplusId,jdbcType=VARCHAR}
+	</update>
+
+	<insert id="insertSerialSurplus" parameterType="com.yz.model.finance.stdfee.BdSerialSurplus">
+		insert into
+		`bms`.`bd_serial_surplus` (
+		`surplus_id`,
+		`serial_mark`,
+		`acc_type`,
+		`unit`,
+		`amount`
+		)
+		values
+		(
+		#{surplusId,jdbcType=VARCHAR},
+		#{serialMark,jdbcType=VARCHAR},
+		#{accType,jdbcType=VARCHAR},
+		#{unit,jdbcType=VARCHAR},
+		#{amount,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="getUserId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select user_id from bd_student_info where std_id = #{stdId}
+	</select>
+
+	<select id="selectStdNameBySerialNo" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select
+		i.`std_name`
+		from
+		bd_student_serial s
+		left join
+		bd_student_info i
+		on i.`std_id` = s.`std_id`
+		where s.`serial_no` =
+		#{stdName}
+	</select>
+
+	<select id="selectItemNameBySerialNo" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		i.`item_name`
+		FROM
+		bd_serial_suborder bss
+		LEFT JOIN
+		bd_sub_order bs
+		ON bs.`sub_order_no` = bss.`sub_order_no`
+		left join
+		bd_fee_item i
+		on i.`item_code` = bs.`item_code`
+		WHERE bss.`serial_no` =
+		#{serialNo}
+	</select>
+
+	<select id="selectTutorAndRecruitUserId" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		select
+		o.`user_id` as recruitUserId,
+		e.`user_id` as
+		tutorUserId,
+		s.`user_id` as stdUserId
+		from
+		bd_learn_rules r
+		left join
+		oa_employee o
+		on o.`emp_id` = r.`recruit`
+		left join oa_employee e
+		on
+		e.`emp_id` = r.`tutor`
+		left join bd_learn_info bli
+		on bli.`learn_id` =
+		r.`learn_id`
+		left join bd_student_info s
+		on bli.`std_id` = s.`std_id`
+		where r.`learn_id` = #{learnId}
+	</select>
+
+	<select id="selectPaidTutorAmount" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		SUM(b.`amount`)
+		FROM
+		bd_sub_serial b
+		WHERE b.`serial_no`
+		IN
+		(SELECT
+		ss.`serial_no`
+		FROM
+		bd_student_order o
+		LEFT JOIN bd_sub_order so
+		ON so.`order_no` = o.`order_no`
+		LEFT JOIN bd_serial_suborder ss
+		ON
+		ss.`sub_order_no` = so.`sub_order_no`
+		WHERE o.`learn_id` = #{learnId}
+		AND so.`sub_order_status` = '2'
+		AND ss.`serial_no` IS NOT NULL
+		GROUP BY
+		ss.`serial_no`)
+		AND b.`sub_serial_status` IN ('2', '3')
+		AND
+		b.`payment_type` IN ("1", "2", "11", "4", "6", "9", "10", "12")
+	</select>
+
+	<insert id="insertSubSerial">
+		insert into bd_sub_serial
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			sub_serial_no,
+			<if test="serialNo != null">
+				serial_no,
+			</if>
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="unit != null">
+				unit,
+			</if>
+			<if test="accType != null">
+				acc_type,
+			</if>
+			<if test="paymentType != null">
+				payment_type,
+			</if>
+			<if test="qrCode != null">
+				qr_code,
+			</if>
+			<if test="subSerialStatus != null">
+				sub_serial_status,
+			</if>
+			<if test="couponId != null">
+				coupon_id,
+			</if>
+			<if test="couponName != null">
+				coupon_name,
+			</if>
+			<if test="scId != null">
+				sc_id,
+			</if>
+			<if test="outSerialNo != null">
+				out_serial_no,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="ext1 != null">
+				ext_1,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{subSerialNo},
+			<if test="serialNo != null">
+				#{serialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null">
+				#{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="accType != null">
+				#{accType,jdbcType=VARCHAR},
+			</if>
+			<if test="paymentType != null">
+				#{paymentType,jdbcType=VARCHAR},
+			</if>
+			<if test="qrCode != null">
+				#{qrCode,jdbcType=VARCHAR},
+			</if>
+			<if test="subSerialStatus != null">
+				#{subSerialStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="couponId != null">
+				#{couponId,jdbcType=VARCHAR},
+			</if>
+			<if test="couponName != null">
+				#{couponName,jdbcType=VARCHAR},
+			</if>
+			<if test="scId != null">
+				#{scId,jdbcType=VARCHAR},
+			</if>
+			<if test="outSerialNo != null">
+				#{outSerialNo,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="ext1 != null">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="selectUserId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select
+		user_id
+		from
+		bd_student_info
+		where std_id = #{stdId}
+	</select>
+
+
+
+	<update id="updateCouponUsed">
+		UPDATE
+		bd_student_coupon
+		SET
+		is_use = '1',
+		used_time =
+		NOW()
+		WHERE sc_id = #{scId}
+		AND (std_id = #{stdId}
+		or (select user_id from bd_relation where std_id = #{stdId}) = user_id)
+	</update>
+
+	<select id="selectItemCodes" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+		bci.`item_code`
+		FROM
+		bd_coupon_item bci
+		WHERE
+		bci.`coupon_id` = #{couponId}
+	</select>
+
+	<select id="selectStdIdByLearnId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select bli.std_id from bd_learn_info bli where bli.learn_id
+		= #{learnId}
+	</select>
+
+	<select id="selectCampusInfoByEmpId" parameterType="java.lang.String"
+		resultMap="CampusResult">
+		select
+		oc.`campus_name`,
+		oc.`finance_no`,
+		oc.`address`
+		from
+		oa_employee_job oj
+		left join oa_campus oc
+		on oc.`campus_id` =
+		oj.`campus_id`
+		where oj.`emp_id` = #{empId}
+	</select>
+
+
+
+	<select id="selectScId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select
+		sc_id
+		from bd_student_coupon
+		where std_id = #{stdId}
+		and coupon_id = #{couponId}
+	</select>
+	<select id="selectCouponAmount" resultMap="CouponReulst"
+		parameterType="java.lang.String">
+		SELECT
+		bc.`amount`,
+		bc.`coupon_id`,
+		bc.`coupon_name`
+		FROM
+		bd_coupon bc
+		WHERE bc.`coupon_id` = #{couponId}
+	</select>
+
+	<select id="selectCouponAmountToPay" resultMap="CouponReulst"
+		parameterType="java.lang.String">
+		SELECT
+		coupon_id,
+		coupon_name,
+		amount,
+		sc_id
+		FROM
+		(SELECT
+		bc.`coupon_id`,
+		bc.`coupon_name`,
+		bc.`create_time`,
+		bc.`amount`,
+		bsc.`sc_id`
+		FROM
+		bms.bd_learn_info l 
+	    left join bms.bd_student_coupon bsc 
+	      on bsc.`std_id` = l.`std_id` 
+	    left join bms.bd_coupon bc 
+	      on bc.`coupon_id` = bsc.`coupon_id` 
+	    left join bms.bd_ptc bp 
+	      on bp.`coupon_code` = bc.`coupon_id` 
+	    LEFT JOIN bms.bd_coupon_trigger r 
+	      ON r.`coupon_id` = bc.`coupon_id` 
+	      and bp.`pfsn_id` = l.`pfsn_id` 
+	      AND bp.`scholarship` = l.`scholarship` 
+	      AND bp.`ta_id` = l.`ta_id` 
+	  where l.`learn_id` = #{learnId} 
+		AND bc.`coupon_id` = #{couponId}
+		and bsc.sc_id = #{scId}
+		AND
+		bsc.`is_use` = '0'
+		AND r.`c_trigger_type` = '1'
+		AND
+		bc.`available_start_time` &lt;= NOW()
+		AND bc.`available_expire_time`
+		&gt;= NOW()
+		UNION
+		  SELECT 
+	    bc.`coupon_id`,
+	    bc.`coupon_name`,
+	    bc.`create_time`,
+	    bc.`amount`,
+	    bsc.`sc_id` 
+	  FROM
+	    bms.bd_student_coupon bsc 
+	    LEFT JOIN bms.bd_coupon bc 
+	      ON bc.`coupon_id` = bsc.`coupon_id` 
+	    LEFT JOIN bms.bd_coupon_trigger r 
+	      ON r.`coupon_id` = bc.`coupon_id` 
+	  WHERE (bsc.std_id = #{stdId} OR bsc.`user_id` = #{userId}) AND r.`c_trigger_type` IN('2','3')
+	    AND bsc.`is_use` = '0' 
+	    AND r.`c_trigger_type` IN ('2','3') 
+	    and bsc.sc_id = #{scId}
+	    AND bc.`coupon_id` = #{couponId}
+	    AND bc.`available_start_time` &lt;= NOW() 
+	    AND bc.`available_expire_time` &gt;= NOW()
+		) AS a
+	</select>
+	
+	<select id="selectStdUserIdByLearnId" parameterType="java.lang.String" resultType="java.util.HashMap" >
+  		SELECT i.std_id stdId,i.user_id userId FROM bd_student_info i LEFT JOIN bd_learn_info l ON l.`std_id` = i.`std_id` WHERE l.`learn_id` = #{learnId} GROUP BY i.`std_id`
+  	</select>
+
+	<select id="selectCouponByLearnId" parameterType="java.lang.String"
+		resultMap="StudentCouponResult">
+		SELECT
+		coupon_id,
+		coupon_name,
+		amount,
+		sc_id
+		FROM
+		(SELECT 
+			  bc.`coupon_id`,
+			  bc.`coupon_name`,
+			  date_format(
+			    bc.`available_start_time`,
+			    '%Y-%m-%d %H:%i:%s'
+			  ) available_start_time,
+			  date_format(
+			    bc.`available_expire_time`,
+			    '%Y-%m-%d %H:%i:%s'
+			  ) available_expire_time,
+			  bc.`amount`,
+			  bsc.`is_use`,
+			  bc.`is_allow`,
+			  bsc.`create_time`,
+			  bsc.sc_id 
+			from 						
+			  bms.bd_learn_info l 
+			    left join bms.bd_student_coupon bsc 
+			      on bsc.`std_id` = l.`std_id` 
+			    left join bms.bd_coupon bc 
+			      on bc.`coupon_id` = bsc.`coupon_id` 
+			    left join bms.bd_ptc bp 
+			      on bp.`coupon_code` = bc.`coupon_id` 
+			    LEFT JOIN bms.bd_coupon_trigger r 
+			      ON r.`coupon_id` = bc.`coupon_id` 
+			      and bp.`pfsn_id` = l.`pfsn_id` 
+			      AND bp.`scholarship` = l.`scholarship` 
+			      AND bp.`ta_id` = l.`ta_id` 
+			  where l.`learn_id` = #{learnId}
+			  AND r.`c_trigger_type` = '1' 
+			  and bsc.is_use = '0' 
+		  UNION
+		    SELECT 
+		    bc.`coupon_id`,
+		    bc.`coupon_name`,
+		    date_format(
+		      bc.`available_start_time`,
+		      '%Y-%m-%d %H:%i:%s'
+		    ) available_start_time,
+		    date_format(
+		      bc.`available_expire_time`,
+		      '%Y-%m-%d %H:%i:%s'
+		    ) available_expire_time,
+		    bc.`amount`,
+		    bsc.`is_use`,
+		    bc.`is_allow`,
+		    bsc.`create_time`,
+		    bsc.sc_id 
+		  FROM
+		    bms.bd_student_coupon bsc 
+		    LEFT JOIN bms.bd_coupon bc 
+		      ON bsc.`coupon_id` = bc.`coupon_id` 
+		    LEFT JOIN bms.bd_coupon_trigger r 
+		      ON r.`coupon_id` = bc.`coupon_id`
+		  WHERE  (bsc.std_id = #{stdId} or bsc.`user_id` = #{userId}) 
+		  	and r.`c_trigger_type` in('2','3') 
+		    and bsc.is_use = '0' 
+		  ) AS a 
+		  GROUP BY sc_id
+		ORDER BY a.`create_time`
+	</select>
+
+	<update id="updateStdStage">
+		UPDATE
+		bd_learn_info bli
+		SET
+		bli.`std_stage` =
+		#{stdStage}
+		WHERE bli.`learn_id` = #{learnId}
+	</update>
+
+	<select id="selectSubOrderStatusByItemCode" resultType="java.lang.String">
+		SELECT
+		bso.sub_order_status
+		FROM
+		bd_student_order bs
+		LEFT JOIN bd_sub_order bso
+		ON bs.`order_no` = bso.`order_no`
+		WHERE bs.`learn_id` = #{learnId}
+		AND
+		bso.`item_code` = #{itemCode}
+	</select>
+
+	<select id="findItemCodeHaveNot" resultMap="PayInfoResultMap">
+		select
+		bfi.item_code,
+		bfi.item_name
+		from
+		bd_fee_item bfi
+		where
+		bfi.item_code not in
+		(select
+		bso.item_code
+		from
+		bd_student_order bs
+		left
+		join bd_sub_order bso
+		on bso.order_no = bs.order_no
+		where bs.learn_id =
+		#{learnId})
+		<if test="sName != null and sName != ''">
+			and
+			(
+			bfi.item_name LIKE CONCAT('%',#{sName,
+			jdbcType=VARCHAR},'%')
+			or bfi.item_code LIKE CONCAT('%',#{sName,
+			jdbcType=VARCHAR},'%')
+			)
+		</if>
+	</select>
+
+	<insert id="addPayableItem">
+		INSERT INTO bd_sub_order (
+		sub_order_no,
+		order_no,
+		item_code,
+		fee_amount,
+		payable,
+		sub_order_status,
+		std_id,
+		mobile,
+		std_name
+		)
+		VALUES
+		(
+		#{subOrderNo},
+		#{orderNo},
+		#{itemCode},
+		#{feeAmount},
+		#{payable},
+		#{subOrderStatus},
+		#{stdId},
+		#{mobile},
+		#{stdName}
+		)
+	</insert>
+
+	<select id="selectPaidInfo" parameterType="java.lang.String"
+		resultMap="PayInfoResultMap">
+		select
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bso.`payable`,
+		bso.`sub_order_status`
+		from
+		bd_serial_suborder bss
+		left join bd_sub_order
+		bso
+		on bso.sub_order_no = bss.sub_order_no
+		LEFT JOIN bd_fee_item bfi
+		ON
+		bfi.`item_code` = bso.`item_code`
+		where bss.serial_no = #{serialNo}
+	</select>
+
+	<select id="selectPayDetailByStdId" parameterType="java.lang.String"
+		resultMap="PayDetailResult">
+		select
+		bss.`serial_no`,
+		bss.`std_id`,
+		bss.`payment_type`,
+		bss.`amount`,
+		bss.`payable`,
+		date_format(bss.`pay_time`,'%Y-%m-%d
+		%H:%i:%s') `pay_time`,
+		bss.`order_no`,
+		bss.`out_serial_no`,
+		bss.`emp_id`,
+		bss.`emp_name`,
+		bss.`serial_status`,
+		bss.`check_user`,
+		bss.`demurrage_before`,
+		bss.`demurrage_after`,
+		bss.`check_user_id`,
+		bsr.`rept_status`
+		from
+		bd_student_serial bss
+		left join `bd_student_order`
+		bs
+		on bss.order_no = bs.order_no
+		LEFT JOIN `bd_student_rept` bsr
+		ON
+		bsr.serial_mark = bss.serial_mark
+		where bs.std_id = #{stdId}
+		AND
+		bss.`serial_status` IN ('2', '3')
+		ORDER BY
+		bss.`pay_time`
+	</select>
+
+	<select id="selectPayDetailByLearnId" parameterType="java.lang.String"
+		resultMap="PayDetailResult">
+		select
+		bss.`serial_no`,
+		bss.`payment_type`,
+		bss.`serial_mark`,
+		bss.`amount`,
+		bss.`payable`,
+		date_format(bss.`pay_time`,'%Y-%m-%d
+		%H:%i:%s') `pay_time`,
+		bss.`order_no`,
+		bss.`out_serial_no`,
+		bss.`emp_id`,
+		bss.`emp_name`,
+		bss.`serial_status`,
+		bss.`check_user`,
+		bss.`demurrage_before`,
+		bss.`demurrage_after`,
+		bss.`check_user_id`,
+		bsr.`rept_status`,
+		bss.`remark`
+		from
+		bd_student_serial bss
+		LEFT JOIN
+		`bd_student_order` bs
+		ON bss.order_no = bs.order_no
+		LEFT JOIN
+		bd_rept_serial rs
+		ON rs.`serial_mark` = bss.`serial_mark`
+		LEFT JOIN
+		`bd_student_rept` bsr
+		ON bsr.rept_id = rs.`rept_id`
+		where bs.learn_id =
+		#{learId}
+		AND bss.`serial_status` IN ('2', '3')
+		ORDER BY
+		bss.`pay_time`
+		DESC
+	</select>
+
+	<select id="selectSubSerial" parameterType="java.lang.String"
+		resultMap="SubSerialResult">
+		SELECT
+		bss.`sub_serial_no`,
+		bss.`serial_no`,
+		bss.`amount`,
+		bss.`acc_type`,
+		bss.`payment_type`,
+		bss.`sub_serial_status`,
+		bss.`coupon_id`,
+		bss.`coupon_name`,
+		bss.`out_serial_no`
+		FROM
+		bd_sub_serial bss
+		WHERE bss.`serial_no` = #{serialNo}
+	</select>
+
+	<select id="selectSubOrder" parameterType="java.lang.String"
+		resultType="com.yz.model.finance.BdSubOrder">
+		select
+		bso.sub_order_no subOrderNo,
+		bso.item_code itemCode
+		from
+		bd_sub_order bso
+		where bso.order_no = #{orderNo}
+	</select>
+
+	<select id="selectOrder" resultMap="OrderResult" parameterType="java.lang.String">
+		SELECT
+		bs.order_no,
+		bs.amount,
+		bs.payable,
+		bs.discount,
+		bs.learn_id,
+		bs.std_id,
+		bs.std_name,
+		bs.mobile,
+		bs.unvs_id,
+		bs.unvs_name,
+		bs.pfsn_id,
+		bs.pfsn_name,
+		bs.ta_id,
+		bs.ta_name,
+		bs.create_time,
+		bs.expire_time,
+		bs.order_status,
+		bs.payee_id
+		FROM
+		bd_student_order bs
+		WHERE bs.learn_id =
+		#{learnId}
+	</select>
+
+	<insert id="insertOrderSerial">
+		insert into bd_student_serial (
+		serial_no,
+		amount,
+		deduction,
+		payable,
+		payment_type,
+		order_no,
+		std_id,
+		std_name,
+		pay_time,
+		emp_id,
+		emp_name,
+		mobile,
+		out_serial_no,
+		serial_status,
+		check_user,
+		check_user_id,
+		user_id,
+		is_assembly,
+		charge_place,
+		finance_code,
+		campus_name,
+		demurrage_before,
+		ext_1
+		)
+		values (
+		#{serial.serialNo},
+		#{serial.amount},
+		#{serial.deduction},
+		#{serial.payable},
+		#{serial.paymentType},
+		#{serial.orderNo},
+		#{serial.stdId},
+		#{serial.stdName},
+		NOW(),
+		#{serial.empId},
+		#{serial.empName},
+		#{serial.mobile},
+		#{serial.outSerialNo},
+		#{serial.serialStatus},
+		#{serial.checkUser},
+		#{serial.checkUserId},
+		#{serial.userId},
+		#{serial.isAssembly},
+		#{serial.chargePlace},
+		#{serial.financeCode},
+		#{serial.campusName},
+		#{serial.demurrageBefore},
+		#{serial.ext1}
+		);
+		insert into
+		bd_serial_suborder(serial_no,sub_order_no)
+		values
+		<foreach collection="subOrderNos" item="subOrderNo" index="index"
+			separator=",">
+			(#{serial.serialNo},#{subOrderNo})
+		</foreach>
+	</insert>
+
+	<update id="updateAfterAmount" parameterType="com.yz.model.finance.stdfee.BdStudentSerial">
+		update
+		bd_student_serial
+		set
+		demurrage_after = #{demurrageAfter}
+		where serial_no
+		= #{serialNo}
+	</update>
+
+	<select id="selectAmountByItems" resultType="com.yz.model.finance.fee.FeeItemForm">
+		select
+		bso.payable amount,
+		bso.item_code itemCode,
+		f.item_type itemType,
+		f.zm_coupon_num zmCouponNum,
+		f.delay_num delayNum
+		from
+		bd_student_order
+		bs
+		LEFT JOIN `bd_sub_order` bso
+		ON bso.order_no = bs.order_no
+		left join
+		bd_fee_item f
+		on f.`item_code` = bso.`item_code`
+		WHERE bs.learn_id =
+		#{learnId}
+		AND bso.item_code IN
+		<foreach collection="itemCodes" item="itemCode" open="("
+			close=")" separator=",">
+			#{itemCode}
+		</foreach>
+		and bso.sub_order_status = '1'
+	</select>
+
+	<select id="selectPaySubOrderNo" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select
+		bso.sub_order_no
+		from
+		bd_student_order bs
+		left join
+		bd_sub_order bso
+		on bso.order_no = bs.order_no
+		where bs.learn_id =
+		#{learnId}
+		and bso.item_code = #{itemCode}
+		and bso.sub_order_status =
+		'1'
+	</select>
+
+	<update id="updateSubOrderPaid">
+		UPDATE
+		bd_student_order bs
+		LEFT JOIN `bd_sub_order` bso
+		ON bso.order_no =
+		bs.order_no SET bso.sub_order_status = '2'
+		WHERE bs.learn_id =
+		#{learnId}
+		AND bso.item_code IN
+		<foreach collection="itemCodes" item="itemCode" open="("
+			close=")" separator=",">
+			#{itemCode}
+		</foreach>
+		and bso.sub_order_status = '1'
+	</update>
+
+	<select id="selectStdInfoByStdId" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		select
+		std_name stdName,
+		std_id stdId,
+		id_card idCard
+		from
+		bd_student_info where std_id = #{stdId}
+	</select>
+
+	<select id="selectPayableInfoByLearnId" parameterType="java.lang.String"
+		resultMap="PayableInfoResultMap">
+		SELECT
+		i.std_name,
+		bu.`recruit_type`,
+		bu.`unvs_name`,
+		bup.`pfsn_code`,
+		bup.`grade`,
+		bup.`pfsn_name`,
+		bup.`pfsn_level`,
+		bs.learn_id,
+		#{subOrderStatus} as subOrderStatus,
+		bs.std_id,
+		bli.scholarship
+		FROM
+		bd_student_order bs
+		left join bd_learn_info bli
+		ON
+		bli.learn_id = bs.learn_id
+		LEFT JOIN bd_university bu
+		ON bu.`unvs_id` =
+		bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON bup.`pfsn_id` =
+		bli.`pfsn_id`
+		LEFT JOIN bd_student_info i
+		on i.`std_id` = bli.`std_id`
+		WHERE bs.`learn_id` = #{learnId}
+	</select>
+
+	<select id="selectPayInfo" parameterType="java.lang.String"
+		resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bso.`payable`,
+		bso.`sub_order_status`
+		FROM
+		bd_student_order bs
+		LEFT JOIN bd_sub_order
+		bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN bd_fee_item bfi
+		ON
+		bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id` = #{learn_id}
+		and
+		bso.sub_order_status != '4'
+		and
+		bso.sub_order_status != '3'
+		ORDER BY
+		bfi.order_num
+	</select>
+
+	<select id="selectStudentSerialByLearnId" resultType="com.yz.model.communi.Body">
+		SELECT
+		aas.`acc_serial_no` accSerialNo,
+		aas.`acc_id` accId,
+		aas.`acc_type` accType,
+		aas.`std_id` stdId,
+		aas.`user_id` userId,
+		aas.`emp_id` empId,
+		aas.`amount` amount,
+		aas.`mapping_id` mappingId
+		FROM goods.`ats_account_serial` aas
+		LEFT JOIN bms.`bd_student_serial` bss ON
+		bss.`serial_mark`=aas.`mapping_id`
+		LEFT JOIN bms.`bd_learn_info` bli ON bli.`std_id`= bss.`std_id`
+		WHERE
+		bss.serial_status IN('2','3')
+		AND aas.`acc_type`=2
+		AND aas.`action`='1'
+		<if test="learnId !=null and '' != learnId">
+			AND bli.learn_id=#{learnId}
+		</if>
+		UNION
+		SELECT
+		aas.`acc_serial_no` accSerialNo,
+		aas.`acc_id` accId,
+		aas.`acc_type` accType,
+		aas.`std_id` stdId,
+		aas.`user_id` userId,
+		aas.`emp_id` empId,
+		aas.`amount` amount,
+		aas.`mapping_id` mappingId
+		FROM goods.`ats_account_serial` aas
+		LEFT JOIN bms.`bd_student_order` bso ON bso.`order_no` = aas.`mapping_id`
+		LEFT JOIN bms.`bd_learn_info` bli ON bli.`learn_id`=bso.`learn_id`
+		WHERE
+		aas.`acc_type`=2
+		AND aas.`action`='1'
+		<if test="learnId !=null and '' != learnId">
+			AND bli.learn_id=#{learnId}
+		</if>
+	</select>
+
+	<select id="selectPayableInfo" resultMap="PayInfoResultMap">
+		SELECT bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		sub.`sub_order_no`,
+		sub.`payable`,
+		sub.`sub_order_status`,
+		sub.`refund_amount`,
+		SUM(IF(subser.`payment_type` NOT IN
+		('6','7','8'),subser.`amount`,0)) amount,
+		SUM(IF(subser.`payment_type`='7',subser.`amount`,0)) zmamount,
+		SUM(IF(subser.`payment_type`='6',subser.`amount`,0)) zlamount,
+		SUM(IF(subser.`payment_type`='8',subser.`amount`,0)) yhqamount
+		FROM
+		bms.`bd_sub_order` sub
+		LEFT JOIN bms.`bd_student_order` o
+		ON
+		o.`order_no`=sub.`order_no`
+		LEFT JOIN bms.`bd_fee_item` bfi
+		ON
+		bfi.`item_code` =sub.`item_code`
+		LEFT JOIN bms.`bd_serial_suborder`
+		sersub
+		ON sersub.`sub_order_no`=sub.`sub_order_no`
+		LEFT JOIN
+		bms.`bd_sub_serial`
+		subser
+		ON subser.`serial_no`=sersub.`serial_no`
+		WHERE o.`learn_id`=#{learnId}
+		<if test="subOrderStatus !=null and '' !=subOrderStatus">
+			AND sub.sub_order_status = #{subOrderStatus}
+		</if>
+		AND subser.sub_serial_status IN('2','3')
+		GROUP BY sub.`sub_order_no`;
+	</select>
+	<select id="selectTutorPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` = 1
+		ORDER BY bfi.order_num
+	</select>
+	<select id="selectFirstPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` in('2','4','5')
+		and bfi.item_year
+		= 1
+		ORDER BY
+		bfi.order_num
+	</select>
+	<select id="selectSecondPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` in('2','4','5')
+		and bfi.item_year
+		= 2
+		ORDER BY
+		bfi.order_num
+	</select>
+	<select id="selectThirdPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` in('2','4','5')
+		and bfi.item_year
+		= 3
+		ORDER BY
+		bfi.order_num
+	</select>
+	<select id="selectFourPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` in('2','4','5')
+		and bfi.item_year
+		= '4'
+		ORDER BY
+		bfi.order_num
+	</select>
+	<select id="selectOtherPayableInfo" resultMap="PayInfoResultMap">
+		SELECT
+		bfi.`item_code`,
+		bfi.`item_name`,
+		bfi.`item_year`,
+		bso.`payable`,
+		bso.`sub_order_status`,
+		bso.refund_amount
+		FROM
+		bd_student_order bs
+		LEFT
+		JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no`
+		LEFT JOIN
+		bd_fee_item bfi
+		ON bfi.`item_code` = bso.`item_code`
+		WHERE bs.`learn_id`
+		= #{learnId}
+		and bso.sub_order_status =
+		#{subOrderStatus}
+		and
+		bfi.`item_type` = 3
+		ORDER BY bfi.order_num
+	</select>
+
+	<select id="selectStdPayFeeByPage" resultMap="BaseResultMap">
+		SELECT
+		bsi.`std_id`,
+		bsi.`std_name`,
+		if(aac.`acc_amount` is null,'0.00',aac.`acc_amount`) acc_amount,
+		bli.`learn_id`,
+		bli.`std_stage`,
+		bs.`order_status`,
+		bu.`recruit_type`,
+		bu.`unvs_name`,
+		bup.`pfsn_code`,
+		bli.`grade`,
+		bli.`std_type`,
+		bup.`pfsn_name`,
+		bup.`pfsn_level`,
+		bli.`fee_id`,
+		bli.`pfsn_id`,
+		bli.`ta_id`,
+		bli.`scholarship`,
+		bli.`inclusion_status`
+		FROM
+		bd_student_info bsi
+		LEFT JOIN bd_learn_info
+		bli
+		ON bli.`std_id` = bsi.`std_id`
+		LEFT JOIN bd_student_order bs
+		ON
+		bs.`learn_id` = bli.`learn_id`
+		LEFT JOIN bd_university bu
+		ON
+		bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON
+		bup.`pfsn_id` = bli.`pfsn_id`
+		LEFT JOIN bd_test_area bta
+		ON bta.`ta_id`
+		= bli.`ta_id`
+		LEFT JOIN goods.`ats_account` aac ON aac.`std_id` = bsi.`std_id` AND aac.`acc_type`='3'
+		<where>
+			<if test="stdName != null and stdName != ''">
+				and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName},
+				'%'))
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and bsi.id_card = #{idCard}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and bsi.mobile = #{mobile}
+			</if>
+			<if test="recruitType != null and recruitType != ''">
+				and bli.recruit_type = #{recruitType}
+			</if>
+			<if test="stdStage != null and stdStage != ''">
+				and bli.std_stage = #{stdStage}
+			</if>
+			<if test="scholarship != null and scholarship != ''">
+				and bli.scholarship = #{scholarship}
+			</if>
+			<if test="grade !=null and '' != grade">
+				and bli.`grade` = #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="unvsId !=null and '' !=unvsId">
+				and bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId !=null and '' != pfsnId">
+				and bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' !=pfsnLevel">
+				and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="sg !=null and '' != sg">
+				and bli.`sg` = #{sg,jdbcType=VARCHAR}
+			</if>
+			<if test="inclusionStatus !=null and '' != inclusionStatus">
+				and bli.`inclusion_status` =
+				#{inclusionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="taName !=null and '' != taName">
+				and bta.`ta_name` = #{taName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by bs.create_time desc
+	</select>
+
+	<select id="findStudentInfo" resultMap="StudentMap"
+		parameterType="java.lang.String">
+		SELECT bli.`std_id`,bli.`learn_id`,bsi.`std_name`,bli.grade FROM
+		bd_student_info
+		bsi
+		LEFT JOIN
+		bd_student_other bso
+		ON bsi.`std_id` =
+		bso.`std_id`
+		LEFT JOIN
+		bd_learn_info bli
+		ON bsi.`std_id` = bli.`std_id`
+		<where>
+			bli.`std_stage` NOT IN ('8','10')
+			<if test="sName != null and sName != ''">
+				AND (
+				bsi.`std_name` LIKE CONCAT('%',#{sName,
+				jdbcType=VARCHAR},'%')
+				or bso.`telephone` LIKE CONCAT('%',#{sName,
+				jdbcType=VARCHAR},'%')
+				or bsi.`id_card` LIKE CONCAT('%',#{sName,
+				jdbcType=VARCHAR},'%')
+				or bso.`std_id` LIKE CONCAT('%',#{sName,
+				jdbcType=VARCHAR},'%')
+				)
+			</if>
+
+		</where>
+	</select>
+
+	<!-- 二维码支付 -->
+	<resultMap id="BaseResultQRCodeMap"
+		type="com.yz.model.finance.stdfee.BdQRCodePayableInfoResponse">
+		<result column="std_id" property="stdId" />
+		<result column="std_name" property="stdName" />
+		<result column="learn_id" property="learnId" />
+		<result column="std_stage" property="stdStage" />
+		<result column="recruit_type" property="recruitType" />
+		<result column="unvs_name" property="unvsName" />
+		<result column="grade" property="grade" />
+		<result column="pfsn_code" property="pfsnCode" />
+		<result column="pfsn_name" property="pfsnName" />
+		<result column="pfsn_level" property="pfsnLevel" />
+		<result column="learn_id" property="learnId" />
+		<result column="order_status" property="orderStatus" />
+		<result column="mobile" property="mobile" />
+		<result column="id_card" property="idCard" />
+	</resultMap>
+
+	<select id="selectStdPayFeeByCondition" resultMap="BaseResultQRCodeMap"
+		parameterType="java.lang.String">
+		SELECT
+		bsi.`std_id`,
+		bsi.`std_name`,
+		bli.`learn_id`,
+		bli.`std_stage`,
+		bs.order_status,
+		bu.`recruit_type`,
+		bu.`unvs_name`,
+		bup.`pfsn_code`,
+		bli.`grade`,
+		bup.`pfsn_name`,
+		bup.`pfsn_level`,
+		bsi.`mobile`,
+		bsi.`id_card`
+		FROM
+		bd_learn_info bli
+		LEFT JOIN bd_student_info bsi
+		ON
+		bsi.`std_id` = bli.`std_id`
+		LEFT JOIN bd_student_order bs
+		ON
+		bs.`learn_id` = bli.`learn_id`
+		LEFT JOIN bd_university bu
+		ON
+		bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON
+		bup.`pfsn_id` = bli.`pfsn_id`
+		LEFT JOIN bd_learn_rules blr
+		ON
+		blr.`learn_id` = bli.`learn_id`
+		<where>
+			<if test="condition !=null and '' != condition">
+				and (
+				bsi.`std_name` LIKE CONCAT('%',#{condition,
+				jdbcType=VARCHAR},'%')
+				or bsi.`mobile`=#{condition,jdbcType=VARCHAR}
+				or bsi.`id_card`=#{condition, jdbcType=VARCHAR}
+				)
+			</if>
+			<if test="empId !=null and '' != empId">
+				and blr.`recruit` = #{empId,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by bs.create_time desc
+	</select>
+
+	<resultMap id="StudentCouponResult" type="com.yz.model.finance.coupon.BdCoupon">
+		<result column="coupon_id" property="couponId" jdbcType="VARCHAR" />
+		<result column="coupon_name" property="couponName" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="available_start_time" property="availableStartTime"
+			jdbcType="VARCHAR" />
+		<result column="available_expire_time" property="availableExpireTime"
+			jdbcType="VARCHAR" />
+		<result column="is_allow" property="isAllow" jdbcType="VARCHAR" />
+		<result column="is_use" property="isUse" jdbcType="VARCHAR" />
+		<result column="sc_id" property="scId" jdbcType="VARCHAR" />
+		<association column="coupon_id" property="itemCodes"
+			select="selectCouponItems" />
+	</resultMap>
+
+	<select id="selectAbleCouponByLearnId" parameterType="java.lang.String"
+		resultMap="StudentCouponResult">
+		SELECT 
+		  * 
+		FROM
+		  (SELECT 
+			  bc.`coupon_id`,
+			  bc.`coupon_name`,
+			  date_format(
+			    bc.`available_start_time`,
+			    '%Y-%m-%d %H:%i:%s'
+			  ) available_start_time,
+			  date_format(
+			    bc.`available_expire_time`,
+			    '%Y-%m-%d %H:%i:%s'
+			  ) available_expire_time,
+			  bc.`amount`,
+			  bsc.`is_use`,
+			  bc.`is_allow`,
+			  bsc.`create_time`,
+			  bsc.sc_id 
+			from 						
+			  bms.bd_learn_info l 
+			    left join bms.bd_student_coupon bsc 
+			      on bsc.`std_id` = l.`std_id` 
+			    left join bms.bd_coupon bc 
+			      on bc.`coupon_id` = bsc.`coupon_id` 
+			    left join bms.bd_ptc bp 
+			      on bp.`coupon_code` = bc.`coupon_id` 
+			    LEFT JOIN bms.bd_coupon_trigger r 
+			      ON r.`coupon_id` = bc.`coupon_id` 
+			      and bp.`pfsn_id` = l.`pfsn_id` 
+			      AND bp.`scholarship` = l.`scholarship` 
+			      AND bp.`ta_id` = l.`ta_id` 
+			  where l.`learn_id` = #{learnId} 
+			  AND r.`c_trigger_type` = '1' 
+			  and bsc.is_use = '0' 
+		  UNION
+		    SELECT 
+		    bc.`coupon_id`,
+		    bc.`coupon_name`,
+		    date_format(
+		      bc.`available_start_time`,
+		      '%Y-%m-%d %H:%i:%s'
+		    ) available_start_time,
+		    date_format(
+		      bc.`available_expire_time`,
+		      '%Y-%m-%d %H:%i:%s'
+		    ) available_expire_time,
+		    bc.`amount`,
+		    bsc.`is_use`,
+		    bc.`is_allow`,
+		    bsc.`create_time`,
+		    bsc.sc_id 
+		  FROM
+		    bms.bd_student_coupon bsc 
+		    LEFT JOIN bms.bd_coupon bc 
+		      ON bsc.`coupon_id` = bc.`coupon_id` 
+		    LEFT JOIN bms.bd_coupon_trigger r 
+		      ON r.`coupon_id` = bc.`coupon_id`
+		  WHERE  (bsc.std_id = #{stdId} or bsc.`user_id` = #{userId}) 
+		  	and r.`c_trigger_type` in('2','3') 
+		    and bsc.is_use = '0' 
+		  ) AS a 
+		  GROUP BY sc_id
+		ORDER BY a.`create_time`
+	</select>
+	<select id="selectCouponItems" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		item_code
+		FROM
+		bd_coupon_item
+		WHERE coupon_id =
+		#{couponId}
+	</select>
+
+
+	<select id="selectLearnInfoByLearnId" parameterType="java.lang.String"
+		resultType="com.yz.model.recruit.BdLearnInfo">
+		select
+		bli.learn_id learnId,
+		bli.recruit_type recruitType,
+		bli.std_stage stdStage,
+		bli.ta_id taId,
+		bli.scholarship,
+		bli.unvs_id
+		unvsId,
+		bli.pfsn_id pfsnId,
+		bsi.std_id stdId,
+		bli.grade
+		from
+		bd_learn_info
+		bli
+		left join bd_student_info bsi
+		on bsi.std_id = bli.std_id
+		where
+		bli.`learn_id` = #{learnId}
+	</select>
+
+
+	<select id="getStdLearndIdsByCond" resultType="java.lang.String">
+		SELECT
+		bli.`learn_id`
+		FROM
+		bd_student_info bsi
+		LEFT JOIN bd_learn_info bli
+		ON bli.`std_id` = bsi.`std_id`
+		LEFT JOIN bd_student_order bs
+		ON
+		bs.`learn_id` = bli.`learn_id`
+		LEFT JOIN bd_university bu
+		ON
+		bu.`unvs_id` = bli.`unvs_id`
+		LEFT JOIN bd_unvs_profession bup
+		ON
+		bup.`pfsn_id` = bli.`pfsn_id`
+		LEFT JOIN bd_test_area bta
+		ON bta.`ta_id`
+		= bli.`ta_id`
+		<where>
+			<if test="stdName != null and stdName != ''">
+				and bsi.std_name LIKE CONCAT('%', CONCAT(#{stdName},
+				'%'))
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and bsi.id_card = #{idCard}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				and bsi.mobile = #{mobile}
+			</if>
+			<if test="recruitType != null and recruitType != ''">
+				and bli.recruit_type = #{recruitType}
+			</if>
+			<if test="stdStage != null and stdStage != ''">
+				and bli.std_stage = #{stdStage}
+			</if>
+			<if test="scholarship != null and scholarship != ''">
+				and bli.scholarship = #{scholarship}
+			</if>
+			<if test="grade !=null and '' != grade">
+				and bli.`grade` = #{grade,jdbcType=VARCHAR}
+			</if>
+			<if test="unvsId !=null and '' !=unvsId">
+				and bu.`unvs_id` = #{unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnId !=null and '' != pfsnId">
+				and bup.`pfsn_id` = #{pfsnId,jdbcType=VARCHAR}
+			</if>
+			<if test="pfsnLevel !=null and '' !=pfsnLevel">
+				and bup.`pfsn_level` = #{pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="sg !=null and '' != sg">
+				and bli.`sg` = #{sg,jdbcType=VARCHAR}
+			</if>
+			<if test="inclusionStatus !=null and '' != inclusionStatus">
+				and bli.`inclusion_status` =
+				#{inclusionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="taName !=null and '' != taName">
+				and bta.`ta_name` = #{taName,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by bs.create_time desc
+	</select>
+
+    <select id="selectItemCodesBySerialMark" parameterType="java.lang.String" resultType="java.lang.String">
+    	select 
+		  so.`item_code` 
+		from
+		  bms.bd_student_serial s 
+		  left join bms.bd_serial_suborder o 
+		    on o.`serial_no` = s.`serial_no` 
+		  left join bms.bd_sub_order so 
+		    on so.`sub_order_no` = o.`sub_order_no` 
+		where serial_mark = #{serialMark}
+    </select>
+</mapper>

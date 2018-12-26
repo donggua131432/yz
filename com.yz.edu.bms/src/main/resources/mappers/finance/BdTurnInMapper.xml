@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdTurnInMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.finance.BdTurnIn" >
+    <id column="turn_id" property="turnId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="school_year" property="schoolYear" jdbcType="CHAR" />
+    <result column="amount" property="amount" jdbcType="VARCHAR" />
+    <result column="turn_date" property="turnDate" jdbcType="VARCHAR" />
+    <result column="return_amount" property="returnAmount" jdbcType="VARCHAR" />
+    <result column="back_date" property="backDate" jdbcType="VARCHAR" />
+    <result column="bill_no" property="billNo" jdbcType="VARCHAR" />
+    <result column="emp_name" property="empName" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    turn_id, learn_id, school_year, amount, turn_date, return_amount, back_date, bill_no, 
+    emp_name, update_time, update_user, update_user_id, create_user_id, create_time, 
+    create_user
+  </sql>
+  
+  <select id="selectTurnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select turn_id from bd_turn_in where learn_id = #{learnId} and school_year = #{schoolYear}
+  </select>
+  
+  <select id="selectStdInfo" parameterType="java.lang.String" resultType="com.yz.model.finance.BdTurnIn">
+  	SELECT 
+	  l.`learn_id` learnId,
+	  i.`std_name` stdName,
+	  i.`sex`,
+	  i.`id_card` idCard,
+	  l.`grade`,
+	  u.`unvs_name` unvsName,
+	  p.`pfsn_level` pfsnLevel,
+	  p.`pfsn_name` pfsnName,
+	  l.`scholarship`,
+	  l.`inclusion_status` inclusionStatus,
+	  t.`school_year` schoolYear,
+	  t.`amount`,
+	  DATE_FORMAT(t.`turn_date`, '%Y-%m-%d') turnDate,
+	  t.`return_amount` returnAmount,
+	  DATE_FORMAT(t.`back_date`, '%Y-%m-%d') backDate,
+	  t.`bill_no` billNo,
+	  t.`emp_name` empName,
+	  l.`school_roll` schoolRoll
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_info i 
+	    ON i.`std_id` = l.`std_id` 
+	  LEFT JOIN bd_university u 
+	    ON u.`unvs_id` = l.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession p 
+	    ON p.`pfsn_id` = l.`pfsn_id` 
+	  LEFT JOIN bd_turn_in t 
+	    ON t.`learn_id` = l.`learn_id` AND t.`school_year` = #{schoolYear}
+	 where l.learn_id = #{learnId}
+	 and (t.school_year = #{schoolYear} OR t.school_year IS NULL)
+  </select>
+  
+  <select id="selectTurnInCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select count(*) from bd_turn_in where learn_id = #{learnId} and school_year = #{schoolYear}
+  </select>
+  
+  <select id="selectLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+  	select l.learn_id from bd_learn_info l left join bd_student_info i on i.std_id = l.std_id
+  	where i.id_card = #{idCard} and l.grade = #{grade} and l.is_completed = '0'
+  	AND l.std_stage IN ('7', '8', '9', '10') 
+  </select>
+  
+  <select id="selectTurnInfo" parameterType="com.yz.model.finance.BdTurnInQuery" resultType="com.yz.model.finance.BdTurnIn">
+  	SELECT 
+	  l.`learn_id` learnId,
+	  i.`std_name` stdName,
+	  i.`sex`,
+	  i.`id_card` idCard,
+	  l.`grade`,
+	  u.`unvs_name` unvsName,
+	  p.`pfsn_level` pfsnLevel,
+	  p.`pfsn_name` pfsnName,
+	  l.`scholarship`,
+	  l.`inclusion_status` inclusionStatus,
+	  t.`school_year` schoolYear,
+	  t.`amount`,
+	  DATE_FORMAT(t.`turn_date`, '%Y-%m-%d') turnDate,
+	  t.`return_amount` returnAmount,
+	  DATE_FORMAT(t.`back_date`, '%Y-%m-%d') backDate,
+	  t.`bill_no` billNo,
+	  t.`emp_name` empName,
+	  l.`school_roll` schoolRoll,
+	  l.`std_stage` stdStage
+	FROM
+	  bd_learn_info l 
+	  LEFT JOIN bd_student_info i 
+	    ON i.`std_id` = l.`std_id` 
+	  LEFT JOIN bd_university u 
+	    ON u.`unvs_id` = l.`unvs_id` 
+	  LEFT JOIN bd_unvs_profession p 
+	    ON p.`pfsn_id` = l.`pfsn_id` 
+	  LEFT JOIN bd_turn_in t 
+	    ON t.`learn_id` = l.`learn_id` AND t.school_year = #{schoolYear}
+	 where l.unvs_id = #{unvsId}
+		 and l.grade = #{grade}
+		 and (
+		    t.school_year = #{schoolYear}
+		    OR t.`school_year` IS NULL
+		  )
+		 and l.std_stage in ('7','8','9','10')
+	 <if test="stdName != null and stdName != ''">  
+         and i.std_name LIKE CONCAT('%', CONCAT(#{stdName}, '%'))
+     </if>  
+     <if test="idCard != null and idCard != ''">  
+         and i.id_card LIKE CONCAT('%', CONCAT(#{idCard}, '%'))
+     </if>  
+     <if test="schoolRoll != null and schoolRoll != ''">  
+         and l.school_roll = #{schoolRoll}
+     </if> 
+     <if test="pfsnLevel != null and pfsnLevel != ''">  
+         and p.pfsn_level = #{pfsnLevel}
+     </if> 
+     <if test="pfsnId != null and pfsnId != ''">  
+         and l.pfsn_id = #{pfsnId}
+     </if> 
+     <if test="scholarship != null and scholarship != ''">  
+         and l.scholarship = #{scholarship}
+     </if> 
+     <if test="inclusionStatus != null and inclusionStatus != ''">  
+         and l.inclusion_status = #{inclusionStatus}
+     </if> 
+     <if test="turnDate != null and turnDate != ''">  
+         and DATE_FORMAT(t.`turn_date`, '%Y-%m-%d') = #{turnDate}
+     </if> 
+     <if test="backDate != null and backDate != ''">  
+         and DATE_FORMAT(t.back_date, '%Y-%m-%d') = #{backDate}
+     </if> 
+     <if test="hasBillNo != null and hasBillNo == 1">  
+         and t.bill_no is not null
+     </if> 
+     <if test="hasBillNo != null and hasBillNo == 2">  
+         and t.bill_no is null
+     </if>
+     <if test="stdStage != null and stdStage != ''">  
+         and l.std_stage = #{stdStage}
+     </if> 
+     
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_turn_in
+    where turn_id = #{turnId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_turn_in
+    where turn_id = #{turnId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.finance.BdTurnIn" >
+    insert into bd_turn_in (turn_id, learn_id, school_year, 
+      amount, turn_date, return_amount, 
+      back_date, bill_no, emp_name, 
+      update_time, update_user, update_user_id, 
+      create_user_id, create_time, create_user
+      )
+    values (#{turnId,jdbcType=VARCHAR}, #{learnId,jdbcType=VARCHAR}, #{schoolYear,jdbcType=CHAR}, 
+      #{amount,jdbcType=VARCHAR}, #{turnDate,jdbcType=VARCHAR}, #{returnAmount,jdbcType=VARCHAR}, 
+      #{backDate,jdbcType=VARCHAR}, #{billNo,jdbcType=VARCHAR}, #{empName,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.finance.BdTurnIn" >
+    insert into bd_turn_in
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="turnId != null" >
+        turn_id,
+      </if>
+      <if test="learnId != null" >
+        learn_id,
+      </if>
+      <if test="schoolYear != null" >
+        school_year,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="turnDate != null and turnDate !=''" >
+        turn_date,
+      </if>
+      <if test="returnAmount != null" >
+        return_amount,
+      </if>
+      <if test="backDate != null and backDate !=''" >
+        back_date,
+      </if>
+      <if test="billNo != null" >
+        bill_no,
+      </if>
+      <if test="empName != null" >
+        emp_name,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="turnId != null" >
+        #{turnId,jdbcType=VARCHAR},
+      </if>
+      <if test="learnId != null" >
+        #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolYear != null" >
+        #{schoolYear,jdbcType=CHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="turnDate != null and turnDate !=''" >
+        #{turnDate,jdbcType=VARCHAR},
+      </if>
+      <if test="returnAmount != null" >
+        #{returnAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="backDate != null and backDate !=''" >
+        #{backDate,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.finance.BdTurnIn" >
+    update bd_turn_in
+    <set >
+      <if test="learnId != null" >
+        learn_id = #{learnId,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolYear != null" >
+        school_year = #{schoolYear,jdbcType=CHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="turnDate != null and turnDate !=''" >
+        turn_date = #{turnDate,jdbcType=VARCHAR},
+      </if>
+      <if test="returnAmount != null" >
+        return_amount = #{returnAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="backDate != null and backDate !=''" >
+        back_date = #{backDate,jdbcType=VARCHAR},
+      </if>
+      <if test="billNo != null" >
+        bill_no = #{billNo,jdbcType=VARCHAR},
+      </if>
+      <if test="empName != null" >
+        emp_name = #{empName,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where turn_id = #{turnId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.finance.BdTurnIn" >
+    update bd_turn_in
+    set learn_id = #{learnId,jdbcType=VARCHAR},
+      school_year = #{schoolYear,jdbcType=CHAR},
+      amount = #{amount,jdbcType=VARCHAR},
+      turn_date = #{turnDate,jdbcType=VARCHAR},
+      return_amount = #{returnAmount,jdbcType=VARCHAR},
+      back_date = #{backDate,jdbcType=VARCHAR},
+      bill_no = #{billNo,jdbcType=VARCHAR},
+      emp_name = #{empName,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR}
+    where turn_id = #{turnId,jdbcType=VARCHAR}
+  </update>
+</mapper>

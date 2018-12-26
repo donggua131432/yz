@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+</head>
+<body>
+  <article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="award-form" >
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>规则分组：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+           <select class="select" size="1" id="ruleGroup" name="ruleGroup">
+            	<option value="" selected>--规则分组--</option>
+            </select>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>规则编号：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" placeholder="请输入规则编号" id="ruleCode" name="ruleCode" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>赠送智米数量：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="number" class="input-text" placeholder="请输入赠送智米数量" id="zhimiCount" name="zhimiCount" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>赠送活跃度：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="number" class="input-text" placeholder="请输入赠送活跃度" id="expCount" name="expCount" />
+        </div>
+      </div>
+	 <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>启用时间起：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'endTime\')}'})" id="startTime" name="startTime" class="input-text Wdate"/>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>启用时间止：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" onfocus="WdatePicker({ dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'startTime\')}'})" id="endTime" name="endTime" class="input-text Wdate"/>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否互斥：</label>
+         <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <div class='radio-box'>
+            <input type="radio" name="isMutex" id="is_mutex_0" value="0" />
+            <label for='is_mutex_0'>是</label>
+          </div>
+          <div class='radio-box'>
+            <input type="radio" name="isMutex" id="is_mutex_1" value="1" />
+            <label for='is_mutex_1'>否</label>
+          </div>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否可以重复赠送：</label>
+         <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <div class='radio-box'>
+            <input type="radio" name="isRepeat" id="is_repeat_0" value="0" />
+            <label for='is_repeat_0'>是</label>
+          </div>
+          <div class='radio-box'>
+            <input type="radio" name="isRepeat" id="is_repeat_1" value="1" />
+            <label for='is_repeat_1'>否</label>
+          </div>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>同组之间排序：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="number" class="input-text" placeholder="排序" id="sort" name="sort" />
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否启用：</label>
+        <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+          <div class='radio-box'>
+            <input type="radio" name="isAllow" id="is_allow_1" value="1" />
+            <label for='is_allow_1'>启用</label>
+          </div>
+          <div class='radio-box'>
+            <input type="radio" name="isAllow" id="is_allow_0" value="0" />
+            <label for='is_allow_0'>禁用</label>
+          </div>
+        </div>
+      </div>
+      <div class="row cl" id="itemDiv">
+		<label class="form-label col-xs-4 col-sm-3"><span
+			class="c-red">*</span>奖励附属信息：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<table class="table table-border table-bordered table-bg">
+				<thead>
+					<tr class="text-c">
+						<th width="120">奖励项目</th>
+						<th width="200">奖励值</th>
+					</tr>
+				</thead>
+				<tbody id="items">
+
+				</tbody>
+			</table>
+		</div>
+	 </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3">规则描述：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <textarea name="ruleDesc" id="ruleDesc" cols="" rows="" class="textarea" placeholder="请输入规则描述，最多100个字" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+          <p class="textarea-numberbar">
+            <em class="textarea-length">0</em>/100
+          </p>
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+          <input class="btn btn-success radius" type="submit" id="bt_submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+          <input class="btn btn-normal radius" type="button" id="bt_cancel" onclick="layer_close();" value="&nbsp;&nbsp;取消&nbsp;&nbsp;">
+        </div>
+      </div>
+    </form>
+  </article>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}" th:inline="javascript"></script>
+  <script type="text/javascript" th:inline="javascript">
+  var type = [[${type}]];
+  var awardInfo = [[${awardInfo}]];
+  </script>
+  <script type="text/javascript" th:inline="javascript" th:src="@{/js/webjs/zhimi/award/award-edit.js}"></script>
+</body>
+  
+</html>

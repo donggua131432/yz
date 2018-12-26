@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.finance.BdOrderMapper">
+
+	<resultMap id="StdRefundResult" type="com.yz.model.finance.order.BdOrderRefund">
+		<result column="order_no" property="orderNo" />
+		<result column="std_id" property="stdId" />
+		<result column="refund_id" property="refundId" />
+		<result column="refund_amount" property="refundAmount" />
+	</resultMap>
+
+	<select id="selectItemCodeByLearnId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select so.item_code from bd_sub_order so left join bd_student_order o on
+		o.order_no = so.order_no
+		where o.learn_id = #{learnId} and so.sub_order_status in('1','2')
+	</select>
+
+	<select id="selectItemCodePayable" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select so.payable from bd_sub_order so left join bd_student_order o on
+		o.order_no = so.order_no
+		where o.learn_id = #{learnId} and so.item_code = #{itemCode} and
+		so.sub_order_status in('1','2')
+	</select>
+	
+	<select id="selectAccAmount" parameterType="java.lang.String" resultType="java.lang.String">
+			select acc_amount from goods.ats_account where acc_type = #{accType} and std_id = #{stdId}
+	</select>
+	
+	<insert id="insertAccSerial">
+	   	INSERT INTO `goods`.`ats_account_serial` (
+		  `acc_serial_no`,
+		  `acc_id`,
+		  `std_id`,
+		  `user_id`,
+		  `acc_type`,
+		  `action`,
+		  `acc_serial_status`,
+		  `amount`,
+		  `before_amount`,
+		  `after_amount`,
+		  `exc_desc`
+		) 
+		SELECT 
+		  #{accSerialNo} AS acc_serial_no,
+		  acc_id,
+		  std_id,
+		  user_id,
+		  acc_type,
+		  #{action} `action`, # 1-入账 2-出账
+		  '2' acc_serial_status,
+		  #{amount} amount,
+		  #{beforeAmount} `before_amount`,
+		  #{afterAmount} after_amount,
+		  #{excDesc} `exc_desc`  
+		FROM
+		  goods.`ats_account` 
+		WHERE acc_type = #{accType}
+		  AND std_id = #{stdId}
+	</insert>
+	
+	<update id="updateAccAmount" parameterType="java.lang.String">
+		update goods.ats_account set acc_amount = #{balance} where acc_type = #{accType} and std_id = #{stdId}
+	</update>
+
+	<select id="selectOrderNoByLearnId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select bs.order_no from bd_student_order bs where bs.learn_id = #{learnId}
+	</select>
+
+	<select id="finishStudentRefund" parameterType="java.lang.String">
+		update
+		bd_student_refund
+		set
+		is_complete = '1'
+		where refund_id = #{refundId}
+	</select>
+
+	<insert id="createOrder" parameterType="com.yz.model.finance.BdStudentOrder">
+		insert into bd_student_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			order_no,
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="payable != null">
+				payable,
+			</if>
+			<if test="discount != null">
+				discount,
+			</if>
+			<if test="learnId != null">
+				learn_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="stdName != null">
+				std_name,
+			</if>
+			<if test="mobile != null">
+				mobile,
+			</if>
+			<if test="unvsId != null">
+				unvs_id,
+			</if>
+			<if test="unvsName != null">
+				unvs_name,
+			</if>
+			<if test="pfsnId != null">
+				pfsn_id,
+			</if>
+			<if test="pfsnName != null">
+				pfsn_name,
+			</if>
+			<if test="taName != null">
+				ta_name,
+			</if>
+			<if test="taId != null">
+				ta_id,
+			</if>
+			<if test="expireTime != null">
+				expire_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+			<if test="orderStatus != null">
+				order_status,
+			</if>
+			<if test="payeeId != null">
+				payee_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{orderNo,jdbcType=VARCHAR},
+			<if test="amount != null">
+				#{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="payable != null">
+				#{payable,jdbcType=VARCHAR},
+			</if>
+			<if test="discount != null">
+				#{discount,jdbcType=VARCHAR},
+			</if>
+			<if test="learnId != null">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdName != null">
+				#{stdName,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="unvsId != null">
+				#{unvsId,jdbcType=VARCHAR},
+			</if>
+			<if test="unvsName != null">
+				#{unvsName,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnId != null">
+				#{pfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnName != null">
+				#{pfsnName,jdbcType=VARCHAR},
+			</if>
+			<if test="taName != null">
+				#{taName,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null">
+				#{taId,jdbcType=VARCHAR},
+			</if>
+			<if test="expireTime != null">
+				#{expireTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus != null">
+				#{orderStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="payeeId != null">
+				#{payeeId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="selectRefundInfo" parameterType="java.lang.String"
+		resultMap="StdRefundResult">
+		SELECT
+		bsr.`order_no`,
+		bsr.`refund_amount`,
+		bsr.`std_id`,
+		bsr.`refund_id`
+		FROM
+		bd_student_refund bsr
+		WHERE bsr.learn_id = #{learnId}
+		and bsr.is_complete = '0'
+		and (bsr.check_type = '2' or bsr.check_type = '4')
+	</select>
+
+	<update id="finishiRefund">
+		update bd_student_order bs
+		left join bd_sub_order bso on bso.`order_no` = bs.`order_no` set
+		bs.`order_status` = '3',
+		bso.`sub_order_status` = case bso.`sub_order_status` when '5' then '3' else '4' end
+		where bs.`learn_id` = #{learnId}
+	</update>
+
+	<update id="rejectRefund" parameterType="java.lang.String">
+		update
+		bd_student_order bs
+		left join bd_sub_order bso
+		on bs.`order_no` = bso.`order_no` set bs.`order_status` = '1',
+		bso.`sub_order_status` = '2',
+		bso.`refund_amount` = '0.00'
+		where bs.`learn_id` = #{learnId}
+		and bso.`sub_order_status` = '5';
+		delete
+		bsr
+		from
+		bd_student_refund bsr
+		left join bd_student_order bs
+		on bs.`order_no` = bsr.`order_no`
+		where bs.`learn_id` = #{learnId}
+	</update>
+
+	<update id="updateOrderRefundAmount">
+		update
+		bd_student_order bs
+		left join bd_sub_order bso
+		on bs.`order_no` = bso.`order_no` set bso.`refund_amount` =
+		case
+		bso.`item_code`
+		<foreach collection="items" item="item">
+			when #{item.itemCode}
+			then #{item.refundAmount}
+		</foreach>
+		else '0.00'
+		end
+		where bs.`learn_id` = #{learnId}
+		and bso.`sub_order_status` = '5';
+		update
+		bd_student_refund bsr
+		left join bd_student_order bs
+		on bs.order_no = bsr.order_no
+		set
+		bsr.refund_amount = #{amount}
+		where bs.learn_id = #{learnId}
+		and
+		(bsr.check_type = '2' or bsr.check_type = '4')
+		and bsr.is_complete =
+		'0'
+	</update>
+
+	<select id="selectOrderByOrderNo" parameterType="java.lang.String"
+		resultType="com.yz.model.finance.BdStudentOrder">
+		SELECT
+		so.`order_no` orderNo,
+		so.`amount` amount,
+		so.`payable` payable,
+		so.`learn_id` learnId,
+		so.`std_id` stdId
+		FROM bms.`bd_student_order` so
+		WHERE so.`order_no`=#{orderNo}
+	</select>
+
+	<select id="selectCountOrderRefunde" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM
+		bd_student_refund
+		WHERE learn_id = #{learnId}
+		AND check_type = #{checkType}
+	</select>
+
+	<insert id="insertRefundInfo">
+		insert into bd_student_refund (
+		refund_id,
+		order_no,
+		learn_id,
+		emp_id,
+		check_type,
+		std_id,
+		<if test="refundAmount != null and refundAmount != ''">
+			refund_amount,
+		</if>
+		update_user,
+		update_user_id
+		)
+		values
+		(#{refundId}, (select order_no from bd_student_order where learn_id = #{learnId}),
+		#{learnId}, #{empId},#{checkType}, #{stdId},
+		<if test="refundAmount != null and refundAmount != ''">
+			#{refundAmount},
+		</if>
+		#{updateUser}, #{updateUserId}
+		)
+	</insert>
+
+	<update id="refundingOrder" parameterType="java.lang.String">
+		UPDATE
+		bd_student_order bs
+		LEFT JOIN bd_sub_order bso
+		ON bso.`order_no` = bs.`order_no` SET bso.`sub_order_status` = '5'
+		WHERE bso.`sub_order_status` = '2'
+		AND bs.`learn_id` = #{learnId} ;
+
+		UPDATE
+		bd_student_order bs
+		SET
+		bs.`order_status` = '5'
+		WHERE bs.`learn_id` = #{learnId}
+	</update>
+
+	<update id="updateOrder" parameterType="com.yz.model.finance.BdStudentOrder">
+		update bd_student_order
+		<set>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="payable != null">
+				payable = #{payable,jdbcType=VARCHAR},
+			</if>
+			<if test="discount != null">
+				discount = #{discount,jdbcType=VARCHAR},
+			</if>
+			<if test="learnId != null">
+				learn_id = #{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdName != null">
+				std_name = #{stdName,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="expireTime != null">
+				expire_time = #{expireTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="orderStatus != null">
+				order_status = #{orderStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="unvsId != null">
+				unvs_id = #{unvsId,jdbcType=VARCHAR},
+			</if>
+			<if test="unvsName != null">
+				unvs_name = #{unvsName,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnId != null">
+				pfsn_id = #{pfsnId,jdbcType=VARCHAR},
+			</if>
+			<if test="pfsnName != null">
+				pfsn_name = #{pfsnName,jdbcType=VARCHAR},
+			</if>
+			<if test="taId != null">
+				ta_id = #{taId,jdbcType=VARCHAR},
+			</if>
+			<if test="taName != null">
+				ta_name = #{taName,jdbcType=VARCHAR},
+			</if>
+			<if test="payeeId != null">
+				payee_id = #{payeeId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where order_no = #{orderNo,jdbcType=VARCHAR}
+	</update>
+
+	<resultMap type="com.yz.model.recruit.BdFeeInfo" id="FeeSimpleMap">
+		<result column="item_code" jdbcType="VARCHAR" property="itemCode" />
+		<result column="item_name" jdbcType="VARCHAR" property="itemName" />
+		<result column="amount" jdbcType="VARCHAR" property="amount" />
+		<result column="discount" jdbcType="VARCHAR" property="discount" />
+		<result column="fd_id" jdbcType="VARCHAR" property="fdId" />
+		<result column="od_id" jdbcType="VARCHAR" property="odId" />
+		<result column="discount_type" jdbcType="VARCHAR" property="discountType" />
+	</resultMap>
+
+	<select id="getRequireItemCodes" parameterType="com.yz.model.recruit.BdLearnInfo"
+		resultMap="FeeSimpleMap">
+		SELECT
+		i.`item_code`,
+		i.`item_name`
+		FROM
+		bd_fee_item i
+		INNER JOIN bd_rt_item r
+		ON r.`item_code` = i.`item_code`
+		WHERE 1=1
+		<if test="stdStage !=null and '' != stdStage">
+			AND r.`std_stage` = #{stdStage, jdbcType=VARCHAR}
+		</if>
+		AND r.`recruit_type` = #{recruitType, jdbcType=VARCHAR}
+		AND i.`status` = '1'
+		order by i.`order_num`
+	</select>
+
+	<select id="getFeeInfo" resultMap="FeeSimpleMap">
+		SELECT
+		fd.`define_amount` as amount,
+		ifnull(of.`define_amount`, '0.00') as discount,
+		fd.fd_id,
+		of.od_id,
+		of.discount_type
+		FROM
+		bd_fee_define fd
+		left join bd_offer_define of
+		on of.`offer_id` = #{offerId, jdbcType=VARCHAR}
+		and of.`item_code` = fd.`item_code`
+		and of.`status` = '1'
+		WHERE fd.`fee_id` = #{feeId, jdbcType=VARCHAR}
+		and fd.`item_code` = #{itemCode, jdbcType=VARCHAR}
+		and fd.`status` = '1'
+		limit 0, 1
+	</select>
+
+	<select id="getStudentPayOrder" resultType="java.util.HashMap">
+		select * from (
+		select count(*) cut,temp_table.*,sp.`amount` from (
+		SELECT
+		bso.`order_no`,bso.`mobile`,bso.`std_name`,bso.`item_code`,bss.`learn_id`,temp_table.remark,bss.`std_id`,bso.`sub_order_no`
+		FROM (
+		SELECT COUNT(*) cc,order_no,remark FROM order_records WHERE
+		order_type='欠费子订单' GROUP BY order_no)
+		temp_table LEFT JOIN bd_sub_order bso ON temp_table.order_no=bso.`sub_order_no`
+		left join bd_student_order bss on bso.`order_no` = bss.`order_no`
+		left join bd_learn_info bli on bli.`learn_id` = bss.`learn_id` WHERE
+		temp_table.cc =1
+		AND bso.`sub_order_status`='6' and bli.`grade`='2017' and
+		bli.`std_type`='1'
+		and bli.`std_stage`='7' and bso.`item_code`!='Y0' AND bso.`mobile` IS NOT
+		NULL)
+		temp_table left join study_pay sp on temp_table.`learn_id` = sp.`learn_id`
+		and temp_table.`item_code`=sp.`item_code` group by temp_table.`order_no`)
+		tt
+		where tt.cut =1
+	</select>
+</mapper>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="renderer" content="webkit"/>
+  <meta name="keywords" content=""/>
+  <meta name="description" content=""/>
+  <title>文件上传</title>
+  <link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+  <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/js/webuploader/css/webuploader.css}"/>
+</head>
+<body>
+<div class="thesis-upload">
+  <div id="paperTitle" class="up-item" style="display: none">
+    <div class="l">本科论文题目</div>
+    <div class="r">
+      <input id="title" class="ipt" name="title" type="text" autocomplete="off" maxlength="50" placeholder="请输入本科论文题目"/>
+    </div>
+  </div>
+  <div class="up-item">
+    <div class="l">
+      <div id="btnUpload" class="btn-upload">上传文件</div>
+    </div>
+    <div id="fileName" class="r fcb"></div>
+    <input id="fileUrl" type="hidden">
+  </div>
+  <div class="action">
+    <button id="btnSubmit" class="btn-submit">提交</button>&#x3000;
+    <button class="btn-cancel" onclick="layer_close()">取消</button>
+  </div>
+</div>
+
+
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/webuploader/0.1.5/webuploader.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script>
+    var learnId = store.get('learnId');
+    var paperUploadType;
+    var uploader;
+  $(function () {
+      paperUploadType = getQueryString('type');
+      //韩山师范学院特殊处理,不需输入论文题目
+      if (paperUploadType === '1' && parent.uId !== '29') {
+          $('#paperTitle').show();
+      }
+
+      initUploader('#btnUpload');
+
+      $('#btnSubmit').on('click', function () {
+          var attachmentUrl = $('#fileUrl').val();
+          var attachmentName=$('#fileName').text();
+          var paperTitle = $('#title').val();
+          if (paperUploadType === '1' &&  parent.uId !== '29' && !paperTitle) {
+              layer.msg("请输入本科论文题目");
+              return;
+          }
+          if (uploader.isInProgress()) {
+              layer.msg("正在上传…请稍后再次点击提交");
+              return;
+          }
+          if (!attachmentUrl) {
+              layer.msg("请上传文件");
+              return;
+          }
+
+          var url = '[[@{/paper/submitUploader.do}]]';
+          $.ajax({
+              type:'post',
+              url:url,
+              data: {
+                  learnId: learnId,
+                  paperUploadType: paperUploadType,
+                  attachmentName: attachmentName,
+                  attachmentUrl: attachmentUrl,
+                  paperTitle: paperTitle
+              },
+              success:function (data) {
+                  if(data.code==='00'){
+                      parent.initPager();
+                      var tip = "提交成功，两个工作日内会完成审核！";
+                      if (parent.uId === '29') {//韩师无需提示审核
+                          tip = "提交成功！";
+                      }
+                      layer.msg(tip, {
+                          time: 5000,
+                          end: function () {
+                              layer_close();
+                          }
+                      });
+                  }
+              }
+          })
+      });
+  });
+
+  /* 关闭弹出框口 */
+  function layer_close() {
+    var index = parent.layer.getFrameIndex(window.name);
+    parent.layer.close(index);
+  }
+
+    function getQueryString(name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        }
+        return null;
+    }
+
+  function initUploader(pick) {
+      uploader = WebUploader.create({// 上传控件
+          auto: true,
+          swf: '/js/webuploader/Uploader.swf',
+          server: '[[@{/paper/webuploader.do}]]?learnId=' + learnId + '&uploadType=1',
+          pick: pick,
+          fileNumLimit: 1,
+          fileSingleSizeLimit:1024*1024*30,
+          accept: {// 只允许文档文件
+              title: 'doc',
+              extensions: 'doc,docx,xls,xlsx,ppt,pptx'
+          }
+      });
+
+      uploader.on('fileQueued', function (file) { // 添加文件到队列
+          $('#fileName').text(file.name);
+          var $list = $('#fileList');
+          var $li = $('<div id="' + file.id + '" data-path="" class="file-item thumbnail"><a href="javascript:;" class="cancel">&times;</a></div>');
+          $list.append($li);
+          uploader.makeThumb(file, function (error, src) {// 创建缩略图
+              if (error) {
+                  $li.append('<span>不能预览</span>');
+                  return;
+              }
+              $li.append('<img src="' + src + '"/>');
+          }, 100, 100);
+          $li.on('click', '.cancel', function () {// 删除图片
+              uploader.removeFile(file);
+              $li.remove();
+          });
+      }).on('uploadProgress', function (file, percentage) { // 文件进度
+          var $li = $('#' + file.id);
+          var $percent = $li.find('.progress');
+          if (!$percent.length) {// 避免重复创建
+              $percent = $('<div class="progress"></div>').appendTo($li);
+          }
+          $percent.text('已上传：' + parseInt(percentage * 100) + '%');
+      }).on('uploadSuccess', function (file, response) {
+          var $li = $('#' + file.id);
+          $('#fileUrl').val(response._raw);
+          //layer.msg("上传成功")
+      }).on('uploadError', function (file) {
+          layer.msg("上传失败")
+      }).on('error', function (type) {
+          if (type == 'F_EXCEED_SIZE') {
+              layer.msg('文件不可大于30M！', {icon: 2, time: 2000})
+          }
+          if (type == 'Q_EXCEED_NUM_LIMIT') {
+              layer.msg('最多只能上传1个文档！', {icon: 2, time: 2000});
+          }
+          if (type == 'Q_TYPE_DENIED') {
+              layer.msg('只能上传文档格式文件！', {icon: 2, time: 2000})
+          }
+      });
+  }
+</script>
+</body>
+</html>

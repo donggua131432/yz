@@ -1,0 +1,293 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" /> 
+<title>远智学堂-毕业论文及报告</title>
+  <style>
+    .label{min-width: 126px;text-align: right}
+  </style>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<body>
+<div class="wrraper">
+  <div class="banner">
+    <div class="tit">远智学堂</div>
+  </div>
+  <div class="breadcrumb">
+    <div class="inner">
+      <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+      <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+      <a class="fc6" href="javascript:void(0);" title="毕业论文及报告">毕业论文及报告</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sidebar" th:include="common::sidebar">
+    </div>
+    <div id="thesisList" class="main"></div>
+  </div>
+  <div class="footer" th:include="common::footer">
+  </div>
+</div>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+
+	
+  	
+<script th:inline="javascript" type="text/javascript">
+    var learnId = store.get("learnId");
+    var uId = '';
+    var pLevel = '';
+    var grade2 = '';
+    var checkStatus = {"0": "未审核", "1": "审核通过", "2": "审核不通过"};
+    //本科论文详情窗口定义
+    var PaperInfoWin = '';
+
+    $('#thesisList').on('click', '.btn-upload', function () {
+        layer.open({
+            type: 2,
+            title: '文件上传',
+            shadeClose: false,
+            shade: 0.8,
+            skin: 'thesis-modal',
+            area: ['485px', '260px'],
+            content: [[@{/paper/upload.do?type=}]]+$(this).data('type')
+        });
+    });
+
+    function initPager(unvsId, pfsnLevel, grade) {
+        var html = '',tbody='';
+        if (unvsId) {
+            uId = unvsId;
+            pLevel = pfsnLevel;
+            grade2 = grade;
+        } else {
+            unvsId = uId;
+            pfsnLevel = pLevel;
+            grade = grade2;
+        }
+        if (['1', '2','29'].indexOf(unvsId) !== -1) {
+            var template = '&#x3000;<a class="btn" href="' + _FILE_URL + 'rar/paper_'+unvsId+'_' + pfsnLevel + '.rar">模板下载</a>';
+            if (unvsId === '1') {
+                if (pfsnLevel === '1') {
+                    tbody = '<tr data-type="1"><td style="text-align: center">本科论文</td><td class="checkStatus"></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                    tbody += '<tr data-type="4"><td style="text-align: center">本科论文选题表</td><td class="checkStatus"></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                    tbody += '<tr data-type="2"><td style="text-align: center">实习鉴定表</td><td class="checkStatus"></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                } else {
+                    tbody = '<tr data-type="2"><td style="text-align: center">实习鉴定表</td><td class="checkStatus"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                    tbody += '<tr data-type="3"><td style="text-align: center">实习报告</td><td class="checkStatus"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                }
+            } else if (unvsId === '2') {
+                if (pfsnLevel === '1') {
+                    tbody = '<tr data-type="1"><td style="text-align: center">本科论文</td><td class="checkStatus"></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                    tbody += '<tr data-type="5"><td style="text-align: center">本科论文计划书</td><td class="checkStatus"></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                } else {
+                    tbody = '<tr data-type="3"><td style="text-align: center">实习报告</td><td class="checkStatus"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                }
+            } else if (unvsId === '29') {//韩山师范处理
+                template = '&#x3000;<a class="btn" href="' + _FILE_URL + 'rar/paper_'+unvsId + '_' + pfsnLevel + '_' + grade + '.rar">模板下载</a>';
+                if (pfsnLevel === '1') {
+                    tbody = '<tr data-type="1"><td style="text-align: center">本科论文<br><span style="color: red;cursor:pointer" onclick="openPaperInfo()">（点击查看论文相关信息）</span></td><td class="paperTitle"></td><td class="attachmentName"></td><td class="op">' + template + '</td></tr>';
+                    //获取论文任务信息填充
+                    getPaperInfo();
+                }
+            }
+
+            if (pfsnLevel === '1') {
+                html = '<table class="table2">\n' +
+                    '        <thead>\n' +
+                    '        <tr>\n' +
+                    '          <th width="230" style="text-align: center">毕业资料</th>\n';
+
+                if (unvsId !== '29'){
+                    html +=  '          <th width="225">审核状态</th>\n';
+                }
+                html +=  '          <th width="230">本科论文题目</th>\n' +
+                    '          <th width="310">文件</th>\n' +
+                    '          <th width="120">操作</th>\n' +
+                    '        </tr>\n' +
+                    '        </thead>\n' +
+                    '        <tbody>' + tbody + '</tbody>\n' +
+                    '      </table>';
+            } else {
+                html = '<table class="table2">\n' +
+                    '        <thead>\n' +
+                    '        <tr>\n' +
+                    '          <th width="230" style="text-align: center">毕业资料</th>\n' ;
+                if (unvsId !== '29'){
+                    html +=  '          <th width="225">审核状态</th>\n';
+                }
+                html += '          <th width="310">文件</th>\n' +
+                    '          <th width="120">操作</th>\n' +
+                    '        </tr>\n' +
+                    '        </thead>\n' +
+                    '        <tbody>' + tbody + '</tbody>\n' +
+                    '      </table>';
+            }
+        }
+
+        if(!html){
+            html='<p style="text-align: center;">你无需提交论文</p>';
+        }
+        $('#thesisList').html(html);
+
+        getAttachments();
+    }
+
+
+    function getAttachments() {
+        var url=[[@{/paper/getAttachments.do?learnId=}]]+learnId;
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {},
+            success: function (data) {
+                if (data.code === '00') {
+                    // 渲染数据
+                    $.each(data.body.data, function () {
+                        var type = this.paperUploadType;
+                        var $tr;
+                        if (type === '0') {
+                            type = '1';
+                            $tr = $('#thesisList tbody >tr[data-type="' + type + '"]');
+                        } else {
+                            $tr = $('#thesisList tbody >tr[data-type="' + type + '"]');
+                            var $checkStatus = $tr.find('>.checkStatus');
+                            $checkStatus.append('<span class="' + (this.checkStatus === '2' ? 'fcr' : '') + '">' + checkStatus[this.checkStatus] + '</span>');
+                            $tr.find('>.paperTitle').html(this.paperTitle);
+                            if (this.checkStatus !== '0') {
+                                $checkStatus.append('&#x3000;<a class="fcb btn-detail" href="javascript:;" onclick="showDetail(\'' + this.attachmentName + '\',\'' + this.checkStatus + '\',\'' + this.commentContent.replace(/[\n\r]/g,'<br/>').replace(/\"/g,'“').replace(/\'/g,'‘') + '\',\'' + this.commentTime + '\')">查看详情&gt;</a>');
+                            }
+                        }
+                        $tr.find('>.attachmentName').append('<p><a  class="fcb" href="' + _FILE_URL + this.attachmentUrl + '">' + this.attachmentName+(this.paperUploadType==='0'?'[校]':'') + '</a></p>');
+                        $tr.data('checkstatus', this.checkStatus);
+                    });
+
+                    // 初始化上传按钮
+                    $('#thesisList tbody >tr').each(function () {
+                        if ($(this).data('checkstatus') !== '1') {
+                            $(this).find('>.op').prepend('<a class="btn btn-upload" data-type="' + $(this).data('type') + '" href="javascript:;">上传</a>');
+                        }
+                    })
+                }
+            }
+        });
+    }
+
+    // 查看审核详情
+    function showDetail(attachmentName, status, commentContent, commentTime) {
+        var html = '<div class="bd">\n' +
+            '    <div class="lr">\n' +
+            '      <div class="t">文档名称</div>\n' +
+            '      <div class="c">' + attachmentName + '</div>\n' +
+            '    </div>\n' +
+            '    <div class="lr">\n' +
+            '      <div class="t">审核结果</div>\n' +
+            '      <div class="c">'+checkStatus[status]+'</div>\n' +
+            '    </div>\n' +
+            '    <div class="lr">\n' +
+            '      <div class="t">点评内容</div>\n' +
+            '      <div class="c">' + commentContent + '</div>\n' +
+            '    </div>\n' +
+            '    <div class="lr">\n' +
+            '      <div class="t">审核时间</div>\n' +
+            '      <div class="c">' + commentTime + '</div>\n' +
+            '    </div>\n' +
+            '  </div>';
+
+        layer.open({
+            type: 1,
+            title: '审核详情',
+            closeBtn: 1,
+            shadeClose: false,
+            shade: 0.8,
+            skin: 'thesis-modal',
+            area: ['505px'],
+            content: html
+        });
+    }
+
+    //打开论文内容信息
+    function openPaperInfo() {
+        layer.open({
+            type: 1,
+            title: '论文内容信息',
+            closeBtn: 1,
+            shadeClose: false,
+            shade: 0.8,
+            skin: 'thesis-modal',
+            area: ['505px'],
+            content: PaperInfoWin
+        });
+    }
+
+    //未导入显示操作
+    function isImport(string) {
+        if(string){
+            return string;
+        }
+        return '无';
+    }
+    
+    function getPaperInfo() {
+        var url=[[@{/paper/getPaperInfo.do?learnId=}]]+learnId;
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {},
+            success: function (data) {
+                if (data.code === '00') {
+                    //定义窗口
+                    var lg = data.body
+                    PaperInfoWin = '<div class="bd">\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">学院（系）：</div>\n' +
+                        '      <div class="c">' + isImport(lg.school_department) + '</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">专业：</div>\n' +
+                        '      <div class="c">'+lg.pfsn_name+'</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">学号：</div>\n' +
+                        '      <div class="c">' + lg.school_roll + '</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">指定论文题目：</div>\n' +
+                        '      <div class="c">' + isImport(lg.paper_title) + '</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">指导老师：</div>\n' +
+                        '      <div class="c">' + isImport(lg.guide_teacher) + '</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">指导老师邮箱：</div>\n' +
+                        '      <div class="c">' + isImport(lg.guide_teacher_email) + '</div>\n' +
+                        '    </div>\n' +
+                        '    <div class="lr">\n' +
+                        '      <div class="t label">指导老师联系电话：</div>\n' +
+                        '      <div class="c">' + isImport(lg.guide_teacher_phone) + '</div>\n' +
+                        '    </div>\n' +
+                        '  </div>';
+                    $('.paperTitle').html(lg.paper_title);
+                }
+            }
+        });
+    }
+    
+</script>
+
+</body>
+</html>

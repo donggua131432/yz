@@ -1,0 +1,1462 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaEmployeeMapper">
+
+	<resultMap type="com.yz.model.oa.EmployeeSelectInfo" id="employeeInfoMap">
+		<id column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="mobile" property="empMobile" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="com.yz.model.oa.EmployeeSelectInfo" id="infoMap">
+		<id column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap type="com.yz.model.oa.OaEmployeeModifyInfo" id="EmployeeModifyInfo">
+	 <result column="modify_id" property="modifyId" jdbcType="VARCHAR"/>
+	 <result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+	 <result column="old_campus_id" property="oldCampusId" jdbcType="VARCHAR"/>
+	 <result column="old_dp_id" property="oldDpId" jdbcType="VARCHAR"/>
+	 <result column="old_group_id" property="oldGroupId" jdbcType="VARCHAR"/>
+	 <result column="old_recruit_code" property="oldRecruitCode" jdbcType="VARCHAR"/>
+	 <result column="old_title" property="oldTitle" jdbcType="VARCHAR"/>
+	 <result column="status" property="status" jdbcType="VARCHAR"/>
+	 <result column="effect_time" property="effectTime" jdbcType="VARCHAR"/>
+	 <result column="job_info" property="jobInfo" jdbcType="VARCHAR"/>
+    </resultMap>
+
+	<select id="selectUnModifyInfos" parameterType="java.lang.String" resultMap="EmployeeModifyInfo">
+		SELECT * FROM oa_employee_modify WHERE emp_Id=#{empId,jdbcType=VARCHAR} and is_delete = '0' and status = '1'
+	</select>
+	
+	<update id="deleteEmpModifyInfo" parameterType="java.lang.String">
+		update oa_employee_modify set is_delete = '1' where modify_id = #{modifyId}
+	</update>
+	
+	<select id="selectEmpStudents" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  i.`std_name` stdName,
+		  i.`mobile` mobile,
+		  i.`id_card` idCard,
+		  i.`std_id` stdId
+		FROM
+		  bd_learn_rules r 
+		  LEFT JOIN bd_learn_info l 
+		    ON l.`learn_id` = r.`learn_id` 
+		  LEFT JOIN bd_student_info i 
+		    ON i.`std_id` = l.`std_id` 
+		WHERE r.`recruit` = #{empId}
+	</select>
+	
+	<select id="selectEmpInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+		  e.`emp_id` empId,
+		  e.`emp_name` empName,
+		  e.`mobile`,
+		  c.`campus_name` campusName,
+		  d.`dp_name` dpName
+		FROM
+		  oa_employee e 
+		  LEFT JOIN oa_employee_job j 
+		    ON j.`emp_id` = e.`emp_id` 
+		  LEFT JOIN oa_campus c 
+		    ON c.`campus_id` = j.`campus_id` 
+		  LEFT JOIN oa_department d 
+		    ON d.`dp_id` = j.`dp_id` 
+		WHERE e.`emp_status` = #{empStatus}
+		<if test="sName != null and sName != ''">
+			and (
+			 e.emp_name like CONCAT('%',#{sName},'%') 
+			 or e.`mobile` like CONCAT('%',#{sName},'%') 
+			)
+		</if>
+	</select>
+
+	<select id="getTutorList" parameterType="com.yz.model.condition.common.SelectQueryInfo"
+		resultType="com.yz.model.oa.EmployeeSelectInfo">
+		SELECT
+		e.`emp_id` as empId,
+		e.`emp_name` as empName,
+		e.`mobile` as mobile
+		FROM
+		oa_employee_title t
+		LEFT JOIN oa_employee e
+		ON t.`emp_id` = e.`emp_id`
+		LEFT JOIN oa_job_title j
+		ON j.`jt_id` = t.`jt_id`
+		<where>
+			j.`title_name` = '辅导员'
+			<if test="sName != null and sName != ''">
+				AND (
+				e.`emp_name` LIKE CONCAT('%',#{sName, jdbcType=VARCHAR},'%')
+				or e.`mobile` LIKE CONCAT('%',#{sName, jdbcType=VARCHAR},'%')
+				or e.`recruit_code` LIKE CONCAT('%',#{sName, jdbcType=VARCHAR},'%')
+				)
+			</if>
+			AND e.`emp_status` = '1'
+		</where>
+	</select>
+
+	<select id="findEmployeeByName" resultMap="infoMap"
+		parameterType="java.lang.String">
+		SELECT
+		oe.emp_id,
+		oe.emp_name,
+		oeo.other_fee
+		FROM
+		oa_employee oe
+		LEFT JOIN oa_employee_other oeo
+		ON oeo.`emp_id` = oe.`emp_id`
+		LEFT JOIN oa_employee_job oej
+		ON oej.`emp_id` = oe.`emp_id`
+		WHERE oe.emp_status = '1'
+		AND oe.emp_type = '3'
+		<if test="campusId != null and '' != campusId">
+			AND oej.campus_id = #{campusId}
+		</if>
+		<if test="sName != null and '' != sName">
+			and oe.emp_name like CONCAT('%',#{sName},'%')
+		</if>
+	</select>
+
+	<!-- 获取所有在职员工列表 -->
+	<select id="findAllKeyValue" resultMap="employeeInfoMap" parameterType="java.lang.String">
+		SELECT emp_id,emp_name FROM oa_employee WHERE emp_status='1'
+		<if test="eName != null and '' != eName">
+			and emp_name like CONCAT('%',#{eName},'%')
+		</if>
+	</select>
+
+	<!-- 根据状态获取所有员工列表 -->
+	<select id="findKeyValueByStatus" resultMap="employeeInfoMap" parameterType="java.lang.String">
+		SELECT emp_id,emp_name,mobile FROM oa_employee WHERE 1=1
+		<if test="eName != null and '' != eName">
+			and emp_name like CONCAT('%',#{eName},'%')
+		</if>
+		<if test="empStatus != null and '' != empStatus">
+			and emp_status=#{empStatus, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 基本信息 -->
+	<resultMap id="EmployeeBaseInfo" type="com.yz.model.oa.OaEmployeeBaseInfo">
+		<id column="emp_id" jdbcType="VARCHAR" property="empId" />
+		<id column="user_id" jdbcType="VARCHAR" property="userId" />
+		<result column="emp_name" jdbcType="VARCHAR" property="empName" />
+		<result column="emp_type" jdbcType="VARCHAR" property="empType" />
+		<result column="emp_status" jdbcType="VARCHAR" property="empStatus" />
+		<result column="id_type" jdbcType="VARCHAR" property="idType" />
+		<result column="id_card" jdbcType="VARCHAR" property="idCard" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="birthday" jdbcType="VARCHAR" property="birthday" />
+		<result column="nation" jdbcType="VARCHAR" property="nation" />
+		<result column="political_status" jdbcType="VARCHAR" property="politicalStatus" />
+		<result column="rpr_type" jdbcType="VARCHAR" property="rprType" />
+		<result column="rpr_province_code" jdbcType="VARCHAR" property="rprProvinceCode" />
+		<result column="rpr_city_code" jdbcType="VARCHAR" property="rprCityCode" />
+		<result column="rpr_district_code" jdbcType="VARCHAR" property="rprDistrictCode" />
+		<result column="province_code" jdbcType="VARCHAR" property="provinceCode" />
+		<result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+		<result column="district_code" jdbcType="VARCHAR" property="districtCode" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="mobile" jdbcType="VARCHAR" property="mobile" />
+		<result column="emergency_contact" jdbcType="VARCHAR" property="emergencyContact" />
+		<result column="emergency_mobile" jdbcType="VARCHAR" property="emergencyMobile" />
+	
+	</resultMap>
+
+	<select id="getEmpBaseInfo" resultMap="EmployeeBaseInfo"
+		parameterType="String">
+		SELECT
+			oe.`emp_id`,
+			oe.`emp_name`,
+			oe.`emp_type`,
+			oe.`emp_status`,
+			oe.`id_type`,
+			oe.`id_card`,
+			oe.`sex`,
+			date_format(oe.`birthday`,'%Y-%m-%d') birthday,
+			oe.`education`,
+			oe.`nation`,
+			oe.`mobile`,
+			oe.`political_status`,
+			oe.`rpr_type`,
+			oe.`rpr_province_code`,
+			oe.`rpr_city_code`,
+			oe.`rpr_district_code`,
+			oe.`province_code`,
+			oe.`city_code`,
+			oe.`district_code`,
+			oe.`address`,
+			oe.`emergency_contact`,
+			oe.`emergency_mobile`,
+			oe.`user_id`
+		FROM
+			oa_employee oe
+		where oe.`emp_id`= #{empId, jdbcType=VARCHAR}
+	</select>
+
+	<!-- 附属信息 -->
+	<resultMap id="EmployeeOtherInfo" type="com.yz.model.oa.OaEmployeeOtherInfo">
+		<id column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="qq" property="qq" jdbcType="VARCHAR" />
+		<result column="finish_school" property="finishSchool"
+			jdbcType="VARCHAR" />
+		<result column="finish_major" property="finishMajor" jdbcType="VARCHAR" />
+		<result column="finish_time" property="finishTime" jdbcType="VARCHAR" />
+		<result column="nssf_time" property="nssfTime" jdbcType="VARCHAR" />
+		<result column="english_level" property="englishLevel"
+			jdbcType="VARCHAR" />
+		<result column="computer_level" property="computerLevel"
+			jdbcType="VARCHAR" />
+		<result column="marital_status" property="maritalStatus"
+			jdbcType="CHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="head_portrait" property="headPortrait"
+			jdbcType="VARCHAR" />
+
+		<result column="age" property="age" jdbcType="VARCHAR" />
+		<result column="degree" property="degree" jdbcType="VARCHAR" />
+		<result column="work_place" property="workPlace" jdbcType="VARCHAR" />
+		<result column="hour_fee" property="hourFee" jdbcType="VARCHAR" />
+		<result column="other_fee" property="otherFee" jdbcType="VARCHAR" />
+		<result column="job_title" property="jobTitle" jdbcType="VARCHAR" />
+		<result column="teach_cert_type" property="teachCertType"
+			jdbcType="VARCHAR" />
+		<result column="bank_card" property="bankCard" jdbcType="VARCHAR" />
+		<result column="teach" property="teach" jdbcType="VARCHAR" />
+		<result column="teach_idea" property="teachIdea" jdbcType="VARCHAR" />
+		<result column="teach_eote" property="teachEote" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		
+		<result column="finish_code" property="finishCode" jdbcType="VARCHAR"/>
+		<result column="ext_1" property="teachEducation" jdbcType="VARCHAR"/>
+		<result column="ext_2" property="professionalTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getEmpOtherInfo" resultMap="EmployeeOtherInfo">
+		SELECT
+		oeo.`emp_id`,
+		oeo.`telephone`,
+		oea.`annex_url` as head_portrait,
+		oeo.`email`,
+		oeo.`qq`,
+		oeo.`wechat`,
+		oeo.`finish_school`,
+		oeo.`finish_major`,
+		oeo.`finish_code`,
+		date_format(oeo.`finish_time`,'%Y-%m-%d') finish_time,
+		oeo.`nssf_time`,
+		oeo.`marital_status`,
+		oeo.`english_level`,
+		oeo.`computer_level`,
+		oeo.`remark`,
+		oeo.`age`,
+		oeo.`degree`,
+		oeo.`work_place`,
+		oeo.`hour_fee`,
+		oeo.`other_fee`,
+		oeo.`job_title`,
+		oeo.`teach_cert_type`,
+		oeo.`bank_card`,
+		oeo.`teach`,
+		oeo.`teach_idea`,
+		oeo.`teach_eote`,
+		oej.`campus_id`,
+		oeo.ext_1,		
+        oeo.ext_2
+		FROM
+		oa_employee_other oeo
+		LEFT JOIN oa_employee_annex oea
+		ON oeo.`emp_id`=oea.`emp_id`
+		LEFT JOIN oa_employee_job oej ON oeo.`emp_id`=oej.`emp_id`
+		WHERE oeo.emp_id=#{empId, jdbcType=VARCHAR} and
+		oea.`emp_annex_type`=#{annexType,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertEmpBaseInfo" parameterType="com.yz.model.oa.OaEmployeeBaseInfo">
+		insert into `oa_employee`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`emp_id`,
+			<if test="empName != null">
+				`emp_name`,
+			</if>
+			<if test="empType != null">
+				`emp_type`,
+			</if>
+			<if test="empSource != null">
+				`emp_source`,
+			</if>
+			<if test="empStatus != null">
+				`emp_status`,
+			</if>
+			<if test="idType != null">
+				`id_type`,
+			</if>
+			<if test="idCard != null">
+				`id_card`,
+			</if>
+			<if test="sex != null">
+				`sex`,
+			</if>
+			<if test="birthday != null">
+				`birthday`,
+			</if>
+			<if test="nation != null">
+				`nation`,
+			</if>
+			<if test="politicalStatus != null">
+				`political_status`,
+			</if>
+			<if test="education !=null">
+				`education`,
+			</if>
+			<if test="rprType != null">
+				`rpr_type`,
+			</if>
+			<if test="rprProvinceCode != null">
+				`rpr_province_code`,
+			</if>
+			<if test="rprCityCode != null">
+				`rpr_city_code`,
+			</if>
+			<if test="rprDistrictCode != null">
+				`rpr_district_code`,
+			</if>
+			<if test="provinceCode != null">
+				`province_code`,
+			</if>
+			<if test="cityCode != null">
+				`city_code`,
+			</if>
+			<if test="districtCode != null">
+				`district_code`,
+			</if>
+			<if test="address != null">
+				`address`,
+			</if>
+			<if test="mobile != null">
+				`mobile`,
+			</if>
+			<if test="emergencyContact != null">
+				`emergency_contact`,
+			</if>
+			<if test="emergencyMobile != null">
+				`emergency_mobile`,
+			</if>
+			<if test="createUser != null">
+				`create_user`,
+			</if>
+			<if test="createUserId != null">
+				`create_user_id`,
+			</if>
+			`create_time`
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{empId, jdbcType=VARCHAR},
+			<if test="empName != null">
+				#{empName, jdbcType=VARCHAR},
+			</if>
+			<if test="empType !=null">
+				#{empType, jdbcType=VARCHAR},
+			</if>
+			<if test="empSource !=null">
+				#{empSource, jdbcType=VARCHAR},
+			</if>
+			<if test="empStatus !=null">
+				#{empStatus, jdbcType=VARCHAR},
+			</if>
+			<if test="idType != null">
+				#{idType, jdbcType=VARCHAR},
+			</if>
+			<if test="idCard != null">
+				#{idCard, jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex, jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				#{birthday, jdbcType=VARCHAR},
+			</if>
+			<if test="nation != null">
+				#{nation, jdbcType=VARCHAR},
+			</if>
+			<if test="politicalStatus != null">
+				#{politicalStatus, jdbcType=VARCHAR},
+			</if>
+			<if test="education !=null">
+				#{education,jdbcType=VARCHAR},
+			</if>
+			<if test="rprType != null">
+				#{rprType, jdbcType=VARCHAR},
+			</if>
+			<if test="rprProvinceCode != null">
+				#{rprProvinceCode, jdbcType=VARCHAR},
+			</if>
+			<if test="rprCityCode != null">
+				#{rprCityCode, jdbcType=VARCHAR},
+			</if>
+			<if test="rprDistrictCode != null">
+				#{rprDistrictCode, jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode != null">
+				#{provinceCode, jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				#{cityCode, jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				#{districtCode, jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address, jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile, jdbcType=VARCHAR},
+			</if>
+			<if test="emergencyContact != null">
+				#{emergencyContact, jdbcType=VARCHAR},
+			</if>
+			<if test="emergencyMobile != null">
+				#{emergencyMobile, jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser, jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId, jdbcType=VARCHAR},
+			</if>
+			NOW()
+		</trim>
+	</insert>
+
+	<insert id="insertEmpAnnexInfos" parameterType="list">
+		INSERT INTO `oa_employee_annex` (
+		`annex_id`,
+		`emp_id`,
+		`annex_name`,
+		`emp_annex_type`
+		)
+		VALUES
+		<foreach collection="list" item="info" index="index"
+			separator=",">
+			(
+			#{info.annexId},
+			#{info.empId, jdbcType=VARCHAR},
+			#{info.annexName,
+			jdbcType=VARCHAR},
+			#{info.empAnnexType,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertEmpOtherInfo" parameterType="com.yz.model.oa.OaEmployeeOtherInfo">
+		insert into `oa_employee_other`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`emp_id`,
+			<if test="telephone != null">
+				`telephone`,
+			</if>
+			<if test="email != null">
+				`email`,
+			</if>
+			<if test="qq != null">
+				`qq`,
+			</if>
+			<if test="wechat != null">
+				`wechat`,
+			</if>
+			<if test="finishSchool != null">
+				`finish_school`,
+			</if>
+			<if test="finishMajor != null">
+				`finish_major`,
+			</if>
+			<if test="finishCode != null">
+				`finish_code`,
+			</if>
+			<if test="finishTime != null">
+				`finish_time`,
+			</if>
+			<if test="nssfTime != null">
+				`nssf_time`,
+			</if>
+			<if test="maritalStatus != null">
+				`marital_status`,
+			</if>
+			<if test="englishLevel != null">
+				`english_level`,
+			</if>
+			<if test="computerLevel != null">
+				`computer_level`,
+			</if>
+			<if test="remark != null">
+				`remark`,
+			</if>
+			<if test="age != null">
+				`age`,
+			</if>
+			<if test="degree != null">
+				`degree`,
+			</if>
+			<if test="workPlace != null">
+				`work_place`,
+			</if>
+			<if test="hourFee != null">
+				`hour_fee`,
+			</if>
+			<if test="otherFee != null">
+				`other_fee`,
+			</if>
+			<if test="jobTitle != null">
+				`job_title`,
+			</if>
+			<if test="teachCertType != null">
+				`teach_cert_type`,
+			</if>
+			<if test="teachCertNo != null">
+				`teach_cert_no`,
+			</if>
+			<if test="bankCard != null">
+				`bank_card`,
+			</if>
+			<if test="teach != null">
+				`teach`,
+			</if>
+			<if test="teachIdea != null">
+				`teach_idea`,
+			</if>
+			<if test="teachEote !=null">
+				`teach_eote`,
+			</if>
+			<if test="updateUser != null">
+				`update_user`,
+			</if>
+			<if test="updateUserId != null">
+				`update_user_id`,
+			</if>
+			<if test="teachEducation != null">
+				ext_1,
+			</if>
+			<if test="professionalTime != null">
+				ext_2,
+			</if>
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{empId, jdbcType=VARCHAR},
+			<if test="telephone != null">
+				#{telephone, jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email, jdbcType=VARCHAR},
+			</if>
+			<if test="qq != null">
+				#{qq, jdbcType=VARCHAR},
+			</if>
+			<if test="wechat != null">
+				#{wechat, jdbcType=VARCHAR},
+			</if>
+			<if test="finishSchool != null">
+				#{finishSchool, jdbcType=VARCHAR},
+			</if>
+			<if test="finishMajor != null">
+				#{finishMajor, jdbcType=VARCHAR},
+			</if>
+			<if test="finishCode != null">
+				#{finishCode, jdbcType=VARCHAR},
+			</if>
+			<if test="finishTime != null">
+				#{finishTime, jdbcType=VARCHAR},
+			</if>
+			<if test="nssfTime != null">
+				#{nssfTime, jdbcType=VARCHAR},
+			</if>
+			<if test="maritalStatus != null">
+				#{maritalStatus, jdbcType=VARCHAR},
+			</if>
+			<if test="englishLevel != null">
+				#{englishLevel, jdbcType=VARCHAR},
+			</if>
+			<if test="computerLevel != null">
+				#{computerLevel, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="age != null">
+				#{age, jdbcType=VARCHAR},
+			</if>
+			<if test="degree != null">
+				#{degree, jdbcType=VARCHAR},
+			</if>
+			<if test="workPlace != null">
+				#{workPlace, jdbcType=VARCHAR},
+			</if>
+			<if test="hourFee != null">
+				#{hourFee, jdbcType=VARCHAR},
+			</if>
+			<if test="otherFee != null">
+				#{otherFee, jdbcType=VARCHAR},
+			</if>
+			<if test="jobTitle != null">
+				#{jobTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="teachCertType != null">
+				#{teachCertType, jdbcType=VARCHAR},
+			</if>
+			<if test="teachCertNo != null">
+				#{teachCertNo, jdbcType=VARCHAR},
+			</if>
+			<if test="bankCard != null">
+				#{bankCard, jdbcType=VARCHAR},
+			</if>
+			<if test="teach != null">
+				#{teach, jdbcType=VARCHAR},
+			</if>
+			<if test="teachIdea != null">
+				#{teachIdea, jdbcType=VARCHAR},
+			</if>
+			<if test="teachEote !=null">
+				#{teachEote, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser, jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="teachEducation != null">
+				#{teachEducation, jdbcType=VARCHAR},
+			</if>
+			<if test="professionalTime != null">
+				#{professionalTime, jdbcType=VARCHAR},
+			</if>
+			now()
+		</trim>
+	</insert>
+
+
+	<update id="updateAnnexInfo" parameterType="com.yz.model.oa.OaEmployeeAnnex">
+		update
+		oa_employee_annex set annex_url = #{annexUrl, jdbcType=VARCHAR}
+		where
+		emp_annex_type = #{empAnnexType, jdbcType=VARCHAR} and emp_id =
+		#{empId, jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateOtherInfo" parameterType="com.yz.model.oa.OaEmployeeOtherInfo">
+		update oa_employee_other
+		<set>
+			<if test="telephone != null">
+				telephone = #{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="qq != null">
+				qq = #{qq,jdbcType=VARCHAR},
+			</if>
+			<if test="wechat != null">
+				wechat = #{wechat,jdbcType=VARCHAR},
+			</if>
+			<if test="finishSchool != null">
+				finish_school = #{finishSchool,jdbcType=VARCHAR},
+			</if>
+			<if test="finishMajor != null">
+				finish_major = #{finishMajor,jdbcType=VARCHAR},
+			</if>
+			<if test="finishCode != null">
+				finish_code = #{finishCode,jdbcType=VARCHAR},
+			</if>
+			<if test="finishTime != null">
+				finish_time = #{finishTime,jdbcType=VARCHAR},
+			</if>
+			<if test="nssfTime != null">
+				nssf_time = #{nssfTime,jdbcType=VARCHAR},
+			</if>
+			<if test="maritalStatus != null">
+				marital_status = #{maritalStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="englishLevel != null">
+				english_level = #{englishLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="computerLevel != null">
+				computer_level = #{computerLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="age !=null">
+				age = #{age,jdbcType=VARCHAR},
+			</if>
+			<if test="degree !=null">
+				degree = #{degree,jdbcType=VARCHAR},
+			</if>
+			<if test="workPlace !=null">
+				work_place = #{workPlace,jdbcType=VARCHAR},
+			</if>
+			<if test="hourFee !=null">
+				hour_fee = #{hourFee,jdbcType=VARCHAR},
+			</if>
+			<if test="otherFee !=null">
+				other_fee = #{otherFee,jdbcType=VARCHAR},
+			</if>
+			<if test="jobTitle !=null">
+				job_title = #{jobTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="teachCertType !=null">
+				teach_cert_type = #{teachCertType,jdbcType=VARCHAR},
+			</if>
+			<if test="bankCard !=null">
+				bank_card = #{bankCard,jdbcType=VARCHAR},
+			</if>
+			<if test="teach !=null">
+				teach = #{teach,jdbcType=VARCHAR},
+			</if>
+			<if test="teachIdea !=null">
+				teach_idea = #{teachIdea,jdbcType=VARCHAR},
+			</if>
+			<if test="teachEote !=null">
+				teach_eote = #{teachEote,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="teachEducation != null">
+				ext_1 = #{teachEducation,jdbcType=VARCHAR},
+			</if>
+			<if test="professionalTime != null">
+				ext_2 = #{professionalTime,jdbcType=VARCHAR},
+			</if>
+			update_time = now()
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR};
+
+		
+	</update>
+	
+	<update id="updateTeacherJob" parameterType="com.yz.model.oa.OaEmployeeOtherInfo">
+		update oa_employee_job
+		<set>
+			<if test="campusId !=null">
+				campus_id = #{campusId,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateEmpBaseInfo" parameterType="com.yz.model.oa.OaEmployeeBaseInfo">
+		update oa_employee
+		<set>
+			<if test="empName != null">
+				emp_name = #{empName,jdbcType=VARCHAR},
+			</if>
+			<if test="empType != null">
+				emp_type = #{empType,jdbcType=VARCHAR},
+			</if>
+			<if test="idType != null">
+				id_type = #{idType,jdbcType=VARCHAR},
+			</if>
+			<if test="idCard != null">
+				id_card = #{idCard,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday,jdbcType=VARCHAR},
+			</if>
+			<if test="nation != null">
+				nation = #{nation,jdbcType=VARCHAR},
+			</if>
+			<if test="politicalStatus != null">
+				political_status = #{politicalStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="rprType != null">
+				rpr_type = #{rprType,jdbcType=VARCHAR},
+			</if>
+			<if test="rprProvinceCode != null">
+				rpr_province_code = #{rprProvinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="rprCityCode != null">
+				rpr_city_code = #{rprCityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="rprDistrictCode != null">
+				rpr_district_code = #{rprDistrictCode,jdbcType=VARCHAR},
+			</if>
+			<if test="provinceCode != null">
+				province_code = #{provinceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode != null">
+				city_code = #{cityCode,jdbcType=VARCHAR},
+			</if>
+			<if test="districtCode != null">
+				district_code = #{districtCode,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="emergencyContact != null">
+				emergency_contact = #{emergencyContact,jdbcType=VARCHAR},
+			</if>
+			<if test="emergencyMobile != null">
+				emergency_mobile = #{emergencyMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="education != null">
+				education = #{education,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			update_time = now()
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="getCountBy" resultType="int">
+		select
+		count(1)
+		from
+		oa_employee o
+		where o.`id_type` = #{idType}
+		and o.`id_card` =
+		#{idCard}
+	</select>
+	
+	<select id="getCountByEmpType" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM
+		oa_employee o
+		WHERE o.`id_type` = #{idType}
+		AND o.`id_card` =#{idCard}
+		AND o.`emp_type` =#{empType}
+	</select>
+	
+	<update id="updateEmpJObEffectTime" parameterType="java.lang.String">
+		update oa_employee_job set effect_time = #{effectTime} where emp_id = #{empId}
+	</update>
+
+	<resultMap type="com.yz.model.oa.OaEmployeeJobInfo" id="EmployeeJobInfo">
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="yz_id" property="yzId" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="group_id" property="groupId" jdbcType="VARCHAR" />
+		<result column="recruit_code" property="recruitCode" jdbcType="VARCHAR" />
+		<result column="entry_date" property="entryDate" jdbcType="VARCHAR" />
+		<result column="leave_date" property="leaveDate" jdbcType="VARCHAR" />
+		<result column="is_check" property="isCheck" jdbcType="VARCHAR" />
+		<result column="pact_start_time" property="pactStartTime" jdbcType="VARCHAR" />
+		<result column="pact_end_time" property="pactEndTime" jdbcType="VARCHAR" />
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="turn_right_time" property="turnRightTime" jdbcType="VARCHAR"/>
+		<result column="effect_time" property="effectTime" jdbcType="VARCHAR"/>
+		<result column="user_id" property="userId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getEmployeeJobInfo" resultMap="EmployeeJobInfo" parameterType="String">
+		SELECT
+		oe.`emp_id`,
+		oe.`emp_status`,
+		oej.`yz_id`,
+		oej.`campus_id`,
+		oej.`dp_id`,
+		oej.`group_id`,
+		oej.`recruit_code`,
+		date_format(oej.`entry_date`,'%Y-%m-%d') entry_date,
+		date_format(oej.`leave_date`,'%Y-%m-%d') leave_date,
+		oej.`is_check`,
+		date_format(oej.`pact_start_time`,'%Y-%m-%d') pact_start_time,
+		date_format(oej.`pact_end_time`,'%Y-%m-%d') pact_end_time,
+		date_format(oej.`turn_right_time`,'%Y-%m-%d') turn_right_time,
+		date_format(oej.`effect_time`,'%Y-%m-%d %H:%i:%s') effect_time,
+		oe.`user_id`
+		FROM
+		oa_employee oe LEFT JOIN oa_employee_job oej ON oe.`emp_id`=oej.`emp_id`
+		WHERE oe.`emp_id`= #{empId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="initEmpJob" parameterType="com.yz.model.oa.OaEmployeeJobInfo">
+		INSERT INTO oa_employee_job (
+		emp_id,
+		yz_id,
+		campus_id,
+		dp_id,
+		group_id,
+		recruit_code,
+		entry_date,
+		leave_date,
+		is_check,
+		pact_start_time,
+		pact_end_time
+		)
+		VALUES
+		(#{empId, jdbcType=VARCHAR},
+		#{yzId, jdbcType=VARCHAR},
+		#{campusId, jdbcType=VARCHAR},
+		#{dpId, jdbcType=VARCHAR},
+		#{groupId, jdbcType=VARCHAR},
+		#{recruitCode, jdbcType=VARCHAR},
+		#{entryDate, jdbcType=VARCHAR},
+		#{leaveDate, jdbcType=VARCHAR},
+		#{isCheck, jdbcType=VARCHAR},
+		#{pactStartTime, jdbcType=VARCHAR},
+		#{pactEndTime, jdbcType=VARCHAR})
+	</insert>
+
+	<update id="empJobUpdate" parameterType="com.yz.model.oa.OaEmployeeJobInfo">
+		update oa_employee_job
+		<set>
+			<if test="yzId != null">
+				yz_id = #{yzId,jdbcType=VARCHAR},
+			</if>
+			<if test="campusId != null">
+				campus_id = #{campusId,jdbcType=VARCHAR},
+			</if>
+			<if test="dpId != null">
+				dp_id = #{dpId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupId != null">
+				group_id = #{groupId,jdbcType=VARCHAR},
+			</if>
+			<if test="recruitCode != null">
+				recruit_code = #{recruitCode,jdbcType=VARCHAR},
+			</if>
+			<if test="entryDate != null">
+				entry_date = #{entryDate,jdbcType=VARCHAR},
+			</if>
+			<if test="leaveDate != null">
+				leave_date = #{leaveDate,jdbcType=VARCHAR},
+			</if>
+			<if test="isCheck != null">
+				is_check = #{isCheck,jdbcType=VARCHAR},
+			</if>
+			<if test="pactStartTime != null">
+				pact_start_time = #{pactStartTime,jdbcType=VARCHAR},
+			</if>
+			<if test="pactEndTime != null">
+				pact_end_time = #{pactEndTime,jdbcType=VARCHAR},
+			</if>
+			<if test="turnRightTime !=null">
+				turn_right_time = #{turnRightTime,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR};
+
+		update oa_employee
+		<set>
+			<if test="empStatus !=null">
+				emp_status = #{empStatus,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+
+    <update id="aloneUpdateEmpJob" parameterType="com.yz.model.oa.OaEmployeeJobInfo">
+		update oa_employee_job
+		<set>
+			<if test="campusId != null">
+				campus_id = #{campusId,jdbcType=VARCHAR},
+			</if>
+			<if test="dpId != null">
+				dp_id = #{dpId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupId != null">
+				group_id = #{groupId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where emp_id = #{empId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="findAllListByDpId" resultMap="EmployeeBaseInfo"
+		parameterType="java.lang.String">
+		SELECT
+		oe.emp_id,
+		oe.emp_name,
+		oej.`dp_id`
+		FROM
+		oa_employee oe
+		LEFT JOIN oa_employee_job oej
+		ON oe.`emp_id` = oej.`emp_id`
+		WHERE oej.dp_id = #{empId}
+		AND oe.emp_status = '1'
+	</select>
+	
+	<delete id="deleteRecruiter">
+	    delete from oa_employee
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		 delete from oa_employee_task
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		 delete from oa_employee_notify
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from oa_employee_job
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from oa_employee_annex
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from oa_employee_other
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		;
+		delete from oa_employee_title
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>
+		
+	</delete>
+	
+	<select id="getEmpIds" parameterType="string" resultType="string">
+		select emp_id from oa_employee where emp_name like concat('%', #{recruitName, jdbcType=VARCHAR}, '%')
+	</select>
+	
+	<!-- 新增员工职称 -->
+  <insert id="insertEmpJdIds">
+	insert into oa_employee_title(`emp_id`,`jt_id`)
+	values
+	<foreach collection="ids" item="id" separator=",">
+		(
+		#{empId, jdbcType=VARCHAR},
+		#{id,jdbcType=VARCHAR}
+		)
+	</foreach> 
+  </insert>
+  <!-- 删除员工职称 -->
+  <delete id="deleteEmpTitle">
+  	delete from oa_employee_title where emp_id=#{empId,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 员工下的所有职称 -->
+  <resultMap type="java.util.HashMap" id="EmpTitleMap">
+  	<result column="emp_id" property="empId" jdbcType="VARCHAR"/>
+  	<result column="jt_id" property="jtId" jdbcType="VARCHAR"/>
+  </resultMap>
+  <select id="findEmpTitle" resultMap="EmpTitleMap" parameterType="string">
+  	select emp_id,jt_id from oa_employee_title where emp_id=#{depId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="isYzCodeExist" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select 
+  		count(1)
+  		from oa_employee_job oej 
+  	where 
+  		oej.yz_id=#{yzCode,jdbcType=VARCHAR}
+  </select>
+   <select id="isSelfYzCode" resultType="java.lang.Integer">
+   		select 
+  		count(1)
+  		from oa_employee_job oej 
+  	where 
+  		oej.emp_id=#{empId,jdbcType=VARCHAR} and oej.yz_id=#{yzCode,jdbcType=VARCHAR}
+   </select>
+  <select id="isRecruitCodeExist" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	select 
+  		count(1)
+  		from oa_employee_job oej 
+  	where 
+  		oej.recruit_code=#{recruitCode,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="isSelfRecruiteCode" resultType="java.lang.Integer">
+  	select 
+  		count(1)
+  		from oa_employee_job oej 
+  	where 
+  		oej.emp_id=#{empId,jdbcType=VARCHAR} and oej.recruit_code=#{recruitCode,jdbcType=VARCHAR}
+  </select>
+ 
+  <!-- 最新一条变更信息 -->
+  <select id="getEmpModifyInfoId" resultMap="EmployeeModifyInfo">
+  	SELECT * FROM oa_employee_modify WHERE emp_Id=#{empId,jdbcType=VARCHAR} and is_delete = '0' and status = '2' ORDER BY create_time DESC LIMIT 0,1
+  </select>
+  <select id="getEmpModifyEndTime" resultType="java.lang.String">
+  	SELECT end_time FROM oa_employee_modify WHERE modify_id=#{modifyId,jdbcType=VARCHAR} ORDER BY create_time DESC LIMIT 0,1
+  </select>
+  
+  <insert id="addEmpModifyInfo" parameterType="com.yz.model.oa.OaEmployeeModifyInfo">
+		insert into `oa_employee_modify`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`modify_id`,
+			<if test="empId != null">
+				`emp_id`,
+			</if>
+			<if test="oldCampusId != null">
+				`old_campus_id`,
+			</if>
+			<if test="oldDpId != null">
+				`old_dp_id`,
+			</if>
+			<if test="oldGroupId != null">
+				`old_group_id`,
+			</if>
+			<if test="oldRecruitCode != null">
+				`old_recruit_code`,
+			</if>
+			<if test="oldTitle != null">
+				`old_title`,
+			</if>
+			<if test="newCampusId != null">
+				`new_campus_id`,
+			</if>
+			<if test="newDpId != null">
+				`new_dp_id`,
+			</if>
+			<if test="newGroupId !=null">
+				`new_group_id`,
+			</if>
+			<if test="newRecruitCode != null">
+				`new_recruit_code`,
+			</if>
+			<if test="newTitle != null">
+				`new_title`,
+			</if>
+			<if test="beginTime !=null">
+				`begin_time`,
+			</if>
+			<if test="createUser != null">
+				`create_user`,
+			</if>
+			<if test="createUserId != null">
+				`create_user_id`,
+			</if>
+			<if test="effectTime != null">
+				`effect_time`,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="jobInfo != null">
+				job_info,
+			</if>
+			`end_time`,
+			`create_time`
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{modifyId, jdbcType=VARCHAR},
+			<if test="empId != null">
+				#{empId, jdbcType=VARCHAR},
+			</if>
+			<if test="oldCampusId !=null">
+				#{oldCampusId, jdbcType=VARCHAR},
+			</if>
+			<if test="oldDpId != null">
+				#{oldDpId, jdbcType=VARCHAR},
+			</if>
+			<if test="oldGroupId != null">
+				#{oldGroupId, jdbcType=VARCHAR},
+			</if>
+			<if test="oldRecruitCode != null">
+				#{oldRecruitCode, jdbcType=VARCHAR},
+			</if>
+			<if test="oldTitle != null">
+				#{oldTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="newCampusId != null">
+				#{newCampusId, jdbcType=VARCHAR},
+			</if>
+			<if test="newDpId != null">
+				#{newDpId, jdbcType=VARCHAR},
+			</if>
+			<if test="newGroupId !=null">
+				#{newGroupId,jdbcType=VARCHAR},
+			</if>
+			<if test="newRecruitCode != null">
+				#{newRecruitCode, jdbcType=VARCHAR},
+			</if>
+			<if test="newTitle != null">
+				#{newTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="beginTime !=null">
+				#{beginTime , jdbcType=VARCHAR},
+			</if>
+			<if test="createUser != null">
+				#{createUser, jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null">
+				#{createUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="effectTime != null">
+				#{effectTime, jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status, jdbcType=VARCHAR},
+			</if>
+			<if test="jobInfo != null">
+				#{jobInfo, jdbcType=VARCHAR},
+			</if>
+			NOW(),
+			NOW()
+		</trim>
+	</insert>
+	
+	<resultMap type="com.yz.model.oa.OaEmployeeLearnInfo" id="EmployeeLearnInfo">
+	   <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+	   <result column="recruit" property="recruit" jdbcType="VARCHAR"/>
+	   <result column="recruit_campus_id" property="recruitCampusId" jdbcType="VARCHAR"/>
+	   <result column="recruit_dp_id" property="recruitDpId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getEmpLearnInfos" resultMap="EmployeeLearnInfo">
+		SELECT 
+		  bli.`learn_id`,
+		  blr.`recruit`,
+		  blr.`recruit_campus_id`,
+		  blr.`recruit_dp_id` 
+		FROM
+		  	bd_learn_info bli
+		  LEFT JOIN  bd_learn_rules blr  
+		    ON blr.`learn_id` = bli.`learn_id` 
+		WHERE blr.recruit = #{recruit,jdbcType=VARCHAR} 
+		  AND blr.`recruit_dp_id` = #{dpId,jdbcType=VARCHAR} 
+	</select>
+
+	<select id="getEmpLearnInfosByLearnId" resultMap="EmployeeLearnInfo">
+		SELECT
+		blr.`learn_id`,
+		blr.`recruit`,
+		blr.`recruit_campus_id`,
+		blr.`recruit_dp_id`
+		FROM bd_learn_rules blr
+		WHERE blr.learn_id = #{learnId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertEmpLearnInfos" parameterType="list">
+		INSERT INTO `oa_employee_learn_info` (
+		  `recrods_no`,
+		  `learn_id`,
+		  `modify_id`,
+		  `old_emp_id`,
+		  `old_dp_id`,
+		  `old_campus_id`,
+		  `create_time` 
+		)
+		VALUES
+		<foreach collection="list" item="info" index="index"
+			separator=",">
+			(
+			#{info.recrodsNo, jdbcType=VARCHAR},
+			#{info.learnId, jdbcType=VARCHAR},
+			#{info.modifyId,jdbcType=VARCHAR},
+			#{info.recruit,jdbcType=VARCHAR},
+			#{info.recruitDpId,jdbcType=VARCHAR},
+			#{info.recruitCampusId,jdbcType=VARCHAR},
+			NOW()
+			)
+		</foreach>
+	</insert>
+	<select id="totalLearnCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) total_count FROM `oa_employee_learn_info` 
+		WHERE old_dp_id=#{dpId,jdbcType=VARCHAR} and old_emp_id=#{empId,jdbcType=VARCHAR}
+		and modify_id = #{modifyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="finishLearnCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) total_count FROM `oa_employee_learn_info` 
+		WHERE old_dp_id=#{dpId,jdbcType=VARCHAR} AND old_emp_id=#{empId,jdbcType=VARCHAR} AND oper_status='1'
+		and modify_id = #{modifyId,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap type="com.yz.model.oa.EmpModifyListInfo" id="EmpModifyListInfo">
+		<result column="modify_id" property="modifyId" jdbcType="VARCHAR"/>
+		<result column="old_campus_name" property="oldCampusName" jdbcType="VARCHAR"/>
+		<result column="old_dp_name" property="oldDpName" jdbcType="VARCHAR"/>
+		<result column="old_group_name" property="oldGroupName" jdbcType="VARCHAR"/>
+		<result column="new_campus_name" property="newCampusName" jdbcType="VARCHAR"/>
+		<result column="new_dp_name" property="newDpName" jdbcType="VARCHAR"/>
+		<result column="new_group_name" property="newGroupName" jdbcType="VARCHAR"/>
+		<result column="old_title" property="oldTitle" jdbcType="VARCHAR"/>
+		<result column="new_title" property="newTitle" jdbcType="VARCHAR"/>
+		<result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+		<result column="emp_name" property="empName" jdbcType="VARCHAR"/>
+		<result column="old_dp_id" property="oldDpId" jdbcType="VARCHAR"/>
+		<result column="old_campus_id" property="oldCampusId" jdbcType="VARCHAR"/>
+		<result column="new_campus_id" property="newCampusId" jdbcType="VARCHAR"/>
+		<result column="new_dp_id" property="newDpId" jdbcType="VARCHAR"/>
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR"/>
+		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="effect_time" property="effectTime" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getModifyList" resultMap="EmpModifyListInfo">
+	  SELECT 
+	    oem.`modify_id`,
+	    oem.`create_user`,
+	    oem.`create_time`,
+	    oc.`campus_name` as old_campus_name,
+	    od.`dp_name` as old_dp_name,
+	    og.`group_name` as old_group_name,
+	    ocn.`campus_name` as new_campus_name,
+	    odn.`dp_name` as new_dp_name,
+	    ogn.`group_name` as new_group_name,
+	    oem.`old_title`,
+	    oem.`new_title`,
+	    oem.`effect_time`,
+	    oem.`status`
+	  FROM
+	    oa_employee_modify oem 
+	    LEFT JOIN oa_campus oc 
+	      ON oc.`campus_id` = oem.`old_campus_id` 
+	    LEFT JOIN oa_department od 
+	      ON od.`dp_id` = oem.`old_dp_id` 
+	    LEFT JOIN oa_group og 
+	      ON og.`group_id` = oem.`old_group_id` 
+	    LEFT JOIN oa_campus ocn 
+	      ON ocn.`campus_id` = oem.`new_campus_id` 
+	    LEFT JOIN oa_department odn 
+	      ON odn.`dp_id` = oem.`new_dp_id` 
+	    LEFT JOIN oa_group ogn 
+	      ON ogn.`group_id` = oem.`new_group_id` 
+	  WHERE oem.`emp_id` = #{empId,jdbcType=VARCHAR} and oem.is_delete = '0' order by oem.`create_time` desc
+	</select>
+	
+	
+	<select id="getLastModifyInfo" resultMap="EmpModifyListInfo">
+	 SELECT 
+	    oe.`emp_name`,
+	    oe.`emp_status`,
+	    oem.`modify_id`,
+	    oem.`old_campus_id`,
+	    oem.`old_dp_id`,
+	    oem.`new_campus_id`,
+	    oem.`new_dp_id`,
+	    oc.`campus_name` AS old_campus_name,
+	    od.`dp_name` AS old_dp_name,
+	    og.`group_name` AS old_group_name,
+	    ocn.`campus_name` AS new_campus_name,
+	    odn.`dp_name` AS new_dp_name,
+	    ogn.`group_name` AS new_group_name,
+	    oem.`old_title`,
+	    oem.`new_title` 
+	  FROM
+	      oa_employee_modify oem
+	    LEFT JOIN oa_employee oe
+	      ON oe.`emp_id` = oem.`emp_id` 
+	    LEFT JOIN oa_campus oc 
+	      ON oc.`campus_id` = oem.`old_campus_id` 
+	    LEFT JOIN oa_department od 
+	      ON od.`dp_id` = oem.`old_dp_id` 
+	    LEFT JOIN oa_group og 
+	      ON og.`group_id` = oem.`old_group_id` 
+	    LEFT JOIN oa_campus ocn 
+	      ON ocn.`campus_id` = oem.`new_campus_id` 
+	    LEFT JOIN oa_department odn 
+	      ON odn.`dp_id` = oem.`new_dp_id` 
+	    LEFT JOIN oa_group ogn 
+	      ON ogn.`group_id` = oem.`new_group_id` 
+	  WHERE oem.`emp_id` = #{empId,jdbcType=VARCHAR}  ORDER BY oem.`create_time` DESC LIMIT 0,1
+	</select>
+	
+	  
+	<update id="clearLearnRules" parameterType="String">
+	UPDATE bd_learn_rules SET recruit=NULL WHERE recruit=#{empId, jdbcType=VARCHAR}
+	</update>
+
+
+
+	<resultMap type="com.yz.model.oa.OaEmpFollowInfo" id="oaEmpFollowInfo">
+		<result column="emp_id" property="empId" jdbcType="VARCHAR" />
+		<result column="emp_name" property="empName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="emp_status" property="empStatus" jdbcType="VARCHAR" />
+		<result column="dp_id" property="dpId" jdbcType="VARCHAR" />
+		<result column="dp_name" property="dpName" jdbcType="VARCHAR" />
+		<result column="dp_manager" property="dpManager" jdbcType="VARCHAR" />
+		<result column="dp_manager_name" property="dpManagerName" jdbcType="VARCHAR" />
+		<result column="campus_id" property="campusId" jdbcType="VARCHAR" />
+		<result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+		<result column="campus_manager" property="campusManager" jdbcType="VARCHAR" />
+		<result column="campus_manager_name" property="campusManagerName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getEmpFollowInfo" resultMap="oaEmpFollowInfo" parameterType="String">
+		select
+			oe.emp_id, oe.emp_name, oe.mobile, oe.emp_status,
+			od.dp_id, od.dp_name, oed.emp_id as dp_manager, oed.emp_name as dp_manager_name,
+			oc.campus_id, oc.campus_name, oec.emp_id as campus_manager, oec.emp_name as campus_manager_name
+		from oa_employee oe
+		left join oa_employee_job oej on oej.emp_id=oe.emp_id
+		left join oa_department od on od.dp_id=oej.dp_id
+		left join oa_employee oed on oed.emp_id=od.emp_id
+		left join oa_campus oc on oc.campus_id=oej.campus_id
+		left join oa_employee oec on oec.emp_id=oc.emp_id
+		WHERE oe.emp_id= #{empId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="checkUserIfExistsByYzCode" resultType="java.lang.Integer">
+		select count(1) from us.us_base_info where yz_code =#{yzCode,jdbcType=VARCHAR};
+	</select>
+	
+	<delete id="deleteTeacher">
+		delete from oa_employee_other
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+		
+		delete from oa_employee_annex
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+		
+		delete from oa_employee_job
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+		
+		delete from oa_employee
+		where emp_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach>;
+	</delete>
+	
+	<update id="updateEmpUserIdByEmpId">
+		UPDATE bms.`oa_employee` SET user_id=NULL WHERE emp_id=#{empId,jdbcType=VARCHAR}
+	</update>
+</mapper>

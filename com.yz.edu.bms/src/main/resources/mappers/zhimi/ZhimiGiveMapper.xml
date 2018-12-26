@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.zhimi.ZhimiGiveMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.zhimi.ZhimiGive">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="zhimi_count" jdbcType="VARCHAR" property="zhimiCount" />
+    <result column="zhimi_type" jdbcType="VARCHAR" property="zhimiType" />
+    <result column="reason_desc" jdbcType="VARCHAR" property="reasonDesc" />
+    <result column="submit_user_id" jdbcType="VARCHAR" property="submitUserId" />
+    <result column="submit_user_name" jdbcType="VARCHAR" property="submitUserName" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="reason_status" jdbcType="CHAR" property="reasonStatus" />
+    <result column="reject_desc" jdbcType="VARCHAR" property="rejectDesc" />
+    <result column="check_user_id" jdbcType="VARCHAR" property="checkUserId" />
+    <result column="check_user_name" jdbcType="VARCHAR" property="checkUserName" />
+    <result column="check_time" jdbcType="VARCHAR" property="checkTime" />
+
+    <result column="yz_code" jdbcType="CHAR" property="yzCode" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickName" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="cert_no" jdbcType="VARCHAR" property="certNo" />
+  </resultMap>
+
+  <select id="selectGiveZhimiByPage" resultMap="BaseResultMap">
+    select us.yz_code,us.nickname,us.real_name,us.mobile,uc.cert_no,
+    zg.id,zg.user_id,zg.zhimi_count,zg.zhimi_type,zg.reason_desc,zg.submit_user_id,zg.submit_user_name,
+    DATE_FORMAT(zg.create_time, '%Y-%m-%d %H:%i:%s') as create_time,
+    zg.reason_status,zg.reject_desc,zg.check_user_id,zg.check_user_name,
+    DATE_FORMAT(zg.check_time, '%Y-%m-%d %H:%i:%s') as check_time
+    from us.`us_zhimi_give` zg
+    left join us.`us_base_info` us on us.user_id=zg.user_id
+    left join us.`us_certificate` uc on zg.user_id=uc.user_id
+    where 1=1
+    <if test="zhimiGive.yzCode != null and zhimiGive.yzCode != ''" >
+      and us.yz_code = #{zhimiGive.yzCode,jdbcType=VARCHAR}
+    </if>
+    <if test="zhimiGive.realName != null and zhimiGive.realName != ''" >
+      and us.real_name LIKE CONCAT('%', CONCAT(#{zhimiGive.realName,jdbcType=VARCHAR}, '%'))
+    </if>
+    <if test="zhimiGive.mobile != null and zhimiGive.mobile != ''" >
+      and us.mobile = #{zhimiGive.mobile,jdbcType=VARCHAR}
+    </if>
+    <if test="zhimiGive.certNo != null and zhimiGive.certNo != ''" >
+      and uc.cert_no = #{zhimiGive.certNo,jdbcType=VARCHAR}
+    </if>
+    <if test="user.userLevel != 1">
+      and zg.submit_user_id= #{user.userId, jdbcType=VARCHAR}
+    </if>
+    <if test="zhimiGive.reasonStatus != null and zhimiGive.reasonStatus != ''">
+      and zg.reason_status = #{zhimiGive.reasonStatus, jdbcType=VARCHAR}
+    </if>
+    <if test="zhimiGive.createTime != null and zhimiGive.createTime != ''">
+      and zg.create_time &gt; str_to_date(#{zhimiGive.createTime, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+    </if>
+    <if test="zhimiGive.createTimeEnd != null and zhimiGive.createTimeEnd != ''">
+      and zg.create_time &lt; str_to_date(#{zhimiGive.createTimeEnd, jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s')
+    </if>
+    order by zg.create_time desc
+  </select>
+
+
+  <select id="selectZhimiGiveInfo" resultMap="BaseResultMap">
+    select us.yz_code,us.nickname,us.real_name,us.mobile,uc.cert_no,
+    zg.id,zg.user_id,zg.zhimi_count,zg.zhimi_type,zg.reason_desc,zg.submit_user_id,zg.submit_user_name,
+    DATE_FORMAT(zg.create_time, '%Y-%m-%d %H:%i:%s') as create_time,
+    zg.reason_status,zg.reject_desc,zg.check_user_id,zg.check_user_name,
+    DATE_FORMAT(zg.check_time, '%Y-%m-%d %H:%i:%s') as check_time
+    from us.`us_zhimi_give` zg
+    left join us.`us_base_info` us on us.user_id=zg.user_id
+    left join us.`us_certificate` uc on zg.user_id=uc.user_id
+    where id= #{id,jdbcType=VARCHAR}
+  </select>
+
+
+  <delete id="deleteGiveRecords">
+    delete from  us.`us_zhimi_give` where id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+
+  <insert id="insertSelective" parameterType="com.yz.model.zhimi.ZhimiGive">
+    insert into us.`us_zhimi_give`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        id,
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="zhimiCount != null">
+        zhimi_count,
+      </if>
+      <if test="zhimiType != null">
+        zhimi_type,
+      </if>
+      <if test="reasonDesc != null">
+        reason_desc,
+      </if>
+      <if test="submitUserId != null">
+        submit_user_id,
+      </if>
+      <if test="submitUserName != null">
+        submit_user_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="reasonStatus != null">
+        reason_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id,jdbcType=VARCHAR},
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimiCount != null">
+        #{zhimiCount,jdbcType=VARCHAR},
+      </if>
+      <if test="zhimiType != null">
+        #{zhimiType,jdbcType=VARCHAR},
+      </if>
+      <if test="reasonDesc != null">
+        #{reasonDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="submitUserId != null">
+        #{submitUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="submitUserName != null">
+        #{submitUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        now(),
+      </if>
+      <if test="reasonStatus != null">
+        #{reasonStatus,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+
+  <!-- 获取用户信息 -->
+  <select id="findKeyValueUser" resultType="java.util.Map">
+    select us.user_id,us.yz_code,us.nickname,us.real_name,us.mobile,uc.cert_no
+    from us.`us_base_info` us
+    left join us.`us_certificate` uc on uc.user_id=us.user_id
+    left join us.`us_follow` uf on uf.user_id=us.user_id
+    <where>
+      <if test="eName != null and '' != eName">
+        (us.yz_code like CONCAT('%',#{eName,jdbcType=VARCHAR},'%')
+        or us.mobile like CONCAT('%',#{eName,jdbcType=VARCHAR},'%')
+        or uc.cert_no like CONCAT('%',#{eName,jdbcType=VARCHAR},'%'))
+      </if>
+      <if test="user.userLevel != 1">
+        <choose>
+          <when test="user.userLevel == 3"> <!-- 校监 -->
+            and (uf.emp_id = #{user.empId, jdbcType=VARCHAR} or uf.dp_id in (
+            <foreach collection="user.myDpList" item="info" separator=",">
+              #{info.dpId, jdbcType=VARCHAR}
+            </foreach>
+            ))
+          </when>
+          <when test="user.userLevel == 4"> <!-- 招生主管  -->
+            and (uf.emp_id = #{user.empId, jdbcType=VARCHAR} or uf.emp_id in (
+            <foreach collection="user.myEmplyeeList" item="info" separator=",">
+              #{info.empId, jdbcType=VARCHAR}
+            </foreach>
+            ))
+          </when>
+          <when test="user.userLevel == 7"> <!-- 校区助理  -->
+            and (uf.emp_id = #{user.empId, jdbcType=VARCHAR} or uf.campus_id=#{user.campusId, jdbcType=VARCHAR}  )
+          </when>
+          <when test="user.userLevel == 8"> <!-- 校监助理  -->
+            and (uf.emp_id = #{user.empId, jdbcType=VARCHAR} or uf.dp_id= #{user.departmentId, jdbcType=VARCHAR}  )
+          </when>
+          <when test="user.userLevel == 5"> <!-- 招生老师  -->
+            and (uf.emp_id = #{user.empId, jdbcType=VARCHAR})
+          </when>
+          <otherwise>
+            and uf.emp_id = #{user.empId, jdbcType=VARCHAR}
+          </otherwise>
+        </choose>
+      </if>
+    </where>
+  </select>
+
+
+  <update id="updateZhimiGive" parameterType="com.yz.model.zhimi.ZhimiGive">
+    update us.`us_zhimi_give`
+    <set>
+      <if test="reasonStatus != null and reasonStatus != ''">
+        reason_status = #{reasonStatus,jdbcType=CHAR},
+      </if>
+      <if test="rejectDesc != null and rejectDesc != ''">
+        reject_desc = #{rejectDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="checkUserId != null and checkUserId != ''">
+        check_user_id = #{checkUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkUserName != null and checkUserName != ''">
+        check_user_name = #{checkUserName,jdbcType=VARCHAR},
+      </if>
+      check_time = now(),
+    </set>
+    where id = #{id, jdbcType=VARCHAR}
+  </update>
+
+
+</mapper>

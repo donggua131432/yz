@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.enroll.BdSceneConfirmMapper">
+	
+	<resultMap id="ResultMap" type="java.util.HashMap">
+	     <result column="std_name" property="std_name" jdbcType="VARCHAR"/>
+	     <result column="std_id" property="std_id" jdbcType="VARCHAR"/>
+	     <result column="learn_id" property="learn_id" jdbcType="VARCHAR"/>
+	     <result column="std_stage" property="std_stage" jdbcType="VARCHAR"/>
+	     <result column="std_type" property="std_type" jdbcType="VARCHAR"/>
+	     <result column="recruit_type" property="recruit_type" jdbcType="VARCHAR"/>
+	     <result column="scholarship" property="scholarship" jdbcType="VARCHAR"/>
+	     <result column="is_test_completed" property="is_test_completed" jdbcType="VARCHAR"/>
+	     <result column="ta_id" property="ta_id" jdbcType="VARCHAR"/>
+	     <result column="grade" property="grade" jdbcType="VARCHAR"/>
+	     <result column="my_annex_status" property="my_annex_status" jdbcType="VARCHAR"/>
+	     <result column="is_data_completed" property="is_data_completed" jdbcType="VARCHAR"/>
+	     <result column="unvs_name" property="unvs_name" jdbcType="VARCHAR"/>
+	     <result column="pfsn_level" property="pfsn_level" jdbcType="VARCHAR"/>
+	     <result column="pfsn_code" property="pfsn_code" jdbcType="VARCHAR"/>
+	     <result column="pfsn_name" property="pfsn_name" jdbcType="VARCHAR"/>
+	     <result column="ta_name" property="ta_name" jdbcType="VARCHAR"/>
+	     <result column="recruit_name" property="recruit_name" jdbcType="VARCHAR"/>
+	     <result column="apply_no" property="apply_no" jdbcType="VARCHAR"/>
+	     <result column="apply_pwd" property="apply_pwd" jdbcType="VARCHAR"/>
+	     <result column="is_ok" property="is_ok" jdbcType="VARCHAR"/>
+	     <result column="is_print_notice" property="is_print_notice" jdbcType="VARCHAR"/>
+	     <result column="is_print_prove" property="is_print_prove" jdbcType="VARCHAR"/>
+	     <result column="is_exam_notice" property="is_exam_notice" jdbcType="VARCHAR"/>
+	     <result column="is_exam_sign" property="is_exam_sign" jdbcType="VARCHAR"/>
+	     <result column="follow_record" property="follow_record" jdbcType="VARCHAR"/>
+	     <result column="test_prove_status" property="test_prove_status" jdbcType="VARCHAR"/>
+	     <result column="test_prove_url" property="test_prove_url" jdbcType="VARCHAR"/>
+	     <result column="network_pay" property="network_pay" jdbcType="VARCHAR"/>		
+	     <result column="proxy_pay" property="proxy_pay" jdbcType="VARCHAR"/>		
+	     <result column="is_arrange" property="is_arrange" jdbcType="VARCHAR"/>		
+	     <result column="exam_no" property="exam_no" jdbcType="VARCHAR"/>		
+	     <result column="test_address" property="test_address" jdbcType="VARCHAR"/>		
+	     <result column="test_name" property="test_name" jdbcType="VARCHAR"/>		
+	     <result column="enroll_unvs_name" property="enroll_unvs_name" jdbcType="VARCHAR"/>		
+	     <result column="enroll_pfsn_name" property="enroll_pfsn_name" jdbcType="VARCHAR"/>		
+	     <result column="payable" property="payable" jdbcType="VARCHAR"/>		
+	     <result column="fee_amount" property="fee_amount" jdbcType="VARCHAR"/>		
+	     <result column="sub_order_status" property="sub_order_status" jdbcType="VARCHAR"/>
+	     <result column="points" property="points" jdbcType="VARCHAR"/>
+		 <result column="inclusion_status" property="inclusionStatus" jdbcType="VARCHAR"/>
+		 <association property="scores" column="learn_id" select="selectStdEScores"/>
+	</resultMap>
+	 <resultMap type="com.yz.model.educational.BdStudentEScore" id="ScoreResultMap">
+  		<result column="course_name" property="courseName" />
+  		<result column="score" property="score" />
+  	</resultMap>
+  
+	<select id="findSceneConfirmStdPage" resultMap="ResultMap" >
+		SELECT 
+		  s.`std_name`,
+		  l.`std_id`,
+		  l.`learn_id`,
+		  l.`std_stage`,
+		  l.`std_type`,
+		  l.`recruit_type`,
+		  l.`scholarship`,
+		  l.is_test_completed,
+		  l.ta_id,
+		  l.grade,
+		  l.annex_status as my_annex_status,
+		  l.is_data_completed,
+		  u.`unvs_name`,
+		  p.`pfsn_level`,
+		  p.`pfsn_code`,
+		  p.pfsn_name,
+		  t.`ta_name`,
+		  e.emp_name as recruit_name,
+		  e.`emp_status`,
+		  c.apply_no,
+		  c.apply_pwd,
+		  c.is_ok,
+		  c.is_print_notice,
+		  c.is_print_prove,
+		  c.is_exam_notice,
+		  c.is_exam_sign,
+		  c.follow_record,
+		  c.test_prove_status,
+		  c.test_prove_url,
+		  c.network_pay,
+		  c.proxy_pay,
+		  c.is_arrange,
+		  i.exam_no,
+		  i.test_addr as test_address,
+		  i.test_name,
+		  yu.`unvs_name` as enroll_unvs_name,
+		  yp.`pfsn_name` as enroll_pfsn_name,
+		  bso.`payable`,
+		  bso.`fee_amount`,
+		  bso.`sub_order_status`,
+		  bse.`points`,
+		  l.`inclusion_status`
+		FROM
+		  bd_learn_info l 
+		  LEFT JOIN bd_student_info s 
+		    ON s.`std_id` = l.`std_id` 
+		  LEFT join bd_student_enroll bse
+		    on bse.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_university u 
+		    ON bse.`unvs_id` = u.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession p 
+		    ON p.`pfsn_id` = bse.`pfsn_id` 
+		  LEFT JOIN bd_test_area t 
+		    ON t.`ta_id` = l.`ta_id` 
+		  LEFT JOIN bd_learn_rules r 
+		    ON r.`learn_id` = l.`learn_id` 
+		  LEFT JOIN oa_employee e 
+		    on e.emp_id = r.recruit 
+		  LEFT JOIN bd_test_confirm c 
+		    on c.learn_id = l.learn_id 
+		  LEFT JOIN bd_test_prove_info i 
+		    on i.learn_id = l.learn_id
+		  left join  bd_student_admit bsa
+		    on bsa.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_university yu 
+		    ON yu.`unvs_id` = bsa.`unvs_id` 
+		  LEFT JOIN bd_unvs_profession yp 
+		    ON yp.`pfsn_id` = bsa.`pfsn_id`
+		  LEFT JOIN bd_student_order bs 
+		    ON bs.`learn_id` = l.`learn_id` 
+		  LEFT JOIN bd_sub_order bso 
+		    ON bso.`order_no` = bs.`order_no` and bso.`item_code`='Y1' and bso.sub_order_status != '4'
+		  
+		where l.recruit_type ='1' and l.`grade` ='2018'
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdStage != null and queryInfo.stdStage != ''">
+				and l.std_stage = #{queryInfo.stdStage, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.taName != null and queryInfo.taName != ''">
+				and t.ta_name LIKE CONCAT('%', #{queryInfo.taName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isTestCompleted != null and queryInfo.isTestCompleted != ''">
+				and l.is_data_completed = #{queryInfo.isTestCompleted, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.applyNo != null and queryInfo.applyNo != ''">
+				and c.apply_no LIKE CONCAT('%', #{queryInfo.applyNo, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isOk != null and queryInfo.isOk != ''">
+				and c.is_ok = #{queryInfo.isOk, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.examNo != null and queryInfo.examNo != ''">
+				and i.exam_no LIKE CONCAT('%', #{queryInfo.examNo, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.testAddress != null and queryInfo.testAddress != ''">
+				and c.test_address LIKE CONCAT('%', #{queryInfo.testAddress, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isPrintNotice != null and queryInfo.isPrintNotice != ''">
+				and c.is_print_notice = #{queryInfo.isPrintNotice, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.isExamNotice != null and queryInfo.isExamNotice != ''">
+				and c.is_exam_notice = #{queryInfo.isExamNotice, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.isExamSign != null and queryInfo.isExamSign != ''">
+				<if test="queryInfo.isExamSign == '1'.toString()">
+					and c.is_exam_sign = #{queryInfo.isExamSign, jdbcType=VARCHAR}
+				</if>
+				<if test="queryInfo.isExamSign == '0'.toString()">
+					and (c.is_exam_sign ='0' or c.is_exam_sign is null)
+				</if>
+			</if>
+			<if test="queryInfo.unvsName != null and queryInfo.unvsName != ''">
+				and u.`unvs_name` LIKE CONCAT('%', #{queryInfo.unvsName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and p.`pfsn_id` LIKE CONCAT('%', #{queryInfo.pfsnId, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.sg !=null and '' != queryInfo.sg">
+				and l.`sg` = #{queryInfo.sg,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.inclusionStatus !=null and '' !=queryInfo.inclusionStatus">
+				and l.`inclusion_status` = #{queryInfo.inclusionStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.scholarship != null and queryInfo.scholarship != ''">
+				and l.scholarship = #{queryInfo.scholarship, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.recruitName != null and queryInfo.recruitName != ''">
+				and e.emp_name LIKE CONCAT('%', #{queryInfo.recruitName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdPhone !=null and '' != queryInfo.stdPhone ">
+				and s.`mobile` = #{queryInfo.stdPhone,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.stdIdCard !=null and '' != queryInfo.stdIdCard">
+				and s.`id_card` = #{queryInfo.stdIdCard,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+				and u.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+				and p.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.campusId !=null and '' != queryInfo.campusId">
+				and r.`recruit_campus_id` = #{queryInfo.campusId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.dpId !=null and '' != queryInfo.dpId">
+				and r.`recruit_dp_id` = #{queryInfo.dpId,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.empStatus !=null and '' !=queryInfo.empStatus">
+				and e.`emp_status` = #{queryInfo.empStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.isStdNo !=null and '' != queryInfo.isStdNo">
+				<if test="queryInfo.isStdNo == '1'.toString()">
+					and i.`exam_no` is not null
+				</if>
+				<if test="queryInfo.isStdNo == '0'.toString()">
+					and i.`exam_no` is null
+				</if>
+			</if>
+			<if test="queryInfo.isExamScore !=null and '' != queryInfo.isExamScore">
+				<if test="queryInfo.isExamScore == '1'.toString()">
+					and IFNULL((SELECT SUM(score) FROM bd_student_e_score WHERE learn_Id=l.`learn_id`),'0') >0
+				</if>
+				<if test="queryInfo.isExamScore == '0'.toString()">
+					and IFNULL((SELECT SUM(score) FROM bd_student_e_score WHERE learn_Id=l.`learn_id`),'0') =0
+				</if>
+			</if>
+			<if test="queryInfo.maxScore !=null and '' != queryInfo.maxScore">
+			  <![CDATA[ and IFNULL((SELECT SUM(score) FROM bd_student_e_score WHERE learn_Id=l.`learn_id`),'0') >= CAST(#{queryInfo.maxScore,jdbcType=VARCHAR} AS SIGNED INTEGER)]]>
+			</if>
+			<if test="queryInfo.minScore !=null and '' != queryInfo.minScore">
+				<![CDATA[ and IFNULL((SELECT SUM(score) FROM bd_student_e_score WHERE learn_Id=l.`learn_id`),'0') <= CAST(#{queryInfo.minScore,jdbcType=VARCHAR} AS SIGNED INTEGER) ]]>
+			</if>
+			<if test="queryInfo.isAddScore !=null and '' != queryInfo.isAddScore">
+				<if test="queryInfo.isAddScore == '1'.toString()">
+					and  bse.`points` >'0'
+				</if>
+				<if test="queryInfo.isAddScore == '0'.toString()">
+					and (bse.`points` ='0' or bse.`points` is null)
+				</if>
+			</if>
+			<if test="queryInfo.isEnroll !=null and '' != queryInfo.isEnroll">
+			    <if test="queryInfo.isEnroll == '1'.toString()">
+			    	and  bsa.`learn_id` is not null
+			    </if>
+				 <if test="queryInfo.isEnroll == '0'.toString()">
+			    	and  bsa.`learn_id` is null
+			    </if>
+			</if>
+			<if test="queryInfo.enrollUnve !=null and '' != queryInfo.enrollUnve">
+				and yu.`unvs_name` LIKE CONCAT('%', #{queryInfo.enrollUnve, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.enrollProf !=null and '' != queryInfo.enrollProf">
+				and yp.`pfsn_name` LIKE CONCAT('%', #{queryInfo.enrollProf, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isSame !=null and '' != queryInfo.isSame">
+				<if test="queryInfo.isSame == '1'.toString()">
+					and  u.`unvs_name` =  yu.`unvs_name`	
+				</if>
+				<if test="queryInfo.isSame == '0'.toString()">
+					and  u.`unvs_name` !=  yu.`unvs_name`
+				</if>
+			</if>
+			<if test="queryInfo.isArrears !=null and '' !=queryInfo.isArrears">
+				<if test="queryInfo.isArrears == '0'.toString()">
+				    and  IF(bso.sub_order_status = '1',bso.fee_amount,0) = 0 and bso.`sub_order_status` is not null
+			    </if>
+			    <if test="queryInfo.isArrears == '1'.toString()">
+					and (IF(bso.sub_order_status = '1',bso.fee_amount,0) > 0 or bso.sub_order_status is null)
+				</if>
+			</if>
+			
+			<if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 2">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_campus_id in (
+						<foreach collection="user.myCampusList" item="info" separator=",">
+							#{info.campusId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 3">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<when test="user.userLevel == 4">
+						and (r.recruit = #{user.empId, jdbcType=VARCHAR} or r.recruit in (
+						<foreach collection="user.myEmplyeeList" item="info" separator=",">
+							#{info.empId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+					<otherwise>
+						and r.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+		GROUP BY l.`learn_id`
+		ORDER BY l.`update_time` DESC
+	</select>
+	
+	  <select id="selectStdEScores" parameterType="java.lang.String" resultMap="ScoreResultMap">
+	  	SELECT 
+		  bse.course_name,
+		  bse.score
+		FROM
+		  bd_student_e_score bse 
+		WHERE bse.`learn_id` = #{learn_id} 
+	  </select>
+
+	<select id="findSceneConfirmStd" resultType="java.util.HashMap">
+		SELECT
+		s.`std_name`,s.id_card,s.address,s.mobile,
+		l.`std_id`,l.`learn_id`,l.`std_stage`,l.`std_type`,l.`recruit_type`,l.`scholarship`,l.is_test_completed,l.ta_id,l.grade,l.annex_status as my_annex_status,l.is_data_completed,
+		u.`unvs_name`,
+		p.`pfsn_level`,p.`pfsn_code`,p.pfsn_name,
+		t.`ta_name`,
+		e.emp_name as recruit_name,
+		c.apply_no,c.apply_pwd,c.is_ok,c.is_print_notice,c.is_print_prove,c.is_exam_notice,c.is_exam_sign,c.follow_record,c.test_prove_status,c.test_prove_url,c.network_pay,
+		c.proxy_pay, c.is_arrange,
+		i.exam_no,i.test_addr as test_address, i.test_name
+		FROM bd_learn_info l
+		LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id`
+		LEFT JOIN bd_university u ON l.`unvs_id` = u.`unvs_id`
+		LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.`pfsn_id`
+		LEFT JOIN bd_test_area t ON t.`ta_id` = l.`ta_id`
+		LEFT JOIN bd_learn_rules r ON r.`learn_id` = l.`learn_id`
+		LEFT JOIN oa_employee e on e.emp_id = r.recruit
+		LEFT JOIN bd_test_confirm c on c.learn_id = l.learn_id
+		LEFT JOIN bd_test_prove_info i on i.learn_id = l.learn_id
+		WHERE l.std_id=#{stdId, jdbcType=VARCHAR}  and l.learn_id=#{learnId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="findSceneConfirm" resultType="java.util.HashMap">
+		SELECT count(1) as countRow from bd_test_confirm where std_id=#{stdId, jdbcType=VARCHAR}  and learn_id=#{learnId, jdbcType=VARCHAR}
+	</select>
+
+	<update id="updateSceneConfirm" parameterType="java.util.HashMap">
+		update bd_test_confirm
+		<set>
+			<if test="map.followRecord != null">
+				follow_record = #{map.followRecord,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where std_id=#{map.stdId, jdbcType=VARCHAR}  and learn_id=#{map.learnId, jdbcType=VARCHAR}
+	</update>
+
+	<insert id="addSceneConfirm" parameterType="java.util.HashMap">
+		insert into bd_test_confirm  (`learn_id`,`std_id`,`follow_record`) values (
+		#{map.learnId, jdbcType=VARCHAR},#{map.stdId, jdbcType=VARCHAR},#{map.followRecord, jdbcType=VARCHAR})
+    </insert>
+
+	<select id="selectSceneConfirmAllList" resultType="java.util.HashMap">
+		select learn_id,std_id,apply_no,apply_pwd,test_prove_url,test_prove_status,is_ok,is_education
+		from bd_test_confirm
+		where test_prove_status='0' and is_ok='3'
+	</select>
+
+	<select id="selectDownloadProveList" resultType="java.util.HashMap">
+		select learn_id,std_id,apply_no,apply_pwd,test_prove_url,test_prove_status,is_ok,is_education
+		from bd_test_confirm
+		where test_prove_status='1' and is_ok='1'
+			and learn_id not in(select learn_id from bd_test_prove_info)
+			and std_id not in(select std_id from bd_test_prove_info)
+	</select>
+
+	<update id="updateTestProveUrl" parameterType="java.util.HashMap">
+		update bd_test_confirm
+		<set>
+			<if test="test_prove_url != null">
+				test_prove_url = #{test_prove_url,jdbcType=VARCHAR},
+			</if>
+			<if test="test_prove_status != null">
+				test_prove_status = #{test_prove_status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where apply_no=#{apply_no, jdbcType=VARCHAR} and apply_pwd=#{apply_pwd, jdbcType=VARCHAR}
+	</update>
+
+
+	<insert id="insertTestProveInfo" parameterType="java.util.HashMap" >
+		insert into bd_test_prove_info (learn_id,std_id,exam_no,stu_name,stu_sex,id_card,
+		test_type,test_room_no,seat_no,fingerprint,test_name,test_addr,test_remark)
+		values (#{learnId,jdbcType=VARCHAR}, #{stdId,jdbcType=VARCHAR}, #{examNo,jdbcType=VARCHAR},
+		#{stuName,jdbcType=VARCHAR}, #{stuSex,jdbcType=VARCHAR}, #{idCard,jdbcType=VARCHAR},
+		#{testType,jdbcType=VARCHAR},#{testRoomNo,jdbcType=VARCHAR},#{seatNo,jdbcType=VARCHAR},
+		#{fingerprint,jdbcType=VARCHAR},#{testName,jdbcType=VARCHAR},#{testAddr,jdbcType=VARCHAR},
+		#{testRemark,jdbcType=VARCHAR})
+	</insert>
+</mapper>

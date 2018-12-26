@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdCutOffMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.BdCutOff">
+		<id column="ct_no" property="ctNo" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="payee_id" property="payeeId" jdbcType="VARCHAR" />
+		<result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+		<result column="belong" property="belong" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="is_success" property="isSuccess" jdbcType="CHAR" />
+		<result column="ct_time" property="ctTime" jdbcType="TIMESTAMP" />
+		<result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+		<result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+		<result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ct_no, amount, remark, payee_id, card_no, belong, reason, is_success,
+		ct_time, ext_1,
+		ext_2, ext_3
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from bms.bd_cut_off
+		where ct_no = #{ctNo,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertSelective" parameterType="com.yz.model.BdCutOff">
+		insert into bms.bd_cut_off
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			ct_no,
+			<if test="amount != null">
+				amount,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="payeeId != null">
+				payee_id,
+			</if>
+			<if test="cardNo != null">
+				card_no,
+			</if>
+			<if test="belong != null">
+				belong,
+			</if>
+			<if test="reason != null">
+				reason,
+			</if>
+			<if test="isSuccess != null">
+				is_success,
+			</if>
+			<if test="ctTime != null">
+				ct_time,
+			</if>
+			<if test="ext1 != null">
+				ext_1,
+			</if>
+			<if test="ext2 != null">
+				ext_2,
+			</if>
+			<if test="ext3 != null">
+				ext_3,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			seq(),
+			<if test="amount != null">
+				#{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="payeeId != null">
+				#{payeeId,jdbcType=VARCHAR},
+			</if>
+			<if test="cardNo != null">
+				#{cardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="belong != null">
+				#{belong,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="isSuccess != null">
+				#{isSuccess,jdbcType=CHAR},
+			</if>
+			<if test="ctTime != null">
+				#{ctTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ext1 != null">
+				#{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				#{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				#{ext3,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.BdCutOff">
+		update bms.bd_cut_off
+		<set>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="payeeId != null">
+				payee_id = #{payeeId,jdbcType=VARCHAR},
+			</if>
+			<if test="cardNo != null">
+				card_no = #{cardNo,jdbcType=VARCHAR},
+			</if>
+			<if test="belong != null">
+				belong = #{belong,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				reason = #{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="isSuccess != null">
+				is_success = #{isSuccess,jdbcType=CHAR},
+			</if>
+			<if test="ctTime != null">
+				ct_time = #{ctTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ext1 != null">
+				ext_1 = #{ext1,jdbcType=VARCHAR},
+			</if>
+			<if test="ext2 != null">
+				ext_2 = #{ext2,jdbcType=VARCHAR},
+			</if>
+			<if test="ext3 != null">
+				ext_3 = #{ext3,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ct_no = #{ctNo,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectCtSerials" parameterType="string" resultType="map">
+		select 
+		  s.`serial_no` as serialNo,
+		  s.`payable`
+		from
+		  bms.bd_student_serial s 
+		where s.`ct_status` = '1'
+		  and s.`ct_count` &lt; 3 
+		  and s.`payee_id` = #{payeeId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateSerialCtStatus">
+		UPDATE bms.bd_student_serial s SET s.`ct_status` = #{ctStatus, jdbcType=VARCHAR} WHERE s.`serial_no` IN (
+			<foreach collection="serialList" item="s" separator=",">
+			#{s.serialNo, jdbcType=VARCHAR}
+			</foreach>
+		)
+	</update>
+	
+	<update id="updateSerialCtCount">
+		UPDATE bms.bd_student_serial s SET s.`ct_count` = (s.ct_count + 1) WHERE s.`serial_no` IN (
+			<foreach collection="serialList" item="s" separator=",">
+			#{s.serialNo, jdbcType=VARCHAR}
+			</foreach>
+		)
+	</update>
+	 
+	  <update id="setNeedCutOff" >
+	  	UPDATE 
+		  bms.bd_student_serial s 
+		SET
+		  s.`ct_status` = #{ctStatus, jdbcType=VARCHAR} 
+		WHERE s.`serial_no` = #{serialNo, jdbcType=VARCHAR}
+		  AND s.`payee_id` IS NOT NULL 
+		  AND LENGTH(s.`payee_id`) > 0 
+		  AND (SELECT COUNT(1) FROM bms.bd_sub_serial e WHERE e.`serial_no` = s.`serial_no` AND e.`payment_type` = '4') > 0
+	  </update>
+</mapper>

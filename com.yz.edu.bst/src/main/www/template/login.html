@@ -1,0 +1,111 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" /> 
+<title>远智学堂</title>
+<style>
+</style>
+</head>
+
+<body>
+<div class="login-wrap">
+  <div class="login-main">
+    <div class="inner">
+      <div class="login-form">
+        <div class="hd">远智学堂</div>
+        <div class="bd">
+          <form method="post" id="login" >
+            <div class="lg-input">
+              <input name="idCard" id="idCard" type="text" placeholder="请输入身份证"/>
+            </div>
+            <div class="lg-input">
+              <input class="ipt" name="password" id="password" type="password" value="" placeholder="请输入密码"/>
+            </div>
+            <div class="btn-submit">
+              <input type="submit" value="登&#x3000;录"/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="inner cl">
+      <div class="f-l">
+        <p>远智热线: 400-833-6013</p>
+        <p>微信公众号: yz2686013</p>
+        <p>地址: 惠州市惠城区江北三新南路22号润宇豪庭3楼 </p>
+        <p class="copyright">惠州市远智文化教育培训学校版权所有Copyright&copy;2015-2020粤ICP备12034252号-1</p>
+      </div>
+      <div class="f-r">
+        <p><img th:src="@{/css/image/erweima.png}" alt=""/></p>
+        <p class="mt-10">欢迎关注远智教育,最新资讯即时掌握</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+	
+<script>
+  $(function () {
+    $('#login').validate({
+      rules :{
+        idCard : {
+          required : true
+        },
+        password : {
+          required : true,
+          minlength : 6,
+		  maxlength : 16
+        }
+      },
+      onkeyup : false,
+      focusCleanup : true,
+      success : "valid",
+      submitHandler:function (form) {
+        $(form).ajaxSubmit({
+          type: "post",
+          dataType: "json",
+          url : '[[@{/login.do}]]', //请求url  
+          success: function (data) {
+        	  if ('Success' == data.body.code||'00' == data.body.code) {
+        		  $("#password").val('');
+        	  	  $.ajax({
+                      type: "post",
+                      url:'[[@{/allowAllLive.do}]]',
+                      dataType: "json",
+                      success:function (data) {
+                          if (data.body === true) {
+                              window.location.href = '[[@{/allCourseLive.do}]]';
+                          } else {
+                              window.location.href = '[[@{/index.do}]]';
+                          }
+                      }
+                  })
+        	  }else {
+        		  $("#password").val('');
+        		  $("#password").focus();
+        		  layer.msg(data.body.msg,{icon:2,time:5000});
+        		  $("#password").val('');
+			  }
+          }
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>

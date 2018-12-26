@@ -1,0 +1,1 @@
+alter table bms.bd_unvs_profession add column textbook_pfsncode varchar(50) comment '½Ì²Ä×¨Òµ±àÂë' after group_id;

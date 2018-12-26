@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.job.dao.GsSalesNotifyMapper" >
+	<resultMap type="com.yz.job.model.GsSalesNotify" id="GsSalesNotify">
+	 <id column="notify_id" property="notifyId" jdbcType="VARCHAR"/>
+	 <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+	 <result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+	 <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+	 <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	 <result column="open_id" property="openId" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="getAllNotifyBySalesId" resultMap="GsSalesNotify">
+		SELECT notify_id,open_id,sales_type,mobile FROM goods.`gs_sales_notify` WHERE '1'='1'
+		<if test="salesId !=null and '' != salesId">
+			and sales_id=#{salesId,jdbcType=VARCHAR}
+		</if>
+		<if test="planCount !=null and '' !=planCount">
+			and plan_count=#{planCount,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+</mapper>

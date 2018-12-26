@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.oa.OaCommissionMapper" >
+  <resultMap id="RecruitStudentListMap" type="java.util.HashMap">
+	<result column="learn_id" jdbcType="VARCHAR" property="learnId" />
+	<result column="std_id" jdbcType="VARCHAR" property="stdId" />
+	<result column="std_stage" jdbcType="VARCHAR" property="stdStage" />
+	<result column="grade" jdbcType="VARCHAR" property="grade" />
+	<result column="unvs_id" jdbcType="VARCHAR" property="unvsId" />
+	<result column="pfsn_id" jdbcType="VARCHAR" property="pfsnId"/>
+  </resultMap>
+  
+  <resultMap id="MonthExpenseResult" type="com.yz.model.oa.OaCommission">
+    <result column="expenseId" jdbcType="VARCHAR" property="expenseId" />
+    <result column="empId" jdbcType="VARCHAR" property="empId" />
+	<result column="empName" jdbcType="VARCHAR" property="empName" />
+	<result column="year" jdbcType="VARCHAR" property="year" />
+	<result column="empType" jdbcType="VARCHAR" property="empType" />
+	<result column="empStatus" jdbcType="VARCHAR" property="empStatus" />
+	<result column="dpName" jdbcType="VARCHAR" property="dpName" />
+	<result column="campusName" jdbcType="VARCHAR" property="campusName"/>
+	<association property="jtIds" column="empId" select="selectEmpTitles"/>
+  </resultMap>
+  
+  <select id="selectEmpTitles" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT 
+	  t.`jt_id` 
+	FROM
+	  oa_employee_title t 
+	WHERE t.`emp_id` = #{empId}
+  </select>
+  <select id="selectComminssionByPage" parameterType="com.yz.model.oa.OaCommissionQuery" resultMap="MonthExpenseResult">
+	  SELECT 
+	  e.expense_id expenseId,
+	  e.`year`,
+	  e.`emp_id` empId,
+	  oe.`emp_name` empName,
+	  oe.`emp_type` empType,
+	  oe.`emp_status` empStatus,
+	  d.`dp_name` dpName,
+	  c.`campus_name` campusName 
+	FROM
+	  oa_expense e 
+	  LEFT JOIN oa_employee oe 
+	    ON oe.`emp_id` = e.`emp_id` 
+	  LEFT JOIN oa_employee_job j 
+	    ON j.`emp_id` = e.`emp_id` 
+	  LEFT JOIN oa_department d 
+	    ON d.`dp_id` = j.`dp_id` 
+	  LEFT JOIN oa_campus c 
+	    ON c.`campus_id` = j.`campus_id`
+	    where 1 = 1
+	    and oe.emp_type = '1'
+	    and (
+ 		 SELECT COUNT(*) FROM `oa_employee_title` WHERE emp_id = e.emp_id AND jt_id = 'XJ'
+		) > 0
+		and j.turn_right_time is not null
+	  <if test="empStatus != null and '' != empStatus and empStatus == 1">
+	     and oe.emp_status = '1'
+	  </if>
+	  <if test="empStatus != null and '' != empStatus and empStatus == 2">
+	     and oe.emp_status = '2'
+	  </if>
+	  <if test="empStatus != null and '' != empStatus and empStatus == 3">
+	     and oe.emp_status = '3'
+	  </if>
+	  <if test="year != null and '' != year">
+	     and e.year = #{year}
+	  </if>
+	  <if test="recruitCampus != null and '' != recruitCampus">
+	     and c.campus_id = #{recruitCampus}
+	  </if>
+	  <if test="recruitName != null and '' != recruitName">
+	     and oe.emp_name like CONCAT('%', CONCAT(#{recruitName}, '%'))
+	  </if>
+	  <if test="recruitDepartment != null and '' != recruitDepartment">
+	     and d.dp_id = #{recruitDepartment}
+	  </if>
+  </select>
+  
+  
+</mapper>

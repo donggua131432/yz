@@ -1,0 +1,1 @@
+alter table goods.bs_order add column jd_ordercomplete_time datetime comment '订单妥投时间-JD返回' after jd_order_id;

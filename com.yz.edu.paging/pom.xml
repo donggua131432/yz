@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.yz.edu</groupId>
+	<artifactId>paging</artifactId>
+	<version>1.4${app.version.type}</version>
+	<packaging>jar</packaging>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.0.RELEASE</version>
+	</parent>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>1.8</jdk.version>
+		<maven.test.skip>true</maven.test.skip>
+		<skipTests>true</skipTests>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</maven.build.timestamp.format>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.yz.edu</groupId>
+			<artifactId>util</artifactId>
+			<version>1.4${yz.util.version}</version>
+		</dependency>
+
+		<dependency>
+			<artifactId>mybatis</artifactId>
+			<groupId>org.mybatis</groupId>
+			<version>3.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.27</version>
+		</dependency>
+
+	</dependencies>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://nexus.yzwill.cn/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>releases</id>
+			<url>http://nexus.yzwill.cn/nexus/content/repositories/releases</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<!-- 提取项目配置文件、避免被打入 jar 包中（打入 jar 包中不便于部署和运维时修改） -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<!-- 本地，默认激活 ，实现本地测试资源自动替换 -->
+		<profile>
+			<id>local</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>local</value>
+				</property>
+			</activation>
+			<properties>
+				<app.version.type>-SNAPSHOT</app.version.type>
+				<yz.util.version>-SNAPSHOT</yz.util.version>
+			</properties>
+		</profile>
+
+		<!-- 测试环境打包：mvn -Denv=test package -->
+		<profile>
+			<id>test</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env</name>
+					<value>test</value>
+				</property>
+			</activation>
+			<properties>
+				<app.version.type>-SNAPSHOT</app.version.type>
+				<yz.util.version>-SNAPSHOT</yz.util.version>
+			</properties>
+		</profile>
+
+		<!-- 预发布：mvn -Denv=pre package -->
+		<profile>
+			<id>pre</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>pre</value>
+				</property>
+			</activation>
+			<properties>
+				<app.version.type>-SNAPSHOT</app.version.type>
+				<yz.util.version>-SNAPSHOT</yz.util.version>
+			</properties>
+		</profile>
+
+		<!-- 生产环境打包：mvn -Denv=prd package -->
+		<profile>
+			<id>prd</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prd</value>
+				</property>
+			</activation>
+			<properties>
+				<app.version.type />
+				<yz.util.version />
+			</properties>
+		</profile>
+	</profiles>
+</project>

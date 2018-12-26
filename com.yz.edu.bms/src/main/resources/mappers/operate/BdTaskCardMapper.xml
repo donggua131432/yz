@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.operate.BdTaskCardMapper" >
+  <resultMap id="BaseResultMap" type="com.yz.model.operate.BdTaskCard" >
+    <id column="task_id" property="taskId" jdbcType="VARCHAR" />
+    <result column="task_type" property="taskType" jdbcType="VARCHAR" />
+    <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="task_target" property="taskTarget" jdbcType="VARCHAR" />
+    <result column="task_reward" property="taskReward" jdbcType="VARCHAR" />
+    <result column="task_status" property="taskStatus" jdbcType="CHAR" />
+    <result column="is_overlap" property="isOverlap" jdbcType="CHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap type="com.yz.model.operate.BdTaskCard" id="PageResultMap" extends="BaseResultMap">
+  	<association property="getCount" column="task_id" select="selectGetCountByTaskId"/>
+  	<association property="finishCount" column="task_id" select="selectFinishCountByTaskId"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    task_id, task_type, task_name, 
+	    DATE_FORMAT(start_time, '%Y-%m-%d') start_time,
+	    DATE_FORMAT(end_time, '%Y-%m-%d') end_time,
+	    task_target, task_reward, task_status, 
+	    is_overlap, create_time
+  </sql>
+  
+  <select id="publishTaskById" parameterType="java.lang.String">
+  	update bd_task_card set task_status = '2' where task_id = #{taskId} 
+  </select>
+  
+  <select id="selectGetCountByTaskId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT COUNT(*) FROM us.us_task_card WHERE task_id = #{taskId}
+  </select>
+  
+  <select id="selectFinishCountByTaskId" parameterType="java.lang.String" resultType="java.lang.String">
+  	SELECT COUNT(*) FROM us.us_task_card WHERE task_id = #{taskId} AND complete_status = '1'
+  </select>
+  
+  <select id="selectTaskCardByPage" parameterType="com.yz.model.operate.BdTaskCard" resultMap="PageResultMap">
+  	 select 
+	    task_id, task_type, task_name, 
+	    DATE_FORMAT(start_time, '%Y-%m-%d') start_time,
+	    DATE_FORMAT(end_time, '%Y-%m-%d') end_time,
+	    task_target, task_reward, task_status, 
+	    is_overlap, create_time
+    from bd_task_card
+    where 1 = 1
+     <if test="taskName != null and '' != taskName">  
+         and task_name LIKE CONCAT('%', CONCAT(#{taskName}, '%'))
+     </if>
+     <if test="taskStatus != null and '' != taskStatus">  
+         and task_status = #{taskStatus}
+     </if>
+     order by update_time DESC
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_task_card
+    where task_id = #{taskId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from bd_task_card
+    where task_id = #{taskId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yz.model.operate.BdTaskCard" >
+    insert into bd_task_card (task_id, task_type, task_name, 
+      start_time, end_time, task_target, 
+      task_reward, task_status, is_overlap, 
+      create_time)
+    values (#{taskId,jdbcType=VARCHAR}, #{taskType,jdbcType=VARCHAR}, #{taskName,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{taskTarget,jdbcType=VARCHAR}, 
+      #{taskReward,jdbcType=VARCHAR}, #{taskStatus,jdbcType=CHAR}, #{isOverlap,jdbcType=CHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yz.model.operate.BdTaskCard" >
+    insert into bd_task_card
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        task_id,
+      </if>
+      <if test="taskType != null" >
+        task_type,
+      </if>
+      <if test="taskName != null" >
+        task_name,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="taskTarget != null" >
+        task_target,
+      </if>
+      <if test="taskReward != null" >
+        task_reward,
+      </if>
+      <if test="taskStatus != null" >
+        task_status,
+      </if>
+      <if test="isOverlap != null" >
+        is_overlap,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="taskType != null" >
+        #{taskType,jdbcType=VARCHAR},
+      </if>
+      <if test="taskName != null" >
+        #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="taskTarget != null" >
+        #{taskTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="taskReward != null" >
+        #{taskReward,jdbcType=VARCHAR},
+      </if>
+      <if test="taskStatus != null" >
+        #{taskStatus,jdbcType=CHAR},
+      </if>
+      <if test="isOverlap != null" >
+        #{isOverlap,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yz.model.operate.BdTaskCard" >
+    update bd_task_card
+    <set >
+      <if test="taskType != null" >
+        task_type = #{taskType,jdbcType=VARCHAR},
+      </if>
+      <if test="taskName != null" >
+        task_name = #{taskName,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="taskTarget != null" >
+        task_target = #{taskTarget,jdbcType=VARCHAR},
+      </if>
+      <if test="taskReward != null" >
+        task_reward = #{taskReward,jdbcType=VARCHAR},
+      </if>
+      <if test="taskStatus != null" >
+        task_status = #{taskStatus,jdbcType=CHAR},
+      </if>
+      <if test="isOverlap != null" >
+        is_overlap = #{isOverlap,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where task_id = #{taskId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yz.model.operate.BdTaskCard" >
+    update bd_task_card
+    set task_type = #{taskType,jdbcType=VARCHAR},
+      task_name = #{taskName,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      task_target = #{taskTarget,jdbcType=VARCHAR},
+      task_reward = #{taskReward,jdbcType=VARCHAR},
+      task_status = #{taskStatus,jdbcType=CHAR},
+      is_overlap = #{isOverlap,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where task_id = #{taskId,jdbcType=VARCHAR}
+  </update>
+</mapper>

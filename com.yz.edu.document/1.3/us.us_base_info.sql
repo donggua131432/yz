@@ -1,0 +1,1 @@
+ALTER TABLE us.`us_base_info` ADD channel_id VARCHAR(50) NULL COMMENT'渠道ID';

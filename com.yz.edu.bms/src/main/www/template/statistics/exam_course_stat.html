@@ -1,0 +1,187 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>统计管理</title>
+</head>
+<body>
+  <nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i>
+           统计管理
+    <span class="c-gray en">/</span>
+  考试科目统计
+    <span class="c-gray en"></span>
+    <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+      <i class="iconfont icon-shuaxin"></i>
+    </a>
+  </nav>
+  <div id="tab_demo" class="HuiTab">
+    </br>
+    <div class="tabBar clearfix">
+      <span>考试科目统计</span>
+      <span>试卷印刷统计</span>
+    </div>
+    <div class="tabCon">
+      <div class="page-container">
+      <form id="export-form" th:action="@{/courseStat/export.do}">
+        <div class="text-l search" style="position: relative">
+          <div class="cl">
+            <div class="cl">
+              <div class="f-l">
+				<span>院校：</span> <select class="select" size="1" id="unvsId" name="unvsId"></select>
+			  </div>
+			  <div class="f-l">
+				<span>专业层次：</span> <select class="select" size="1" id="pfsnLevel" name="pfsnLevel"></select>
+			  </div>
+			  <div class="f-l">
+				<span>年级：</span> <select class="select" size="1" id="grade" name="grade"></select>
+			  </div>
+              <div class="f-r mr-5">
+                <a class="btn btn-primary radius" href="javascript:;" onclick="searchStatList();" />
+                <i class="iconfont icon-sousuo"></i>搜索
+                </a>
+                <a class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:;">
+                  <i class="iconfont icon-shuaxin"></i>
+                </a>
+              </div>
+            </div>
+            <div class="cl">
+				<div class="f-l">
+					<span>专业：</span> <input type="text" class="input-text"
+						placeholder="专业" id="pfsnName" name="pfsnName" />
+				</div>
+				<div class="f-l">
+					<span>开课学期：</span> <select class="select" size="1" id="semester"
+						name="semester"></select>
+				</div>
+				<div class="f-l">
+					<span>考试年度：</span> <select class="select" size="1" id="year"
+						name="year"></select>
+				</div>
+			 </div>
+        
+            <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther(this)">
+              <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+                <i class="iconfont icon-xiala"></i>
+              </p>
+            </div>
+          </div>
+        </div>
+        </form>
+        <div class="bg-1">
+          <div class="cl bg-1">
+            <span class="l mt-15 mb-15">
+         		<a href="javascript:;" onclick="exportCourseStat()" class="btn btn-warning radius"><i class="iconfont icon-daochu"></i> 导出科目统计 </a>
+         		<a href="javascript:;" onclick="testsubject_excel_import()" class="btn btn-success radius"><i class="iconfont icon-daoru"></i> 考试科目导入</a>
+            </span>
+            <div class="mt-35 bg-fff">
+              <table class="table table-border table-bordered table-hover table-bg table-sort">
+                <thead>
+                  <tr class="text-c">
+						<th width="80">年级</th>
+						<th width="30">院校</th>
+						<th width="40">开课学期</th>
+						<th width="50">层次</th>
+						<th width="100">专业</th>
+						<th width="90">考试年度</th>
+						<th width="60">人数</th>
+						<th width="60">考试科目</th>
+						<th width="60">开课课程</th>
+					</tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tabCon">
+      <div class="page-container">
+      <form id="export-form-exam" th:action="@{/courseStat/exportExam.do}">
+        <div class="text-l search" style="position: relative">
+            <div class="cl">
+              
+              <div class="f-l">
+                <span>考试科目:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入考试科目" id="testSubject" name="testSubject">
+              </div>
+              <div class="f-l">
+                <span>试卷名称:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入试卷名称" id="examName" name="examName">
+              </div>
+              <div class="f-l">
+                <span>课程名称:</span>
+                <input type="text" class="input-text radius ml-10" placeholder="输入课程名称" id="courseName" name="courseName">
+              </div>
+              <div class="f-r mr-5">
+                <a class="btn btn-primary radius" href="javascript:;" onclick="searchExamStatList();" />
+                <i class="iconfont icon-sousuo"></i>搜索
+                </a>
+              </div>
+            </div>
+            
+            <div class="cl">
+				 <div class="f-l">
+					<span>考试年度：</span> <select class="select" size="1" id="examYear" name="examYear"></select>
+				</div>
+			 </div>
+            
+        </div>
+        </form>
+        <div class="bg-1">
+          <div class="cl bg-1">
+            <span class="l mt-15 mb-15">
+              <a href="javascript:;" onclick="exportExamStat()" class="btn btn-warning radius"><i class="iconfont icon-daochu"></i> 导出试卷印刷统计 </a>
+            </span>
+            <div class="mt-35 bg-fff">
+              <table class="table table-border table-bordered table-hover table-bg table-sort-exam">
+                <thead>
+                  <tr class="text-c">
+                    <th width="100">考试科目</th>
+                    <th width="100">课程名称</th>
+                    <th width="100">试卷名称</th>
+                    <th width="40">涉及的人数（需印试卷）</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/webjs/statistics/exam_course_stat.js}"></script>
+</body>
+</html>

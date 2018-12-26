@@ -1,0 +1,205 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.css}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/css/h-ui//H-ui.admin.css}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/skin/default/skin.css}" id="skin"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}"/>
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js"></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>招生计划</title>
+</head>
+<body>
+    <nav class="breadcrumb">
+        <i class="Hui-iconfont">&#xe67f;</i> 招生管理 <span class="c-gray en">/</span>招生计划<a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+    </nav>
+    <div id="tab_demo" class="HuiTab">
+        <div class="tabBar clearfix">
+            <span>月度招生计划</span><span>年度招生计划</span>
+        </div>
+        <div class="tabCon">
+            <div class="page-container">
+
+                <div class="text-l search" style="position: relative">
+                    <div class="cl" style="padding-left: 30px;">
+                        <div class="cl">
+                            <div class="f-l">
+                                <span>月份</span> <input type="text" id="timeSlot" name="timeSlot"
+                                                       class="input-text radius ml-10"/>
+                            </div>
+                            <div class="f-l">
+                                <span>校区</span>
+                                <select class="select" size="1" id="campus">
+                                    <option value="">--请选择校区--</option>
+                                </select>
+                            </div>
+                            <div class="f-l">
+                                <span>招生部门</span>
+                                <select class="select" size="1" id="dpId" name="dpId">
+                                    <option value="">--请选择招生部门--</option>
+                                </select>
+                            </div>
+                            <div class="f-r mr-5" style="position: absolute; right: 0;">
+                                <a class="btn btn-primary radius" style="width: 90px" href="javascript:;"
+                                   onclick="searchMonth()"> <i class="Hui-iconfont">&#xe665;</i> 搜索
+                                </a> <a class="btn btn-normal-outline radius" onclick="_reset()"><i class="Hui-iconfont Hui-iconfont-huanyipi"></i></a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-1">
+                    <div class="cl pd-5 bg-1 ">
+					<span class="l mb-15 mt-15">
+						<a href="javascript:;" onclick="plan_add(1)" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe600;</i>
+							新增</a>
+						<a href="javascript:;" onclick="" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							Excel导入</a> 
+						<a href="javascript:;" onclick="" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							Excel导出</a> 	
+						<a href="javascript:;" onclick="delAll(1)" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							批量删除</a> 
+					</span>
+
+
+                        <div class="mt-35 bg-fff">
+                            <table class="table table-border table-bordered table-hover table-bg table-sort"
+                                   id="monthTable">
+                                <thead>
+                                    <th width="15"><input type="checkbox" name="" value=""/></th>
+                                    <th width="50">月度</th>
+                                    <th width="50">校监</th>
+                                    <th width="80">招生部门</th>
+                                    <th width="100">校区</th>
+                                    <th width="40">当月目标</th>
+                                    <th width="40">当月完成</th>
+                                    <th width="40">当月完成率</th>
+                                    <th width="40">今日新增</th>
+                                    <th width="40">操作</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--        ------------------------------------分割线--------------------------------------        -->
+
+
+        <div class="tabCon">
+            <div class="page-container">
+                <div class="text-l search" style="position: relative">
+                    <div class="cl" style="padding-left: 30px;">
+                        <div class="cl">
+                            <div class="f-l">
+                                <span>年度</span> <input type="text" id="timeSlot" name="timeSlot2"
+                                                       class="input-text radius ml-10"/>
+                            </div>
+                            <div class="f-l">
+                                <span>校区</span>
+                                <select class="select" size="1" id="campus2">
+                                    <option value="">--请选择校区--</option>
+                                </select>
+                            </div>
+                            <div class="f-l">
+                                <span>招生部门</span>
+                                <select class="select" size="1" id="dpId2" name="dpId2">
+                                    <option value="">--请选择招生部门--</option>
+                                </select>
+                            </div>
+                            <div class="f-r mr-5" style="position: absolute; right: 0;">
+                                <a class="btn btn-primary radius" style="width: 90px" href="javascript:;"
+                                   onclick="searchYear()"> <i class="Hui-iconfont">&#xe665;</i> 搜索
+                                </a> <a class="btn btn-normal-outline radius" onclick="_reset()"><i class="Hui-iconfont Hui-iconfont-huanyipi"></i></a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-1">
+                    <div class="cl pd-5 bg-1">
+					<span class="l mt-15 mb-15">
+						<a href="javascript:;" onclick="plan_add(2)" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe600;</i>
+							新增</a>
+						<a href="javascript:;" onclick="" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							Excel导入</a> 
+						<a href="javascript:;" onclick="" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							Excel导出</a> 	
+						<a href="javascript:;" onclick="delAll(2)" class="btn btn-normal-outline radius">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+							批量删除</a> 
+					</span>
+
+
+                        <div class="mt-35 bg-fff">
+
+                            <table
+                                    class="table table-border table-bordered table-hover table-bg table-sort"
+                                    id="yearTable" style="width:100%">
+                                <thead>
+                                <tr class="text-c">
+                                    <th width="25"><input type="checkbox" name="all" value=""/></th>
+                                    <th width="40">招生部门</th>
+                                    <th width="90">校区</th>
+                                    <th width="90">校区负责人</th>
+                                    <th width="100">年度目标</th>
+                                    <th width="100">年度完成</th>
+                                    <th width="100">年度完成率</th>
+                                    <th width="100">操作</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--_footer 作为公共模版分离出去-->
+        <script type="text/javascript"
+                th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+        <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+        <!--/_footer 作为公共模版分离出去-->
+
+        <!--请在下方写此页面业务相关的脚本-->
+        <script type="text/javascript"
+                th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+        <script type="text/javascript"
+                th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+        <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+        <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+        <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+		<script type="text/javascript" th:src="@{/js/webjs/recruit/oaplan/oaplan-list.js}"></script>
+
+    </div>
+</body>
+</html>

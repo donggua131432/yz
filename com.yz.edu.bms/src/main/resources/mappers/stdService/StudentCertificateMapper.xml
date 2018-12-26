@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.stdService.StudentCertificateMapper">
+    <resultMap type="com.yz.model.stdService.StudentCertificateInfo" id="StudentCertificateMap">
+        <result column="cert_id" property="certId" jdbcType="VARCHAR"/>
+        <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+        <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+        <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+        <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+        <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+        <result column="emp_name" property="tutor" jdbcType="VARCHAR"/>
+        <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+        <result column="check_status" property="checkStatus" jdbcType="VARCHAR"/>
+        <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+        <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+        <result column="apply_type" property="applyType" jdbcType="VARCHAR"/>
+        <result column="apply_purpose" property="applyPurpose" jdbcType="VARCHAR"/>
+        <result column="receiver_name" property="receiverName" jdbcType="VARCHAR"/>
+        <result column="receiver_mobile" property="receiverMobile" jdbcType="VARCHAR"/>
+        <result column="receiver_address" property="receiverAddress" jdbcType="VARCHAR"/>
+        <result column="express_no" property="expressNo" jdbcType="VARCHAR"/>
+        <result column="receive_type" property="receiveType" jdbcType="VARCHAR"/>
+        <result column="material_name" property="materialName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="is_send" property="isSend" jdbcType="VARCHAR"/>
+        <result column="check_order" property="checkOrder" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="stamp_down" property="stampDown" jdbcType="VARCHAR"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="recruit" property="recruit" jdbcType="VARCHAR" />
+        <collection property="check" ofType="com.yz.model.stdService.StudentCertificateCheckRecord">
+        <result column="cr_id" property="crId" jdbcType="VARCHAR" />
+        <result column="bcr_reason" property="reason" jdbcType="VARCHAR" />
+        <result column="bcr_emp_name" property="empName" jdbcType="VARCHAR" />
+        <result column="bcrUpdateTime" property="bcrUpdateTime" jdbcType="VARCHAR" />
+    </collection>
+    </resultMap>
+
+    <select id="findAllList" resultMap="StudentCertificateMap">
+        SELECT
+        a.cert_id,
+        c.std_name,
+        b.grade,
+        g.unvs_name,
+        h.pfsn_level,
+        h.pfsn_name,
+        h.pfsn_code,
+        b.school_roll,
+        f.emp_name,
+        c.id_card,
+        b.learn_id,
+        b.unvs_id,
+        a.apply_type,
+        a.apply_purpose,
+        a.is_send,
+        a.receiver_name,
+        a.receiver_mobile,
+        a.receiver_address,
+        a.express_no,
+        a.receive_type,
+        a.material_name,
+        a.remark,
+        a.stamp_down,
+        a.check_order,
+        d.check_status,
+        d.reason,
+        date_format(
+        a.create_time,
+        '%Y-%m-%d %H:%i:%s'
+        ) create_time,
+        i.emp_name recruit
+        FROM
+        bd_student_certificate a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_check_record d ON d.mapping_id = a.cert_id  AND d.check_order = a.check_order
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.tutor = f.emp_id
+        LEFT JOIN bd_university g ON b.unvs_id = g.unvs_id
+        LEFT JOIN bd_unvs_profession h ON b.pfsn_id = h.pfsn_id
+        LEFT JOIN oa_employee i on e.recruit = i.emp_id
+        WHERE 1=1 and d.check_type = '11'
+        <if test="queryInfo.queryType !=null and '' != queryInfo.queryType">
+            <choose>
+                <when test="queryInfo.queryType == 'zs'">
+                    and a.apply_type = 6
+                </when>
+                <otherwise>
+                    and a.apply_type BETWEEN 1 and 5
+                </otherwise>
+            </choose>
+        </if>
+        <if test="queryInfo.certId !=null and '' != queryInfo.certId">
+            and a.`cert_id` = #{queryInfo.certId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.expressNo !=null and '' != queryInfo.expressNo">
+            and a.`express_no` like concat('%',#{queryInfo.expressNo,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.stdName !=null and '' != queryInfo.stdName">
+            and c.`std_name` like concat('%',#{queryInfo.stdName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.schoolRoll !=null and '' != queryInfo.schoolRoll">
+            and b.`school_roll` like concat('%',#{queryInfo.schoolRoll,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.idCard !=null and '' != queryInfo.idCard">
+            and c.`id_card` like concat('%',#{queryInfo.idCard,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.tutor !=null and '' != queryInfo.tutor">
+            and f.emp_name like concat('%',#{queryInfo.tutor,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.recruit !=null and '' != queryInfo.recruit">
+            and i.emp_name like concat('%',#{queryInfo.recruit,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="queryInfo.grade !=null and '' != queryInfo.grade">
+            and b.`grade` = #{queryInfo.grade,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.unvsId !=null and '' != queryInfo.unvsId">
+            and b.`unvs_id` = #{queryInfo.unvsId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnLevel !=null and '' != queryInfo.pfsnLevel">
+            and h.`pfsn_level` = #{queryInfo.pfsnLevel,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.pfsnId !=null and '' != queryInfo.pfsnId">
+            and b.`pfsn_id` = #{queryInfo.pfsnId,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.isSend !=null and '' != queryInfo.isSend">
+            and a.`is_send` = #{queryInfo.isSend,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.applyType !=null and '' != queryInfo.applyType">
+            and a.`apply_type` = #{queryInfo.applyType,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.receiveType !=null and '' != queryInfo.receiveType">
+            and a.`receive_type` = #{queryInfo.receiveType,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.recruitType != null and queryInfo.recruitType != ''">
+            AND b.`recruit_type` = #{queryInfo.recruitType,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.startTime != null and queryInfo.startTime != ''">
+            AND a.`create_time` >= #{queryInfo.startTime,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.endTime != null and queryInfo.endTime != ''">
+            AND a.`create_time` &lt;= #{queryInfo.endTime,jdbcType=VARCHAR}
+        </if>
+        <if test="queryInfo.fdyStartTime != null and queryInfo.fdyStartTime != ''">
+            AND (a.check_order='1' AND d.check_status='2' AND d.`update_time` >= #{queryInfo.fdyStartTime,jdbcType=VARCHAR})
+        </if>
+        <if test="queryInfo.fdyEndTime != null and queryInfo.fdyEndTime != ''">
+            AND (a.check_order='1' AND d.check_status='2' AND d.`update_time` &lt;= #{queryInfo.fdyEndTime,jdbcType=VARCHAR})
+        </if>
+        <if test="queryInfo.finalStartTime != null and queryInfo.finalStartTime != ''">
+            AND (a.check_order='2'AND d.check_status='2' AND d.`update_time` >= #{queryInfo.finalStartTime,jdbcType=VARCHAR})
+        </if>
+        <if test="queryInfo.finalEndTime != null and queryInfo.finalEndTime != ''">
+            AND (a.check_order='2' AND d.check_status='2' AND d.`update_time` &lt;= #{queryInfo.finalEndTime,jdbcType=VARCHAR})
+        </if>
+        <if test="queryInfo.checkStatus != null and queryInfo.checkStatus != ''">
+            <if test="queryInfo.checkStatus == 0">
+                and a.check_order = '1' and d.check_status = '1'
+            </if>
+            <if test="queryInfo.checkStatus == 1">
+                and a.check_order = '2' and d.check_status = '1'
+            </if>
+            <if test="queryInfo.checkStatus == 2">
+                and a.check_order = '2' and d.check_status = '2'
+            </if>
+            <if test="queryInfo.checkStatus == 3">
+                and d.check_status = '3'
+            </if>
+        </if>
+        <if test="user.userLevel != 1">
+            <choose>
+                <when test="user.userLevel == 3"> <!-- 校监 -->
+                    and (e.recruit = #{user.empId, jdbcType=VARCHAR} or e.recruit_dp_id in (
+                    <foreach collection="user.myDpList" item="info" separator=",">
+                        #{info.dpId, jdbcType=VARCHAR}
+                    </foreach>
+                    ))
+                </when>
+                <when test="user.userLevel == 5"> <!-- 招生老师 -->
+                    and e.recruit = #{user.empId, jdbcType=VARCHAR}
+                </when>
+                <when test="user.userLevel == 6"> <!-- 辅导员 -->
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </when>
+                <when test="user.userLevel == 7">
+                    and (b.`recruit_type` = '2' or e.tutor = #{user.empId, jdbcType=VARCHAR})
+                </when>
+                <when test="user.userLevel == 8">
+                    and (b.`recruit_type` = '1' or e.tutor = #{user.empId, jdbcType=VARCHAR})
+                </when>
+                <otherwise>
+                    and e.tutor = #{user.empId, jdbcType=VARCHAR}
+                </otherwise>
+            </choose>
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <select id="getCertificate" resultMap="StudentCertificateMap">
+        SELECT
+        a.cert_id,
+        c.std_name,
+        b.grade,
+        g.unvs_name,
+        h.pfsn_level,
+        h.pfsn_name,
+        h.pfsn_code,
+        b.school_roll,
+        f.emp_name,
+        c.id_card,
+        b.learn_id,
+        b.unvs_id,
+        a.apply_type,
+        a.apply_purpose,
+        a.is_send,
+        a.receiver_name,
+        a.receiver_mobile,
+        a.receiver_address,
+        a.express_no,
+        a.receive_type,
+        a.material_name,
+        a.remark,
+        a.stamp_down,
+        a.check_order,
+        d.check_status,
+        d.reason,
+        date_format(
+        a.create_time,
+        '%Y-%m-%d %H:%i:%s'
+        ) create_time,
+        bcr.`cr_id`,
+        date_format(bcr.`update_time`, '%Y-%m-%d %H:%i:%s')  bcrUpdateTime,
+        bcr.`reason` bcr_reason,
+        oe.`emp_name` bcr_emp_name
+        FROM
+        bd_student_certificate a
+        LEFT JOIN bd_learn_info b ON a.learn_id = b.learn_id
+        LEFT JOIN bd_student_info c ON b.std_id = c.std_id
+        LEFT JOIN bd_check_record d ON d.mapping_id = a.cert_id  AND d.check_order = a.check_order
+        LEFT JOIN bd_learn_rules e ON a.learn_id = e.learn_id
+        LEFT JOIN oa_employee f ON e.tutor = f.emp_id
+        LEFT JOIN bd_university g ON b.unvs_id = g.unvs_id
+        LEFT JOIN bd_unvs_profession h ON b.pfsn_id = h.pfsn_id
+        LEFT JOIN bd_check_record bcr ON bcr.mapping_id = a.cert_id
+        LEFT JOIN `oa_employee` oe ON bcr.`emp_id` = oe.`emp_id`
+        WHERE 1=1 and d.check_type = '11' and bcr.check_type = '11'
+        <if test="certId !=null and '' != certId">
+            and a.`cert_id` = #{certId,jdbcType=VARCHAR}
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <update id="updateExpressNo">
+        UPDATE bd_student_certificate SET express_no= #{expressNo,jdbcType=VARCHAR},
+        is_send = 1
+        WHERE cert_id =#{certId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateCheckOrder">
+        UPDATE bd_student_certificate SET check_order= #{checkOrder,jdbcType=VARCHAR}
+        WHERE cert_id =#{certId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_certificate;
+        CREATE TEMPORARY TABLE tmp_student_certificate (
+        cert_id VARCHAR (50)
+        );
+        INSERT INTO tmp_student_certificate (
+        cert_id
+        )
+        VALUES
+        <foreach collection="studentCertificateExcelList" item="info" separator=",">
+            (
+            #{info.certId, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        SELECT
+        b.cert_id
+        FROM
+        bd_student_certificate a
+        RIGHT JOIN tmp_student_certificate b ON a.cert_id = b.cert_id
+        WHERE
+        a.cert_id IS NULL;
+    </select>
+
+    <update id="updateExpressNoByExcel">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_certificate;
+        CREATE TEMPORARY TABLE tmp_student_certificate (
+        cert_id VARCHAR (50),
+        express_no VARCHAR (50),
+        is_send VARCHAR(10)
+        );
+        INSERT INTO tmp_student_certificate
+        VALUES
+        <foreach collection="studentCertificateExcelList" item="info" separator=",">
+            (
+            #{info.certId, jdbcType=VARCHAR},
+            #{info.expressNo, jdbcType=VARCHAR},
+            #{info.isSend, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        UPDATE bd_student_certificate a
+        JOIN bd_check_record b ON a.cert_id = b.mapping_id and a.check_order = b.check_order
+        JOIN tmp_student_certificate c ON a.cert_id = c.cert_id
+        SET a.express_no = c.express_no,
+        a.is_send = c.is_send,
+        a.update_time = now(),
+        a.update_user= #{user.realName, jdbcType=VARCHAR},
+        a.update_user_id= #{user.userId, jdbcType=VARCHAR}
+        where a.check_order = '2' and b.check_status = '2';
+    </update>
+
+    <select id="getStudyInfo" resultType="java.util.Map">
+        SELECT
+            b.std_name,
+            b.id_card,
+            a.grade,
+            CASE b.sex
+        WHEN 1 THEN
+            '男'
+        WHEN 2 THEN
+            '女'
+        ELSE
+            ''
+        END sex,
+            c.unvs_name,
+            CASE d.pfsn_level
+        WHEN 1 THEN
+            '本科'
+        WHEN 5 THEN
+            '专科'
+        ELSE
+            ''
+        END pfsn_level,
+         d.pfsn_name,
+         a.recruit_type,
+         now() now,
+         (
+            select p.pay_time from  bd_student_order l
+            LEFT JOIN bd_sub_order m ON m.order_no = l.order_no
+            LEFT JOIN bd_student_serial p on p.order_no = l.order_no
+            WHERE  m.item_code  in ('Y0','Y1')
+            and m.sub_order_status ='2'
+            and l.learn_id = #{learnId}
+            GROUP BY l.learn_id
+         ) pay_time
+        FROM
+            bd_learn_info a
+        LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+        LEFT JOIN bd_university c ON a.unvs_id = c.unvs_id
+        LEFT JOIN bd_unvs_profession d ON a.pfsn_id = d.pfsn_id
+        WHERE
+            a.learn_id = #{learnId}
+    </select>
+</mapper>

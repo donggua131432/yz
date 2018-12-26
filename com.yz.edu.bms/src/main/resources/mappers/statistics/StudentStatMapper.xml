@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.statistics.StudentStatMapper">
+
+    <select id="selectStudentStat"  resultType="java.util.HashMap">
+        select
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit_campus_id')">
+            (select campus_name from oa_campus where campus_id=c.recruit_campus_id) as campus_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.unvs_id')">
+            (select unvs_name from bd_university where unvs_id=a.unvs_id) as unvs_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_name')">
+            (select pfsn_name from bd_university where unvs_id=a.unvs_id) as pfsn_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.ta_id')">
+            (select ta_name from bd_test_area where ta_id=a.ta_id) as ta_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_cata')">
+            (select dict_name from sys_dict where p_id = 'pfsnCata' and dict_value=b.pfsn_cata) as pfsn_cata,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_level')">
+            (select dict_name from sys_dict where p_id = 'pfsnLevel' and dict_value=b.pfsn_level) as pfsn_level,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit')">
+            c.emp_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit_dp_id')">
+            (select dp_name from oa_department where dp_id=c.recruit_dp_id) as dp_name,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.std_stage')">
+            (select dict_name from sys_dict where p_id = 'stdStage' and dict_value=a.std_stage) as std_stage,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.year')">
+            (select dict_name from sys_dict where p_id = 'year' and dict_value=b.year) as year,
+        </if>
+        <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.grade')">
+            (select dict_name from sys_dict where p_id = 'grade' and dict_value=b.grade) as grade,
+        </if>
+        count(1) as count,
+        sum(Convert(IFNULL(c.audit,1),DECIMAL(18,2))) audit_count
+        from (bd_learn_info a left join bd_unvs_profession b on a.pfsn_id=b.pfsn_id LEFT JOIN bd_audit c on a.unvs_id = c.unvs_id and a.grade = c.grade and a.scholarship = c.scholarship) left join (select m.*,n.emp_name from bd_learn_rules m left join oa_employee n on m.recruit = n.emp_id) c on a.learn_id=c.learn_id
+        <if test="queryInfo.payTime != null and queryInfo.payTime != ''">
+        	left join (SELECT bbb.learn_id,MAX(ttt.pay_time)pay_time
+  					FROM
+    			bd_serial_suborder bss 
+    				LEFT JOIN bd_sub_order bso 
+      			ON bso.sub_order_no = bss.sub_order_no 
+   			 		LEFT JOIN bd_fee_item bfi 
+      			ON bfi.`item_code` = bso.`item_code` 
+    				LEFT JOIN bd_student_order bbb
+     			ON bbb.`order_no` = bso.`order_no` 
+    			LEFT JOIN bd_student_serial ttt
+    				ON ttt.`serial_no` = bss.`serial_no`  
+  				WHERE  bso.`item_code`in ('Y0','Y1') AND ttt.`serial_status` IN ('2', '3')  GROUP BY bbb.order_no)y  on y.learn_id=a.learn_id
+        </if>
+        <if test="queryInfo.regTime != null and queryInfo.regTime != ''">
+        	left join (SELECT bbb.learn_id,ttt.pay_time
+  					FROM
+    			bd_serial_suborder bss 
+    				LEFT JOIN bd_sub_order bso 
+      			ON bso.sub_order_no = bss.sub_order_no 
+   			 		LEFT JOIN bd_fee_item bfi 
+      			ON bfi.`item_code` = bso.`item_code` 
+    				LEFT JOIN bd_student_order bbb
+     			ON bbb.`order_no` = bso.`order_no` 
+    			LEFT JOIN bd_student_serial ttt
+    				ON ttt.`serial_no` = bss.`serial_no`  
+  				WHERE  bso.`item_code`='Y1' AND ttt.`serial_status` = '2'  )r  on r.learn_id=a.learn_id
+        </if>
+        <where>
+            <if test="queryInfo.year != null and queryInfo.year != ''">
+                and b.year = #{queryInfo.year, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.grade != null and queryInfo.grade != ''">
+                and a.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+                and a.unvs_id = #{queryInfo.unvsId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.pfsnCata != null and queryInfo.pfsnCata != ''">
+                and b.pfsn_cata = #{queryInfo.pfsnCata, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+                and b.pfsn_level = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.taId != null and queryInfo.taId != ''">
+                and a.ta_id = #{queryInfo.taId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruitCampusId != null and queryInfo.recruitCampusId != ''">
+                and c.recruit_campus_id = #{queryInfo.recruitCampusId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruitDpId != null and queryInfo.recruitDpId != ''">
+                and c.recruit_dp_id = #{queryInfo.recruitDpId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruit != null and queryInfo.recruit != ''">
+                and c.emp_name like concat('%',#{queryInfo.recruit},'%')
+            </if>
+            <if test="queryInfo.scholarship != null and queryInfo.scholarship != ''">
+                and a.scholarship = #{queryInfo.scholarship, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.createTime != null and queryInfo.createTime != ''">
+                and a.create_time &gt;= #{queryInfo.createTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.createTime1 != null and queryInfo.createTime1 != ''">
+                and a.create_time  &lt;= #{queryInfo.createTime1, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.payTime != null and queryInfo.payTime != ''">
+                and y.pay_time &gt;= #{queryInfo.payTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.payTime1 != null and queryInfo.payTime1 != ''">
+                and y.pay_time  &lt;= #{queryInfo.payTime1, jdbcType=VARCHAR}
+            </if>
+            
+            <if test="queryInfo.regTime != null and queryInfo.regTime != ''">
+                and r.pay_time &gt;= #{queryInfo.regTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.regTime1 != null and queryInfo.regTime1 != ''">
+                and r.pay_time  &lt;= #{queryInfo.regTime1, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.stdStageArray != null and queryInfo.stdStageArray.length!=0">
+                and a.std_stage in
+                <foreach collection="queryInfo.stdStageArray" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 3"> <!-- 校监 -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+                    <when test="user.userLevel == 4"> <!-- 招生主管  -->
+                        and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit in (
+                        <foreach collection="user.myEmplyeeList" item="info" separator=",">
+                            #{info.empId, jdbcType=VARCHAR}
+                        </foreach>
+                        ))
+                    </when>
+					<when test="user.userLevel == 7"> <!-- 校区助理  -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_campus_id=#{user.campusId, jdbcType=VARCHAR}  )
+					</when>
+					<when test="user.userLevel == 8"> <!-- 校监助理  -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_dp_id= #{user.departmentId, jdbcType=VARCHAR}  ) 
+					</when>
+                    <when test="user.userLevel == 5"> <!-- 招生老师  -->
+                        and (c.recruit = #{user.empId, jdbcType=VARCHAR})
+                    </when>
+					<otherwise>
+                        and c.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+			
+        </where>
+        group by
+        <trim suffixOverrides=",">
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit_campus_id')">
+                c.recruit_campus_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.unvs_id')">
+                a.unvs_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.ta_id')">
+                a.ta_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_cata')">
+                b.pfsn_cata,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_level')">
+                b.pfsn_level,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit')">
+                c.emp_name,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'c.recruit_dp_id')">
+                c.recruit_dp_id,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'a.std_stage')">
+                a.std_stage,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.year')">
+                b.year,
+            </if>
+            <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.grade')">
+                b.grade,
+            </if>
+             <if test="@com.yz.core.util.StudentStatUtil@isFieldString(queryInfo.statGroup,'b.pfsn_name')">
+                b.pfsn_name,
+            </if>
+            
+        </trim>
+        order by count(1) desc
+    </select>
+
+
+
+    <select id="selectStudentStatTotal" resultType="java.util.HashMap">
+        select 
+
+        count(1) as countTotal
+		
+
+        from (bd_learn_info a left join bd_unvs_profession b on a.pfsn_id=b.pfsn_id) left join (select m.*,n.emp_name from bd_learn_rules m left join oa_employee n on m.recruit = n.emp_id) c on a.learn_id=c.learn_id
+        
+        <if test="queryInfo.payTime != null and queryInfo.payTime != ''">
+        left join (SELECT bbb.learn_id,MAX(ttt.pay_time)pay_time
+  					FROM
+    			bd_serial_suborder bss 
+    				LEFT JOIN bd_sub_order bso 
+      			ON bso.sub_order_no = bss.sub_order_no 
+   			 		LEFT JOIN bd_fee_item bfi 
+      			ON bfi.`item_code` = bso.`item_code` 
+    				LEFT JOIN bd_student_order bbb
+     			ON bbb.`order_no` = bso.`order_no` 
+    			LEFT JOIN bd_student_serial ttt
+    				ON ttt.`serial_no` = bss.`serial_no`  
+  				WHERE  bso.`item_code`in ('Y0','Y1') AND ttt.`serial_status` IN ('2', '3')  GROUP BY bbb.order_no)y  on y.learn_id=a.learn_id
+         </if>
+         <if test="queryInfo.regTime != null and queryInfo.regTime != ''">
+        left join (SELECT bbb.learn_id,ttt.pay_time
+  					FROM
+    			bd_serial_suborder bss 
+    				LEFT JOIN bd_sub_order bso 
+      			ON bso.sub_order_no = bss.sub_order_no 
+   			 		LEFT JOIN bd_fee_item bfi 
+      			ON bfi.`item_code` = bso.`item_code` 
+    				LEFT JOIN bd_student_order bbb
+     			ON bbb.`order_no` = bso.`order_no` 
+    			LEFT JOIN bd_student_serial ttt
+    				ON ttt.`serial_no` = bss.`serial_no`  
+  				WHERE  bso.`item_code`='Y1' AND ttt.`serial_status` = '2'  )r  on r.learn_id=a.learn_id
+         </if>
+        <where>
+        	 
+            <if test="queryInfo.year != null and queryInfo.year != ''">
+                and b.year = #{queryInfo.year, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.grade != null and queryInfo.grade != ''">
+                and a.grade = #{queryInfo.grade, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+                and a.unvs_id = #{queryInfo.unvsId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.pfsnCata != null and queryInfo.pfsnCata != ''">
+                and b.pfsn_cata = #{queryInfo.pfsnCata, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+                and b.pfsn_level = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.taId != null and queryInfo.taId != ''">
+                and a.ta_id = #{queryInfo.taId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruitCampusId != null and queryInfo.recruitCampusId != ''">
+                and c.recruit_campus_id = #{queryInfo.recruitCampusId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruitDpId != null and queryInfo.recruitDpId != ''">
+                and c.recruit_dp_id = #{queryInfo.recruitDpId, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.recruit != null and queryInfo.recruit != ''">
+                and c.emp_name like concat('%',#{queryInfo.recruit},'%')
+            </if>
+            <if test="queryInfo.scholarship != null and queryInfo.scholarship != ''">
+                and a.scholarship = #{queryInfo.scholarship, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.createTime != null and queryInfo.createTime != ''">
+                and a.create_time &gt;= #{queryInfo.createTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.createTime1 != null and queryInfo.createTime1 != ''">
+                and a.create_time  &lt;= #{queryInfo.createTime1, jdbcType=VARCHAR}
+            </if>
+            
+			<if test="queryInfo.payTime != null and queryInfo.payTime != ''">
+                and y.pay_time &gt;= #{queryInfo.payTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.payTime1 != null and queryInfo.payTime1 != ''">
+                and y.pay_time  &lt;= #{queryInfo.payTime1, jdbcType=VARCHAR}
+            </if>
+
+            <if test="queryInfo.regTime != null and queryInfo.regTime != ''">
+                and r.pay_time &gt;= #{queryInfo.regTime, jdbcType=VARCHAR}
+            </if>
+            <if test="queryInfo.regTime1 != null and queryInfo.regTime1 != ''">
+                and r.pay_time  &lt;= #{queryInfo.regTime1, jdbcType=VARCHAR}
+            </if>
+
+            
+            <if test="queryInfo.stdStageArray != null and queryInfo.stdStageArray.length!=0">
+                and a.std_stage in
+                <foreach collection="queryInfo.stdStageArray" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            
+            <if test="user.userLevel != 1">
+				<choose>
+					<when test="user.userLevel == 3"> <!-- 校监 -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_dp_id in (
+						<foreach collection="user.myDpList" item="info" separator=",">
+							#{info.dpId, jdbcType=VARCHAR}
+						</foreach>
+						))
+					</when>
+                    <when test="user.userLevel == 4"> <!-- 招生主管  -->
+                        and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit in (
+                        <foreach collection="user.myEmplyeeList" item="info" separator=",">
+                            #{info.empId, jdbcType=VARCHAR}
+                        </foreach>
+                        ))
+                    </when>
+					<when test="user.userLevel == 7"> <!-- 校区助理  -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_campus_id=#{user.campusId, jdbcType=VARCHAR}  )
+					</when>
+					<when test="user.userLevel == 8"> <!-- 校监助理  -->
+						and (c.recruit = #{user.empId, jdbcType=VARCHAR} or c.recruit_dp_id= #{user.departmentId, jdbcType=VARCHAR}  ) 
+					</when>
+                    <when test="user.userLevel == 5"> <!-- 招生老师  -->
+                        and (c.recruit = #{user.empId, jdbcType=VARCHAR} )
+                    </when>
+					<otherwise>
+                        and c.recruit = #{user.empId, jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+			
+			
+        </where>
+    </select>
+</mapper>

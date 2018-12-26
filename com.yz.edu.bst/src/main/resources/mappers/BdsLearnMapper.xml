@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.BdsLearnMapper">
+	
+	<resultMap type="java.util.HashMap" id="StudentInfo">
+		<result column="std_ame" property="stdName" jdbcType="VARCHAR"/>
+		<result column="sex" property="sex" jdbcType="VARCHAR"/>
+		<result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+		<result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+		<association property="learnInfos" column="std_id" select="selectLearnInfo" />
+		<association property="headUrl" column="std_id" select="selectHeadUrl" />
+	</resultMap>
+	
+	<resultMap type="java.util.HashMap" id="LearnInfo">
+		<result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+		<result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+		<result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+		<result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+		<result column="teach_method" property="teachMethod" jdbcType="VARCHAR"/>
+		<result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+		<result column="grade" property="grade" jdbcType="VARCHAR"/>
+		<result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+		<result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+		<result column="ta_name" property="taName" jdbcType="VARCHAR"/>
+		<result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+		<result column="is_test_completed" property="isTestCompleted" jdbcType="VARCHAR"/>
+		<result column="guide_teacher" property="guideTeacher" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	<select id="selectUserIdByLearnId" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		  o.`user_id` 
+		from
+		  bd_learn_info l 
+		  left join bd_student_info o 
+		    on o.`std_id` = l.`std_id` 
+		where l.learn_id = #{learnId}
+	</select>
+	
+	<select id="selectTutorAndRecruitUserId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select 
+		  o.`user_id` as recruitUserId,
+		  e.`user_id` as tutorUserId 
+		from
+		  bd_learn_rules r 
+		  left join oa_employee o 
+		    on o.`emp_id` = r.`recruit` 
+		  left join oa_employee e 
+		    on e.`emp_id` = r.`tutor` 
+		where r.`learn_id` = #{learnId} 
+	</select>
+	
+	<select id="selectHeadUrl" parameterType="java.lang.String" resultType="java.lang.String">
+		select annex_url AS headUrl from bd_student_annex where std_id = #{stdId} AND annex_type = '5' limit 0,1
+	</select>
+	
+	<select id="selectUnpaidCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  bd_sub_order bo 
+		  LEFT JOIN bd_student_order bs 
+		    ON bs.`order_no` = bo.`order_no` 
+		WHERE bs.`learn_id` = #{learnId}
+			and bo.`sub_order_status` = '1'
+	</select>
+	
+	<select id="selectPaidCount" parameterType="java.lang.String" resultType="java.lang.Integer" >
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  bd_sub_order bo 
+		  LEFT JOIN bd_student_order bs 
+		    ON bs.`order_no` = bo.`order_no` 
+		WHERE bs.`learn_id` = #{learnId}
+			and bo.`sub_order_status` = '2'
+	</select>
+	
+	<select id="selectStudentInfo" parameterType="java.lang.String" resultMap="StudentInfo">
+		SELECT 
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bsi.`sex`,
+		  bsi.`mobile`,
+		  bsi.`id_card`
+		FROM
+		   bd_student_info bsi 
+		WHERE bsi.`user_id` = #{userId}
+	</select>
+	
+	<select id="selectStudentInfoByStdId" parameterType="java.lang.String" resultMap="StudentInfo">
+		SELECT 
+		  bsi.`std_id`,
+		  bsi.`std_name`,
+		  bsi.`sex`,
+		  bsi.`mobile`,
+		  bsi.`id_card`
+		FROM
+		   bd_student_info bsi 
+		WHERE bsi.`std_id` = #{stdId}
+	</select>
+	
+	<select id="selectLearnInfo" parameterType="java.lang.String" resultMap="LearnInfo">
+		select 
+		  bli.`learn_id`,
+		  bli.`school_roll` std_no,
+		  bu.`unvs_name`,
+		  bup.`pfsn_name`,
+		  bu.`unvs_id`,
+		  bli.`recruit_type`,
+		  bup.`pfsn_level`,
+		  bup.`teach_method`,
+		  bli.`is_test_completed`,
+		  bli.`grade`,
+		  bli.`std_stage`,
+		  ta.ta_name,
+		  pa.guide_teacher
+		from
+		  bd_learn_info bli 
+		  left join bd_university bu 
+		    on bli.`unvs_id` = bu.`unvs_id` 
+		  left join bd_unvs_profession bup 
+		    on bup.`pfsn_id` = bli.`pfsn_id`
+		  left join bd_test_area ta
+		    on ta.ta_id = bli.ta_id
+		  left join oa_student_graduate_paper_task pa
+		  	on pa.learn_id = bli.learn_id
+		where bli.`std_id` = #{stdId} 
+	</select>
+	
+	<select id="getLearnList" parameterType="string" resultType="java.util.HashMap">
+		select 
+		  l.`is_completed` as isCompleted,
+		  l.`scholarship`
+		from
+		  bd_learn_info l 
+		where l.`std_id` = #{stdId, jdbcType=VARCHAR} 
+	</select>
+	
+	<select id="countWhiteListBy" resultType="int">
+		select 
+		  count(1) 
+		from
+		  bd_white_list w 
+		where w.`std_id` = #{stdId, jdbcType=VARCHAR}
+		  and w.`scholarship` = #{scholarship, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getStudentInfoById" resultType="java.util.HashMap" parameterType="string">
+		select 
+		  s.`std_name` as `name`,
+		  s.`std_id` as stdId,
+		  s.`id_type` as idType,
+		  s.`id_card` as idCard,
+		  s.`mobile`
+		from
+		  bd_student_info s 
+		where s.`std_id` = #{stdId, jdbcType=VARCHAR} 
+	</select>
+	
+	<select id="getStudentInfo" resultType="java.util.HashMap">
+		select 
+		  s.`std_name` as `name`,
+		  s.`std_id` as stdId
+		from
+		  bd_student_info s 
+		where s.`id_card` = #{certNo, jdbcType=VARCHAR}
+		  and s.`id_type` = #{certType, jdbcType=VARCHAR}
+		limit 0, 1 
+	</select>
+	
+	<insert id="addStudentInfo" parameterType="com.yz.model.communi.Body">
+		<selectKey keyProperty="stdId" order="BEFORE" resultType="string">
+			select seq()
+		</selectKey>
+		INSERT INTO `bd_student_info` (
+		  `std_id`,
+		  `std_name`,
+		  `id_type`,
+		  `id_card`,
+		  `sex`,
+		  `birthday`,
+		  `mobile`
+		) 
+		VALUES
+		  (
+		    #{stdId, jdbcType=VARCHAR},
+		    #{name, jdbcType=VARCHAR},
+		    #{idType, jdbcType=VARCHAR},
+		    #{idCard, jdbcType=VARCHAR},
+		    #{sex, jdbcType=VARCHAR},
+		    #{birthday, jdbcType=VARCHAR},
+		    #{mobile}
+		  )
+	</insert>
+	
+	<insert id="addStudentOther" parameterType="com.yz.model.communi.Body">
+		insert into `bd_student_other` (`std_id`) values( #{stdId, jdbcType=VARCHAR} )
+	</insert>
+	
+	<insert id="addStudentAnnex" parameterType="com.yz.model.communi.Body" >
+		INSERT INTO `bd_student_annex` (
+		`annex_id`,
+		`std_id`,
+		`annex_name`,
+		`annex_type`,
+		`annex_status`,
+		`is_require`
+		)
+		VALUES
+		<foreach collection="list" item="info" index="index" separator=",">
+			(
+			seq(),
+			#{info.stdId, jdbcType=VARCHAR},
+			#{info.annexName, jdbcType=VARCHAR},
+			#{info.annexType, jdbcType=VARCHAR},
+			#{info.annexStatus, jdbcType=VARCHAR},
+			#{info.isRequire, jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	
+	<select id="selectFeeInfo" resultType="java.util.HashMap">
+		select 
+		  f.`fee_id` as feeId,
+		  o.`offer_id` as offerId 
+		from
+		  bd_fee f 
+		  left join bd_offer o 
+		    on o.`offer_id` = 
+		    (select 
+		      pto.offer_id 
+		    from
+		      bd_pto pto 
+		      left join bd_offer r 
+		        on r.offer_id = pto.offer_id 
+		    where pto.`pfsn_id` = #{pfsnId, jdbcType=VARCHAR}
+		      and pto.`ta_id` = #{taId, jdbcType=VARCHAR} 
+		      and pto.`scholarship` = #{scholarship, jdbcType=VARCHAR}
+		      and r.status = '1' 
+		    group by pto.`offer_id`) 
+		where f.`fee_id` = 
+		  (select 
+		    ptf.fee_id 
+		  from
+		    bd_ptf ptf 
+		    left join bd_fee e 
+		      on e.fee_id = ptf.fee_id 
+		  where ptf.`pfsn_id` = #{pfsnId, jdbcType=VARCHAR}
+		    and ptf.`ta_id` = #{taId, jdbcType=VARCHAR} 
+		    and ptf.`scholarship` = #{scholarship, jdbcType=VARCHAR}
+		    and e.status = '1' 
+		  group by ptf.`fee_id`)
+	</select>
+	
+	<insert id="addStudentLearnInfo" parameterType="com.yz.model.communi.Body">
+		<selectKey keyProperty="learnId" order="BEFORE" resultType="string">
+			select seq()
+		</selectKey>
+		insert into `bd_learn_info` (
+		  `learn_id`,
+		  `std_id`,
+		  `std_type`,
+		  `unvs_id`,
+		  `pfsn_id`,
+		  `ta_id`,
+		  `scholarship`,
+		  `recruit_type`,
+		  `fee_id`,
+		  `offer_id`,
+		  `grade`,
+		  `std_stage`,
+		  `is_online`,
+		  `enroll_channel`,
+		  `sg`
+		) 
+		values
+		  (
+		    #{learnId, jdbcType=VARCHAR},
+		    #{stdId, jdbcType=VARCHAR},
+		    #{stdType, jdbcType=VARCHAR},
+		    #{unvsId, jdbcType=VARCHAR},
+		    #{pfsnId, jdbcType=VARCHAR},
+		    #{taId, jdbcType=VARCHAR},
+		    #{scholarship, jdbcType=VARCHAR},
+		    #{recruitType, jdbcType=VARCHAR},
+		    #{feeId, jdbcType=VARCHAR},
+		    #{offerId, jdbcType=VARCHAR},
+		    #{grade, jdbcType=VARCHAR},
+		    #{stdStage, jdbcType=VARCHAR},
+		    #{isOnline, jdbcType=VARCHAR},
+		    #{enrollChannel, jdbcType=VARCHAR},
+		    #{sg, jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<insert id="addStudentHistory" parameterType="com.yz.model.communi.Body">
+		insert into `bd_student_history` (`learn_id`, `std_id`) 
+		values (#{learnId, jdbcType=VARCHAR}, #{stdId, jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="addStudentEnroll" parameterType="com.yz.model.communi.Body">
+		insert into `bd_student_enroll` (
+		  `learn_id`,
+		  `std_id`,
+		  `scholarship`,
+		  `pfsn_level`,
+		  `grade`,
+		  `unvs_id`,
+		  `pfsn_id`,
+		  `ta_id`,
+		  `points`,
+		  `bp_type`
+		) 
+		values
+		  (
+		    #{learnId, jdbcType=VARCHAR},
+		    #{stdId, jdbcType=VARCHAR},
+		    #{scholarship, jdbcType=VARCHAR},
+		    #{pfsnLevel, jdbcType=VARCHAR},
+		    #{grade, jdbcType=VARCHAR},
+		    #{unvsId, jdbcType=VARCHAR},
+		    #{pfsnId, jdbcType=VARCHAR},
+		    #{taId, jdbcType=VARCHAR},
+		    #{points, jdbcType=VARCHAR},
+		    #{bpType, jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<select id="countGrade" resultType="int">
+		select count(1) from bd_learn_info where std_id = #{stdId, jdbcType=VARCHAR} and grade = #{grade, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertLearnRemarks" parameterType="list">
+		insert into bd_learn_remark(lr_id,learn_id,remark_type) values
+		<foreach collection="remarkList" separator="," item="remark">
+			(
+			seq(),
+			#{remark.learnId, jdbcType=VARCHAR},
+			#{remark.remarkType, jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertCheckRecord" parameterType="map">
+		insert into bd_check_record
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	        cr_id,
+	      <if test="mappingId != null" >
+	        mapping_id,
+	      </if>
+	      <if test="checkStatus != null" >
+	        check_status,
+	      </if>
+	      <if test="checkOrder != null" >
+	        check_order,
+	      </if>
+	      <if test="checkType != null" >
+	        check_type,
+	      </if>
+	      <if test="crStatus != null" >
+	        cr_status,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	        seq(),
+	      <if test="mappingId != null" >
+	        #{mappingId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="checkStatus != null" >
+	        #{checkStatus,jdbcType=VARCHAR},
+	      </if>
+	      <if test="checkOrder != null" >
+	        #{checkOrder,jdbcType=VARCHAR},
+	      </if>
+	      <if test="checkType != null" >
+	        #{checkType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="crStatus != null" >
+	        #{crStatus,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<select id="selectEmpInfo" parameterType="string" resultType="map">
+		SELECT 
+		  e.`emp_id` AS recruit,
+		  j.`dp_id` AS recruitDpId,
+		  j.`campus_id` AS recruitCampusId,
+		  c.`emp_id` AS recruitCampusManager 
+		FROM
+		  oa_employee e 
+		  INNER JOIN oa_employee_job j 
+		    ON j.`emp_id` = e.`emp_id` 
+		  INNER JOIN oa_campus c 
+		    ON c.`campus_id` = j.`campus_id` 
+		WHERE e.`emp_id` = #{recruitId, jdbcType=VARCHAR} 
+		  and e.`emp_status` != '2'
+	</select>
+	
+	<insert id="insertLearnRule" parameterType="java.util.HashMap">
+		INSERT INTO `bd_learn_rules` (
+		  `learn_id`,
+		  `recruit`,
+		  `recruit_campus_id`,
+		  `recruit_dp_id`,
+		  `recruit_campus_manager`
+		) 
+		VALUES
+		  (
+		    #{learnId, jdbcType=VARCHAR},
+		    #{recruit, jdbcType=VARCHAR},
+		    #{recruitCampusId, jdbcType=VARCHAR},
+		    #{recruitDpId, jdbcType=VARCHAR},
+		    #{recruitCampusManager, jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+</mapper>

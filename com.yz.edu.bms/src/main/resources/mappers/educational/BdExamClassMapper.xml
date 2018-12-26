@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.educational.BdExamClassMapper">
+  
+  <resultMap id="ExamClassResult" type="com.yz.model.educational.BdExamClass">
+  	<result column="py_id" property="pyId" jdbcType="VARCHAR"/>
+  	<result column="ey_id" property="eyId" jdbcType="VARCHAR"/>
+  	<result column="ep_id" property="epId" jdbcType="VARCHAR"/>
+    <result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+    <result column="py_code" property="pyCode" jdbcType="VARCHAR"/>
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+    <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+    <result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+    <result column="ep_name" property="epName" jdbcType="VARCHAR"/>
+    <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+    <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+    <result column="seats" property="seats" jdbcType="VARCHAR"/>
+    <result column="rest_seats" property="restSeats" jdbcType="VARCHAR"/>
+     <result column="divide_remark" property="divideRemark" jdbcType="VARCHAR"/>
+    <association property="places" column="py_id" select="selectPlaces"/>
+  </resultMap>
+
+	<resultMap id="ExamClassExcelMap" type="com.yz.model.educational.BdExamClassExcel">
+		<result column="py_id" property="pyId" jdbcType="VARCHAR"/>
+		<result column="exam_year" property="examYear" jdbcType="VARCHAR"/>
+		<result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+		<result column="district_name" property="districtName" jdbcType="VARCHAR"/>
+		<result column="ep_name" property="epName" jdbcType="VARCHAR"/>
+		<result column="place_name" property="placeName" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+		<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+		<result column="seats" property="seats" jdbcType="VARCHAR"/>
+		<result column="max_count" property="maxCount" jdbcType="VARCHAR"/>
+		<result column="is_use" property="isUse" jdbcType="VARCHAR"/>
+		<result column="divide_remark" property="remeak" jdbcType="VARCHAR"/>
+		<result column="is_multi" property="isMulti" jdbcType="VARCHAR"/>
+	</resultMap>
+
+  <delete id="deleteExamClassByPyId" parameterType="java.lang.String">
+ 	delete from bd_place_info where py_id = #{pyId}
+  </delete>
+  
+  <insert id="insertExamClass" parameterType="com.yz.model.educational.BdExamClass">
+  	INSERT INTO `bd_place_info` (
+	  `place_id`,
+	  `place_name`,
+	  `max_count`,
+	  `py_id`,
+	  `ep_id`,
+	  `update_user`,
+	  `update_user_id`,
+	  `create_user_id`,
+	  `create_user`,
+	  `order_num`
+	) 
+	VALUES
+	<foreach collection="places" item="c" index="index" separator="," >  
+	 (
+	    #{c.placeId},
+	    #{c.placeName},
+	    #{c.maxCount},
+	    #{pyId},
+	    #{epId},
+	    #{updateUser},
+	    #{updateUserId},
+	    #{createUserId},
+	    #{createUser},
+	    #{c.orderNum}
+	  )
+  	</foreach>
+  </insert>
+  
+  <update id="updateDivideRemark" parameterType="java.lang.String">
+  	UPDATE bd_place_year SET divide_remark = #{divideRemark} WHERE py_id = #{pyId}
+  </update>
+  
+  <select id="selectExamClassByPyId" parameterType="java.lang.String" resultMap="ExamClassResult">
+  	SELECT 
+	  a.py_id,
+	  b.exam_year,
+	  b.ey_id,
+	  a.py_code,
+	  c.ep_id,
+	  d.province_name,
+	  e.city_name,
+	  f.district_name,
+	  c.address,
+	  c.ep_name,
+	  a.divide_remark,
+	  DATE_FORMAT(
+	    a.start_time,
+	    '%Y-%m-%d %p %H:%i'
+	  ) start_time,
+	  DATE_FORMAT(a.end_time, '%H:%i') end_time,
+	  a.seats,
+	  (a.seats - IFNULL(g.seats, 0)) rest_seats
+	FROM
+	  bd_place_year a 
+	  LEFT JOIN bd_exam_year b 
+	    ON a.ey_id = b.ey_id 
+	  LEFT JOIN bd_exam_place c 
+	    ON a.place_id = c.ep_id 
+	  LEFT JOIN sys_province d 
+	    ON c.province_code = d.province_code 
+	  LEFT JOIN sys_city e 
+	    ON c.city_code = e.city_code 
+	  LEFT JOIN sys_district f 
+	    ON c.district_code = f.district_code 
+	  LEFT JOIN 
+	    (SELECT 
+	      py_id,
+	      COUNT(*) seats 
+	    FROM
+	      bd_student_exam_affirm 
+	    GROUP BY py_id) g 
+	    ON a.py_id = g.py_id 
+	 where a.py_id = #{pyId}
+  </select>
+  
+  <select id="selectPlaces" parameterType="java.lang.String" resultType="com.yz.model.educational.BdPlaceInfo">
+  	SELECT 
+	  place_id placeId,
+	  place_name placeName,
+	  max_count maxCount 
+	FROM
+	  bd_place_info p 
+	WHERE p.`py_id` = #{pyId}
+	order by p.order_num
+  </select>
+  
+  <select id="selectAllExamClass" parameterType="com.yz.model.educational.BdExamClassQuery" resultMap="ExamClassResult">
+  	SELECT 
+	  a.py_id,
+	  b.exam_year,
+	  a.py_code,
+	  d.province_name,
+	  e.city_name,
+	  f.district_name,
+	  c.address,
+	  c.ep_name,
+	  a.divide_remark,
+	  DATE_FORMAT(
+	    a.start_time,
+	    '%Y-%m-%d %p %H:%i'
+	  ) start_time,
+	  DATE_FORMAT(a.end_time, '%H:%i') end_time,
+	  a.seats,
+	  (a.seats - IFNULL(g.seats, 0)) rest_seats
+	FROM
+	  bd_place_year a 
+	  LEFT JOIN bd_exam_year b 
+	    ON a.ey_id = b.ey_id 
+	  LEFT JOIN bd_exam_place c 
+	    ON a.place_id = c.ep_id 
+	  LEFT JOIN sys_province d 
+	    ON c.province_code = d.province_code 
+	  LEFT JOIN sys_city e 
+	    ON c.city_code = e.city_code 
+	  LEFT JOIN sys_district f 
+	    ON c.district_code = f.district_code 
+	  LEFT JOIN 
+	    (SELECT 
+	      py_id,
+	      COUNT(*) seats 
+	    FROM
+	      bd_student_exam_affirm 
+	    GROUP BY py_id) g 
+	    ON a.py_id = g.py_id 
+	 WHERE 1 = 1 
+	 and a.status = '1'
+	 <if test="pyCode != null and ''!= pyCode">
+         AND a.py_code LIKE CONCAT('%',#{pyCode,jdbcType=VARCHAR} , '%')
+     </if>
+     <if test="epName != null and ''!= epName">
+         AND c.ep_name LIKE CONCAT('%',#{epName,jdbcType=VARCHAR} , '%')
+     </if>
+     <if test="provinceCode != null and ''!= provinceCode">
+         AND c.province_code = #{provinceCode,jdbcType=VARCHAR}
+     </if>
+     <if test="cityCode != null and ''!= cityCode">
+         AND c.city_code = #{cityCode,jdbcType=VARCHAR}
+     </if>
+     <if test="districtCode != null and ''!= districtCode">
+         AND c.district_code = #{districtCode,jdbcType=VARCHAR}
+     </if>
+     <if test="startTime != null and ''!= startTime">
+         AND DATE_FORMAT(a.start_time, '%Y-%m-%d') &gt;= #{startTime}
+     </if>
+     <if test="endTime != null and ''!= endTime">
+         AND DATE_FORMAT(a.start_time, '%Y-%m-%d') &lt;= #{endTime}
+     </if>
+     <if test="divideStatus != null and ''!= divideStatus and divideStatus == 1">
+         AND (SELECT COUNT(*) FROM `bd_place_info` WHERE py_id = a.py_id) > 0
+     </if>
+     <if test="divideStatus != null and ''!= divideStatus and divideStatus == 0">
+         AND (SELECT COUNT(*) FROM `bd_place_info` WHERE py_id = a.py_id) = 0
+     </if>
+     <if test="eyId != null and ''!= eyId">
+         AND a.ey_id = #{eyId,jdbcType=VARCHAR}
+     </if>
+     order by a.update_time desc
+  </select>
+
+	<select id="selectEpName" resultType="java.util.Map">
+		SELECT
+			c.ep_id dictValue,
+			c.ep_name dictName
+		FROM
+			bd_place_year a
+		LEFT JOIN bd_exam_year b ON a.ey_id = b.ey_id
+		LEFT JOIN bd_exam_place c ON a.place_id = c.ep_id
+		WHERE
+			b.ey_id = #{eyId}
+		AND c.city_code = #{cityCode}
+		AND c.district_code = #{districtCode}
+		AND a.`status` = '1'
+		GROUP BY
+			c.ep_id
+	</select>
+	
+	<select id="getExamClass" resultMap="ExamClassExcelMap">
+		SELECT
+		a.py_id,
+		b.exam_year,
+		d.city_name,
+		e.district_name,
+		c.ep_name,
+		f.place_name,
+		DATE_FORMAT(
+		a.start_time,
+		'%Y-%m-%d %p %H:%i'
+		) start_time,
+		DATE_FORMAT(a.end_time, '%H:%i') end_time,
+		f.max_count,
+		g.seats,
+		'可用' is_use,
+		a.divide_remark,
+		IF(h.py_id is null,0,1) is_multi
+		FROM
+		bd_place_year a
+		LEFT JOIN bd_exam_year b ON a.ey_id = b.ey_id
+		LEFT JOIN bd_exam_place c ON a.place_id = c.ep_id
+		LEFT JOIN sys_city d ON c.city_code = d.city_code
+		LEFT JOIN sys_district e ON c.district_code = e.district_code
+		LEFT JOIN bd_place_info f ON a.py_id = f.py_id
+		LEFT JOIN (
+		SELECT
+		py_id,
+		COUNT(*) seats
+		FROM
+		bd_student_exam_affirm
+		GROUP BY
+		py_id
+		) g ON a.py_id = g.py_id
+		LEFT JOIN (
+		select py_id from bd_place_info GROUP BY py_id HAVING count(*)>1
+		) h
+		on a.py_id = h.py_id
+		WHERE
+		a.`status` = '1'
+		<if test="eyId != null and ''!= eyId">
+			AND b.ey_id = #{eyId,jdbcType=VARCHAR}
+		</if>
+		<if test="cityCode != null and ''!= cityCode">
+			AND c.city_code = #{cityCode,jdbcType=VARCHAR}
+		</if>
+		<if test="districtCode != null and ''!= districtCode">
+			AND c.district_code = #{districtCode,jdbcType=VARCHAR}
+		</if>
+		<if test="epId != null and ''!= epId">
+			AND c.ep_id = #{epId,jdbcType=VARCHAR}
+		</if>
+	</select>
+</mapper>

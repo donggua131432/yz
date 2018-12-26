@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.goods.GsSalesNotifyMapper" >
+	<resultMap type="com.yz.model.goods.GsSalesNotify" id="GsSalesNotify">
+	 <id column="notify_id" property="notifyId" jdbcType="VARCHAR"/>
+	 <result column="sales_type" property="salesType" jdbcType="VARCHAR"/>
+	 <result column="sales_name" property="salesName" jdbcType="VARCHAR"/>
+	 <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+	 <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+	 <result column="is_notify" property="isNotify" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGsSalesNotify" resultMap="GsSalesNotify">
+		SELECT 
+		  gsn.`notify_id`,
+		  ggs.`sales_type`,
+		  ggs.`sales_name`,
+		  gsn.`nick_name`,
+		  gsn.`mobile`,
+		  gsn.is_notify 
+		FROM
+		  goods.`gs_sales_notify` gsn 
+		  LEFT JOIN goods.`gs_goods_sales` ggs 
+		    ON gsn.`sales_id` = ggs.`sales_id`
+	</select>
+	<delete id="singleDeleteSalesNotify">
+		DELETE FROM goods.`gs_sales_notify` WHERE notify_id=#{notifyId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="batchDeleteSalesNotify">
+		DELETE FROM goods.`gs_sales_notify` 
+		WHERE notify_id in
+		<foreach collection="ids" item="id" open="(" close=")"
+			separator=",">
+			#{id, jdbcType=CHAR}
+		</foreach> 
+	</delete>
+	
+	<select id="getAllNotifyBySalesId" resultMap="GsSalesNotify">
+		SELECT * FROM goods.`gs_sales_notify` WHERE '1'='1'
+		<if test="salesId !=null and '' != salesId">
+			and sales_id=#{salesId,jdbcType=VARCHAR}
+		</if>
+		<if test="planCount !=null and '' !=planCount">
+			and plan_count=#{planCount,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<update id="updateNotifyStatus">
+		UPDATE goods.`gs_sales_notify` SET is_notify='1' WHERE notify_id=#{notifyId,jdbcType=VARCHAR}
+	</update>
+</mapper>

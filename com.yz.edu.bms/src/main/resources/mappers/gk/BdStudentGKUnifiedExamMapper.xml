@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.gk.BdStudentGKUnifiedExamMapper">
+    <resultMap type="com.yz.model.gk.BdStudentGkUnifiedExamInfo" id="GkUnifiedExamInfo">
+    	<result column="id" property="id" jdbcType="VARCHAR"/>
+    	<result column="title" property="title" jdbcType="VARCHAR"/>
+    	<result column="describe" property="describe" jdbcType="VARCHAR"/>
+    	<result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+    	<result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+    	<result column="test_subject" property="testSubject" jdbcType="VARCHAR"/>
+    	<result column="operation_desc" property="operationDesc" jdbcType="VARCHAR"/>
+    	<result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
+    	<result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+    	<result column="if_show" property="ifShow" jdbcType="VARCHAR"/>
+    	<result column="create_user_name" property="createUserName" jdbcType="VARCHAR"/>
+    	<result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findStdGKUnifiedExamList" resultMap="GkUnifiedExamInfo">
+       SELECT 
+		  `id`,
+		  `title`,
+		  `describe`,
+		   DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') start_time,
+		   DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') end_time,
+		  `test_subject`,
+		  `operation_desc`,
+		  `file_url`,
+		  `file_name`,
+		  `if_show`,
+		  `create_user_name`,
+		   DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') create_time
+		FROM
+		  bms.`bd_gk_unified_exam_set` ue
+		WHERE 1=1
+		<if test="ifShow !=null and '' != ifShow">
+		   AND ue.if_show= #{ifShow,jdbcType=VARCHAR}
+		</if> 
+		<if test="title !=null and '' != title">
+		   AND ue.title like concat('%',#{title,jdbcType=VARCHAR},'%')
+		</if> 
+		order by create_time desc
+    </select>
+    <insert id="insertStdGKUnifiedExamInfo">
+    	insert into bd_gk_unified_exam_set
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			id,
+			<if test="title !=null and '' != title">
+				title,
+			</if>
+			<if test="describe !=null and '' !=describe">
+				`describe`,
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				start_time,
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				end_time,
+			</if>
+			<if test="testSubject !=null and '' != testSubject">
+				test_subject,
+			</if>
+			<if test="operationDesc !=null and '' !=operationDesc">
+				operation_desc,
+			</if>
+			<if test="fileUrl !=null and '' != fileUrl">
+				file_url,
+			</if>
+			<if test="fileName !=null and '' != fileName">
+				file_name,
+			</if>
+			<if test="ifShow !=null and '' != ifShow">
+				if_show,
+			</if>
+			<if test="createUserId !=null and '' != createUserId">
+				create_user_id,
+			</if>
+			<if test="createUserName !=null and '' != createUserName">
+				create_user_name,
+			</if>
+			create_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{id,jdbcType=VARCHAR},
+			<if test="title !=null and '' != title">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="describe !=null and '' !=describe">
+				#{describe,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				#{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				#{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject !=null and '' != testSubject">
+				#{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="operationDesc !=null and '' !=operationDesc">
+				#{operationDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="fileUrl !=null and '' != fileUrl">
+				#{fileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName !=null and '' != fileName">
+				#{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="ifShow !=null and '' != ifShow">
+				#{ifShow,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId !=null and '' != createUserId">
+				#{createUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserName !=null and '' != createUserName">
+				#{createUserName,jdbcType=VARCHAR},
+			</if>
+			NOW()
+		</trim>
+    </insert>
+    
+    <select id="getGkUnifiedExam" resultMap="GkUnifiedExamInfo">
+    	SELECT 
+		  `id`,
+		  `title`,
+		  `describe`,
+		   DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') start_time,
+		   DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') end_time,
+		  `test_subject`,
+		  `operation_desc`,
+		  `file_url`,
+		  `file_name`,
+		  `if_show`,
+		  `create_user_name`,
+		   DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') create_time
+		FROM
+		  bms.`bd_gk_unified_exam_set` ue
+		WHERE id=#{id,jdbcType=VARCHAR}
+    </select>
+    
+    <delete id="delGkUnifiedExam">
+    	delete from bms.`bd_gk_unified_exam_set` where id=#{id,jdbcType=VARCHAR}
+    </delete>
+    
+    <update id="startOrStopGkUnifiedExam">
+    	update bms.`bd_gk_unified_exam_set` set if_show=#{ifShow,jdbcType=VARCHAR} where id=#{id,jdbcType=VARCHAR}
+    </update>
+	
+	<update id="updateGkUnifiedExam">
+		update  bms.`bd_gk_unified_exam_set`
+		<set>
+			<if test="title !=null and '' != title">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="describe !=null and '' != describe">
+				`describe` = #{describe,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime !=null and '' != startTime">
+				start_time = #{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="endTime !=null and '' != endTime">
+				end_time = #{endTime,jdbcType=VARCHAR},
+			</if>
+			<if test="testSubject !=null and '' != testSubject">
+				test_subject = #{testSubject,jdbcType=VARCHAR},
+			</if>
+			<if test="operationDesc !=null and '' != operationDesc">
+				operation_desc = #{operationDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="ifShow !=null and '' != ifShow">
+				`if_show` = #{ifShow,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId !=null and '' != updateUserId">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserName !=null and '' != updateUserName">
+				update_user_name = #{updateUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileUrl !=null and '' !=fileUrl">
+				file_url = #{fileUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName !=null and '' !=fileName">
+				file_name = #{fileName,jdbcType=VARCHAR},	
+			</if>
+			update_time = NOW()
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getTaskCountByGKUniFiedId" resultType="java.lang.Integer">
+		SELECT COUNT(0) FROM bms.`oa_task_info` WHERE task_type='14' AND ey_id=#{id,jdbcType=VARCHAR};
+	</select>
+	
+	<update id="updateGkunifiedFileInfo">
+		update  bms.`bd_gk_unified_exam_set` set file_url=null,file_name=null where id=#{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

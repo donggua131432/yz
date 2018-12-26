@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title>添加学员</title>
+</head>
+<body>
+  <div class="page-container" style="padding-bottom: 60px;">
+    <div class="text-l search" style="position: relative">
+      <div class="cl">
+        <form id="searchForm">
+          <input type="hidden" id="learnId" name="learnId" th:value="${learnId}" />
+          <div class="cl">
+            <div class="f-l">
+              <span>变更类型:</span>
+              <select class="select" size="1" id="modifyType" name="modifyType">
+                <option value="" selected>--请选择变更类型--</option>
+              </select>
+            </div>
+            <div class="f-r mr-15">
+              <a class="btn btn-primary radius" href="javascript:void(0);" style="width: 90px" onclick="searchModifyList()"><i class="iconfont icon-sousuo"></i>搜索</a>
+              <a class="btn btn-normal-outline radius" title="重置" href="javascript:" onclick="_reset();"><i class="iconfont icon-shuaxin"></i></a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="bg-1">
+      <div class="bg-fff">
+        <table class="table table-border table-bordered table-hover table-bg table-sort" id="modifyListTable">
+          <thead>
+            <tr class="text-c">
+              <th width="80">变更类型</th>
+              <th width="180">变更内容</th>
+              <th width="80">操作人</th>
+              <th width="100">操作时间</th>
+              <th width="60">是否已完成</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" th:src="@{/js/webjs/recruit/student/student_modify.js}"></script>
+</body>
+</html>

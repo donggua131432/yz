@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.GwCertInfoMapper">
+	<resultMap id="BaseResultMap" type="com.yz.model.GwCertInfo">
+		<id column="cert_id" property="certId" jdbcType="VARCHAR" />
+		<id column="trans_type" property="transType" jdbcType="VARCHAR" />
+		<result column="merchant_name" property="merchantName"
+			jdbcType="VARCHAR" />
+		<result column="appid" property="appid" jdbcType="VARCHAR" />
+		<result column="merchant_id" property="merchantId" jdbcType="VARCHAR" />
+		<result column="private_key" property="privateKey" jdbcType="VARCHAR" />
+		<result column="public_key" property="publicKey" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+		<result column="cert_serial_number" property="certSerialNumber"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.yz.model.GwCertInfoKey">
+		select
+		cert_id, trans_type, merchant_name, appid,
+		merchant_id, private_key,
+		public_key,
+		cert_serial_number, user_name,
+		user_pwd
+		from gw.gw_cert_info
+		where cert_id = #{certId,jdbcType=VARCHAR}
+		and trans_type = #{transType,jdbcType=VARCHAR}
+	</select>
+</mapper>

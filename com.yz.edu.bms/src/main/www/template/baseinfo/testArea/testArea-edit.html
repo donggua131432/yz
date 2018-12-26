@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" href="/favicon.ico">
+<link rel="Shortcut Icon" href="/favicon.ico" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<!--/meta 作为公共模版分离出去-->
+<title th:text="UPDATE == ${exType} ? 修改考试县区 : 添加考试县区"></title>
+</head>
+<body>
+  <!--  <div id="tab_demo" class="HuiTab">
+    </br>
+    <div class="tabBar clearfix">
+      <span>基本信息</span><span>变更记录</span>
+    </div>
+    <div class="tabCon"> --> 
+  <article class="page-container" style="padding-bottom: 50px;">
+    <form action="" method="post" class="form form-horizontal" id="form-member-add" th:object="${testAreaInfo}">
+      <input type="hidden" th:value="${exType}" name="exType" id="exType" />
+      <input type="hidden" th:value="*{taId}" name="taId" id="taId" />
+      <input type="hidden" th:value="*{provinceId}" id="provinceIdc" />
+      <input type="hidden" th:value="*{cityId}" id="cityIdc" />
+      <input type="hidden" th:value="*{areaId}" id="areaIdc" />
+      <input type="hidden" th:value="*{taCode}" id="oldTaCode" />
+      <!-- 执行类型 -->
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>省：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="select" size="1" id="provinceId" name="provinceId">
+          </select>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>市：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="select" size="1" id="cityId" name="cityId">
+          </select>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>区：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <select class="select" size="1" id="areaId" name="areaId">
+          </select>
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>考区名称：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{taName}" placeholder="请输入考区名称" id="taName" name="taName">
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>考区编号：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input type="text" class="input-text" th:value="*{taCode}" placeholder="请输入考区编号" id="taCode" name="taCode">
+        </div>
+      </div>
+      <!--   <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>考区类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+              <select class="select" size="1" id="taType" name="taType">
+                  <option th:value="*{taType}" selected>--请选择考区类型--</option>
+              </select>
+            </div>
+          </div> -->
+      <div class="row cl">
+        <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>是否可选：</label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <div class="radio-box">
+            <input type="radio" name="isAllow" value="1" th:checked="1 == *{isAllow} ? true : false">
+            <label for="radio-1">是</label>
+          </div>
+          <div class="radio-box">
+            <input type="radio" name="isAllow" value="0" th:checked="0 == *{isAllow}? true : false">
+            <label for="radio-2">否</label>
+          </div>
+        </div>
+      </div>
+      <div class="row cl " style="margin-top: 10px;">
+        <label class="form-label col-xs-4 col-sm-3"></label>
+        <div class="formControls col-xs-8 col-sm-9">
+          <input class="btn btn-success radius inputW9" type="submit" value="提交">
+        </div>
+      </div>
+    </form>
+  </article>
+  <!-- </div>
+    <div class="tabCon">
+      <div class="mt-20">
+        <table class="table table-border table-bordered table-hover table-bg table-sort">
+          <thead>
+            <tr class="text-c">
+              <th width="80">操作人</th>
+              <th width="100">操作记录</th>
+              <th width="40">操作时间</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div> -->
+  <!--_footer 作为公共模版分离出去-->
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+  <!--/_footer 作为公共模版分离出去-->
+  <!--请在下方写此页面业务相关的脚本-->
+  <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/jquery.validate.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.form/3.46.0/jquery.form.js}"></script>
+  <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/validate-methods.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.validation/1.14.0/messages_zh.js}"></script>
+  <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+  <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/baseinfo/testArea/testArea-edit.js}"></script>
+  <!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

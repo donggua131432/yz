@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yz.dao.educational.BdExamYearMapper">
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdExamYear">
+   <result column="ey_id" property="eyId" jdbcType="VARCHAR" />
+   <result column="exam_year" property="examYear" jdbcType="VARCHAR" />
+   <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+   <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+   <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="YearResult" type="com.yz.model.educational.BdExamYear" extends="BaseResultMap">
+   <association property="reasons" column="ey_id" select="selectExamReasons"/>
+   <association property="subjects" column="ey_id" select="selectExamSubject"/>
+  </resultMap>
+  
+  <delete id="deleteExamSubjects">
+  	DELETE FROM bd_year_subject WHERE exam_year_id in
+  	<foreach collection="eyIds" item="eyId" open="(" close=")" separator=",">
+    	#{eyId}
+    </foreach>
+  </delete>
+  
+  <insert id="insertExamSubject" parameterType="com.yz.model.educational.BdExamYear" >
+  	INSERT INTO `bd_year_subject` (
+	  `ys_id`,
+	  `exam_year_id`,
+	  `grade`,
+	  `semester`
+	) VALUES
+	<foreach collection="subjects" item="subject" index="index" separator="," >  
+	  (#{subject.ysId}, #{eyId}, #{subject.grade}, #{subject.semester})
+  	</foreach>
+  </insert>
+  
+  <select id="selectExamSubject" resultType="com.yz.model.educational.BdYearSubject">
+  	SELECT 
+	  `ys_id` ysId,
+	  `exam_year_id` examYearId,
+	  `grade`,
+	  `semester` 
+	FROM
+	  `bd_year_subject` 
+	WHERE exam_year_id = #{eyId}
+  </select>
+  
+  <delete id="deleteExamSubject" parameterType="java.lang.String">
+  	DELETE 
+	FROM
+	  `bd_year_subject` 
+	WHERE exam_year_id = #{eyId} ;
+  </delete>
+  
+  <delete id="deleteExamReasons">
+  	DELETE FROM bd_exam_reason WHERE ey_id in
+  	<foreach collection="eyIds" item="eyId" open="(" close=")" separator=",">
+    	#{eyId}
+    </foreach>
+  </delete>
+  
+  <delete id="deleteExamYears">
+  	delete from bd_exam_year where ey_id in
+  	<foreach collection="eyIds" item="eyId" open="(" close=")" separator=",">
+    	#{eyId}
+    </foreach>
+  </delete>
+  
+  <delete id="deleteExamYear" parameterType="java.lang.String">
+  	delete from bd_exam_year where ey_id = #{eyId,jdbcType=VARCHAR}
+  </delete>
+  
+  <update id="updateExamYearStatus" parameterType="java.lang.String">
+  	UPDATE `bd_exam_year` SET `status` = #{status,jdbcType=VARCHAR} WHERE ey_id = #{eyId,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="deleteExamReason" parameterType="java.lang.String">
+  	DELETE FROM `bd_exam_reason` WHERE ey_id = #{eyId,jdbcType=VARCHAR}
+  </delete>
+  
+  <update id="updateExam" parameterType="com.yz.model.educational.BdExamYear">
+  	UPDATE 
+	  `bd_exam_year` 
+	SET
+	  `exam_year` = #{examYear,jdbcType=VARCHAR},
+	  `tips` = #{tips,jdbcType=VARCHAR},
+	  `status` = #{status,jdbcType=VARCHAR},
+	  `update_user` = #{updateUser,jdbcType=VARCHAR},
+	  `update_user_id` = #{updateUserId,jdbcType=VARCHAR}
+	WHERE `ey_id` = #{eyId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectExamReasons" parameterType="java.lang.String" resultType="com.yz.model.educational.BdExamReason">
+  	SELECT 
+	  er_id erId,
+	  ey_id eyId,
+	  reason 
+	FROM
+	  bd_exam_reason 
+	WHERE ey_id = #{eyId}
+  </select>
+  
+  <update id="updateExamReason" parameterType="java.lang.String">
+  	UPDATE 
+	  bd_exam_reason 
+	SET
+	  reason = #{reason}
+	WHERE er_id = #{erId}
+  </update>
+  
+  <delete id="deleteExamReasonByErId" parameterType="java.lang.String">
+  	DELETE FROM bd_exam_reason WHERE er_id = #{erId}
+  </delete>
+  
+  <insert id="insertExamReason" parameterType="java.lang.String">
+	INSERT INTO `bd_exam_reason` (`er_id`, `ey_id`, `reason`) 
+	VALUES
+	  ( #{erId,jdbcType=VARCHAR},#{eyId}, #{reason})
+  </insert>
+  
+  <select id="selectExamYearByPage" resultMap="BaseResultMap">
+  	SELECT 
+	  e.ey_id,
+	  e.`exam_year`,
+	  e.`create_user`,
+	  DATE_FORMAT(
+	    e.create_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS create_time,
+	  e.`status` 
+	FROM
+	  bd_exam_year e 
+  </select>
+  
+  <insert id="insertExamYear" parameterType="com.yz.model.educational.BdExamYear">
+  	INSERT INTO `bd_exam_year` (
+	  `ey_id`,
+	  `exam_year`,
+	  `tips`,
+	  `status`,
+	  `update_user`,
+	  `update_user_id`,
+	  `create_user_id`,
+	  `create_user`
+	) 
+	VALUES
+	  (
+	    #{eyId},
+	    #{examYear},
+	    #{tips},
+	    #{status},
+	    #{updateUser},
+	    #{updateUserId},
+	    #{createUserId},
+	    #{createUser}
+	  )
+  </insert>
+  
+  <insert id="insertExamReasons" parameterType="com.yz.model.educational.BdExamYear" >
+  	INSERT INTO bd_exam_reason (`er_id`, `ey_id`, `reason`) 
+	VALUES
+	<foreach collection="reasons" item="reason" index="index" separator="," >  
+	  (#{reason.erId}, #{eyId}, #{reason.reason})
+  	</foreach>
+	  	
+  </insert>
+  
+  <select id="selectExamYearCount" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  	SELECT 
+	  COUNT(*) 
+	FROM
+	  bd_exam_year 
+	WHERE exam_year = #{examYear}
+  </select>
+  
+  <select id="selectExamYearById" parameterType="java.lang.String" resultMap="YearResult">
+  	SELECT 
+	  ey_id,
+	  exam_year,
+	  tips,
+	  `status`,
+	  create_user,
+	  DATE_FORMAT(
+	    create_time,
+	    '%Y-%m-%d %H:%i:%s'
+	  ) AS create_time 
+	FROM
+	  bd_exam_year 
+	WHERE ey_id = #{eyId}
+  </select>
+  
+  <select id="selectPlaceYearCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT COUNT(1) FROM `bd_place_year` WHERE ey_id = #{eyId}
+  </select>
+  
+</mapper>

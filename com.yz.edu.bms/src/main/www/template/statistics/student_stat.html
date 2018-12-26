@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="lib/html5shiv.js"></script>
+    <script type="text/javascript" src="lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui//H-ui.admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+    <!-- 自定义样式 -->
+    <style type="text/css">
+        .table-auto .dataTables_wrapper > table.table{width:auto !important;max-width: 100% !important;}
+        .table-auto .dataTables_wrapper > table.table th,
+        .table-auto .dataTables_wrapper > table.table td{width:auto !important;}
+
+        .checkDiv{margin: 20px 30px 20px 50px;font-size:12px;}
+        .checkDiv span label{margin-left: 10px;}
+    </style>
+
+    <!--[if IE 6]>
+    <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>全部学员信息</title>
+    <!--_footer 作为公共模版分离出去-->
+    <script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+    <script type="text/javascript" th:src="${_file_browser + 'cache/pcd.json'}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+    <!--/_footer 作为公共模版分离出去-->
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+    <script type="text/javascript" th:src="@{/js/laypage/1.2/laypage.js}"></script>
+    <script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+	<script type="text/javascript" th:src="@{/js/webjs/statistics/student_stat.js}"></script>
+	
+
+</head>
+<body>
+    <nav class="breadcrumb">
+        <i class="Hui-iconfont">&#xe67f;</i>
+        统计管理
+        <span class="c-gray en">/</span>
+        学员统计
+        <a class="btn btn-success radius r" style="line-height: 1.6em; margin-top: 3px" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="iconfont icon-shuaxin"></i>
+        </a>
+    </nav>
+
+
+    <div class="page-container">
+        <div class="text-l search" style="position: relative">
+            <div class="cl">
+                <div class="cl">
+                    <div class="f-l">
+                        <span><span style="color: red;">*</span>招生年度：</span>
+                        <select class="select" size="1" id="year"></select>
+                    </div>
+                    <div class="f-l">
+                        <span><span style="color: red;">*</span>年级：</span>
+                        <select class="select" size="1" id="grade"></select>
+                    </div>
+                    <div class="f-l">
+                        <span>院校：</span>
+                        <select class="select" size="1" id="unvsId"></select>
+                    </div>
+                    <div class="f-r mr-5">
+                        <a class="btn btn-primary radius" href="javascript:void(0);" onclick="_search();">
+                            <i class="iconfont icon-sousuo"></i>搜索
+                        </a>
+                        <a class="btn btn-normal-outline radius" onclick="_reset()" href="javascript:void(0);">
+                            <i class="iconfont icon-shuaxin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="cl">
+                    <div class="f-l">
+                        <span>专业大类：</span>
+                        <select class="select" size="1" id="pfsnCata"></select>
+                    </div>
+                    <div class="f-l">
+                        <span>专业层次：</span>
+                        <select class="select" size="1" id="pfsnLevel"></select>
+                    </div>
+                    <div class="f-l">
+                        <span>考试县区：</span>
+                        <select class="select" size="1" id="taId"></select>
+                    </div>
+                </div>
+                <div class="cl">
+                    <div class="f-l">
+                        <span>校区：</span>
+                        <select class="select" size="1" id="recruitCampusId"></select>
+                    </div>
+                    <div class="f-l">
+                        <span>招生部门：</span>
+                        <select class="select" size="1" id="recruitDpId"></select>
+                    </div>
+                    <div class="f-l">
+                        <span>招生老师：</span>
+                        <input type="text" name="recruit" id="recruit" class="input-text radius">
+                    </div>
+                </div>
+                <div class="cl">
+                    <div class="f-l">
+                        <span>优惠类型：</span>
+                        <select class="select" size="1" id="scholarship" name="scholarship"></select>
+                    </div>
+                    <div class="f-l" style="width:65%;">
+                        <span>招生起止时间：</span>
+                        <input type="text" id="createTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'createTime1\')}'})" class="input-text Wdate" style="width:160px !important;"/>
+                        -
+                        <input type="text" id="createTime1" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'createTime\')}'})" class="input-text Wdate" style="width:160px !important;margin-left: 0;"/>
+                    </div>
+                    <div class="f-l" style="width:65%;">
+                        <span>缴费起止时间：</span>
+                        <input type="text" id="payTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'payTime1\')}'})" class="input-text Wdate" style="width:160px !important;"/>
+                        -
+                        <input type="text" id="payTime1" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'payTime\')}'})" class="input-text Wdate" style="width:160px !important;margin-left: 0;"/>
+                    </div>
+                  <!--   <div class="f-l" style="width:65%;">
+                        <span>注册起止时间：</span>
+                        <input type="text" id="regTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'regTime1\')}'})" class="input-text Wdate" style="width:160px !important;"/>
+                        -
+                        <input type="text" id="regTime1" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'regTime\')}'})" class="input-text Wdate" style="width:160px !important;margin-left: 0;"/>
+                    </div> -->
+                    
+                </div>
+
+                <div class="text-c showOther" style="background-color: #FBFBFB;" onclick="_showOther()">
+                    <p><i class="iconfont icon-xiala"></i></p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="checkDiv">
+            <label>学员阶段：</label>
+            <span>
+                <label><input type="checkbox" value="1" name="stdStage" checked="checked">意向学员</label>
+                <label><input type="checkbox" value="2" name="stdStage">考前辅导</label>
+                <label><input type="checkbox" value="3" name="stdStage">考前确认</label>
+                <label><input type="checkbox" value="4" name="stdStage">入学考试</label>
+                <label><input type="checkbox" value="5" name="stdStage">已录取</label>
+                <label><input type="checkbox" value="6" name="stdStage">注册学员</label>
+                <label><input type="checkbox" value="7" name="stdStage">在读学员</label>
+                <label><input type="checkbox" value="8" name="stdStage">毕业学员</label>
+                <label><input type="checkbox" value="9" name="stdStage">留级学员</label>
+                <label><input type="checkbox" value="10" name="stdStage">退学学员</label>
+                <label><input type="checkbox" value="11" name="stdStage">其他</label>
+                <label><input type="checkbox" value="12" name="stdStage">待录取</label>
+                <label><input type="checkbox" value="13" name="stdStage">待注册</label>
+                <label><input type="checkbox" value="14" name="stdStage">休学学员</label>
+            </span>
+            <span class="ml-20">
+                <label><input type="checkbox" value="1" name="checkAll" id="checkAll">全选</label>
+            </span>
+        </div>
+
+        <div class="checkDiv">
+            <label>统计分组条件：</label>
+            <span>
+                <label><input type="checkbox" value="c.recruit_campus_id" name="statGroup" checked="checked">校区</label>
+                <label><input type="checkbox" value="a.unvs_id" name="statGroup">院校</label>
+                <label><input type="checkbox" value="a.ta_id" name="statGroup">考试县区</label>
+                <label><input type="checkbox" value="b.pfsn_cata" name="statGroup">专业大类</label>
+                <label><input type="checkbox" value="b.pfsn_level" name="statGroup">专业层次</label>
+                <label><input type="checkbox" value="c.recruit" name="statGroup">招生老师</label>
+                <label><input type="checkbox" value="c.recruit_dp_id" name="statGroup">招生部门</label>
+                <label><input type="checkbox" value="a.std_stage" name="statGroup">学员状态</label>
+                <label><input type="checkbox" value="b.year" name="statGroup">年</label>
+                <label><input type="checkbox" value="b.grade" name="statGroup">年级</label>
+                
+                <label><input type="checkbox" value="b.pfsn_name" name="statGroup">专业</label>
+            </span>
+        </div>
+
+        <div><span style="margin-left: 20px;">统计结果列表</span><span style="margin-left: 80px; color: red;">总人数：<span id="totalSpan"></span></span></div>
+        <div class="bg-1">
+            <div class="cl pd-15 bg-1">
+                <div class="bg-fff table-auto" id="statTable">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.UsTaskCardMapper" >
+    <resultMap id="BaseResultMap" type="java.util.Map" >
+        <id column="task_id" property="taskId" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="task_count" property="taskCount" jdbcType="VARCHAR" />
+        <result column="task_reward" property="taskReward" jdbcType="VARCHAR" />
+        <result column="complete_count" property="completeCount" jdbcType="VARCHAR" />
+        <result column="complete_status" property="completeStatus" jdbcType="CHAR" />
+        <result column="complete_time" property="completeTime" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="task_type" property="taskType" jdbcType="VARCHAR" />
+        <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+        <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+        <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+        <result column="task_status" property="taskStatus" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="selectReleaseTaskCard" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select btc.task_id, btc.task_type,btc.task_name,btc.start_time,btc.end_time,btc.task_target as task_count,btc.task_status,btc.task_reward,
+			utc.user_id,utc.complete_count,utc.complete_status,utc.complete_time,utc.create_time
+        from bms.bd_task_card btc
+        left join us.us_task_card utc on btc.task_id = utc.task_id and utc.user_id = #{userId,jdbcType=VARCHAR}
+        where (btc.task_status != '1' and utc.user_id is not null)
+		or (btc.task_status not in ('1','4') and utc.user_id is null)
+        order by btc.task_status,btc.end_time asc
+    </select>
+
+
+    <select id="selectReceiveTaskCard" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select utc.task_id,utc.user_id,utc.task_count,utc.complete_count,utc.complete_status,utc.complete_time,utc.create_time,
+        btc.task_type,btc.task_name,btc.start_time,btc.end_time,btc.task_status,btc.task_reward
+        from us.us_task_card utc
+        left join bms.bd_task_card btc on btc.task_id = utc.task_id
+        where utc.user_id = #{userId,jdbcType=VARCHAR}
+        and btc.task_status = '3'
+        order by btc.task_status,btc.end_time asc
+    </select>
+
+    <update id="updateUsTaskCard" parameterType="java.util.Map">
+        update us.us_task_card
+        <set>
+            <if test="completeCount != null and completeCount != ''">
+                complete_count = #{completeCount,jdbcType=VARCHAR},
+            </if>
+            <if test="completeStatus != null and completeStatus != ''">
+                complete_status = #{completeStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="completeTime != null and completeTime != ''">
+                complete_time = str_to_date(#{completeTime,jdbcType=VARCHAR}, '%Y-%m-%d %H:%i:%s'),
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=VARCHAR} and task_id = #{taskId,jdbcType=VARCHAR}
+    </update>
+
+
+    <insert id="insertUsTaskCard" parameterType="com.yz.model.UsTaskCard">
+        insert into us.us_task_card
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="taskCount != null">
+                task_count,
+            </if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            seq(),
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="taskCount != null">
+                #{taskCount,jdbcType=VARCHAR},
+            </if>
+            now(),
+        </trim>
+    </insert>
+
+
+    <insert id="insertUsTaskCardDetail" parameterType="com.yz.model.UsTaskCardDetail">
+        insert into us.us_task_card_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="triggerUserId != null">
+                trigger_user_id,
+            </if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            seq(),
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="triggerUserId != null">
+                #{triggerUserId,jdbcType=VARCHAR},
+            </if>
+            now(),
+        </trim>
+    </insert>
+
+
+    <resultMap id="usTaskCardDetailResultMap" type="java.util.Map" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+        <result column="task_name" property="taskName" jdbcType="VARCHAR" />
+        <result column="trigger_user_id" property="triggerUserId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="trigger_user_name" property="triggerUserName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="selectUsTaskCardDetail" parameterType="java.util.Map" resultMap="usTaskCardDetailResultMap">
+        select utcd.id,utcd.task_id,utcd.user_id,utcd.trigger_user_id,date_format(utcd.create_time,'%Y-%c-%d %H:%i:%s') as create_time,
+        usi.mobile, usi.real_name as trigger_user_name, btc.task_name
+        from us.us_task_card_detail utcd
+        left join us.us_base_info usi on usi.user_id = utcd.trigger_user_id
+        left join bms.bd_task_card btc on btc.task_id = utcd.task_id
+        where utcd.user_id = #{userId,jdbcType=VARCHAR}
+        <if test="taskId != null and taskId != ''">
+            and utcd.task_id = #{taskId,jdbcType=VARCHAR}
+        </if>
+        order by utcd.create_time desc
+    </select>
+
+
+    <select id="selectUsTaskCardDetailCount" resultType="java.lang.Integer">
+        select count(1) as count
+        from us.us_task_card_detail utcd
+        where utcd.user_id = #{userId,jdbcType=VARCHAR}
+        and utcd.task_id = #{taskId,jdbcType=VARCHAR}
+        and utcd.trigger_user_id = #{triggerUserId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

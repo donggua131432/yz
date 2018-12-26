@@ -1,0 +1,195 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="Bookmark" th:href="@{/favicon.ico}">
+<link rel="Shortcut Icon" th:href="@{/favicon.ico}" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.min.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/H-ui.admin.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/js/Hui-iconfont/1.0.8/iconfont.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/skin/default/skin.css}" id="skin" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+<!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>配置学员</title>
+</head>
+<body>
+		<div class="page-container">
+			<div class="text-l search" style="position: relative">
+			<input type="hidden" id="mtpId" name="mtpId" th:value="${mtpId}"/>
+			<div class="cl" style="padding-left: 30px;">
+			<div class="cl">
+		       <div class="cl">
+		        <div class="f-l">
+		          <span> 是否选中：</span> <select class="select" size="1" id="isChecked">
+		          </select>
+		        </div>
+		        <div class="f-l">
+		           <span> 报考层次：</span> <select class="select" size="1" id="pfsnLevel" >
+		          </select>
+		        </div>
+		        <div class="f-l">
+		           <span> 年级：</span> 
+		           <select class="select" size="1" id="grade" >
+		           </select>
+		        </div>
+		        
+			    <div class="f-r mr-5" style="position: absolute; right: 0;">
+					<a class="btn btn-primary radius" style="width: 100px" href="javascript:;" onclick="searchDep()"> <i class="Hui-iconfont">&#xe665;</i> 搜索
+					</a> <a class="btn btn-normal-outline radius" onclick="reset()">重置</a>
+			    </div>
+			    
+			    <div class="cl">
+			    	<div class="f-l">
+			          <span> 院校：</span> <select class="select" size="1" id="unvsId" >
+			          </select>
+			        </div>
+			        <div class="f-l">
+				        <span> 专业：</span>
+				        <select class="select" size="1" id="pfsnId">
+			  			</select>
+			        </div>
+			        <div class="f-l">
+				        <span> 考区：</span>
+				        <select class="select" size="1" id="taId">
+			  			</select>
+			        </div>
+			    </div>
+			    
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 学员姓名：</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入学员姓名" id="stdName">
+			        </div>
+			        <div class="f-l">
+				        <span> 证件号码：</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入证件号码" id="idCard">
+			        </div>
+			        <div class="f-l">
+				        <span> 手机号：</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入手机号" id="mobile">
+			        </div>
+			    </div>
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 班主任：</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入班主任姓名" id="tutorName">
+			        </div>
+			        <div class="f-l">
+			           <span> 招生类型：</span> <select class="select" size="1" id="recruitType" >
+			          </select>
+			        </div>
+			        <div class="f-l">
+				        <span> 优惠类型：</span>
+				        <select class="select" size="1" id="scholarship">
+			  			</select>
+			        </div>
+			    </div>
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 招生分校：</span>
+				        <select class="select" size="1" id="recruitCampus">
+			  			</select>
+			        </div>
+			        <div class="f-l">
+				        <span> 招生部门：</span>
+				         <select class="select" size="1" id="recruitDepartment">
+			  			</select>
+			        </div>
+			        <div class="f-l">
+				        <span> 招生老师：</span>
+				        <input type="text" class="input-text radius ml-10"  placeholder="输入招生老师姓名" id="recruitName">
+			        </div>
+			    </div>
+			    <div class="cl">
+			        <div class="f-l">
+				        <span> 是否外校：</span>
+				        <select class="select" size="1" id="stdType">
+			  			</select>
+			        </div>
+			        <div class="f-l">
+				        <span> 是否欠费：</span>
+				        <select class="select" size="1" id="isArrearage">
+				       		<option value="" selected>--请选择--</option>
+				        	<option value="1">是</option>
+				        	<option value="0">否</option>
+			  			</select>
+			        </div>
+			        <div class="f-l">
+				        <span> 是否有成考成绩：</span>
+				        <select class="select" size="1" id="hasScore">
+				        	<option value="" selected>--请选择--</option>
+				        	<option value="1">是</option>
+				        	<option value="0">否</option>
+			  			</select>
+			        </div>
+			    </div>
+			    <div class="cl" style="padding-top: 3px;">
+			        <div class="row cl">
+				        <span class="col-sm-1 text-r" style="width: 120px;"> 学员状态：</span>
+				        <div id="stdStage" class="col-sm-10">
+				        </div>
+			        </div>
+			    </div>
+			    <div class="text-c showOther" style="background-color: #FBFBFB" onclick="_showOther()">
+		          <p style="margin-bottom: 0; cursor: pointer" class="f-12 c-666">
+		           		  <i  class="iconfont  icon-xiala"></i>
+		          </p>
+               </div>
+			    </div>
+			</div>
+			</div>
+			</div>
+			<div class="bg-1">
+			<div class="cl pd-15 bg-1">
+					<span class="r"> 
+					    <a href="javascript:;" onclick="addAllStu()" class="btn btn-primary radius"> 添加全部 </a>
+						<a href="javascript:;" onclick="addStu()" class="btn btn-primary radius"> 添加选中 </a>
+						<a href="javascript:;" onclick="delAllStu()" class="btn btn-danger radius"> 删除全部 </a>
+						<a href="javascript:;" onclick="delStu()" class="btn btn-success radius"> 清除选中</a>
+						<a href="javascript:;" onclick="toImport()" class="btn btn-danger radius"> <i class="Hui-iconfont">&#xe70c;</i> 目标学员导入</a>
+					</span>
+					<div class="mt-35 bg-fff">
+                        <table class="table table-border table-bordered table-bg table-sort" id="tab">
+							<thead>
+						  <tr class="text-c">
+							<th width="25"><input type="checkbox" name="all" value=""></th>
+							<th width="20">是否目标学员</th>
+							<th width="30">学员姓名</th>
+							<th width="30">年级</th>
+							<th width="100">院校专业</th>
+							<th width="50">学员阶段</th>
+						</tr>
+					</thead>
+					</table>
+				</div>
+		</div>
+</div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="@{/js/My97DatePicker/4.8/WdatePicker.js}"></script>
+<script type="text/javascript" th:src="@{/js/datatables/1.10.0/jquery.dataTables.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/webjs/message/regist/student-list.js}"></script>
+</body>
+</html>

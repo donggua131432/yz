@@ -1,0 +1,70 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+<link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css}" /> 
+<title>远智学堂-毕业论文及报告</title>
+  <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+</head>
+<body>
+<div class="wrraper">
+  <div class="banner">
+    <div class="tit">远智学堂</div>
+  </div>
+  <div class="breadcrumb">
+    <div class="inner">
+      <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+      <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+      <a class="fc6" href="javascript:void(0);" title="新生学籍表">新生学籍表</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="sidebar" th:include="common::sidebar">
+    </div>
+    <div id="thesisList" class="main">
+      <table class="table2">
+        <thead>
+        <tr>
+          <th>新生学籍表</th>
+          <th width="200">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-type="1">
+          <td>新生学籍表（模板及空表）</td>
+          <td class="op">
+            <a id="btnDownload" class="btn">下载</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer" th:include="common::footer">
+  </div>
+</div>
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json'}"></script>
+<script type="text/javascript" th:src="${_file_browser + 'cache/param.json'}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+
+	
+  	
+<script th:inline="javascript" type="text/javascript">
+    function initPager(unvsId, pfsnLevel) {
+        $('#btnDownload').attr('href', _FILE_URL + 'rar/schoolroll_' + unvsId + '.rar');
+    }
+</script>
+
+</body>
+</html>

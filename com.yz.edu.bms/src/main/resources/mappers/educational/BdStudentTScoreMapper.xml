@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yz.dao.educational.BdStudentTScoreMapper" >
+
+
+  <resultMap id="PageResultMap" type="java.util.HashMap">
+     <result column="std_name" property="stdName" jdbcType="VARCHAR"/>
+     <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+     <result column="std_id" property="stdId" jdbcType="VARCHAR"/>
+     <result column="std_no" property="stdNo" jdbcType="VARCHAR"/>
+     <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR"/>
+     <result column="learn_id" property="learnId" jdbcType="VARCHAR"/>
+     <result column="std_stage" property="stdStage" jdbcType="VARCHAR"/>
+     <result column="std_type" property="stdType" jdbcType="VARCHAR"/>
+     <result column="recruit_type" property="recruitType" jdbcType="VARCHAR"/>
+     <result column="scholarship" property="scholarship" jdbcType="VARCHAR"/>
+     <result column="is_test_completed" property="isTestCompleted" jdbcType="VARCHAR"/>
+     <result column="ta_id" property="ta_id" jdbcType="VARCHAR"/>
+     <result column="grade" property="grade" jdbcType="VARCHAR"/>
+     <result column="my_annex_status" property="myAnnexStatus" jdbcType="VARCHAR"/>
+     <result column="is_data_completed" property="isDataCompleted" jdbcType="VARCHAR"/>
+     <result column="unvs_name" property="unvsName" jdbcType="VARCHAR"/>
+     <result column="unvs_id" property="unvsId" jdbcType="VARCHAR"/>
+     <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR"/>
+     <result column="pfsn_code" property="pfsnCode" jdbcType="VARCHAR"/>
+     <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+	 <result column="inclusion_status" property="inclusionStatus" jdbcType="VARCHAR"/>
+	 <association property="firstscores" column="{learnId=learn_id,isPass=isPass}" select="selectFirstStdEScores"/>
+	 <association property="secondscores" column="{learnId=learn_id,isPass=isPass}" select="selectSecondStdEScores"/>
+	 <association property="thirdscores" column="{learnId=learn_id,isPass=isPass}" select="selectThirdStdEScores"/>
+	 <association property="fourscores" column="{learnId=learn_id,isPass=isPass}" select="selectFourStdEScores"/>
+	 <association property="fivescores" column="{learnId=learn_id,isPass=isPass}" select="selectFiveStdEScores"/>
+	 <association property="sixscores" column="{learnId=learn_id,isPass=isPass}" select="selectSixStdEScores"/>
+  </resultMap>
+  <resultMap type="com.yz.model.educational.BdStudentTScore" id="TScoreResultMap">
+  			<result column="is_pass" property="isPass" />
+  			<result column="course_id" property="courseId" />
+	 		<result column="course_name" property="courseName" />
+	 		<result column="score" property="score" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMap" type="com.yz.model.educational.BdStudentTScore" >
+    <id column="tscore_id" property="tscoreId" jdbcType="VARCHAR" />
+    <result column="learn_id" property="learnId" jdbcType="VARCHAR" />
+    <result column="std_id" property="stdId" jdbcType="VARCHAR" />
+    <result column="semester" property="semester" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="score" property="score" jdbcType="VARCHAR" />
+    <result column="totalmark" property="totalmark" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
+    <result column="teacher" property="teacher" jdbcType="VARCHAR" />
+    <result column="is_pass" property="isPass" jdbcType="CHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	<result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+    <result column="ext_1" property="ext1" jdbcType="VARCHAR" />
+    <result column="ext_2" property="ext2" jdbcType="VARCHAR" />
+    <result column="ext_3" property="ext3" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ExcelResultMap" type="com.yz.model.educational.BdStudentTScoreExcel" >
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="std_name" property="stdName" jdbcType="VARCHAR" />
+    <result column="std_no" property="stdNo" jdbcType="VARCHAR" />
+    <result column="school_roll" property="schoolRoll" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="unvs_name" property="unvsName" jdbcType="VARCHAR" />
+    <result column="unvs_id" property="unvsId" jdbcType="VARCHAR" />
+    <result column="pfsn_level" property="pfsnLevel" jdbcType="VARCHAR" />
+    <result column="pfsn_id" property="pfsnId" jdbcType="VARCHAR" />
+    <result column="pfsn_name" property="pfsnName" jdbcType="VARCHAR"/>
+    <result column="year" property="year" jdbcType="VARCHAR" />
+    <result column="semester" property="semester" jdbcType="VARCHAR" />
+    <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="score" property="score" jdbcType="VARCHAR" />
+    <result column="totalmark" property="totalmark" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
+    <result column="teacher" property="teacher" jdbcType="VARCHAR" />   
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    tscore_id, learn_id, std_id, semester, grade, course_name, course_id, score, totalmark, teacher_id, 
+    teacher, is_pass,update_time,update_user,update_user_id,ext_1,ext_2,ext_3
+  </sql>
+  
+  <select id="findStudentScore" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_student_t_score
+    where learn_id = #{learnId, jdbcType=VARCHAR} 
+  </select>
+  
+   <select id="getTeacherByCourseId" resultType="java.util.HashMap" parameterType="java.lang.String" >
+     select 
+    	oe.emp_name as teacher ,bcp.emp_id as teacher_id 
+    	from bd_class_plan  bcp
+		LEFT JOIN oa_employee oe ON oe.emp_id=bcp.emp_id
+    where bcp.course_id = #{courseId, jdbcType=VARCHAR}   order by bcp.update_time desc limit 1  
+    
+  </select>
+  
+  
+  <select id="findStudentTScoreBySemester" resultMap="BaseResultMap" parameterType="java.lang.String" >
+	SELECT DISTINCT
+		  bc.`course_id`,
+		  bc.`course_name`,
+		  bsts.`teacher`,
+		  bsts.`teacher_id`,
+		  bsts.`score`,
+		  bsts.`totalmark` 
+		FROM
+		  bd_course bc 
+		  LEFT JOIN bd_plan_course bpc 
+		    ON bc.`course_id` = bpc.`course_id` 
+		  LEFT JOIN bd_teach_plan btp 
+		    ON bpc.`thp_id` = btp.`thp_id` 
+		  LEFT JOIN bd_unvs_profession bup 
+		    ON btp.`pfsn_id` = bup.`pfsn_id` and bup.grade=btp.`grade`
+		  LEFT JOIN bd_learn_info bli 
+		    ON bup.`pfsn_id` = bli.`pfsn_id` 
+		  LEFT JOIN bd_student_t_score bsts
+		    ON bsts.`learn_id` = bli.`learn_id` and bsts.`semester`=btp.`semester`	and  bsts.`course_id`=bc.`course_id`	
+		WHERE bli.`learn_id` = #{learnId, jdbcType=VARCHAR}
+		  AND btp.`semester`= #{semester, jdbcType=VARCHAR}
+		ORDER BY bc.`course_id` 
+  </select>
+  
+  <select id="findStudentScoreByUnionKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from bd_student_t_score
+    where learn_id = #{learnId, jdbcType=VARCHAR} and course_id=#{courseId, jdbcType=VARCHAR} and semester=#{semester, jdbcType=VARCHAR} limit 1
+  </select>
+  
+  <select id="findAllStudentTScoreListByLearnIds"  resultMap="ExcelResultMap" parameterType="java.lang.String">
+		SELECT u.`unvs_name`, p.`pfsn_level`, p.pfsn_name,p.pfsn_id, bli.`grade`,bsi.`std_name`, bli.`std_no`,bli.`school_roll`, bsi.`id_card`, 
+	  	bst.`semester`, bst.`course_name`, bst.`course_id`, bst.`score`,  bst.`totalmark`, bst.`teacher_id`, bst.`teacher`
+	  	FROM bd_student_t_score bst
+	  	LEFT JOIN bd_learn_info bli ON bst.`learn_id`=bli.`learn_id`
+	  	LEFT JOIN bd_student_info bsi ON bsi.`std_id` = bli.`std_id` 
+	  	LEFT JOIN bd_university u ON u.`unvs_id` = bli.`unvs_id` 
+		LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = bli.`pfsn_id` 
+		WHERE bli.std_stage ='7' and bli.`learn_id` IN
+		<foreach collection="learnids" item="id" open="(" close=")" separator=",">
+			#{id, jdbcType=VARCHAR}
+		</foreach>
+		ORDER BY bli.`update_time` DESC 
+		
+   </select>
+   
+  <select id="findAllStudentTScoreList" resultMap="ExcelResultMap" >
+	  	SELECT  u.`unvs_name`, p.`pfsn_level`, p.pfsn_name,p.pfsn_id, bli.`grade`,bsi.`std_name`, bli.`std_no`,bli.`school_roll`, bsi.`id_card`, 
+	  	bst.`semester`, bst.`course_name`, bst.`course_id`, bst.`score`,  bst.`totalmark`, bst.`teacher_id`, bst.`teacher`
+	  	FROM bd_student_t_score bst
+	  	LEFT JOIN bd_learn_info bli ON bst.`learn_id`=bli.`learn_id`
+	  	LEFT JOIN bd_student_info bsi ON bsi.`std_id` = bli.`std_id` 
+	  	LEFT JOIN bd_university u ON u.`unvs_id` = bli.`unvs_id` 
+		LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = bli.`pfsn_id` 
+		where bli.std_stage ='7'
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and bsi.`std_name` LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdStage != null and queryInfo.stdStage != ''">
+				and bli.`std_stage` = #{queryInfo.stdStage, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and bli.`grade` = #{queryInfo.grade, jdbcType=VARCHAR} 
+			</if>
+			<if test="queryInfo.schoolRoll != null and queryInfo.schoolRoll != ''">
+				and bli.`school_roll` = #{queryInfo.schoolRoll, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+				and p.`pfsn_level` = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.year != null and queryInfo.year != ''">
+				and p.`year` = #{queryInfo.year, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+				and u.`unvs_id` = #{queryInfo.unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and p.`pfsn_id` = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and bsi.`id_card`  LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and bsi.`mobile`  LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isPass != null and queryInfo.isPass != ''">
+				and bst.`is_pass` = #{queryInfo.isPass, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.semester != null and queryInfo.semester != ''">
+				and bst.`semester` = #{queryInfo.semester, jdbcType=VARCHAR}
+			</if>
+		ORDER BY bli.`update_time` DESC 
+  </select>
+  
+  
+  <select id="getBdStudentTScoreLearnInfo" resultMap="PageResultMap" parameterType="java.lang.String">
+  	SELECT DISTINCT
+			s.`std_name`,s.`id_card`, l.`std_id`,l.`std_no`,l.`school_roll`, l.`learn_id`, l.`std_stage`, l.`std_type`, l.`recruit_type`, 
+		    l.`scholarship`, l.is_test_completed, l.ta_id, l.grade, l.`annex_status` as my_annex_status, 
+		    l.`is_data_completed`,l.`inclusion_status` ,u.`unvs_id`,
+			u.`unvs_name`, p.`pfsn_level`, p.`pfsn_code`, p.pfsn_name,'' isPass
+			FROM bd_learn_info l 
+			LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id` 
+			LEFT JOIN bd_university u ON u.`unvs_id` = l.`unvs_id` 
+			LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.`pfsn_id` 
+			WHERE l.`learn_id`=#{learnId, jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findAllStudentTScorePage" resultMap="PageResultMap" >
+		SELECT 
+			s.`std_name`,s.`id_card`, l.`std_id`,l.`std_no`,l.`school_roll`, l.`learn_id`, l.`std_stage`, l.`std_type`, l.`recruit_type`, 
+		    l.`scholarship`, l.is_test_completed, l.ta_id, l.grade, l.`annex_status` as my_annex_status, 
+		    l.`is_data_completed`,l.`inclusion_status` ,u.`unvs_id`,
+			u.`unvs_name`, p.`pfsn_level`, p.`pfsn_code`, p.pfsn_name, #{queryInfo.isPass} as isPass
+			FROM bd_learn_info l 
+			LEFT JOIN bd_student_info s ON s.`std_id` = l.`std_id` 
+			LEFT JOIN bd_university u ON u.`unvs_id` = l.`unvs_id` 
+			LEFT JOIN bd_unvs_profession p ON p.`pfsn_id` = l.`pfsn_id` 
+			where l.std_stage ='7'  
+			<if test="queryInfo.stdName != null and queryInfo.stdName != ''">
+				and s.`std_name` LIKE CONCAT('%', #{queryInfo.stdName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.stdStage != null and queryInfo.stdStage != ''">
+				and l.`std_stage` = #{queryInfo.stdStage, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.grade != null and queryInfo.grade != ''">
+				and l.`grade` = #{queryInfo.grade, jdbcType=VARCHAR} 
+			</if>
+			<if test="queryInfo.schoolRoll != null and queryInfo.schoolRoll != ''">
+				and l.`school_roll` = #{queryInfo.schoolRoll, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnLevel != null and queryInfo.pfsnLevel != ''">
+				and p.`pfsn_level` = #{queryInfo.pfsnLevel, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.year != null and queryInfo.year != ''">
+				and p.`year` = #{queryInfo.year, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.unvsId != null and queryInfo.unvsId != ''">
+				and u.`unvs_id` = #{queryInfo.unvsId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.pfsnId != null and queryInfo.pfsnId != ''">
+				and p.`pfsn_id` = #{queryInfo.pfsnId, jdbcType=VARCHAR}
+			</if>
+			<if test="queryInfo.idCard != null and queryInfo.idCard != ''">
+				and s.`id_card`  LIKE CONCAT('%', #{queryInfo.idCard, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.mobile != null and queryInfo.mobile != ''">
+				and s.`mobile`  LIKE CONCAT('%', #{queryInfo.mobile, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="queryInfo.isPass != null and queryInfo.isPass != ''">
+				and exists (SELECT bsts.`is_pass` FROM bd_student_t_score bsts WHERE bsts.`learn_id` = l.`learn_id` AND bsts.`is_pass`=#{queryInfo.isPass, jdbcType=VARCHAR} limit 1) 
+			</if>
+			<if test="queryInfo.semester != null and queryInfo.semester != ''">
+				and EXISTS (select learn_id,course_id from bd_student_t_score bst where  bst.learn_id=l.learn_id  and bst.semester=#{queryInfo.semester, jdbcType=VARCHAR})
+			</if>
+			
+		ORDER BY l.`update_time` DESC
+	</select>
+    
+    <select id="selectFirstStdEScores"  resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '1'
+		 <if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+		
+	</select>
+	<select id="selectSecondStdEScores"  resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '2'
+		<if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+	</select>
+	<select id="selectThirdStdEScores" resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '3'
+		<if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+	</select>
+	<select id="selectFourStdEScores" resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '4'
+		<if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+	</select>
+	<select id="selectFiveStdEScores"  resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '5'
+		<if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+	</select>
+	<select id="selectSixStdEScores"  resultMap="TScoreResultMap">
+	  	SELECT 
+		  bst.course_id,bst.course_name,
+		  bst.score,bst.is_pass
+		FROM
+		  bd_student_t_score bst 
+		WHERE bst.`learn_id` = #{learnId}  and bst.`semester`= '6'
+		<if test="isPass != null and isPass.toString() == '1'.toString()">
+		 	and bst.is_pass=#{isPass}
+		</if>
+	</select>
+	
+  <select id="selectLearninfoByIdCardOrSchoolRoll" parameterType="com.yz.model.educational.BdStudentTScoreExcel" resultType="java.util.HashMap">
+  	select l.learn_id as learnId,l.std_no as stdNo from bd_learn_info l 
+  	LEFT JOIN bd_student_info bsi on bsi.std_id = l.std_id 
+  	LEFT JOIN bd_university bu ON bu.`unvs_id` = l.`unvs_id` 
+	LEFT JOIN bd_unvs_profession bup ON bup.`pfsn_id` = l.`pfsn_id` 
+  	 where l.`std_stage` = '7' 
+  	 <if test="idCard != null">
+			AND bsi.id_card = #{idCard,jdbcType=VARCHAR}
+	 </if>
+	 <if test="schoolRoll != null">
+			AND	l.school_roll = #{schoolRoll,jdbcType=VARCHAR}
+	</if>
+  </select>
+  
+  <select id="selectLearninfoByUnvsId" parameterType="com.yz.model.educational.BdStudentTScoreExcel" resultType="java.util.HashMap">
+  	select l.learn_id as learnId,l.std_no as stdNo from bd_learn_info l 
+  	LEFT JOIN bd_student_info bsi on bsi.std_id = l.std_id 
+  	LEFT JOIN bd_university bu ON bu.`unvs_id` = l.`unvs_id` 
+	LEFT JOIN bd_unvs_profession bup ON bup.`pfsn_id` = l.`pfsn_id` 
+  	 where l.`std_stage` = '7' 
+  	 AND  bsi.`std_name` = #{stdName} 
+  	 AND l.grade = #{grade}
+  	 AND bu.unvs_id = #{unvsId} AND bup.`pfsn_name` = #{pfsnName}  
+  	 <if test="idCard != null">
+			AND bsi.id_card = #{idCard,jdbcType=VARCHAR}
+	 </if>
+	 <if test="schoolRoll != null">
+			AND	l.school_roll = #{schoolRoll,jdbcType=VARCHAR}
+	</if>
+  </select>
+  
+  
+  <select id="getNonExistsStudent" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_info_Score;
+        CREATE TEMPORARY  TABLE tmp_student_info_Score (
+        std_name VARCHAR (50),
+        id_card VARCHAR (50),
+        school_roll VARCHAR (50),
+        grade VARCHAR (20),
+        unvs_name VARCHAR (50),
+        pfsn_level  VARCHAR (50),
+        pfsn_name VARCHAR (50));
+        INSERT INTO tmp_student_info_Score (
+            std_name,
+            id_card,
+            school_roll,
+            grade,
+            unvs_name,
+         	pfsn_level,
+         	pfsn_name
+        )
+        VALUES
+        <foreach collection="studentExcelList" item="info" separator=",">
+            ( 
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.schoolRoll, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.unvsName, jdbcType=VARCHAR},
+            #{info.pfsnLevel, jdbcType=VARCHAR},
+            #{info.pfsnName, jdbcType=VARCHAR}
+            )
+        </foreach>;
+        <if test="type != null and type=='idCard'">
+		select a.* from tmp_student_info_Score a WHERE NOT  EXISTS(  
+			 select l.* from bd_student_info bsi 
+			 LEFT JOIN bd_learn_info l  ON bsi.std_id=l.std_id 
+			 LEFT JOIN bd_university bu ON bu.`unvs_id` = l.`unvs_id`  
+			 LEFT JOIN bd_unvs_profession bup ON bup.`pfsn_id` = l.`pfsn_id`
+			 LEFT JOIN sys_dict sd1  ON  (sd1.p_id='pfsnLevel' and sd1.dict_value=bup.pfsn_level)
+			 LEFT JOIN sys_dict sd2  ON  (sd2.p_id='grade' and sd2.dict_value= l.grade  )
+			 WHERE l.`std_stage` = '7' and sd1.p_id='pfsnLevel' and sd2.p_id='grade'
+				AND	(a.id_card = bsi.id_card)
+			  AND a.grade = sd2.dict_name 
+				AND  a.pfsn_level = sd1.dict_name 
+				AND  a.unvs_name = bu.unvs_name
+				AND  a.pfsn_name = bup.pfsn_name 
+		)
+		</if>	
+		<if test="type != null and type=='schoolRoll'">
+		select a.* from tmp_student_info_Score a WHERE NOT  EXISTS(  
+			 select l.* from bd_learn_info l
+			 LEFT JOIN bd_student_info bsi  ON bsi.std_id=l.std_id 
+			 LEFT JOIN bd_university bu ON bu.`unvs_id` = l.`unvs_id`  
+			 LEFT JOIN bd_unvs_profession bup ON bup.`pfsn_id` = l.`pfsn_id`
+			 LEFT JOIN sys_dict sd1  ON  (sd1.p_id='pfsnLevel' and sd1.dict_value=bup.pfsn_level)
+			 LEFT JOIN sys_dict sd2  ON  (sd2.p_id='grade' and sd2.dict_value= l.grade  )
+			 WHERE l.`std_stage` = '7' and sd1.p_id='pfsnLevel' and sd2.p_id='grade'
+				AND	(a.school_roll = l.school_roll )
+			  AND a.grade = sd2.dict_name 
+				AND  a.pfsn_level = sd1.dict_name 
+				AND  a.unvs_name = bu.unvs_name
+				AND  a.pfsn_name = bup.pfsn_name 
+		)
+		</if>	
+           
+    </select>
+    
+    <select id="getNonExistsCourse" resultType="java.util.Map">
+        DROP TEMPORARY TABLE IF EXISTS tmp_student_Course;
+        CREATE TEMPORARY TABLE tmp_student_Course (
+        course_id VARCHAR (50),
+        course_name VARCHAR (100));
+        INSERT INTO tmp_student_Course (
+            course_id,
+            course_name
+        )
+        VALUES
+        <foreach collection="studentExcelList" item="info" separator=",">
+            ( 
+            #{info.courseId, jdbcType=VARCHAR},
+            #{info.courseName, jdbcType=VARCHAR}
+           
+            )
+        </foreach>;
+        SELECT
+            a.*
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                tmp_student_Course
+                GROUP BY
+                    
+                    course_id,
+                    course_name
+            ) a
+        LEFT JOIN bd_course b 
+        ON a.course_id = b.course_id
+        WHERE
+            b.course_id IS NULL;
+    </select>
+    
+    <select id="initTmpExcelTable">
+    	DROP TEMPORARY TABLE IF EXISTS tmp_student_T_Score;
+        CREATE TEMPORARY TABLE tmp_student_T_Score (
+        id_card varchar(50),
+        std_name VARCHAR (50),
+        school_roll VARCHAR (50),
+        grade VARCHAR (50),
+        unvs_name varchar(50),
+        pfsn_level varchar(50),
+        pfsn_name varchar(50),
+        year varchar(50),
+        course_id varchar(50),
+        course_ame varchar(100),
+        semester varchar(50),
+        score varchar(10),
+		totalmark varchar(10),
+        teacher varchar(50),
+		teacher_id varchar(50),
+		is_pass varchar(50)
+        );
+        INSERT INTO tmp_student_T_Score
+        VALUES
+        <foreach collection="studentExcelList" item="info" separator=",">
+            (
+            #{info.idCard, jdbcType=VARCHAR},
+            #{info.stdName, jdbcType=VARCHAR},
+            #{info.schoolRoll, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.unvsName, jdbcType=VARCHAR},
+            #{info.pfsnLevel, jdbcType=VARCHAR},
+            #{info.pfsnName, jdbcType=VARCHAR},
+            #{info.year, jdbcType=VARCHAR},
+            #{info.courseId, jdbcType=VARCHAR},
+            #{info.courseName, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR},
+	    	#{info.score, jdbcType=VARCHAR},
+	    	#{info.totalmark, jdbcType=VARCHAR},
+            #{info.teacher, jdbcType=VARCHAR},
+	    	#{info.teacherId, jdbcType=VARCHAR},
+	    	#{info.isPass, jdbcType=VARCHAR}
+            )
+        </foreach>;
+    </select>
+	
+	<select id="selectTmpStudentTScore">
+		SELECT
+        a.learn_id learnId,
+		a.std_id stdId,
+		c.semester,
+        a.grade,
+		bc.course_name courseName,
+		c.course_id courseId,
+		c.score,
+		c.totalmark,
+		c.teacher_id teacherId,
+		c.teacher,
+		c.is_pass isPass,
+        now() updateTime,
+       #{user.realName, jdbcType=VARCHAR} updateUser,
+        #{user.userId, jdbcType=VARCHAR} updateUserId
+        FROM
+        bd_learn_info a
+        JOIN bd_student_info b ON a.std_id = b.std_id
+		LEFT JOIN bd_unvs_profession bup ON bup.pfsn_id = a.pfsn_id
+		LEFT JOIN bd_university bu ON bu.unvs_id = a.unvs_id
+		LEFT JOIN sys_dict sd1  ON  (sd1.p_id='pfsnLevel' and sd1.dict_value=bup.pfsn_level)
+		LEFT JOIN sys_dict sd2  ON  (sd2.p_id='grade' and sd2.dict_value= a.grade  )
+    LEFT JOIN tmp_student_T_Score c ON c.grade = sd2.dict_name
+        AND c.std_name = b.std_name
+        AND ( c.id_card = b.id_card or c.school_roll=a.school_roll)
+		AND c.unvs_name = bu.unvs_name
+		AND c.pfsn_level = sd1.dict_name
+		AND c.pfsn_name = bup.pfsn_name
+		JOIN bd_course bc ON bc.course_id = c.course_id
+        WHERE  a.std_stage = 7;
+	</select>
+	
+	<insert id="insertByExcel">
+        
+        REPLACE INTO bd_student_t_score (
+        tscore_id,
+        learn_id,
+        std_id,
+        semester,
+        grade,
+        course_name,
+        course_id,
+        score,
+        totalmark,
+        teacher_id,
+        teacher,
+        is_pass,
+        update_time,
+        update_user,
+        update_user_id
+        ) values
+        <foreach collection="studentExcelList" item="info" separator=",">
+            (
+            #{info.tscoreId, jdbcType=VARCHAR},
+            #{info.learnId, jdbcType=VARCHAR},
+            #{info.stdId, jdbcType=VARCHAR},
+            #{info.semester, jdbcType=VARCHAR},
+            #{info.grade, jdbcType=VARCHAR},
+            #{info.courseName, jdbcType=VARCHAR},
+            #{info.courseId, jdbcType=VARCHAR},
+	    	#{info.score, jdbcType=VARCHAR},
+	    	#{info.totalmark, jdbcType=VARCHAR},
+            #{info.teacherId, jdbcType=VARCHAR},
+	    	#{info.teacher, jdbcType=VARCHAR},
+	    	#{info.isPass, jdbcType=VARCHAR},
+	    	#{info.updateTime, jdbcType=VARCHAR},
+	    	#{info.updateUser, jdbcType=VARCHAR},
+	    	#{info.updateUserId, jdbcType=VARCHAR}
+            )
+        </foreach>;
+    </insert>
+    
+    
+    
+	<insert id="insertStudentTScore">
+		insert into bd_student_t_score (
+		  tscore_id,
+		  learn_id,
+		  std_id,
+		  semester,
+		  grade,
+		  course_id,
+		  course_name,
+		  score,
+		  totalmark,
+		  teacher_id,
+		  teacher,
+		  is_pass,
+		  update_user,
+		  update_user_id
+		) 
+		values
+		  <foreach collection="scores" item="score" index="index" separator="," >  
+		        (#{score.tscoreId},#{learnId},#{stdId},#{semester},#{grade},#{score.courseId},#{score.courseName},#{score.score},#{score.totalmark},#{score.teacherId},#{score.teacher},#{score.isPass},#{updateUser},#{updateUserId})
+		    </foreach>
+	</insert>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		bd_student_t_score
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yz.model.educational.BdStudentTScore">
+		insert into bd_student_t_score
+		(tscore_id, learn_id, std_id,semester,grade, course_name,
+		course_id, score,totalmark, teacher_id,teacher,is_pass,
+		update_time,update_user, update_user_id
+		)
+		values (#{tscoreId,jdbcType=VARCHAR},
+		#{learnId,jdbcType=VARCHAR},
+		#{stdId,jdbcType=VARCHAR},
+		#{semester,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR},
+		#{courseName,jdbcType=VARCHAR},
+		#{courseId,jdbcType=VARCHAR}, #{score,jdbcType=VARCHAR},
+		#{totalmark,jdbcType=VARCHAR},
+		#{teacherId,jdbcType=VARCHAR},
+		#{teacher,jdbcType=VARCHAR},
+		#{isPass,jdbcType=CHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateUserId,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yz.model.educational.BdStudentTScore">
+		insert into bd_student_t_score
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tscoreId != null">
+				tscore_id,
+			</if>
+			<if test="learnId != null">
+				learn_id,
+			</if>
+			<if test="stdId != null">
+				std_id,
+			</if>
+			<if test="semester != null">
+				semester,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="courseName != null">
+				course_name,
+			</if>
+			<if test="courseId != null">
+				course_id,
+			</if>
+			<if test="score != null">
+				score,
+			</if>
+			<if test="totalmark != null">
+				totalmark,
+			</if>
+			<if test="teacherId != null">
+				teacher_id,
+			</if>
+			<if test="teacher != null">
+				teacher,
+			</if>
+			<if test="isPass != null">
+				is_pass,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateUserId != null">
+				update_user_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+			<if test="tscoreId != null">
+				#{tscoreId,jdbcType=VARCHAR},
+			</if>
+			<if test="learnId != null">
+				#{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				#{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				#{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				#{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				#{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				#{score,jdbcType=VARCHAR},
+			</if>
+			<if test="totalmark != null">
+				#{totalmark,jdbcType=VARCHAR},
+			</if>
+			<if test="teacherId != null">
+				#{teacher_id,jdbcType=VARCHAR},
+			</if>
+			<if test="teacher != null">
+				#{teacher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPass != null">
+				#{isPass,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				#{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yz.model.educational.BdStudentTScore">
+		update bd_student_t_score
+		<set>
+			<if test="learnId != null">
+				learn_id = #{learnId,jdbcType=VARCHAR},
+			</if>
+			<if test="stdId != null">
+				std_id = #{stdId,jdbcType=VARCHAR},
+			</if>
+			<if test="semester != null">
+				semester = #{semester,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="courseName != null">
+				course_name = #{courseName,jdbcType=VARCHAR},
+			</if>
+			<if test="courseId != null">
+				course_id = #{courseId,jdbcType=VARCHAR},
+			</if>
+			<if test="score != null">
+				score = #{score,jdbcType=VARCHAR},
+			</if>
+			<if test="totalmark != null">
+				totalmark = #{totalmark,jdbcType=VARCHAR},
+			</if>
+			<if test="teacherId != null">
+				teacher_id = #{teacherId,jdbcType=VARCHAR},
+			</if>
+			<if test="teacher != null">
+				teacher = #{teacher,jdbcType=VARCHAR},
+			</if>
+			<if test="isPass != null">
+				is_pass = #{isPass,jdbcType=CHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				update_user_id = #{updateUserId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yz.model.educational.BdStudentTScore">
+		update
+		bd_student_t_score
+		set learn_id = #{learnId,jdbcType=VARCHAR},
+		std_id = #{stdId,jdbcType=VARCHAR},
+		semester = #{semester,jdbcType=VARCHAR},
+		grade = #{grade,jdbcType=VARCHAR},
+		course_name = #{courseName,jdbcType=VARCHAR},
+		course_id = #{courseId,jdbcType=VARCHAR},
+		score = #{score,jdbcType=VARCHAR},
+		totalmark = #{totalmark,jdbcType=VARCHAR},
+		teacher_id = #{teacherId,jdbcType=VARCHAR},
+		teacher = #{teacher,jdbcType=VARCHAR},
+		is_pass = #{isPass,jdbcType=CHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user = #{updateUser,jdbcType=VARCHAR},
+		update_user_id = #{updateUserId,jdbcType=VARCHAR}
+		where tscore_id = #{tscoreId,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getStudentInfo" resultType="java.util.Map">
+			SELECT
+				a.learn_id,
+				a.unvs_id,
+				ifnull(a.school_roll,'') school_roll,
+				b.std_name
+			FROM
+				bd_learn_info a
+			LEFT JOIN bd_student_info b ON a.std_id = b.std_id
+			WHERE
+				a.unvs_id = #{unvsId}
+			AND a.pfsn_id = #{pfsnId}
+			AND a.grade = #{grade}
+			AND a.std_stage = '7'
+			order by a.school_roll asc
+	</select>
+
+	<select id="getCourseName" resultType="java.util.Map">
+		SELECT
+			emp.emp_name,
+			teach.*
+		FROM
+			oa_employee emp
+		JOIN (
+			SELECT
+				thp_id,
+				thp_name,
+				total_hours,
+				(
+					SELECT
+						emp_id
+					FROM
+						oa_employee
+					WHERE
+						emp_type = '3'
+					ORDER BY
+						RAND()
+					LIMIT 1
+				) emp_id
+			FROM
+				bd_teach_plan
+			WHERE
+				pfsn_id = #{pfsnId}
+			AND grade = #{grade}
+			AND semester = #{semester}
+			group by thp_name
+		) AS teach ON teach.emp_id = emp.emp_id
+		ORDER BY thp_id
+	</select>
+
+	<select id="getCourseNameCount" resultType="java.lang.Integer">
+		SELECT
+		count(0)
+		FROM
+		oa_employee emp
+		JOIN (
+		SELECT
+		thp_id,
+		thp_name,
+		total_hours,
+		(
+		SELECT
+		emp_id
+		FROM
+		oa_employee
+		WHERE
+		emp_type = '3'
+		ORDER BY
+		RAND()
+		LIMIT 1
+		) emp_id
+		FROM
+		bd_teach_plan
+		WHERE
+		pfsn_id = #{pfsnId}
+		AND grade = #{grade}
+		AND semester = #{semester}
+		group by thp_name
+		) AS teach ON teach.emp_id = emp.emp_id
+	</select>
+
+	<insert id="insertScoreExcel" parameterType="com.yz.model.educational.BdStudentTemplateExcel">
+		INSERT INTO bd_student_score_excel (se_id,te_id,learn_id,thp_id,unvs_id,score,emp_id,exam_time,create_time)
+		values
+		<foreach collection="studentScoreExcels" item="info" separator=",">
+			(
+			#{info.seId, jdbcType=VARCHAR},
+			#{info.teId, jdbcType=VARCHAR},
+			#{info.learnId, jdbcType=VARCHAR},
+			#{info.thpId, jdbcType=VARCHAR},
+			#{info.unvsId, jdbcType=VARCHAR},
+			#{info.score, jdbcType=VARCHAR},
+			#{info.empId, jdbcType=VARCHAR},
+			#{info.examTime, jdbcType=VARCHAR},
+			now()
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertTemplateExcel" parameterType="com.yz.model.educational.BdStudentTemplateExcel">
+		insert into bd_student_template_excel
+		(te_id,year,semester,grade,unvs_id,pfsn_level,pfsn_id,excel_url,create_time)
+		values (#{teId,jdbcType=VARCHAR},
+		#{year,jdbcType=VARCHAR},
+		#{semester,jdbcType=VARCHAR},
+		#{grade,jdbcType=VARCHAR},
+		#{unvsId,jdbcType=VARCHAR},
+		#{pfsnLevel,jdbcType=VARCHAR},
+		#{pfsnId,jdbcType=VARCHAR},
+		#{excelUrl,jdbcType=VARCHAR},
+		now()
+		)
+	</insert>
+	
+	<select id="getTemplateExcelUrl" resultType="java.lang.String" parameterType="com.yz.model.educational.TemplateExcel">
+		SELECT excel_url FROM bd_student_template_excel
+		WHERE year =#{year} and semester =#{semester} and grade =#{grade}
+		and unvs_id =#{unvsId} and pfsn_level=#{pfsnLevel} and pfsn_id=#{pfsnId}
+	</select>
+
+	<select id="getCourseScore" resultType="java.util.Map">
+		SELECT
+			MAX(ROUND(score)) max_score,
+			MIN(ROUND(score)) min_score,
+			ROUND(AVG(ROUND(score)),2) avg_score,
+			SUM(
+				CASE
+				WHEN ROUND(score) BETWEEN 80
+				AND 90 THEN
+					1
+				ELSE
+					0
+				END
+			) count1,
+			SUM(
+				CASE
+				WHEN ROUND(score) BETWEEN 70
+				AND 79 THEN
+					1
+				ELSE
+					0
+				END
+			) count2,
+			count(*) count,
+			date_format(exam_time, '%Y-%m-%d') exam_time,
+			b.emp_name,
+			c.total_hours
+		FROM
+			bd_student_score_excel a
+		LEFT JOIN oa_employee b ON a.emp_id = b.emp_id
+		LEFT JOIN bd_teach_plan c ON a.thp_id = c.thp_id
+		WHERE
+			unvs_id = #{unvsId}
+		AND a.thp_id = #{thpId}
+	</select>
+</mapper>

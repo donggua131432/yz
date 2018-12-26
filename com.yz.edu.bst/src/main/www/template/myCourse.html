@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" th:href="@{/css/image/favicon.ico}"  />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/h-ui/style.css?v=20180315}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery.select2/select2.min.css}" />
+    <title>远智学堂-我的课表</title>
+    <script type="text/javascript" th:src="@{/js/jquery/1.9.1/jquery.min.js}"></script>
+    <style>
+    .layer-address .layui-layer-content{padding:20px;}
+    </style>
+</head>
+
+<body>
+<div class="wrraper">
+    <div class="banner">
+        <div class="tit">远智学堂</div>
+    </div>
+    <div class="breadcrumb">
+        <div class="inner">
+            <a class="f-r fc069"  th:href="@{/logout.do}">退出登录&gt;</a>
+            <a class="fc9" href="javascript:void(0);" title="远智学堂">远智学堂</a> <i class="arr-r"></i>
+            <a class="fc6" href="javascript:void(0);" title="我的课表">我的课表</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar" th:include="common::sidebar">
+        </div>
+        <div class="main my-curriculum">
+            <div class="hd">
+                <div class="cl">
+                    <h1 class="h1 f-l" id="unvs"></h1>
+                    <div class="f-l select-wrap">
+                        <select class="select" size="1" id="semester" name="semester"></select>
+                    </div>
+                </div>
+                <p class="fc9">开课专业：<span id="pfsnName"></span></p>
+            </div>
+            <div class="bd">
+                <div id="liveing" class="liveing" style="display: none"></div>
+                <div id="courses" class="mt-10"></div>
+                <div id="courseInfos" class="mt-10"></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer" th:include="common::footer">
+    </div>
+</div>
+
+
+<script type="text/javascript" th:src="${_file_browser + 'cache/dict.json?v=12'}"></script>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" th:src="@{/js/layer/2.4/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/h-ui/H-ui.admin.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery.select2/select2.full.js}"></script>
+<script type="text/javascript" th:src="@{/js/custom/yzCommon.js}"></script>
+<script type="text/javascript" th:src="@{/js/store/store.legacy.min.js}"></script>
+<!--/_footer 作为公共模版分离出去-->
+
+<script th:inline="javascript" type="text/javascript">
+    var learnId = store.get('learnId');
+    var stdStage = store.get('stdStage');
+    $(function() {
+        //初始化学期下拉框
+        presentTerm();
+    });
+
+    $('#semester').on('change', function () {
+        $('#courses').html('');
+        $('#courseInfos').html('');
+        $('#liveing').hide();
+        mySyllabus($(this).val());
+    });
+
+    //获取学期
+    function presentTerm() {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            data: {learnId: learnId},
+            url: [[@{/presentTerm.do}]], //请求url
+            success: function (data) {
+                if ('00' == data.code) {
+                    if(data.body){
+                        if(data.body=='0'){
+                            var semester = [{dictName: '辅导课', dictValue: '0'}];
+                            _init_select("semester", semester, '0');
+                        }else {
+                            _init_select("semester", dictJson.semester, data.body);
+                        }
+                        $('#semester').change();
+                    };
+                }
+            }
+        });
+    }
+
+    //我的课程
+    function mySyllabus(term) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            data: {learnId: learnId,term:term},
+            url: [[@{/mySyllabus.do}]],
+            success: function (data) {
+                if ('00' == data.code) {
+                    var body = data.body;
+                    if(body){
+                        $("#unvs").text("["+body.grade+"级]"+body.unvsName);
+                        $("#pfsnName").text(body.pfsnName);
+
+                        courseInfosDom(body.courseInfos);
+                        coursesDom(body.courses,body.qingshuId,body.qingshuPwd);
+
+                        //获取正在直播课程
+                        var courseInfosString = JSON.stringify(body.courseInfos || {});
+                        getCourseLive(term, courseInfosString.indexOf('"cpType":"6"') > -1 || courseInfosString.indexOf('"cpType":"7"') > -1);
+                    }else {
+                        $('#courseInfos').html('<p style="padding-top: 20px;text-align: center">暂无数据</p>')
+                    }
+                }
+            }
+        });
+    }
+    function courseInfosDom(courseInfos) {
+        //课程表
+        var html = $.map(courseInfos, function (item) {
+            return $.map(item.details, function (detailItem,index) {
+                var td = '';
+                var addr='';
+                var time = parseInt(detailItem.startTime);
+                if (item.details.length > 1) {
+                    if (index === 0) {
+                        td = '<td rowspan="' + item.details.length + '">' + item.date + '</td>';
+                    }
+                } else {
+                    td = '<td>' + item.date + '</td>';
+                }
+                if(detailItem.cpType=='8'){
+                	addr='<a class="f-r fc069" onclick="showAddress(\''+detailItem.cpType+'\',\''+detailItem.address+'\')">查看流程&gt;</a>';
+                }
+                else if(detailItem.cpType!=='6'){
+                	addr='<a class="f-r fc069" onclick="showAddress(\''+detailItem.cpType+'\',\''+detailItem.address+'\')">地址&gt;</a>';
+                }
+                return '<tr>\n' + td +
+                    '          <td>' + detailItem.startTime + '-' + detailItem.endTime + '</td>\n' +
+                    '          <td><p>' + delCode(detailItem.courseName) + '</p><p class="cl">'+addr+'(' + _findDict('cpType',detailItem.cpType) + ')</p></td>\n' +
+                    '      </tr>';
+            });
+        });
+        var courseInfosDom = '<table class="table">\n' +
+            '                        <thead>\n' +
+            '                        <tr>\n' +
+            '                            <th width="198"></th>\n' +
+            '                            <th width="315">上课时间</th>\n' +
+            '                            <th width="508">课程</th>\n' +
+            '                        </tr>\n' +
+            '                        </thead><tbody>' + html.join('') + '</tbody>\n' +
+            '                    </table>';
+        $('#courseInfos').html(courseInfosDom);
+    }
+
+    function coursesDom(courses, qingshuId, qingshuPwd) {
+        var tr = '';
+        tr = $.map(courses, function (item) {
+        	var addr='<a class="f-r fc069" onclick="showAddress(\''+item.cpType+'\',\''+item.address+'\',\''+qingshuId+'\',\''+qingshuPwd+'\')">地址&gt;</a>';
+            return '<tr>\n' +
+                '          <td></td>\n' +
+                '          <td></td>\n' +
+                '           <td><p>' + delCode(item.courseName) + '</p><p class="cl">'+addr+'(' + _findDict('cpType',item.cpType) + ')</p></td>\n' +
+                '      </tr>';
+        });
+        
+        $('#courseInfos tbody').append(tr.join(''));
+    }
+
+    //获取课程直播
+    function getCourseLive(term, isLiveCourse) {
+        if(!isLiveCourse) return;
+        // 观看直播的学员限制。1、辅导课程：考前辅导、考前确认、入学考试  2、学科课程：在读学员
+        if ((term === '0' && '"2","3","4"'.indexOf('"' + stdStage + '"') > -1) || (term > 0 && stdStage === '7')) {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                data: {learnId: learnId, term: term},
+                url: [[@{/getCourseLive.do}]], //请求url
+                success: function (data) {
+                    if ('00' == data.code) {
+                        var html='';
+                        // 过滤直播课程
+                        var courseLive = $.map(data.body.live.courseLive, function (item) {
+                            var startDate = new Date(item.startTime.replace(/-/g, '/')).getTime()-1000*60*10;
+                            var endDate = new Date(item.endTime.replace(/-/g, '/')).getTime();
+                            if (data.body.live.now >= startDate&&data.body.live.now <= endDate) {
+                                return item;
+                            }
+                        });
+
+                        if (courseLive.length>0) {
+                            var url = [[@{/live.do?term=}]]+$('#semester').val()+'&courseId='+courseLive[0].courseId+'&channelId='+(courseLive[0].channelId||'');
+                            html = '<a href=' + url + ' style="display: block;margin: 0;"><p class="cl" style="margin:0 -10px;padding:0 10px;color:#fff;background-color:#f55161;">\n' +
+                                '           <span class="f-r">进入课程直播&gt;</span>上课中：' + delCode(courseLive[0].courseName) + '\n' +
+                                '       </p></a>';
+                        }else{
+                            html='<p style="margin:0 -10px;padding:0 10px;;color:#999;background-color:#e6e6e6;">直播入口：课程表指定的上课时间段方可点击进入</p>';
+                        }
+                        $('#liveing').html(html).show();
+                    }
+                }
+            });
+        }
+    }
+    
+    
+    function delCode(courseName) {
+       return courseName.replace(/【([^】]*)】/g, '');
+    }
+    
+    function showAddress(cpType,address, qingshuId, qingshuPwd){
+    	if(cpType==='3'){
+    		address='该课程自习';
+    	}else if(cpType==='4'){
+    		if(qingshuId&&qingshuId!='null'){
+    			address='<p>请下载“青书学堂”手机APP，使用帐号、密码登录进行上课练习。</p><p>帐号：'+qingshuId+'</p><p>密码：'+qingshuPwd+'</p>';
+    		}else{
+    			address='请登录青书学堂进行学习';
+    		}
+    		
+    	}else if(cpType=='8'){
+    			address='请登录国家开放大学学习网 <a href="http://www.ouchn.cn/" target="_blank">http://www.ouchn.cn/</a>，登录账户是学号（远智学堂-我的信息查看），密码是出生年月日八位数';
+    	}
+    	if(address){
+    		layer.open({
+      		  type: 1,
+      		  skin: 'layer-address', //样式类名
+      		  title: null,
+      		  closeBtn: 1, //显示关闭按钮
+      		  anim: 2,
+      		  shadeClose: true, //开启遮罩关闭
+      		  area: ['400px'],
+      		  content: address
+     		});
+    	}
+    }
+</script>
+
+
+</body>
+</html>
