@@ -1,6 +1,6 @@
 package com.yz.executor;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +11,11 @@ import com.yz.cache.rule.RedisCacheRule;
 import com.yz.cache.rule.RedisCacheRuleFactory;
 import com.yz.edu.trace.TraceTransfer;
 import com.yz.exception.CustomException;
-import com.yz.exception.IRpcException;
 import com.yz.model.YzServiceInfo;
 import com.yz.model.communi.Body;
 import com.yz.model.communi.Header;
 import com.yz.trace.sender.TraceSender;
 import com.yz.util.ApplicationContextUtil;
-import com.yz.util.ExceptionUtil;
 import com.yz.util.OSUtil;
 
 /**

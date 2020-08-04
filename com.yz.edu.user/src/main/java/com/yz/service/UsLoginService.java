@@ -514,11 +514,13 @@ public class UsLoginService {
 		}
 
 		if (saveValicode == null) {
-			throw new BusinessException("E30009");// 短信验证码失效
+			// 短信验证码失效
+			throw new BusinessException("E30009");
 		}
 
 		if (!saveValicode.equals(valicode)) {
-			throw new BusinessException("E30010");// 短信验证码错误
+			// 短信验证码错误
+			throw new BusinessException("E30010");
 		}
 
 		int count = baseInfoMapper.countByMobile(mobile);
@@ -529,7 +531,8 @@ public class UsLoginService {
 			return loginByBaseInfoWithLog(baseInfo, UsConstants.LOGIN_TYPE_MBILE, ip, mac, coordinate);
 
 		} else {
-			throw new BusinessException("E30015");// 手机号尚未注册
+			// 手机号尚未注册
+			throw new BusinessException("E30015");
 		}
 	}
 

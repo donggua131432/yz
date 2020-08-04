@@ -128,16 +128,21 @@ public class YzServiceExecutor {
 		ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
 		reference.setApplication(applicationConfig);
 		reference.setRegistry(registryConfig);
-		reference.setInterface(interfaceInfo.getInterfaceName()); // 接口名
+		// 接口名
+		reference.setInterface(interfaceInfo.getInterfaceName());
 		reference.setVersion("1.0");
-		reference.setGeneric(true); // 声明为泛化接口
+		// 声明为泛化接口
+		reference.setGeneric(true);
 		reference.setCache("lru");
 		reference.setProtocol("dubbo");
 		reference.setCheck(false);
-		reference.setTimeout(interfaceInfo.getTimeout());// 超时时间 3000ms
+		// 超时时间 3000ms
+		reference.setTimeout(interfaceInfo.getTimeout());
 		//reference.setTimeout(30000);// 超时时间 3000ms
-		reference.setRetries(0); // 重试次数
-		reference.setCluster(yzDubboBean.getCluster()); // 设置集群方式
+		// 重试次数
+		reference.setRetries(0);
+		// 设置集群方式
+		reference.setCluster(yzDubboBean.getCluster());
 		reference.setLoadbalance(yzDubboBean.getLoadbalance()); 
 	 
 		// ReferenceConfig实例很重，封装了与注册中心的连接以及与提供者的连接，

@@ -80,8 +80,9 @@ public class ProxyController {
 		if (interfaceInfo == null) {
 			return new Response( "E00006","["+sysBelong +"."+ interfaceName + "." + interfaceVersion + "]" + " 接口尚未发布");
 		}
-		
-		handlerChain.check(interfaceInfo, request, servletRequest);// 检测
+
+		// 检测
+		handlerChain.check(interfaceInfo, request, servletRequest);
 
 		Object result = null;
 		try {
